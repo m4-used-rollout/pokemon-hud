@@ -1,0 +1,4 @@
+node_modules/
+bin/
+img/sprites/
+.DS_Store

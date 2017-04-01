@@ -1,0 +1,365 @@
+@font-face {
+    font-family: 'pokered';
+    src: url('fonts/pokered-regular.woff2') format('woff2'),
+         url('fonts/pokered-regular.woff') format('woff'),
+         url('fonts/pokered-regular.otf') format('otf');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'pokeplatinum';
+    src: url('fonts/pokeplatinum-regular.woff2') format('woff2'),
+         url('fonts/pokeplatinum-regular.woff') format('woff'),
+         url('fonts/pokeplatinum-regular.otf') format('otf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    background-color:black;
+    margin:0;
+    width:100vw;
+    height:100vh;
+    overflow: hidden;
+}
+
+@low-health: red;
+@med-health: goldenrod;
+@high-health:green;
+
+@bar-chrome: #666;
+@bar-skew: 15deg;
+
+@party-member-height: 15vh;
+
+.pokemon-hud {
+    font-family: pokeplatinum;
+    color:white;
+    font-size: @party-member-height / 5;
+    width:100%;
+    overflow: hidden;
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .health-info(@color) {
+        .pokemon-image {
+            background-image:linear-gradient(46deg, @color 0%, @color 47.6%, rgba(0,0,0,0) 47.7%);
+        }
+        .health {
+            background-color:@color;
+        }
+    }
+    .bar(@name, @height) {
+        position: absolute;
+        height:1.25em;
+        right:0;
+        left:0;
+        font-size: @height;
+        background-color:darken(@bar-chrome, 20%);
+        border:.1em solid @bar-chrome;
+
+        &:before {
+            content:@name ':';
+            padding: 0 .5em;
+            font-weight: bold;
+            background-color:@bar-chrome;
+            transform: skew((@bar-skew * -1));
+            position: absolute;
+            right:calc(100% - .5em);
+            top:-.1em;
+            bottom:-.1em;
+            z-index: 1;
+        }
+
+        &:after {
+            content:'';
+            position: absolute;
+            background-color:@bar-chrome;
+            right:-.75em;
+            top:-.1em;
+            bottom:-.1em;
+            width:1em;
+            transform:skew(@bar-skew);
+        }
+    }
+
+    .bar-fill() {
+        position: absolute;
+        left:0;
+        top:0;
+        bottom:0;
+        transform:skew(@bar-skew)translateX(-.2em);
+        transition: width .5s ease-out;
+    }
+
+    ul.party {
+        list-style: none;
+        margin:0;
+        padding:0;
+        height: (@party-member-height * 6);
+        
+        li {
+            display:flex;
+            padding:0;
+            margin:0;
+            height:@party-member-height;
+            background-position: left center;
+            background-size: contain;
+            background-repeat: no-repeat;
+
+            &.female .name:after {
+                content:'♀';
+                color: deeppink;
+            }
+
+            &.male .name:after {
+                content:'♂';
+                color: dodgerblue;
+            }
+
+            .pokemon-image {
+                display: inline-block;
+                flex:0 0 auto;
+                position: relative;
+
+                > img {
+                    width: @party-member-height;
+                    height:@party-member-height;
+                }
+            }
+
+            .pokemon-info {
+                flex: 1 1 auto;
+                position: relative;
+                min-width: 0;
+                background-image: linear-gradient(to left, black 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,0) 100%);
+
+                .top-line {
+                    display: flex;
+                    align-items:center;
+                    align-content: space-between;
+                    font-size:1.2em;
+                    position: relative;
+
+                    .name {
+                        flex: 0 0 auto;
+                        text-align: left;
+                        white-space: pre;
+
+                        &:after {
+                            margin-left: .1em;
+                        }
+                    }
+
+                    .types {
+                        flex: 1 1 auto;
+                        text-align: center;
+                        width:100%;
+                        img {
+                            height: (@party-member-height / 6);
+                            margin: (@party-member-height / 64);
+                            // display:block;
+                            // margin-left:auto;
+                            // margin-right:auto;
+                        }
+                    }
+
+                    .level {
+                        text-align: right;
+                        margin-left:auto;
+
+                        &:before {
+                            content:'Lv';
+                            font-size:.8em;
+                            vertical-align: baseline;
+                        }
+                    }
+
+                    .exp-bar {
+                        .bar('EXP', (@party-member-height / 30));
+                        top:90%;
+                        left:2em;
+
+                        .exp {
+                            .bar-fill();
+                            background-color:deepskyblue;
+                        }
+                    }
+                }
+                .moves {
+                    list-style: none;
+                    width:100%;
+                    padding:0;
+                    margin:0;
+                    position: relative;
+                    left:-.2em;
+                    top:.3em;
+
+                    li {
+                        display: inline-flex;
+                        flex-flow: row nowrap;
+                        align-items: center;
+                        width:50%;
+                        white-space: nowrap;
+                        height: auto;
+
+                        img {
+                            height: .7em;
+                            margin:0 .1em;
+                        }
+                        .move-name {
+                            margin:auto;
+                            text-align: center;
+                        }
+                        span:last-of-type {
+                            margin-left:auto;
+                        }
+                        &.long-name .move-name {
+                            font-size:.7em;
+                            transform: scaleY(1.4);
+                            transform-origin:50%;
+                        }
+                        &.pp-low {
+                            color:@low-health;
+                        }
+                        &.pp-med {
+                            color:@med-health;
+                        }
+                        &.exhausted {
+                            opacity: .3;
+                            transition: filter .5s ease-in, opacity .5s ease-out, color .5s ease-out;
+                            filter:grayscale(100%);
+                        }
+                    }
+                }
+                .health-bar {
+                    .bar('HP', (@party-member-height / 10));
+                    bottom:0;
+
+                    .hp {
+                        position: absolute;
+                        left:0;
+                        right:0;
+                        bottom:0;
+                        text-align: center;
+                        font-size: 1.8em;
+                        height:1em;
+
+                        &:before {
+                            content:attr(data-current);
+                        }
+                        &:after {
+                            content:"/" attr(data-max);
+                            font-size: .8em;
+                            vertical-align: baseline;
+                        }
+                    }
+                    
+                    .health {
+                        .bar-fill();
+                        min-width:2%;
+                    }
+                }
+            }
+
+            &.slp {
+                background-image:url('../img/status/bg/slp.jpg');
+            }
+            &.psn {
+                background-image:url('../img/status/bg/psn.jpg');
+            }
+            &.brn {
+                background-image:url('../img/status/bg/brn.jpg');
+            }
+            &.frz {
+                background-image:url('../img/status/bg/frz.jpg');
+            }
+            &.par {
+                background-image:url('../img/status/bg/par.jpg');
+            }
+            &.tox {
+                background-image:url('../img/status/bg/tox.jpg');
+            }
+
+            &.fainted {
+                .pokemon-image img {
+                    opacity: .7;
+                    transition: opacity .5s ease-out;
+                }
+                opacity: .5;
+                transition: filter .5s ease-in, opacity .5s ease-out;
+                filter:grayscale(100%);
+                .health {
+                    min-width:0!important;
+                    width:0!important;
+                }
+                .moves li {
+                    color:white!important;
+                    opacity: 1!important;
+                }
+            }
+
+            &.health-high {
+                .health-info(@high-health);
+            }
+            &.health-med {
+                .health-info(@med-health);
+            }
+            &.health-low {
+                .health-info(@low-health);
+            }
+
+            &.egg {
+                line-height:@party-member-height;
+                font-size: (@party-member-height / 2);
+            }
+        }
+
+    }
+
+    .trainer-info {
+        .badges {
+            font-size: 10vw;
+            width:100%;
+            text-align: center;
+        }
+
+        .wallet {
+            position: absolute;
+            left:0;
+            bottom:0;
+            padding: .2em 0;
+
+            span {
+                margin: 0 .5em;
+                vertical-align: baseline;
+
+                &:before {
+                    font-size: .9em;
+                    vertical-align: baseline;
+                    margin-right:.1em;
+                }
+            }
+
+            .cash:before {
+                content:"$";
+            }
+            .balls:before {
+                content:"♎";
+            }
+        }
+
+        .dex-counts {
+            position: absolute;
+            right:0;
+            bottom:0;
+            padding: .2em .5em;
+
+            span:not(:last-of-type):after {
+                content:'/';
+            }
+        }
+    }
+}
