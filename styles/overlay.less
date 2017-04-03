@@ -169,12 +169,13 @@ body {
                     }
 
                     .types {
-                        flex: 1 1 auto;
+                        flex: 0 1 auto;
                         text-align: center;
-                        width:100%;
+                        width:(@party-member-height / 2);
+                        margin-left:auto;
                         img {
                             height: (@party-member-height / 6);
-                            margin: (@party-member-height / 64);
+                            margin: .1em;
                             border-radius: 50%;
                             // display:block;
                             // margin-left:auto;
@@ -184,7 +185,7 @@ body {
 
                     .level {
                         text-align: right;
-                        margin-left:auto;
+                        width: 2.2em;
 
                         &:before {
                             content:'Lv';
