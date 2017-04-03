@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"outDir": ".",
+		"target": "es6",
+		"removeComments": true,
+        "jsx": "react",
+        "outFile": "overlay.js"
+    },
+	"include": [
+        "./**/*.tsx",
+		"./**/*.ts"
+	]
+}

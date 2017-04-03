@@ -12,6 +12,7 @@ declare namespace TPP {
         caught: number;
         caught_list: number[];
         coins?: number;
+        id: number;
         items?: Item[];
         items_key?: Item[];
         items_ball?: Item[];
@@ -21,9 +22,11 @@ declare namespace TPP {
         area_id: number;
         area_name: string;
         money: number;
+        name: string;
         pc_items: Item[];
         seen: number;
         seen_list: number[];
+        secret: number;
         x: number;
         y: number;
     }
@@ -59,6 +62,7 @@ declare namespace TPP {
             name: string;
             type1?: string;
             type2?: string;
+            egg_cycles: number;
             egg_type1?: string;
             egg_type2?: string;
             growth_rate?: string;

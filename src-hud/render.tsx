@@ -1,0 +1,44 @@
+/// <reference path="party.tsx" />
+/// <reference path="trainer.tsx" />
+
+var data: TPP.RunStatus = null;
+
+var targetId:string;
+function Render(id: string = targetId) {
+    targetId = id;
+    if (!id || !data) return;
+    ReactDOM.render(<div className="pokemon-hud">
+        <Party party={data.party} />
+        <Trainer trainer={data} />
+    </div>, document.getElementById(id));
+}
+
+TPP.Server.registerStateChangeHandler(state=> {
+    data = state;
+    Render();
+});
+
+//droppable state changes (for testing)
+document.addEventListener('dragover', e=>{
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'copy';
+});
+document.addEventListener('dragenter', e=>{
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+});
+document.addEventListener('drop', e=>{
+    e.preventDefault();
+    for (let i = 0; i < e.dataTransfer.files.length; i++) {
+        if (e.dataTransfer.files[i].type == "application/json") {
+            let reader = new FileReader();
+            reader.onload = e=> {
+                TPP.Server.setState((e as any).target.result);
+            };
+            console.log();
+            reader.readAsText(e.dataTransfer.files[i]);
+        }
+    }
+});
+
+(window as any).Render = Render;

@@ -27,7 +27,7 @@
         "friendship": 255,
         "gender": "Male",
         "health": [
-            13,
+            183,
             183
         ],
         "held_item": {
@@ -62,7 +62,7 @@
                 "id": 94,
                 "max_pp": 10,
                 "name": "Psychic",
-                "pp": 0,
+                "pp": 10,
                 "pp_up": 0,
                 "type": "Psychic"
             },
@@ -72,7 +72,7 @@
                 "id": 202,
                 "max_pp": 15,
                 "name": "Giga Drain",
-                "pp": 9,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "Grass"
             },
@@ -82,7 +82,7 @@
                 "id": 53,
                 "max_pp": 15,
                 "name": "Flamethrower",
-                "pp": 12,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "Fire"
             },
@@ -92,7 +92,7 @@
                 "id": 340,
                 "max_pp": 5,
                 "name": "Bounce",
-                "pp": 2,
+                "pp": 5,
                 "pp_up": 0,
                 "type": "Flying"
             }
@@ -134,7 +134,7 @@
             "special_defense": 144,
             "speed": 165
         },
-        "status": 64
+        "status": 0
     },
     {
         "ability": "NATURAL CURE",
@@ -164,7 +164,7 @@
         "friendship": 255,
         "gender": "Female",
         "health": [
-            0,
+            201,
             201
         ],
         "held_item": {
@@ -199,7 +199,7 @@
                 "id": 348,
                 "max_pp": 15,
                 "name": "Leaf Blade",
-                "pp": 0,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "Grass"
             },
@@ -209,7 +209,7 @@
                 "id": 325,
                 "max_pp": 15,
                 "name": "Shadow Claw",
-                "pp": 2,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "Ghost"
             },
@@ -219,7 +219,7 @@
                 "id": 125,
                 "max_pp": 15,
                 "name": "Wood Hammer",
-                "pp": 5,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "Grass"
             },
@@ -229,7 +229,7 @@
                 "id": 223,
                 "max_pp": 15,
                 "name": "Drain Punch",
-                "pp": 12,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "Fighting"
             }
@@ -301,7 +301,7 @@
         "friendship": 255,
         "gender": "Male",
         "health": [
-            82,
+            209,
             209
         ],
         "held_item": {
@@ -336,7 +336,7 @@
                 "id": 127,
                 "max_pp": 15,
                 "name": "Waterfall",
-                "pp": 7,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "Water"
             },
@@ -346,7 +346,7 @@
                 "id": 8,
                 "max_pp": 15,
                 "name": "Ice Punch",
-                "pp": 6,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "Ice"
             },
@@ -366,7 +366,7 @@
                 "id": 280,
                 "max_pp": 15,
                 "name": "Brick Break",
-                "pp": 4,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "Fighting"
             }
@@ -438,7 +438,7 @@
         "friendship": 255,
         "gender": "Male",
         "health": [
-            102,
+            194,
             194
         ],
         "held_item": {
@@ -473,7 +473,7 @@
                 "id": 301,
                 "max_pp": 15,
                 "name": "Moonblast",
-                "pp": 13,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "???"
             },
@@ -483,7 +483,7 @@
                 "id": 94,
                 "max_pp": 10,
                 "name": "Psychic",
-                "pp": 5,
+                "pp": 10,
                 "pp_up": 0,
                 "type": "Psychic"
             },
@@ -493,7 +493,7 @@
                 "id": 186,
                 "max_pp": 15,
                 "name": "Drain Kiss",
-                "pp": 0,
+                "pp": 15,
                 "pp_up": 0,
                 "type": "???"
             },
@@ -503,7 +503,7 @@
                 "id": 347,
                 "max_pp": 20,
                 "name": "Calm Mind",
-                "pp": 18,
+                "pp": 20,
                 "pp_up": 0,
                 "type": "Psychic"
             }
@@ -545,7 +545,7 @@
             "special_defense": 178,
             "speed": 116
         },
-        "status": 0
+        "status": 3
     },
     {
         "ability": "INNER FOCUS",
@@ -685,7 +685,7 @@
         "status": 0
     },
     {
-        "ability": "LIGHTNINGROD",
+        "ability": "SERENE GRACE",
         "address": "246E0",
         "condition": {
             "beauty": 0,
@@ -696,101 +696,81 @@
             "toughness": 0
         },
         "evs": {
-            "attack": 50,
-            "defense": 28,
-            "hp": 4,
-            "special_attack": 50,
-            "special_defense": 11,
-            "speed": 33
+            "attack": 0,
+            "defense": 0,
+            "hp": 0,
+            "special_attack": 0,
+            "special_defense": 0,
+            "speed": 0
         },
         "experience": {
-            "current": 243364,
-            "next_level": 250047,
-            "remaining": 6683,
-            "this_level": 238328
+            "current": 1,
+            "next_level": 6,
+            "remaining": 5,
+            "this_level": 0
         },
-        "friendship": 110,
+        "friendship": 0,
         "gender": "Male",
         "health": [
-            55,
-            155
+            11,
+            11
         ],
         "held_item": {
-            "count": 1,
-            "id": 212,
-            "key_item": false,
-            "name": "NEVERMELTICE"
+            "count": 0,
+            "id": 0,
+            "key_item": true,
+            "name": "None"
         },
-        "is_egg": false,
+        "is_egg": true,
         "ivs": {
-            "attack": 0,
-            "defense": 24,
-            "hp": 14,
-            "special_attack": 25,
-            "special_defense": 6,
-            "speed": 12
+            "attack": 15,
+            "defense": 25,
+            "hp": 26,
+            "special_attack": 12,
+            "special_defense": 19,
+            "speed": 24
         },
-        "language": 514,
-        "level": 62,
+        "language": 1537,
+        "level": 1,
         "marking": "â—",
         "met": {
             "caught_in": "POKÃ© BALL",
             "game": "Emerald",
-            "level": 50,
-            "map_id": 66,
-            "map_name": "FUSION CO"
+            "level": 0,
+            "map_id": 253,
+            "map_name": ""
         },
         "moves": [
             {
                 "accuracy": 100,
-                "base_power": 90,
-                "id": 85,
-                "max_pp": 15,
-                "name": "Thunderbolt",
-                "pp": 1,
+                "base_power": 0,
+                "id": 45,
+                "max_pp": 40,
+                "name": "Growl",
+                "pp": 40,
                 "pp_up": 0,
-                "type": "Electric"
+                "type": "Normal"
             },
             {
                 "accuracy": 100,
-                "base_power": 90,
-                "id": 58,
-                "max_pp": 10,
-                "name": "Ice Beam",
-                "pp": 1,
+                "base_power": 0,
+                "id": 204,
+                "max_pp": 20,
+                "name": "Charm",
+                "pp": 20,
                 "pp_up": 0,
-                "type": "Ice"
-            },
-            {
-                "accuracy": 95,
-                "base_power": 90,
-                "id": 19,
-                "max_pp": 15,
-                "name": "Fly",
-                "pp": 2,
-                "pp_up": 0,
-                "type": "Flying"
-            },
-            {
-                "accuracy": 100,
-                "base_power": 95,
-                "id": 57,
-                "max_pp": 15,
-                "name": "Surf",
-                "pp": 5,
-                "pp_up": 0,
-                "type": "Water"
+                "type": "???"
             }
         ],
-        "name": "Chu",
-        "nature": "HARDY",
+        "name": "ã‚¿Ã­ã‚´",
+        "nature": "LAX",
         "original_trainer": {
             "gender": "Male",
             "id": 10574,
             "name": "Faith",
             "secret": 10764
         },
-        "personality_value": 312347775,
+        "personality_value": 3447033259,
         "pokerus": {
             "cured": false,
             "days_left": 0,
@@ -801,24 +781,24 @@
         "ribbons": [],
         "shiny": false,
         "species": {
-            "egg_cycles": 120,
+            "egg_cycles": 10,
             "egg_type1": "Undiscovered",
             "egg_type2": "Undiscovered",
-            "growth_rate": "Medium Fast",
-            "id": 252,
-            "name": "Pikachu",
-            "national_dex": 387,
-            "type1": "Electric",
-            "type2": "Electric"
+            "growth_rate": "Fast",
+            "id": 175,
+            "name": "Togepi",
+            "national_dex": 175,
+            "type1": "???",
+            "type2": "???"
         },
         "stats": {
-            "attack": 136,
-            "defense": 92,
-            "hp": 155,
-            "special_attack": 151,
-            "special_defense": 109,
-            "speed": 153
+            "attack": 5,
+            "defense": 6,
+            "hp": 11,
+            "special_attack": 5,
+            "special_defense": 5,
+            "speed": 5
         },
-        "status": 8
+        "status": 0
     }
 ]

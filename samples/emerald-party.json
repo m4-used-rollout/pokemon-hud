@@ -1,0 +1,822 @@
+[
+    {
+        "ability": "THICK FAT",
+        "address": "244EC",
+        "condition": {
+            "beauty": 0,
+            "coolness": 0,
+            "cuteness": 0,
+            "feel": 0,
+            "smartness": 0,
+            "toughness": 0
+        },
+        "evs": {
+            "attack": 210,
+            "defense": 41,
+            "hp": 130,
+            "special_attack": 12,
+            "special_defense": 73,
+            "speed": 44
+        },
+        "experience": {
+            "current": 707113,
+            "next_level": 737280,
+            "remaining": 30167,
+            "this_level": 700115
+        },
+        "friendship": 255,
+        "gender": "Female",
+        "health": [
+            13,
+            343
+        ],
+        "held_item": {
+            "count": 1,
+            "id": 110,
+            "key_item": false,
+            "name": "NUGGET"
+        },
+        "is_egg": false,
+        "ivs": {
+            "attack": 6,
+            "defense": 22,
+            "hp": 2,
+            "special_attack": 7,
+            "special_defense": 13,
+            "speed": 17
+        },
+        "language": 514,
+        "level": 79,
+        "marking": "â™¥",
+        "met": {
+            "caught_in": "ULTRA BALL",
+            "game": "Emerald",
+            "level": 40,
+            "map_id": 70,
+            "map_name": "VICTORY ROAD"
+        },
+        "moves": [
+            {
+                "accuracy": 100,
+                "base_power": 75,
+                "id": 280,
+                "max_pp": 15,
+                "name": "BRICK BREAK",
+                "pp": 9,
+                "pp_up": 0,
+                "type": "Fighting"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 80,
+                "id": 70,
+                "max_pp": 15,
+                "name": "STRENGTH",
+                "pp": 7,
+                "pp_up": 0,
+                "type": "Normal"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 1,
+                "id": 179,
+                "max_pp": 15,
+                "name": "REVERSAL",
+                "pp": 1,
+                "pp_up": 0,
+                "type": "Fighting"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 20,
+                "id": 249,
+                "max_pp": 15,
+                "name": "ROCK SMASH",
+                "pp": 0,
+                "pp_up": 0,
+                "type": "Fighting"
+            }
+        ],
+        "name": "A♀NIIIIc33",
+        "nature": "LAX",
+        "original_trainer": {
+            "gender": "Female",
+            "id": 61415,
+            "name": "A",
+            "secret": 3417
+        },
+        "personality_value": 2307355434,
+        "pokerus": {
+            "cured": false,
+            "days_left": 0,
+            "infected": false,
+            "strain": 0
+        },
+        "pokerus_remaining": 255,
+        "ribbons": [
+            "Champion"
+        ],
+        "shiny": false,
+        "species": {
+            "egg_type1": "Human-Like",
+            "growth_rate": "Fluctuating",
+            "id": 336,
+            "name": "HARIYAMA",
+            "national_dex": 297,
+            "type1": "Fighting",
+            "type2": "Fighting"
+        },
+        "stats": {
+            "attack": 240,
+            "defense": 137,
+            "hp": 343,
+            "special_attack": 76,
+            "special_defense": 111,
+            "speed": 106
+        },
+        "status": 64
+    },
+    {
+        "ability": "INTIMIDATE",
+        "address": "24550",
+        "condition": {
+            "beauty": 0,
+            "coolness": 0,
+            "cuteness": 0,
+            "feel": 0,
+            "smartness": 0,
+            "toughness": 0
+        },
+        "evs": {
+            "attack": 110,
+            "defense": 32,
+            "hp": 30,
+            "special_attack": 17,
+            "special_defense": 83,
+            "speed": 48
+        },
+        "experience": {
+            "current": 128734,
+            "next_level": 132651,
+            "remaining": 3917,
+            "this_level": 125000
+        },
+        "friendship": 255,
+        "gender": "Male",
+        "health": [
+            62,
+            146
+        ],
+        "held_item": {
+            "count": 1,
+            "id": 111,
+            "key_item": false,
+            "name": "HEART SCALE"
+        },
+        "is_egg": false,
+        "ivs": {
+            "attack": 28,
+            "defense": 4,
+            "hp": 26,
+            "special_attack": 25,
+            "special_defense": 26,
+            "speed": 13
+        },
+        "language": 514,
+        "level": 50,
+        "marking": "â—",
+        "met": {
+            "caught_in": "GREAT BALL",
+            "game": "Emerald",
+            "level": 25,
+            "map_id": 35,
+            "map_name": "ROUTE 120"
+        },
+        "moves": [
+            {
+                "accuracy": 100,
+                "base_power": 80,
+                "id": 242,
+                "max_pp": 15,
+                "name": "CRUNCH",
+                "pp": 5,
+                "pp_up": 0,
+                "type": "Dark"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 80,
+                "id": 70,
+                "max_pp": 15,
+                "name": "STRENGTH",
+                "pp": 10,
+                "pp_up": 0,
+                "type": "Normal"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 80,
+                "id": 247,
+                "max_pp": 15,
+                "name": "SHADOW BALL",
+                "pp": 15,
+                "pp_up": 0,
+                "type": "Ghost"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 120,
+                "id": 38,
+                "max_pp": 15,
+                "name": "DOUBLE-EDGE",
+                "pp": 4,
+                "pp_up": 0,
+                "type": "Normal"
+            }
+        ],
+        "name": "MIGHTYENA",
+        "nature": "MILD",
+        "original_trainer": {
+            "gender": "Female",
+            "id": 61415,
+            "name": "A",
+            "secret": 3417
+        },
+        "personality_value": 3557601241,
+        "pokerus": {
+            "cured": false,
+            "days_left": 0,
+            "infected": false,
+            "strain": 0
+        },
+        "pokerus_remaining": 255,
+        "ribbons": [
+            "Champion"
+        ],
+        "shiny": false,
+        "species": {
+            "egg_type1": "Field",
+            "growth_rate": "Medium Fast",
+            "id": 287,
+            "name": "MIGHTYENA",
+            "national_dex": 262,
+            "type1": "Dark",
+            "type2": "Dark"
+        },
+        "stats": {
+            "attack": 122,
+            "defense": 72,
+            "hp": 146,
+            "special_attack": 86,
+            "special_defense": 87,
+            "speed": 87
+        },
+        "status": 8
+    },
+    {
+        "ability": "CHLOROPHYLL",
+        "address": "245B4",
+        "condition": {
+            "beauty": 0,
+            "coolness": 0,
+            "cuteness": 0,
+            "feel": 0,
+            "smartness": 0,
+            "toughness": 0
+        },
+        "evs": {
+            "attack": 85,
+            "defense": 30,
+            "hp": 51,
+            "special_attack": 17,
+            "special_defense": 74,
+            "speed": 46
+        },
+        "experience": {
+            "current": 115600,
+            "next_level": 117360,
+            "remaining": 1760,
+            "this_level": 109923
+        },
+        "friendship": 255,
+        "gender": "Female",
+        "health": [
+            0,
+            150
+        ],
+        "held_item": {
+            "count": 1,
+            "id": 4,
+            "key_item": false,
+            "name": "POKÉ BALL"
+        },
+        "is_egg": false,
+        "ivs": {
+            "attack": 7,
+            "defense": 12,
+            "hp": 24,
+            "special_attack": 0,
+            "special_defense": 0,
+            "speed": 11
+        },
+        "language": 514,
+        "level": 49,
+        "met": {
+            "caught_in": "SAFARI BALL",
+            "game": "Emerald",
+            "level": 27,
+            "map_id": 57,
+            "map_name": "SAFARI ZONE"
+        },
+        "moves": [
+            {
+                "accuracy": 100,
+                "base_power": 70,
+                "id": 80,
+                "max_pp": 20,
+                "name": "PETAL DANCE",
+                "pp": 0,
+                "pp_up": 0,
+                "type": "Grass"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 90,
+                "id": 188,
+                "max_pp": 10,
+                "name": "SLUDGE BOMB",
+                "pp": 1,
+                "pp_up": 0,
+                "type": "Poison"
+            },
+            {
+                "accuracy": 75,
+                "base_power": 0,
+                "id": 79,
+                "max_pp": 15,
+                "name": "SLEEP POWDER",
+                "pp": 5,
+                "pp_up": 0,
+                "type": "Grass"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 60,
+                "id": 202,
+                "max_pp": 5,
+                "name": "GIGA DRAIN",
+                "pp": 3,
+                "pp_up": 0,
+                "type": "Grass"
+            }
+        ],
+        "name": "VILEPLUME",
+        "nature": "ADAMANT",
+        "original_trainer": {
+            "gender": "Female",
+            "id": 61415,
+            "name": "A",
+            "secret": 3417
+        },
+        "personality_value": 623643453,
+        "pokerus": {
+            "cured": false,
+            "days_left": 0,
+            "infected": false,
+            "strain": 0
+        },
+        "pokerus_remaining": 255,
+        "ribbons": [
+            "Champion"
+        ],
+        "shiny": false,
+        "species": {
+            "egg_type1": "Grass",
+            "growth_rate": "Medium Slow",
+            "id": 45,
+            "name": "VILEPLUME",
+            "national_dex": 45,
+            "type1": "Grass",
+            "type2": "Poison"
+        },
+        "stats": {
+            "attack": 105,
+            "defense": 97,
+            "hp": 150,
+            "special_attack": 93,
+            "special_defense": 101,
+            "speed": 64
+        },
+        "status": 0
+    },
+    {
+        "ability": "STURDY",
+        "address": "24618",
+        "condition": {
+            "beauty": 0,
+            "coolness": 0,
+            "cuteness": 0,
+            "feel": 23,
+            "smartness": 10,
+            "toughness": 0
+        },
+        "evs": {
+            "attack": 61,
+            "defense": 77,
+            "hp": 133,
+            "special_attack": 29,
+            "special_defense": 45,
+            "speed": 165
+        },
+        "experience": {
+            "current": 315499,
+            "next_level": 329555,
+            "remaining": 14056,
+            "this_level": 314618
+        },
+        "friendship": 255,
+        "gender": "Female",
+        "health": [
+            171,
+            188
+        ],
+        "held_item": {
+            "count": 1,
+            "id": 291,
+            "key_item": false,
+            "name": "TM03 WATER PULSE"
+        },
+        "is_egg": false,
+        "ivs": {
+            "attack": 3,
+            "defense": 31,
+            "hp": 20,
+            "special_attack": 16,
+            "special_defense": 26,
+            "speed": 17
+        },
+        "language": 514,
+        "level": 68,
+        "met": {
+            "caught_in": "POKÉ BALL",
+            "game": "Emerald",
+            "level": 5,
+            "map_id": 26,
+            "map_name": "ROUTE 111"
+        },
+        "moves": [
+            {
+                "accuracy": 80,
+                "base_power": 25,
+                "id": 350,
+                "max_pp": 10,
+                "name": "ROCK BLAST",
+                "pp": 10,
+                "pp_up": 0,
+                "type": "Rock"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 80,
+                "id": 70,
+                "max_pp": 15,
+                "name": "STRENGTH",
+                "pp": 15,
+                "pp_up": 0,
+                "type": "Normal"
+            },
+            {
+                "accuracy": 90,
+                "base_power": 50,
+                "id": 88,
+                "max_pp": 15,
+                "name": "ROCK THROW",
+                "pp": 15,
+                "pp_up": 0,
+                "type": "Rock"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 120,
+                "id": 38,
+                "max_pp": 15,
+                "name": "DOUBLE-EDGE",
+                "pp": 14,
+                "pp_up": 0,
+                "type": "Normal"
+            }
+        ],
+        "name": "   -5’”7”Y",
+        "nature": "TIMID",
+        "original_trainer": {
+            "gender": "Female",
+            "id": 61415,
+            "name": "A",
+            "secret": 3417
+        },
+        "personality_value": 3783332135,
+        "pokerus": {
+            "cured": false,
+            "days_left": 0,
+            "infected": false,
+            "strain": 0
+        },
+        "pokerus_remaining": 255,
+        "ribbons": [
+            "Champion"
+        ],
+        "shiny": false,
+        "species": {
+            "egg_type1": "Mineral",
+            "growth_rate": "Medium Slow",
+            "id": 75,
+            "name": "GRAVELER",
+            "national_dex": 75,
+            "type1": "Rock",
+            "type2": "Ground"
+        },
+        "stats": {
+            "attack": 131,
+            "defense": 195,
+            "hp": 188,
+            "special_attack": 81,
+            "special_defense": 91,
+            "speed": 101
+        },
+        "status": 16
+    },
+    {
+        "ability": "LIQUID OOZE",
+        "address": "2467C",
+        "condition": {
+            "beauty": 0,
+            "coolness": 0,
+            "cuteness": 0,
+            "feel": 0,
+            "smartness": 0,
+            "toughness": 0
+        },
+        "evs": {
+            "attack": 58,
+            "defense": 108,
+            "hp": 152,
+            "special_attack": 11,
+            "special_defense": 24,
+            "speed": 157
+        },
+        "experience": {
+            "current": 641194,
+            "next_level": 664301,
+            "remaining": 23107,
+            "this_level": 640000
+        },
+        "friendship": 255,
+        "gender": "Female",
+        "health": [
+            269,
+            269
+        ],
+        "held_item": {
+            "count": 1,
+            "id": 220,
+            "key_item": false,
+            "name": "SEA INCENSE"
+        },
+        "is_egg": false,
+        "ivs": {
+            "attack": 29,
+            "defense": 30,
+            "hp": 26,
+            "special_attack": 11,
+            "special_defense": 19,
+            "speed": 12
+        },
+        "language": 514,
+        "level": 80,
+        "marking": "â—",
+        "met": {
+            "caught_in": "POKÉ BALL",
+            "game": "Emerald",
+            "level": 30,
+            "map_id": 33,
+            "map_name": "ROUTE 118"
+        },
+        "moves": [
+            {
+                "accuracy": 100,
+                "base_power": 95,
+                "id": 57,
+                "max_pp": 15,
+                "name": "SURF",
+                "pp": 15,
+                "pp_up": 0,
+                "type": "Water"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 1,
+                "id": 237,
+                "max_pp": 15,
+                "name": "HIDDEN POWER",
+                "pp": 15,
+                "pp_up": 0,
+                "type": "Normal"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 60,
+                "id": 291,
+                "max_pp": 10,
+                "name": "DIVE",
+                "pp": 10,
+                "pp_up": 0,
+                "type": "Water"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 80,
+                "id": 127,
+                "max_pp": 15,
+                "name": "WATERFALL",
+                "pp": 15,
+                "pp_up": 0,
+                "type": "Water"
+            }
+        ],
+        "name": "GJKLFFZ ",
+        "nature": "BOLD",
+        "original_trainer": {
+            "gender": "Female",
+            "id": 61415,
+            "name": "A",
+            "secret": 3417
+        },
+        "personality_value": 3953907555,
+        "pokerus": {
+            "cured": false,
+            "days_left": 0,
+            "infected": false,
+            "strain": 0
+        },
+        "pokerus_remaining": 255,
+        "ribbons": [
+            "Champion"
+        ],
+        "shiny": false,
+        "species": {
+            "egg_type1": "Water 3",
+            "growth_rate": "Slow",
+            "id": 73,
+            "name": "TENTACRUEL",
+            "national_dex": 73,
+            "type1": "Water",
+            "type2": "Poison"
+        },
+        "stats": {
+            "attack": 135,
+            "defense": 169,
+            "hp": 269,
+            "special_attack": 143,
+            "special_defense": 217,
+            "speed": 205
+        },
+        "status": 32
+    },
+    {
+        "ability": "THICK FAT",
+        "address": "246E0",
+        "condition": {
+            "beauty": 0,
+            "coolness": 0,
+            "cuteness": 0,
+            "feel": 0,
+            "smartness": 0,
+            "toughness": 0
+        },
+        "evs": {
+            "attack": 74,
+            "defense": 53,
+            "hp": 78,
+            "special_attack": 90,
+            "special_defense": 44,
+            "speed": 171
+        },
+        "experience": {
+            "current": 800000,
+            "next_level": 0,
+            "remaining": 0,
+            "this_level": 800000
+        },
+        "friendship": 255,
+        "gender": "Female",
+        "health": [
+            340,
+            340
+        ],
+        "held_item": {
+            "count": 1,
+            "id": 221,
+            "key_item": false,
+            "name": "LAX INCENSE"
+        },
+        "is_egg": false,
+        "ivs": {
+            "attack": 23,
+            "defense": 19,
+            "hp": 11,
+            "special_attack": 19,
+            "special_defense": 26,
+            "speed": 24
+        },
+        "language": 514,
+        "level": 100,
+        "marking": "â—",
+        "met": {
+            "caught_in": "POKÉ BALL",
+            "game": "Emerald",
+            "level": 5,
+            "map_id": 19,
+            "map_name": "ROUTE 104"
+        },
+        "moves": [
+            {
+                "accuracy": 90,
+                "base_power": 30,
+                "id": 205,
+                "max_pp": 20,
+                "name": "ROLLOUT",
+                "pp": 19,
+                "pp_up": 0,
+                "type": "Rock"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 95,
+                "id": 57,
+                "max_pp": 15,
+                "name": "SURF",
+                "pp": 15,
+                "pp_up": 0,
+                "type": "Water"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 80,
+                "id": 70,
+                "max_pp": 15,
+                "name": "STRENGTH",
+                "pp": 15,
+                "pp_up": 0,
+                "type": "Normal"
+            },
+            {
+                "accuracy": 100,
+                "base_power": 20,
+                "id": 249,
+                "max_pp": 15,
+                "name": "ROCK SMASH",
+                "pp": 15,
+                "pp_up": 0,
+                "type": "Fighting"
+            }
+        ],
+        "name": "M ---/’/’4",
+        "nature": "RASH",
+        "original_trainer": {
+            "gender": "Female",
+            "id": 61415,
+            "name": "A",
+            "secret": 3417
+        },
+        "personality_value": 901189144,
+        "pokerus": {
+            "cured": false,
+            "days_left": 0,
+            "infected": false,
+            "strain": 0
+        },
+        "pokerus_remaining": 255,
+        "ribbons": [
+            "Champion"
+        ],
+        "shiny": false,
+        "species": {
+            "egg_type1": "Water 1",
+            "growth_rate": "Fast",
+            "id": 184,
+            "name": "AZUMARILL",
+            "national_dex": 184,
+            "type1": "Water",
+            "type2": "Water"
+        },
+        "stats": {
+            "attack": 146,
+            "defense": 197,
+            "hp": 340,
+            "special_attack": 160,
+            "special_defense": 181,
+            "speed": 171
+        },
+        "status": 7
+    }
+]

@@ -1,4 +1,7 @@
 node_modules/
 bin/
 img/sprites/
+img/badges/
+cache/
+release/
 .DS_Store
