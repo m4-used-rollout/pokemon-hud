@@ -30,14 +30,15 @@ document.addEventListener('dragenter', e=>{
 document.addEventListener('drop', e=>{
     e.preventDefault();
     for (let i = 0; i < e.dataTransfer.files.length; i++) {
-        if (e.dataTransfer.files[i].type == "application/json") {
+        console.log(e.dataTransfer.files[i].type);
+        // if (e.dataTransfer.files[i].type == "application/json") {
             let reader = new FileReader();
             reader.onload = e=> {
                 TPP.Server.setState((e as any).target.result);
             };
             console.log();
             reader.readAsText(e.dataTransfer.files[i]);
-        }
+        // }
     }
 });
 

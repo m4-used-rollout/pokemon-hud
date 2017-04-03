@@ -33,7 +33,7 @@ gulp.task('package-app', ['clean-old-release', 'build-app'], () => {
         release: './release',
         cache: './cache',
         version: 'v1.4.14',
-        packaging: true,
+        packaging: false,
         // token: 'abc123...',
         platforms: ['win32-x64'],
         platformResources: {
@@ -56,7 +56,7 @@ gulp.task('copy-config', () => gulp.src('./config.json').pipe(gulp.dest('bin/'))
 
 gulp.task('copy-fonts', () => gulp.src('./styles/fonts/*').pipe(gulp.dest('bin/fonts/')));
 
-gulp.task('copy-html', () => gulp.src('./src/*.html').pipe(gulp.dest('bin/')));
+gulp.task('copy-html', () => gulp.src('./src-hud/*.html').pipe(gulp.dest('bin/')));
 
 gulp.task('copy-img', () => gulp.src('./img/**/*').pipe(gulp.dest('bin/img/')));
 

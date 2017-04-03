@@ -32,7 +32,7 @@ class Badges extends React.PureComponent<{bitfield:number},{}> {
         while (badgeStr.length < config.badgeCount)
             badgeStr = '0' + badgeStr;
         return <div className="badges">
-            { badgeStr.split('').map((own, num)=>
+            { badgeStr.split('').reverse().map((own, num)=>B
                 <img key={num} className={own == '1' ? '' : 'unowned'}
                     style={{
                         width: (100 / config.badgeCount) + 'vw'

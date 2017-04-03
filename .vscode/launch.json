@@ -11,6 +11,9 @@
             "program": "${workspaceRoot}/bin/app.js",
             "cwd": "${workspaceRoot}/bin/",
             "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "windows": {
+                "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+            },
             "runtimeArgs": [
                 ".",
                 "--enable-logging"
