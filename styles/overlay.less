@@ -108,14 +108,12 @@ body {
         padding:0;
         height: (@party-member-height * 6);
         
-        li {
+        > li {
             display:flex;
+            position: relative;
             padding:0;
             margin:0;
             height:@party-member-height;
-            background-position: left center;
-            background-size: contain;
-            background-repeat: no-repeat;
 
             &.female .name:after {
                 content:'♀';
@@ -151,7 +149,7 @@ body {
                 flex: 1 1 auto;
                 position: relative;
                 min-width: 0;
-                background-image: linear-gradient(to left, black 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,0) 100%);
+                background-image: linear-gradient(to left, black 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
 
                 .top-line {
                     display: flex;
@@ -284,22 +282,45 @@ body {
                 
             }
 
-            &.slp {
+            &:before {
+                content:'';
+                position:absolute;
+                left:0;
+                right:0;
+                top:0;
+                bottom:0;
+                background-position: left center;
+                background-size: contain;
+                background-repeat: no-repeat;
+                opacity: 0;
+                transition: transform @transition-time ease-in-out, opacity @transition-time ease-in-out;
+            }
+
+            &:not(.fainted){
+                &.slp, &.psn, &.brn, &.frz, &.par, &.tox {
+                    &:before {
+                        transform:none;
+                        opacity: .9;
+                    }
+                }
+            }
+
+            &.slp:before {
                 background-image:url('./img/status/bg/slp.jpg');
             }
-            &.psn {
+            &.psn:before {
                 background-image:url('./img/status/bg/psn.jpg');
             }
-            &.brn {
+            &.brn:before {
                 background-image:url('./img/status/bg/brn.jpg');
             }
-            &.frz {
+            &.frz:before {
                 background-image:url('./img/status/bg/frz.jpg');
             }
-            &.par {
+            &.par:before {
                 background-image:url('./img/status/bg/par.jpg');
             }
-            &.tox {
+            &.tox:before {
                 background-image:url('./img/status/bg/tox.jpg');
             }
 
