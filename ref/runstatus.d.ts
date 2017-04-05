@@ -24,11 +24,11 @@ declare namespace TPP {
         area_name: string;
         money: number;
         name: string;
+        options: Options;
         pc_items: Item[];
         seen: number;
         seen_list: number[];
         secret: number;
-        settings: number;
         x: number;
         y: number;
     }
@@ -156,4 +156,12 @@ declare namespace TPP {
         feel: number;
     }
 
+    export interface Options {
+        button_mode:string;
+        frame:string;
+        text_speed:string;
+        sound:string;
+        battle_style:string;
+        battle_scene:string;
+    }
 }

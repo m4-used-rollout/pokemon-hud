@@ -11,7 +11,10 @@ class Trainer extends React.Component<{trainer:TPP.TrainerData},{}> {
                     <span className="cash">{(t.money || 0).toLocaleString()}</span>
                     <span className="balls">{totalBalls.toLocaleString()}</span>
                 </div>
-                <Settings settings={t.settings} />
+                {t.options && 
+                <div className="options">
+                    {`${t.options.text_speed} | ${t.options.battle_style} | ${t.options.battle_scene}`}
+                </div>}
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>
                     <span className="seen">{t.seen || 0}</span>
@@ -38,17 +41,5 @@ class Badges extends React.PureComponent<{bitfield:number},{}> {
                     src={`./img/badges/${config.spriteFolder}/${num + 1}.png`}/>
             )}
         </div>;
-    }
-}
-
-class Settings extends React.PureComponent<{settings:number},{}> {
-    render() {
-        let settings = this.props.settings || 0;
-        let textSpeed = settings & 512 ? "FAST" : settings & 256 ? "MED" : "SLOW";
-        let battleStyle = settings & 2 ? "SET" : "SWITCH";
-        let battleScene = settings & 4 ? "OFF" : "ON";
-        return <div className="settings">
-            {`${textSpeed} | ${battleStyle} | ${battleScene}`}
-        </div>
     }
 }
