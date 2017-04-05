@@ -38,6 +38,8 @@ body {
 
 @party-member-height: 14vh;
 
+@tiny-screen: 390px;
+
 .pokemon-hud {
     font-family: pokeplatinum;
     color:white;
@@ -55,6 +57,10 @@ body {
         font-size:.7em;
         transform: scaleY(1.4);
         transform-origin:50%;
+        @media all and (max-width: @tiny-screen) {
+            font-size:.5em;
+            transform: scaleY(2);
+        }
     }
 
     .health-info(@color) {
@@ -183,9 +189,12 @@ body {
                             height: (@party-member-height / 6);
                             margin: .1em;
                             border-radius: 50%;
-                            // display:block;
-                            // margin-left:auto;
-                            // margin-right:auto;
+                            @media all and (max-width: @tiny-screen) {
+                                height: (@party-member-height / 12);
+                                display:block;
+                                margin-left:auto;
+                                margin-right:auto;
+                            }
                         }
                     }
 
@@ -236,6 +245,9 @@ body {
                         .move-name {
                             margin:auto;
                             text-align: center;
+                            @media all and (max-width: @tiny-screen) {
+                                .crush-text();
+                            }
                         }
                         span:last-of-type {
                             margin-left:auto;
