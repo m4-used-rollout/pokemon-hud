@@ -35,7 +35,7 @@ class Badges extends React.PureComponent<{bitfield:number},{}> {
             { badgeStr.split('').reverse().map((own, num)=>
                 <img key={num} className={own == '1' ? '' : 'unowned'}
                     style={{
-                        width: (100 / config.badgeCount) + 'vw'
+                        width: (100 / 8) + 'vw'
                     }}
                     src={`./img/badges/${config.spriteFolder}/${num + 1}.png`}/>
             )}
