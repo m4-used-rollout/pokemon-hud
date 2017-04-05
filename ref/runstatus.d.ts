@@ -27,6 +27,7 @@ declare namespace TPP {
         seen: number;
         seen_list: number[];
         secret: number;
+        settings: number;
         x: number;
         y: number;
     }
