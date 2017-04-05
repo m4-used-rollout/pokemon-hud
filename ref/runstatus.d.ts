@@ -18,6 +18,7 @@ declare namespace TPP {
         items_ball?: Item[];
         items_tm?: Item[];
         items_berry?: Item[];
+        map_bank: number;
         map_id: number;
         area_id: number;
         area_name: string;

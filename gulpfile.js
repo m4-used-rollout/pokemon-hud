@@ -56,7 +56,7 @@ gulp.task('copy-config', () => gulp.src('./config.json').pipe(gulp.dest('bin/'))
 
 gulp.task('copy-fonts', () => gulp.src('./styles/fonts/*').pipe(gulp.dest('bin/fonts/')));
 
-gulp.task('copy-html', () => gulp.src('./src-hud/*.html').pipe(gulp.dest('bin/')));
+gulp.task('copy-html', () => gulp.src('./src*/*.html').pipe(flatten()).pipe(gulp.dest('bin/')));
 
 gulp.task('copy-img', () => gulp.src('./img/**/*').pipe(gulp.dest('bin/img/')));
 

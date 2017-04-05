@@ -9,5 +9,8 @@ declare module TPP.Server {
     function setState(data: any): void;
 }
 declare const http: any;
+declare const fs: any;
 declare var config: any;
+declare var locationTemplate: string;
 declare const server: any;
+declare function endpointResponse(request: any): string;
