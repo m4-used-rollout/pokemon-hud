@@ -1,7 +1,7 @@
 --This library adds RSE/FRLG game data reading functions to memory. Use with PokeRunStatus.lua.
 
 function initEmerald()
-	print("Emerald-based game detected")
+	-- print("Emerald-based game detected")
 	--permanent memory addresses
 	partyAddress = 0x244EC
 	enemyAddress = 0x24744
@@ -31,41 +31,45 @@ function initEmerald()
 	}
 end
 
-function initFireRed()
-	print("FireRed-based game detected")
-	partyAddress = 0x24284
-	enemyAddress = 0x2402C
+-- function initFireRed()
+-- 	print("FireRed-based game detected")
+-- 	partyAddress = 0x24284
+-- 	enemyAddress = 0x2402C
 
-	--FireRed can only get pokemon data for now, trainer data is coming later on
+-- 	--FireRed can only get pokemon data for now, trainer data is coming later on
 
-	romAddresses = {
-		['tmData'] = 0x45A80C,
-		['numTMs'] = 50,
-		['itemData'] = 0x3DB028,
-		['attackNames'] = 0x247094,
-		['attackData'] = 0x250C04,
-		['pokemonNames'] = 0x245EE0,
-		['nationalDexTable'] = 0x251FEE,
-		['numberOfPokemon'] = 412,
-		['pokemonData'] = 0x254784,
-		['abilityNames'] = 0x24FC40,
-		['mapLabelData'] = 0x3F1CAC,
-		['mapDataSize'] = 4,
-		['natures'] = 0x463DBC
-	}
+-- 	romAddresses = {
+-- 		['tmData'] = 0x45A80C,
+-- 		['numTMs'] = 50,
+-- 		['itemData'] = 0x3DB028,
+-- 		['attackNames'] = 0x247094,
+-- 		['attackData'] = 0x250C04,
+-- 		['pokemonNames'] = 0x245EE0,
+-- 		['nationalDexTable'] = 0x251FEE,
+-- 		['numberOfPokemon'] = 412,
+-- 		['pokemonData'] = 0x254784,
+-- 		['abilityNames'] = 0x24FC40,
+-- 		['mapLabelData'] = 0x3F1CAC,
+-- 		['mapDataSize'] = 4,
+-- 		['natures'] = 0x463DBC
+-- 	}
+-- end
+
+-- function init()
+-- 	local game = bizstring.tolower(gameinfo.getromname())
+-- 	if string.find(game, 'emerald') ~= nil or string.find(game,'glazed') ~= nil then
+-- 		return initEmerald()
+-- 	end
+-- 	if string.find(game, 'firered') ~= nil or string.find(game, 'ash gray') ~= nil then
+-- 		return initFireRed()
+-- 	end
+-- end
+
+while emu.framecount() == 0 do
+	emu.frameadvance() --do nothing until emulator runs
 end
 
-function init()
-	local game = bizstring.tolower(gameinfo.getromname())
-	if string.find(game, 'emerald') ~= nil or string.find(game,'glazed') ~= nil then
-		return initEmerald()
-	end
-	if string.find(game, 'firered') ~= nil or string.find(game, 'ash gray') ~= nil then
-		return initFireRed()
-	end
-end
-
-init()
+initEmerald()
 
 
 -- BizHawk uses 24-bit memory addresses and splits the memory up into 'domains'
@@ -75,9 +79,18 @@ function switchDomainAndGetLocalPointer(globalPtr)
 	return globalPtr % 0x1000000
 end
 
+function WhereIsTrainerData() 
+	local startAddr = switchDomainAndGetLocalPointer(memory.read_u32_le(switchDomainAndGetLocalPointer(trainerDataPtr)))
+	return string.format("Trainer Data starts at %s", bizstring.hex(startAddr))
+end
+function WhereIsGameData()
+	startAddr = switchDomainAndGetLocalPointer(memory.read_u32_le(switchDomainAndGetLocalPointer(gameDataPtr)))
+	return string.format("Game Data starts at %s", bizstring.hex(startAddr))
+end
+
 function getTrainerData()
 	local startAddr = switchDomainAndGetLocalPointer(memory.read_u32_le(switchDomainAndGetLocalPointer(trainerDataPtr)))
-	print(string.format("Trainer Data starts at %s", bizstring.hex(startAddr)))
+	-- print(string.format("Trainer Data starts at %s", bizstring.hex(startAddr)))
 	local data = {}
 	data["name"] = grabTextFromMemory(startAddr, 7)
 	data["gender"] = TrainerGender[memory.readbyte(startAddr + 8)]
@@ -85,7 +98,7 @@ function getTrainerData()
 	data["id"] = trainerId % 65536
 	data["secret"] = math.floor(trainerId / 65536)
 	data["time_played"] = string.format('%d:%d:%d.%d', memory.read_u16_le(startAddr + 14), memory.readbyte(startAddr + 16), memory.readbyte(startAddr + 17), memory.readbyte(startAddr + 18))
-	data["settings"] = memory.read_u24_le(startAddr + 19)
+	data["options"] = getOptions(startAddr + 19)
 	local securityKey = memory.read_u32_le(startAddr + 0xAC)
 	local halfKey = securityKey % 0x10000
 	data["security_key"] = securityKey
@@ -95,13 +108,17 @@ function getTrainerData()
 	data["seen_list"] = getDexFlagged(startAddr + 0x5C, 49)
 
 	startAddr = switchDomainAndGetLocalPointer(memory.read_u32_le(switchDomainAndGetLocalPointer(gameDataPtr)))
-	print(string.format("Game Data starts at %s", bizstring.hex(startAddr)))
+	-- print(string.format("Game Data starts at %s", bizstring.hex(startAddr)))
 	data["x"] = memory.read_u16_le(startAddr)
 	data["y"] = memory.read_u16_le(startAddr + 2)
 	data["map_bank"] = memory.readbyte(startAddr + 4)
 	data["map_id"] = memory.readbyte(startAddr + 5)
 	local area = memory.readbyte(currentAreaAddress)
 	data["area_id"] = area
+	
+	--Tunod/Johto badges
+	data["badges"] = bit.bor(bit.lshift(getMoreBadges(startAddr), 8), getBadges(startAddr))
+
 	data["money"] = bit.bxor(securityKey, memory.read_u32_le(startAddr + 0x490))
 	data["coins"] = bit.bxor(halfKey, memory.read_u16_le(startAddr + 0x494))
 	data["pc_items"] = getItemCollection(startAddr + 0x498, 50) -- no key required
@@ -122,6 +139,71 @@ function getTrainerData()
 	augmentItemCollection(data["items_berry"])
 	return data
 end
+
+function getOptions(startAddr)
+	local options = {}
+	local firstByte = memory.readbyte(startAddr)
+	if firstByte == 0 then
+		options["button_mode"] = "Normal"
+	elseif firstByte == 1 then
+		options["button_mode"] = "LR"
+	elseif firstByte == 2 then
+		options["button_mode"] = "L=A"
+	end
+	local secondByte = memory.readbyte(startAddr + 1)
+	options["frame"] = "Type" .. (bit.rshift(secondByte, 3) + 1)
+	secondByte = secondByte % 4
+	if secondByte == 2 then
+		options["text_speed"] = "Fast"
+	elseif secondByte == 1 then
+		options["text_speed"] = "Med"
+	else
+		options["text_speed"] = "Slow"
+	end
+	local thirdByte = memory.readbyte(startAddr + 2)
+	if thirdByte % 2 > 0 then
+		options["sound"] = "Stereo"
+	else
+		options["sound"] = "Mono"
+	end
+	if bit.band(thirdByte, 2) > 0 then
+		options["battle_style"] = "Set"
+	else
+		options["battle_style"] = "Switch"
+	end
+	if bit.band(thirdByte, 4) > 0 then
+		options["battle_scene"] = "Off"
+	else
+		options["battle_scene"] = "On"
+	end
+	return options
+end
+
+function getBadges(startAddr)
+	local flagStart = startAddr + 0x1270
+	return bit.rshift(memory.read_u16_le(flagStart + 0x10C), 7) % 256
+end
+
+function getMoreBadges(startAddr)
+	local flagStart = startAddr + 0x1270
+	local frontierBrains = bit.rshift(memory.read_u24_le(flagStart + 0x118), 4) % 0x4000
+	--if we wanted the battle frontier badges from Emerald, we'd be done here.
+	--they're 14 bits long, two bits per badge. 3 = gold badge, 1 or 2 = silver badge.
+	--Glazed uses these for johto badges, and gold means the 8th badge, so we're changing it.
+	local badges = 0
+	local lastBadge = 0;
+	for i = 0, 6 do
+		local pair = bit.rshift(frontierBrains, i * 2) % 4
+		if pair > 0 then
+			badges = bit.bor(badges, bit.lshift(1, i))
+		end
+		if pair == 3 then
+			lastBadge = bit.bor(lastBadge, 1)
+		end
+	end
+	return bit.bor(badges, bit.lshift(lastBadge, 7))
+end
+
 
 function getItemCollection(startAddr, length, key)
 	if not key then
@@ -198,21 +280,27 @@ function getEnemyPokemon(partySlot)
 	return augmentPokemonFromRom(data)
 end
 
-function getBoxedPokemon()
+function getBoxedPokemon(boxNum)
+	local boxMin = 1
+	local boxMax = 14
+	if boxNum ~= nil then
+		boxMin = boxNum
+		boxMax = boxNum
+	end
 	local startAddr = switchDomainAndGetLocalPointer(memory.read_u32_le(switchDomainAndGetLocalPointer(pcDataPtr)))
 	local data = {}
 	data['current_box_number'] = memory.read_u32_le(startAddr)
 	data['boxes'] = {}
-	for i = 1, 14 do
+	for box = boxMin, boxMax do
 		table.insert(data['boxes'], {
-			['box_number'] = i,
-			['box_name'] = getPCBoxName(startAddr, i),
-			['box_contents'] = getEntirePCBox(startAddr, i)
+			['box_number'] = box,
+			['box_name'] = getPCBoxName(startAddr, box),
+			['box_contents'] = getEntirePCBox(startAddr, box)
 		})
 	end
 
 	-- gather ROM data
-	for box = 1, 14 do
+	for box = boxMin, boxMax do
 		for mon = 1, 30 do
 			augmentPokemonFromRom(data['boxes'][box]['box_contents'][mon])
 		end
@@ -253,10 +341,21 @@ function getPokemonData(startAddr)
 	data["name"] = grabTextFromMemory(startAddr + 8, 10)
 	data["language"] = memory.read_u16_le(startAddr + 18)
 	data["original_trainer"]["name"] = grabTextFromMemory(startAddr + 20, 7)
-	data["marking"] = Markings[memory.readbyte(startAddr + 27)]
+	data["marking"] = getMarkingString(startAddr + 27)
 	local checkSum = memory.read_u16_le(startAddr + 28)
 	parseDataSubstructure(data, descrambleDataSubstructure(decryptDataSubstructure(startAddr + 32, key, checkSum), pv))
 	return data
+end
+
+function getMarkingString(addr)
+	local marks = memory.readbyte(addr)
+	local marking = ''
+	for i = 0, 3 do
+		if bit.band(marks, bit.lshift(1, i)) > 0 then
+			marking = marking .. Markings[i]
+		end
+	end
+	return marking
 end
 
 function pullDataFromPersonalityAndTrainer(data, pv, ot)
@@ -401,7 +500,7 @@ function decryptDataSubstructure(startAddr, key, checkSum)
     if (sum == checkSum) then
 		return decryptedData
 	end
-	 print(string.format("Error decoding Pokemon data: Calculated sum = %d, Read checksum = %d", sum, checkSum)) 
+	--  print(string.format("Error decoding Pokemon data: Calculated sum = %d, Read checksum = %d", sum, checkSum)) 
 	return nil
 end
 
@@ -443,7 +542,7 @@ end
 -- example: translateRSEChars(string.char(199, 0, 174, 174, 174, 186, 180, 186, 180, 165, 187, 255))
 -- Pokémon's name is "M ---/’/’4"
 -- BizHawk's console prints "M ---/â€™/â€™4"
--- I think the JSON library deals in UTF-8 though so it should hopefully come out correct on the Python side
+-- BizHawk's console doesn't understand UTF-8, but the HUD does, so it comes out ok.
 function translateRSEChars(rawStr)
 	local outStr = ""
 	for i=0,string.len(rawStr)-1 do
@@ -1064,10 +1163,10 @@ RSECharmap = {
 
 --Pokemon Storage markings to UTF-8
 Markings = {
-	[0x0] = string.char(0xE2,0x97,0x8F), -- ●
-	[0x1] = string.char(0xE2,0x96,0xA0), -- ■
-	[0x2] = string.char(0xE2,0x96,0xB2), -- ▲
-	[0x3] = string.char(0xE2,0x99,0xA5)  -- ♥
+	[0] = string.char(0xE2,0x97,0x8F), -- ●
+	[1] = string.char(0xE2,0x96,0xA0), -- ■
+	[2] = string.char(0xE2,0x96,0xB2), -- ▲
+	[3] = string.char(0xE2,0x99,0xA5)  -- ♥
 }
 
 --lookups pulled from ROM
