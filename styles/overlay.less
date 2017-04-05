@@ -51,6 +51,12 @@ body {
         box-sizing: border-box;
     }
 
+    .crush-text() {
+        font-size:.7em;
+        transform: scaleY(1.4);
+        transform-origin:50%;
+    }
+
     .health-info(@color) {
         .pokemon-image {
             background-image:linear-gradient(46deg, @color 0%, @color 47.6%, rgba(0,0,0,0) 47.7%);
@@ -235,9 +241,7 @@ body {
                             margin-left:auto;
                         }
                         &.long-name .move-name {
-                            font-size:.7em;
-                            transform: scaleY(1.4);
-                            transform-origin:50%;
+                            .crush-text()
                         }
                         &.pp-low {
                             color:@low-health;
@@ -425,6 +429,7 @@ body {
                 flex: 1 1 auto;
                 text-align: center;
                 margin:auto;
+                .crush-text()
             }
 
             .dex-counts {
