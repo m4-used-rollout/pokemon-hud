@@ -15,7 +15,8 @@ function createWindow() {
     win = new BrowserWindow({
         width: config.screenWidth, height: config.screenHeight,
         webPreferences: {
-            webSecurity: false
+            webSecurity: false,
+            backgroundThrottling: false
         },
         show: false
     });
