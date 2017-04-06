@@ -36,7 +36,6 @@ declare namespace TPP {
     export interface PartyData extends Array<PartyPokemon> { }
 
     export interface PCData {
-        current_box_name: string;
         current_box_number: number;
     }
 

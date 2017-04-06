@@ -38,18 +38,26 @@ module TPP.Server {
         return state;
     }
 
-    export function setState(data:any) {
-        if (typeof data === "string")
-            data = JSON.parse(data);
-        if (Array.isArray(data) && (!data.length || data[0].personality_value)) {
+    let trainerString = "", partyString = "", pcString = "";
+
+    export function setState(dataJson:string) {
+        if (dataJson == trainerString || dataJson == partyString || dataJson == pcString)
+            return; //same exact data, no update needed.
+        let data = JSON.parse(dataJson);
+        if (Array.isArray(data) && data.length && data[0] && typeof(data[0].personality_value) == "number") {
+            partyString = dataJson;
             delete state.party;
             state.party = data;
         }
         else if (data.boxes) {
-            delete state.pc;
-            state.pc = data;
+            pcString = dataJson;
+            state.pc = state.pc || data;
+            state.pc.boxes = state.pc.boxes || [];
+            state.pc.current_box_number = data.current_box_number;
+            (data.boxes || []).forEach(b=> state.pc.boxes[b.box_number - 1] = b);
         }
         else if (data.id || data.secret) {
+            trainerString = dataJson;
             let sameTrainer = data.id == state.id && data.secret == state.secret;
             let oldCatches = (sameTrainer ? state.caught_list : data.caught_list) || [];
             let oldParty = state.party || [];
@@ -64,7 +72,7 @@ module TPP.Server {
             }
         }
         else
-            return console.dir(data); //unrecognized format, dropped
+            return; //unrecognized format, dropped
         transmitState();
     }
 

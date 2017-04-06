@@ -6,11 +6,7 @@ declare module TPP.Server {
     function getConfig(): any;
     function registerStateChangeHandler(callback: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
-    function setState(data: any): void;
+    function setState(dataJson: string): void;
 }
-declare const http: any;
-declare const fs: any;
-declare var config: any;
-declare var locationTemplate: string;
-declare const server: any;
-declare function endpointResponse(request: any): string;
+declare module TPP.Server {
+}

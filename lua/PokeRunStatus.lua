@@ -30,11 +30,11 @@ function getEnemyTeam()
 	return JSON:encode(getEnemyPokemon())
 end
 
-function getPCPokemon()
+function getPCPokemon(boxNum)
 	if (getBoxedPokemon == nil) then
 		return print("No Pokemon Data script is installed")
 	end
-	return JSON:encode(getBoxedPokemon())
+	return JSON:encode(getBoxedPokemon(boxNum))
 end
 
 function sendParty()
@@ -45,18 +45,23 @@ function sendTrainer()
 	http.request(hudEndpoint, getTrainer())
 end
 
-function sendPC()
-	http.request(hudEndpoint, getPCPokemon())
+function sendPC(boxNum)
+	http.request(hudEndpoint, getPCPokemon(boxNum))
 end
 
+local boxNum = 1
+
 function sendData(frame)
-	if frame % 30 == 0 then
-		--sendPC()
-	elseif frame % 20 == 0 then
-	-- elseif frame % 10 == 0 then
+	if frame % 18000 == 0 then --once every 5 minutes
+		sendPC(boxNum)
+		boxNum = (boxNum % 14) + 1
+	elseif frame % 1800 == 0 then --once every 30 seconds
+		sendPC(getCurrentPCBox())
+	-- elseif frame % 20 == 0 then --once every 20 frames
+	elseif frame % 10 == 0 then --once every 10 frames
 		sendTrainer()
-	elseif frame % 10 == 0 then
-	-- else	
+	-- elseif frame % 10 == 0 then --once every 10 frames
+	else --once every frame
 		sendParty()
 	end
 end

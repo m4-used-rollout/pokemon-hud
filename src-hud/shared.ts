@@ -15,4 +15,4 @@ var config = TPP.Server.getConfig();
 
 config.totalInDex = config.totalInDex || ((config.romDexToNatDex || [0]).length - 1);
 
-var cleanString = (str: string) => (str || '').replace(/[^A-Z0-9-]/ig, '').toLowerCase();
+var cleanString = (str: string) => typeof str === "string" ? str.replace(/[^A-Z0-9-]/ig, '').toLowerCase() : str;

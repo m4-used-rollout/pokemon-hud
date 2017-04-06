@@ -280,6 +280,13 @@ function getEnemyPokemon(partySlot)
 	return augmentPokemonFromRom(data)
 end
 
+function getCurrentPCBox(startAddr)
+	if startAddr == nil then
+		startAddr = switchDomainAndGetLocalPointer(memory.read_u32_le(switchDomainAndGetLocalPointer(pcDataPtr)))
+	end
+	return memory.read_u32_le(startAddr) + 1;
+end
+
 function getBoxedPokemon(boxNum)
 	local boxMin = 1
 	local boxMax = 14
@@ -289,7 +296,7 @@ function getBoxedPokemon(boxNum)
 	end
 	local startAddr = switchDomainAndGetLocalPointer(memory.read_u32_le(switchDomainAndGetLocalPointer(pcDataPtr)))
 	local data = {}
-	data['current_box_number'] = memory.read_u32_le(startAddr)
+	data['current_box_number'] = getCurrentPCBox(startAddr)
 	data['boxes'] = {}
 	for box = boxMin, boxMax do
 		table.insert(data['boxes'], {
@@ -301,8 +308,12 @@ function getBoxedPokemon(boxNum)
 
 	-- gather ROM data
 	for box = boxMin, boxMax do
-		for mon = 1, 30 do
-			augmentPokemonFromRom(data['boxes'][box]['box_contents'][mon])
+		if data['boxes'][box] ~= nil then
+			for mon = 1, 30 do
+				augmentPokemonFromRom(data['boxes'][box]['box_contents'][mon])
+			end
+		else
+			print(boxMin)
 		end
 	end
 
@@ -334,7 +345,7 @@ function getPokemonData(startAddr)
 	if (key == 0) then --data must not contain pokemon
 		return nil
 	end
-	data['address'] = bizstring.hex(startAddr) --for debugging
+	-- data['address'] = bizstring.hex(startAddr) --for debugging
 	data["personality_value"] = pv
 	data["original_trainer"] = {}
 	pullDataFromPersonalityAndTrainer(data, pv, ot)
@@ -529,6 +540,9 @@ function get32(byteTable, offset)
 end
 
 function grabTextFromMemory(startAddr, length)
+	if startAddr + length > memory.getmemorydomainsize() then --prevent overreads
+		return bizstring.hex(startAddr)
+	end
 	local strBytes = memory.readbyterange(startAddr, length)
 	local str = ""
 	for i=0,length do

@@ -27,9 +27,11 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
     }
     render() {
         let mon = this.props.pokemon;
+        if (!mon)
+            return null;
         let hpPercent = mon.health[0] / mon.health[1] * 100;
-        let expPercent = (mon.experience.current - mon.experience.this_level) / (mon.experience.next_level - mon.experience.this_level) * 100;
-        let eggPercent = 100 - (mon.friendship / mon.species.egg_cycles * 100);
+        let expPercent = mon.experience ? (mon.experience.current - mon.experience.this_level) / (mon.experience.next_level - mon.experience.this_level) * 100 : 0;
+        let eggPercent = mon.species ? 100 - (mon.friendship / mon.species.egg_cycles * 100) : 0;
         let classes = [
             hpPercent <= 20 ? "health-low" : hpPercent >= 50 ? "health-high" : "health-med",
             mon.gender,
