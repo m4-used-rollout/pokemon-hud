@@ -90,14 +90,13 @@ end
 
 function getTrainerData()
 	local startAddr = switchDomainAndGetLocalPointer(memory.read_u32_le(switchDomainAndGetLocalPointer(trainerDataPtr)))
-	-- print(string.format("Trainer Data starts at %s", bizstring.hex(startAddr)))
 	local data = {}
 	data["name"] = grabTextFromMemory(startAddr, 7)
 	data["gender"] = TrainerGender[memory.readbyte(startAddr + 8)]
 	local trainerId = memory.read_u32_le(startAddr + 10)
 	data["id"] = trainerId % 65536
 	data["secret"] = math.floor(trainerId / 65536)
-	data["time_played"] = string.format('%d:%d:%d.%d', memory.read_u16_le(startAddr + 14), memory.readbyte(startAddr + 16), memory.readbyte(startAddr + 17), memory.readbyte(startAddr + 18))
+	--data["time_played"] = string.format('%d:%d:%d.%d', memory.read_u16_le(startAddr + 14), memory.readbyte(startAddr + 16), memory.readbyte(startAddr + 17), memory.readbyte(startAddr + 18))
 	data["options"] = getOptions(startAddr + 19)
 	local securityKey = memory.read_u32_le(startAddr + 0xAC)
 	local halfKey = securityKey % 0x10000
@@ -108,7 +107,6 @@ function getTrainerData()
 	data["seen_list"] = getDexFlagged(startAddr + 0x5C, 49)
 
 	startAddr = switchDomainAndGetLocalPointer(memory.read_u32_le(switchDomainAndGetLocalPointer(gameDataPtr)))
-	-- print(string.format("Game Data starts at %s", bizstring.hex(startAddr)))
 	data["x"] = memory.read_u16_le(startAddr)
 	data["y"] = memory.read_u16_le(startAddr + 2)
 	data["map_bank"] = memory.readbyte(startAddr + 4)
@@ -312,8 +310,6 @@ function getBoxedPokemon(boxNum)
 			for mon = 1, 30 do
 				augmentPokemonFromRom(data['boxes'][box]['box_contents'][mon])
 			end
-		else
-			print(boxMin)
 		end
 	end
 

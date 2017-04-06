@@ -13,7 +13,9 @@ class Trainer extends React.Component<{trainer:TPP.TrainerData},{}> {
                 </div>
                 {t.options && 
                 <div className="options">
-                    {`${t.options.text_speed} | ${t.options.battle_style} | ${t.options.battle_scene}`}
+                    <span>{t.options.text_speed}</span>
+                    <span>{t.options.battle_style}</span>
+                    <span>{t.options.battle_scene}</span>
                 </div>}
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>

@@ -15,6 +15,9 @@ module TPP.Server {
     var state:TPP.RunStatus = { party: [], pc: {} } as any;
     var stateChangeHandlers: ((state:TPP.RunStatus)=>void)[] = [];
 
+    if (config.runStatusEndpoint)
+        stateChangeHandlers.push(s=>sendData(config.runStatusEndpoint, JSON.stringify(s)));
+
     export function registerStateChangeHandler(callback:(state:TPP.RunStatus)=>void) {
         stateChangeHandlers.push(callback);
         callback(state);
@@ -24,7 +27,7 @@ module TPP.Server {
         for (let i = 0; i < stateChangeHandlers.length; i++) {
             try {
                 if (typeof stateChangeHandlers[i] === "function")
-                    stateChangeHandlers[i](state);
+                    setTimeout(()=>stateChangeHandlers[i](state), 0);
                 else 
                     delete stateChangeHandlers[i];
             }
@@ -60,11 +63,11 @@ module TPP.Server {
             trainerString = dataJson;
             let sameTrainer = data.id == state.id && data.secret == state.secret;
             let oldCatches = (sameTrainer ? state.caught_list : data.caught_list) || [];
-            let oldParty = state.party || [];
-            let oldPC =  state.pc;
+            let party = data.party || state.party || [];
+            let pc =  data.pc || state.pc;
             state = data;
-            state.pc = oldPC;
-            state.party = oldParty;
+            state.pc = pc;
+            state.party = party;
             if ((state.caught_list || []).length > oldCatches.length) {
                 let newCatches = state.caught_list.filter(c=>oldCatches.indexOf(c) < 0);
                 if (newCatches.length < 3) //these should only happen one at a time, really, but 2 *might* happen at once
@@ -81,7 +84,11 @@ module TPP.Server {
             dexNum = config.romDexToNatDex[dexNum] || dexNum;
         }
         console.log(`New catch: ${dexNum}`);
+        if (config.newCatchEndpoint)
+            sendData(config.newCatchEndpoint, dexNum.toString());
     }
+
+    const sendData = (url:string, data:string) => require('http').request(url).end(data, 'utf8');
 
 }
 

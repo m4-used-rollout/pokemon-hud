@@ -38,7 +38,16 @@ body {
 
 @party-member-height: 14vh;
 
-@tiny-screen: 390px;
+.skinny-screen(@rules){
+    @media screen and (max-aspect-ratio: 34/92) {
+        @rules();
+    }
+}
+.normal-screen(@rules){
+    @media screen and (min-aspect-ratio: 34/92) {
+        @rules();
+    }
+}
 
 .pokemon-hud {
     font-family: pokeplatinum;
@@ -57,10 +66,10 @@ body {
         font-size:.7em;
         transform: scaleY(1.4);
         transform-origin:50%;
-        @media all and (max-width: @tiny-screen) {
+        .skinny-screen({
             font-size:.5em;
             transform: scaleY(2);
-        }
+        });
     }
 
     .health-info(@color) {
@@ -166,7 +175,7 @@ body {
                 .top-line {
                     display: flex;
                     align-items:center;
-                    align-content: space-between;
+                    justify-content: flex-end;
                     font-size:1.2em;
                     position: relative;
 
@@ -185,22 +194,21 @@ body {
                         text-align: center;
                         width:(@party-member-height / 2);
                         margin-left:auto;
+                        white-space: nowrap;
                         img {
                             height: (@party-member-height / 6);
                             margin: .1em;
                             border-radius: 50%;
-                            @media all and (max-width: @tiny-screen) {
-                                height: (@party-member-height / 12);
-                                display:block;
-                                margin-left:auto;
-                                margin-right:auto;
-                            }
+                            position: relative;
+                            top: .1em;
+                            .skinny-screen({
+                                height: (@party-member-height / 7);
+                            });
                         }
                     }
 
                     .level {
                         text-align: right;
-                        width: 2.2em;
 
                         &:before {
                             content:'Lv';
@@ -213,6 +221,10 @@ body {
                         .bar('EXP', (@party-member-height / 30));
                         top:90%;
                         left:2em;
+
+                        &:after{
+                            right:-.5em;
+                        }
 
                         .exp {
                             .bar-fill();
@@ -232,22 +244,25 @@ body {
                     li {
                         display: inline-flex;
                         flex-flow: row nowrap;
-                        align-items: center;
-                        width:50%;
+                        align-items: baseline;
+                        justify-content: space-around;
+                        width:48%;
                         white-space: nowrap;
                         height: auto;
 
+                        &:nth-child(even) {
+                            margin-left:4%;
+                        }
+
                         img {
                             height: .7em;
-                            margin:0 .1em;
                             border-radius: 50%;
+                            position: relative;
+                            top: .1em;
                         }
                         .move-name {
                             margin:auto;
                             text-align: center;
-                            @media all and (max-width: @tiny-screen) {
-                                .crush-text();
-                            }
                         }
                         span:last-of-type {
                             margin-left:auto;
@@ -266,6 +281,12 @@ body {
                             transition: filter @transition-time ease-in, opacity @transition-time ease-out, color @transition-time ease-out;
                             filter:grayscale(100%);
                         }
+                        .skinny-screen({
+                            span {
+                                vertical-align: middle;
+                                .crush-text();
+                            }
+                        });
                     }
                 }
                 .health-bar {
@@ -342,10 +363,6 @@ body {
             }
 
             &.fainted {
-                // .pokemon-image img {
-                //     opacity: .8;
-                //     transition: opacity .5s ease-out;
-                // }
                 opacity: .5;
                 transition: filter @transition-time ease-in, opacity @transition-time ease-out;
                 filter:grayscale(100%);
@@ -412,15 +429,27 @@ body {
             bottom:0;
             left:0;
             right:0;
-            align-content: space-between;
+            justify-content: space-between;
             padding-bottom:.1em;
 
             .wallet {
                 margin-right:auto;
+                .skinny-screen({
+                    display:flex;
+                    width:100%;
+                });
 
                 span {
                     margin-left: .25em;
                     vertical-align: baseline;
+
+                    .skinny-screen({
+                        flex: 1 1 auto;
+
+                        + span {
+                            margin-left:auto;
+                        }
+                    });
 
                     &:before {
                         font-size: .9em;
@@ -439,9 +468,26 @@ body {
 
             .options {
                 flex: 1 1 auto;
+                display:flex;
+                justify-content: space-around;
                 text-align: center;
                 margin:auto;
-                .crush-text()
+                .normal-screen({
+                    .crush-text()
+                });
+                .skinny-screen({
+                    position: absolute;
+                    left:0;
+                    right:0;
+                    bottom:100%;
+                    height: 1em;
+                    span {
+                        width:30%;
+                    }
+                });
+                span {
+                    flex: 1 1 auto;
+                }
             }
 
             .dex-counts {

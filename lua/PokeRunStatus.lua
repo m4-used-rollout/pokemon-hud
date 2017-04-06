@@ -52,15 +52,18 @@ end
 local boxNum = 1
 
 function sendData(frame)
-	if frame % 18000 == 0 then --once every 5 minutes
+	--Sends a single PC box once per minute (on the minute) (takes 14 minutes to send entire PC)
+	--Sends the current PC box once per minute (at the 30 second mark)
+	--Sends the current Trainer data 5 times per second (every 10 frames, unless sending PC data)
+	--Sends the current Party 54 times per second (every frame, unless sending PC or Trainer data)
+
+	if frame and frame % 3200 == 0 then --once every minute
 		sendPC(boxNum)
 		boxNum = (boxNum % 14) + 1
-	elseif frame % 1800 == 0 then --once every 30 seconds
+	elseif frame and frame % 1800 == 0 then --once every 30 seconds
 		sendPC(getCurrentPCBox())
-	-- elseif frame % 20 == 0 then --once every 20 frames
 	elseif frame % 10 == 0 then --once every 10 frames
 		sendTrainer()
-	-- elseif frame % 10 == 0 then --once every 10 frames
 	else --once every frame
 		sendParty()
 	end

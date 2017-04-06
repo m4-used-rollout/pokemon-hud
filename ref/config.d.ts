@@ -5,9 +5,8 @@ declare interface Config {
     romDexToNatDex?: number[];
     spriteFolder: string;
     listenPort: number;
-    runStatusEndpoint: string;
-    runStatusUpdateInterval: number;
-    newCatchEndpoint: string;
+    runStatusEndpoint?: string;
+    newCatchEndpoint?: string;
     screenWidth: number;
     screenHeight: number;
 }
