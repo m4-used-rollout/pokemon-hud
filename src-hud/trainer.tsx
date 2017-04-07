@@ -34,14 +34,17 @@ class Badges extends React.PureComponent<{bitfield:number},{}> {
         let badgeStr = (this.props.bitfield || 0).toString(2);
         while (badgeStr.length < config.badgeCount)
             badgeStr = '0' + badgeStr;
-        return <div className="badges">
-            { badgeStr.split('').reverse().map((own, num)=>
-                <img key={num} className={own == '1' ? '' : 'unowned'}
-                    style={{
-                        width: (100 / 8) + 'vw'
-                    }}
-                    src={`./img/badges/${config.spriteFolder}/${num + 1}.png`}/>
-            )}
+        return <div className="badges"> {
+            badgeStr.split('').reverse().map((own, num)=> {
+                let isOwned = own == '1';
+                let img = `./img/badges/${config.spriteFolder}/${num + 1}.png`;
+                let slotImg = img.replace(/\/(\d*)\.png/, "/d$1.png");
+                let hasSlotImg = TPP.Server.fileExists(slotImg);
+                return <span style={{ backgroundImage: hasSlotImg ? `url('${slotImg}')` : null }}>
+                    <img key={num} className={isOwned ? '' : hasSlotImg ? 'badge-slot' : 'unowned'}  src={img}/>
+                </span>
+            }
+        )}
         </div>;
     }
 }

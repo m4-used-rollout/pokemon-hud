@@ -90,6 +90,8 @@ module TPP.Server {
 
     const sendData = (url:string, data:string) => require('http').request(url).end(data, 'utf8');
 
+    export const fileExists = (path:string) => require('fs').existsSync(path);
+
 }
 
 (exports as any).TPP = TPP;
