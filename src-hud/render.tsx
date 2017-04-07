@@ -1,5 +1,6 @@
 /// <reference path="party.tsx" />
 /// <reference path="trainer.tsx" />
+/// <reference path="pokedex.tsx" />
 
 var data: TPP.RunStatus = null;
 
@@ -10,6 +11,7 @@ function Render(id: string = targetId) {
     ReactDOM.render(<div className="pokemon-hud">
         <Party party={data.party} />
         <Trainer trainer={data} />
+        <Pokedex seen={data.seen_list || []} owned={data.caught_list || []} />
     </div>, document.getElementById(id));
 }
 
@@ -30,7 +32,7 @@ document.addEventListener('dragenter', e=>{
 document.addEventListener('drop', e=>{
     e.preventDefault();
     for (let i = 0; i < e.dataTransfer.files.length; i++) {
-        console.log(e.dataTransfer.files[i].type);
+        //console.log(e.dataTransfer.files[i].type);
         // if (e.dataTransfer.files[i].type == "application/json") {
             let reader = new FileReader();
             reader.onload = e=> {

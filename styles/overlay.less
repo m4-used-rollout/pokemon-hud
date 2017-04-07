@@ -514,6 +514,98 @@ body {
     }
 }
 
+.pokedex {
+    position: absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    right:0;
+    border: 2px outset #600;
+    background-color: #c00;
+    box-shadow: 0 0 4px 4px #600 inset;
+    font-size:5vh;
+    font-family: pokered;
+    color:white;
+    text-align: center;
+    z-index: 100;
+
+    transition: transform 1s ease-in-out;
+
+    transform:translateY(-100%);
+    &.new-entry {
+        transform:none;
+    }
+
+    &:before, &:after {
+        content:attr(data-region);
+        position: absolute;
+        top:0;
+        left:0;
+        right:0;
+        font-weight: bold;
+        font-size:4vh;
+        line-height:5vh;
+        text-shadow: 1px 1px 1vh #900;
+    }
+    &:after {
+        content:"Pokédex";
+        top:auto;
+        bottom:0;
+    }
+
+    .pokemon-display {
+        border: 2px inset #600;
+        box-shadow: 0 0 4px 4px #600;
+        background-color: #050;
+        overflow: hidden;
+        color:black;
+
+        position:absolute;
+        left:5vw;
+        right:5vw;
+        top:5vh;
+        bottom:5vh;
+
+        ul.pokemon-list {
+            list-style: none;
+            margin:0;
+            padding:0;
+            transition: transform 5s ease-in-out;
+
+            li {
+                margin:0;
+                padding:5vh 1vw;
+                transform:translateY(50%);
+                transform-origin:center center;
+                transition:filter .2s ease-in-out;
+                position: relative;
+
+                &:before{
+                    position: absolute;
+                    left:0;
+                    top:0;
+                    right:0;
+                    content:'#.' attr(data-index);
+                }
+                &.unowned, &.new-entry {
+                    filter: contrast(0%) brightness(0%);
+                }
+                &.new-entry {
+                    transition:none;
+                    animation: new-entry 2s 1;
+                    animation-delay: 5s;
+                    animation-fill-mode:forwards;
+                    animation-timing-function: linear;
+                }
+
+                img {
+                    width:100%;
+                }
+            }
+        }
+    }
+}
+
 .shimmy-shake {
     .pokemon-image img {
         transform-origin: 50% 70%;
@@ -530,5 +622,23 @@ body {
     }
     30% {
         transform: none;
+    }
+}
+
+@keyframes new-entry {
+    20% {
+        filter: contrast(0%) brightness(0%);
+        transform: translateY(50%);
+    }
+    30% {
+        filter: brightness(200%)saturate(20%);
+        transform: translateY(50%) scale(1.5) rotate(10deg);
+    }
+    40% {
+        filter:none;
+        transform: translateY(50%);
+    }
+    100% {
+        filter: drop-shadow(0 0 10vh white);
     }
 }
