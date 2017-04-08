@@ -39,7 +39,7 @@ class Badges extends React.PureComponent<{bitfield:number},{}> {
                 let isOwned = own == '1';
                 let img = `./img/badges/${config.spriteFolder}/${num + 1}.png`;
                 let slotImg = img.replace(/\/(\d*)\.png/, "/d$1.png");
-                let hasSlotImg = TPP.Server.fileExists(slotImg);
+                let hasSlotImg = true;// TPP.Server.fileExists(slotImg);
                 return <span style={{ backgroundImage: hasSlotImg ? `url('${slotImg}')` : null }}>
                     <img key={num} className={isOwned ? '' : hasSlotImg ? 'badge-slot' : 'unowned'}  src={img}/>
                 </span>
