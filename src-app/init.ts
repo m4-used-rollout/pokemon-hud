@@ -1,7 +1,7 @@
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 /// <reference path="../ref/config.d.ts" />
 
-const {app, BrowserWindow, Menu} = require('electron')
+const {app, BrowserWindow, globalShortcut} = require('electron')
 const path = require('path')
 const url = require('url')
 const config:Config = require('./config.json');
@@ -10,7 +10,7 @@ const config:Config = require('./config.json');
 // be closed automatically when the JavaScript object is garbage collected.
 let win: Electron.BrowserWindow;
 
-function createWindow() {
+function createWindow(x:number = null, y:number = null, frameless:boolean = false) {
     // Create the browser window.
     win = new BrowserWindow({
         width: config.screenWidth, height: config.screenHeight,
@@ -18,6 +18,10 @@ function createWindow() {
             webSecurity: false,
             backgroundThrottling: false
         },
+        useContentSize: true,
+        frame: !frameless,
+        x: x,
+        y: y,
         show: false
     });
 
@@ -34,12 +38,14 @@ function createWindow() {
     win.on('closed', () => win = null);
 
     win.on('unresponsive', ()=> win.reload());
+
+    globalShortcut.register('F5', () => win.reload());
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => createWindow(config.windowX, config.windowY, config.frameless));
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => app.quit());
