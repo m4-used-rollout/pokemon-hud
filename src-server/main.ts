@@ -88,7 +88,18 @@ module TPP.Server {
             sendData(config.newCatchEndpoint, dexNum.toString());
     }
 
-    const sendData = (url:string, data:string) => require('http').request(url).end(data, 'utf8');
+    const sendData = (url:string, data:string) => {
+        try {
+            var options = require('url').parse(url);
+            options['method'] = 'POST';
+            var request = require('http').request(options);
+            request.on('error', ()=>null);
+            request.end(data, 'utf8');
+            return request;
+        }
+        catch(e) {
+        }
+    };
 
     export const fileExists = (path:string) => require('fs').existsSync(path);
 
