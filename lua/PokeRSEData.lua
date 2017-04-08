@@ -305,10 +305,10 @@ function getBoxedPokemon(boxNum)
 	end
 
 	-- gather ROM data
-	for box = boxMin, boxMax do
-		if data['boxes'][box] ~= nil then
+	for num,box in pairs(data['boxes']) do
+		if box ~= nil then
 			for mon = 1, 30 do
-				augmentPokemonFromRom(data['boxes'][box]['box_contents'][mon])
+				augmentPokemonFromRom(box['box_contents'][mon])
 			end
 		end
 	end
