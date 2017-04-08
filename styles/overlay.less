@@ -163,6 +163,7 @@ body {
                 > img {
                     width: @party-member-height;
                     height:@party-member-height;
+                    image-rendering: pixelated;
                 }
             }
 
@@ -422,6 +423,7 @@ body {
                     filter: drop-shadow(1px 1px 0 @bar-chrome) drop-shadow(-1px -1px 0 @bar-chrome) drop-shadow(-1px 1px 0 @bar-chrome) drop-shadow(1px -1px 0 @bar-chrome);
                     width: 12.5vw;
                     transform-origin: center center;
+                    image-rendering: pixelated;
 
                     &.unowned {
                         filter: contrast(0%) brightness(50%);
@@ -542,10 +544,10 @@ body {
         top:0;
         left:0;
         right:0;
-        font-weight: bold;
+        // font-weight: bold;
         font-size:4vh;
         line-height:5vh;
-        text-shadow: 1px 1px 1vh #900;
+        text-shadow: 2px 2px 0 #900, -2px 2px 0 #900, 2px -2px 0 #900, -2px -2px 0 #900;
     }
     &:after {
         content:"Pokédex";
@@ -556,7 +558,7 @@ body {
     .pokemon-display {
         border: 2px inset #600;
         box-shadow: 0 0 4px 4px #600;
-        background-color: #050;
+        background-color: darkolivegreen;
         overflow: hidden;
         color:black;
 
@@ -600,6 +602,7 @@ body {
 
                 img {
                     width:100%;
+                    image-rendering: pixelated;
                 }
             }
         }

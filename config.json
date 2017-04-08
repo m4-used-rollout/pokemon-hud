@@ -8,5 +8,5 @@
     "screenHeight" : 920,
     "windowX":20,
     "windowY":20,
-    "frameless": true
+    "frameless": false
 }
