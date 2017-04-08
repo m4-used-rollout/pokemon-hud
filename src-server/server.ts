@@ -1,4 +1,6 @@
 /// <reference path="main.ts" />
+/// <reference path="../ref/joypad.d.ts" />
+
 module TPP.Server {
     const http = require('http');
     const fs = require('fs');
@@ -35,6 +37,8 @@ module TPP.Server {
         server.listen(config.listenPort || 1337);
     });
 
+    var inputs:JoyPad = null;
+
     function endpointResponse(request) {
         var state = TPP.Server.getState();
         switch (((request.url || '').split('/').pop() || '').toLowerCase()) {
@@ -42,6 +46,19 @@ module TPP.Server {
                 return JSON.stringify(state);
             case "location":
                 return locationTemplate.replace(/%AREA%/g, <any>state.area_name).replace(/%MAPBANK%/g, <any>state.map_bank).replace(/%MAPID%/g, <any>state.map_id);
+            case "input":
+                if (!inputs) {
+                    setInterval(()=>inputs = {
+                        Left: Math.random() > .7,
+                        Right: Math.random() > .7,
+                        Up: Math.random() > .7,
+                        Down: Math.random() > .7,
+                        B: Math.random() > .4,
+                        A: Math.random() > .3,
+                        //Start: Math.random() > .9
+                    },100);
+                }
+                return JSON.stringify(inputs);
         }
     }
 }
