@@ -10,4 +10,7 @@ declare interface Config {
     newCatchEndpoint?: string;
     screenWidth: number;
     screenHeight: number;
+    windowX?:number;
+    windowY?:number;
+    frameless?:boolean;
 }
