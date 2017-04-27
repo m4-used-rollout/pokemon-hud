@@ -1,0 +1,12 @@
+{
+    "runName": "Emerald",
+    "badgeCount": 8,
+    "mainRegion": "Hoenn",
+    "totalInDex": 386,
+    "spriteFolder": "emerald",
+    "screenWidth" : 450,
+    "screenHeight" : 920,
+    "windowX":0,
+    "windowY":0,
+    "frameless": false
+}

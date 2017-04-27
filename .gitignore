@@ -5,3 +5,4 @@ img/badges/
 cache/
 release/
 .DS_Store
+./**/config.json
