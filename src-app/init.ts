@@ -16,7 +16,7 @@ function createWindow(x:number = null, y:number = null, frameless:boolean = fals
         width: config.screenWidth, height: config.screenHeight,
         webPreferences: {
             webSecurity: false,
-            backgroundThrottling: false
+            // backgroundThrottling: false
         },
         useContentSize: true,
         frame: !frameless,

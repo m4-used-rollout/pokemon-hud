@@ -5,7 +5,6 @@
 /// <reference path="../ref/joypad.d.ts" />
 declare module TPP.Server {
     function getConfig(): any;
-    function registerStateChangeHandler(callback: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
     function setState(dataJson: string): void;
     const fileExists: (path: string) => any;

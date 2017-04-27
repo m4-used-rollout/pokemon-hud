@@ -5,6 +5,8 @@
 
 module TPP.Server {
 
+    const {ipcMain} = require('electron');
+
     export function getConfig() {
         delete require.cache[require.resolve('./config.json')];
         return require('./config.json');
@@ -18,10 +20,15 @@ module TPP.Server {
     if (config.runStatusEndpoint)
         stateChangeHandlers.push(s=>sendData(config.runStatusEndpoint, JSON.stringify(s)));
 
-    export function registerStateChangeHandler(callback:(state:TPP.RunStatus)=>void) {
-        stateChangeHandlers.push(callback);
-        callback(state);
-    }
+    ipcMain.on('register-renderer', e => {
+        let renderer = e.sender;
+        let sendFunc = (state:TPP.RunStatus) => {
+            if (!renderer.isDestroyed())
+                renderer.send('state-update', state);
+        };
+        stateChangeHandlers.push(sendFunc);
+        sendFunc(state);
+    });
 
     function transmitState() {
         for (let i = 0; i < stateChangeHandlers.length; i++) {

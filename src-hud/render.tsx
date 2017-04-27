@@ -15,10 +15,12 @@ function Render(id: string = targetId) {
     </div>, document.getElementById(id));
 }
 
-TPP.Server.registerStateChangeHandler(state=> {
+const {ipcRenderer} = require('electron')
+ipcRenderer.on('state-update', (event, state:TPP.RunStatus) => {
     data = state;
     Render();
 });
+ipcRenderer.send('register-renderer');
 
 //droppable state changes (for testing)
 document.addEventListener('dragover', e=>{
