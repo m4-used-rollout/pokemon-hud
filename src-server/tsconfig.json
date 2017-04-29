@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"outDir": ".",
 		"target": "es6",
 		"removeComments": true,
 		"declaration": true,
