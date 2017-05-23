@@ -4,13 +4,15 @@ declare interface Config {
     mainRegion?: string;
     totalInDex?: number;
     romDexToNatDex?: number[];
-    spriteFolder: string;
+    romFile?: string;
+    extractedRomFolder?: string;
+    spriteFolder?: string;
     listenPort: number;
     runStatusEndpoint?: string;
     newCatchEndpoint?: string;
     screenWidth: number;
     screenHeight: number;
-    windowX?:number;
-    windowY?:number;
-    frameless?:boolean;
+    windowX?: number;
+    windowY?: number;
+    frameless?: boolean;
 }

@@ -37,7 +37,7 @@ module TPP.Server {
         server.listen(config.listenPort || 1337);
     });
 
-    var inputs:JoyPad = null;
+    var inputs:JoyPad.Generic = null;
 
     function endpointResponse(request) {
         var state = TPP.Server.getState();
@@ -49,10 +49,10 @@ module TPP.Server {
             case "input":
                 if (!inputs) {
                     setInterval(()=>inputs = {
-                        Left: Math.random() > .7,
-                        Right: Math.random() > .7,
-                        Up: Math.random() > .7,
-                        Down: Math.random() > .7,
+                        left: Math.random() > .7,
+                        right: Math.random() > .7,
+                        up: Math.random() > .7,
+                        down: Math.random() > .7,
                         B: Math.random() > .4,
                         A: Math.random() > .3,
                         //Start: Math.random() > .9

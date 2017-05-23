@@ -43,7 +43,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
         return <li className={classes}>
             <Sleeps status={mon.status} />
             <div className="pokemon-image">
-                <img src={`./img/sprites/${config.spriteFolder}/${mon.is_egg ? 'egg' : mon.species.national_dex}.gif`} />
+                <img src={`./img/sprites/${config.spriteFolder}/${mon.is_egg ? 'egg' : mon.species.national_dex || mon.species.id}.gif`} />
             </div>
             {mon.is_egg ?
             <div className="pokemon-info">

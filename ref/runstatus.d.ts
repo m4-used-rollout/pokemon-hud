@@ -9,6 +9,7 @@ declare namespace TPP {
     //sent from lua
     export interface TrainerData {
         badges: number;
+        ball_count: number;
         caught: number;
         caught_list: number[];
         coins?: number;
@@ -17,7 +18,9 @@ declare namespace TPP {
         items_key?: Item[];
         items_ball?: Item[];
         items_tm?: Item[];
+        items_medicine?: Item[];
         items_berry?: Item[];
+        items_free_space?: Item[];
         map_bank: number;
         map_id: number;
         area_id: number;
@@ -25,7 +28,7 @@ declare namespace TPP {
         money: number;
         name: string;
         options: Options;
-        pc_items: Item[];
+        pc_items?: Item[];
         seen: number;
         seen_list: number[];
         secret: number;
@@ -75,6 +78,7 @@ declare namespace TPP {
             this_level?: number;
             remaining?: number;
         };
+        level: number;
         moves: Move[];
         language?: number;
         ability?: string;
@@ -91,7 +95,8 @@ declare namespace TPP {
             cured: boolean;
         }
         met: {
-            area_id: number;
+            map_id?: number;
+            area_id?: number;
             area_name: string;
             level: number;
             game: string;
@@ -107,7 +112,6 @@ declare namespace TPP {
 
     export interface PartyPokemon extends Pokemon {
         health: number[];
-        level: number;
         status: number;
         stats: Stats;
         pokerus_remaining?: number;
@@ -156,8 +160,10 @@ declare namespace TPP {
     }
 
     export interface Options {
-        button_mode:string;
-        frame:string;
+        [key:string]:string;
+        box_mode?:string;
+        button_mode?:string;
+        frame?:string;
         text_speed:string;
         sound:string;
         battle_style:string;

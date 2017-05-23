@@ -1,0 +1,1424 @@
+{
+    "badges": 7,
+    "caught_list": [
+        116,
+        148,
+        175,
+        281,
+        326,
+        371,
+        389,
+        396,
+        443,
+        444,
+        481,
+        520,
+        619
+    ],
+    "id": 55231,
+    "items": [
+        {
+            "count": 5,
+            "id": 4,
+            "name": "PokÃ© Ball"
+        },
+        {
+            "count": 1,
+            "id": 142,
+            "name": "Like Mail"
+        },
+        {
+            "count": 1,
+            "id": 290,
+            "name": "Power Belt"
+        },
+        {
+            "count": 1,
+            "id": 273,
+            "name": "Flame Orb"
+        },
+        {
+            "count": 1,
+            "id": 64,
+            "name": "Fluffy Tail"
+        },
+        {
+            "count": 1,
+            "id": 66,
+            "name": "Yellow Flute"
+        },
+        {
+            "count": 1,
+            "id": 217,
+            "name": "Quick Claw"
+        },
+        {
+            "count": 1,
+            "id": 280,
+            "name": "Destiny Knot"
+        },
+        {
+            "count": 1,
+            "id": 223,
+            "name": "Amulet Coin"
+        },
+        {
+            "count": 1,
+            "id": 84,
+            "name": "Water Stone"
+        },
+        {
+            "count": 1,
+            "id": 100,
+            "name": "Claw Fossil"
+        },
+        {
+            "count": 1,
+            "id": 68,
+            "name": "Black Flute"
+        },
+        {
+            "count": 2,
+            "id": 15,
+            "name": "Quick Ball"
+        },
+        {
+            "count": 5,
+            "id": 10,
+            "name": "Timer Ball"
+        },
+        {
+            "count": 1,
+            "id": 110,
+            "name": "Oval Stone"
+        },
+        {
+            "count": 1,
+            "id": 216,
+            "name": "Exp. Share"
+        },
+        {
+            "count": 1,
+            "id": 63,
+            "name": "PokÃ© Doll"
+        },
+        {
+            "count": 1,
+            "id": 8,
+            "name": "Nest Ball"
+        },
+        {
+            "count": 1,
+            "id": 79,
+            "name": "Repel"
+        },
+        {
+            "count": 1,
+            "id": 257,
+            "name": "Metal Powder"
+        },
+        {
+            "count": 1,
+            "id": 298,
+            "name": "Flame Plate"
+        },
+        {
+            "count": 1,
+            "id": 262,
+            "name": "Pink Scarf"
+        },
+        {
+            "count": 1,
+            "id": 230,
+            "name": "Focus Band"
+        },
+        {
+            "count": 1,
+            "id": 308,
+            "name": "Insect Plate"
+        },
+        {
+            "count": 1,
+            "id": 581,
+            "name": "Big Nugget"
+        },
+        {
+            "count": 10,
+            "id": 72,
+            "name": "Red Shard"
+        },
+        {
+            "count": 4,
+            "id": 3,
+            "name": "Great Ball"
+        },
+        {
+            "count": 1,
+            "id": 218,
+            "name": "Soothe Bell"
+        },
+        {
+            "count": 1,
+            "id": 215,
+            "name": "Macho Brace"
+        },
+        {
+            "count": 1,
+            "id": 229,
+            "name": "Everstone"
+        }
+    ],
+    "items_berry": [
+        {
+            "count": 2,
+            "id": 194,
+            "name": "Tanga Berry"
+        },
+        {
+            "count": 2,
+            "id": 182,
+            "name": "Durin Berry"
+        },
+        {
+            "count": 5,
+            "id": 155,
+            "name": "Oran Berry"
+        },
+        {
+            "count": 4,
+            "id": 151,
+            "name": "Pecha Berry"
+        },
+        {
+            "count": 11,
+            "id": 169,
+            "name": "Pomeg Berry"
+        },
+        {
+            "count": 1,
+            "id": 196,
+            "name": "Kasib Berry"
+        },
+        {
+            "count": 1,
+            "id": 168,
+            "name": "Pinap Berry"
+        },
+        {
+            "count": 3,
+            "id": 152,
+            "name": "Rawst Berry"
+        },
+        {
+            "count": 1,
+            "id": 179,
+            "name": "Spelon Berry"
+        },
+        {
+            "count": 2,
+            "id": 149,
+            "name": "Cheri Berry"
+        }
+    ],
+    "items_free_space": [
+        {
+            "count": 1,
+            "id": 137,
+            "name": "Greet Mail"
+        },
+        {
+            "count": 2,
+            "id": 559,
+            "name": "Rock Gem"
+        },
+        {
+            "count": 1,
+            "id": 58,
+            "name": "X Defend"
+        },
+        {
+            "count": 1,
+            "id": 577,
+            "name": "PokÃ© Toy"
+        },
+        {
+            "count": 1,
+            "id": 116,
+            "name": "Douse Drive"
+        },
+        {
+            "count": 1,
+            "id": 242,
+            "name": "Magnet"
+        },
+        {
+            "count": 1,
+            "id": 583,
+            "name": "Comet Shard"
+        },
+        {
+            "count": 1,
+            "id": 138,
+            "name": "Favored Mail"
+        },
+        {
+            "count": 1,
+            "id": 237,
+            "name": "Soft Sand"
+        },
+        {
+            "count": 3,
+            "id": 78,
+            "name": "Escape Rope"
+        },
+        {
+            "count": 1,
+            "id": 80,
+            "name": "Sun Stone"
+        },
+        {
+            "count": 1,
+            "id": 288,
+            "name": "Sticky Barb"
+        },
+        {
+            "count": 1,
+            "id": 265,
+            "name": "Wide Lens"
+        },
+        {
+            "id": 578,
+            "name": "Prop Case"
+        },
+        {
+            "id": 410,
+            "name": "TM83"
+        },
+        {
+            "id": 417,
+            "name": "TM90"
+        },
+        {
+            "id": 420,
+            "name": "HM01"
+        },
+        {
+            "id": 372,
+            "name": "TM45"
+        },
+        {
+            "id": 423,
+            "name": "HM04"
+        },
+        {
+            "id": 385,
+            "name": "TM58"
+        },
+        {
+            "id": 421,
+            "name": "HM02"
+        },
+        {
+            "id": 620,
+            "name": "TM95"
+        },
+        {
+            "count": 1,
+            "id": 206,
+            "name": "Lansat Berry"
+        },
+        {
+            "count": 1,
+            "id": 153,
+            "name": "Aspear Berry"
+        },
+        {
+            "count": 1,
+            "id": 157,
+            "name": "Lum Berry"
+        },
+        {
+            "count": 1,
+            "id": 171,
+            "name": "Qualot Berry"
+        },
+        {
+            "count": 1,
+            "id": 569,
+            "name": "Clever Wing"
+        },
+        {
+            "count": 1,
+            "id": 50,
+            "name": "Rare Candy"
+        },
+        {
+            "count": 1,
+            "id": 26,
+            "name": "Super Potion"
+        },
+        {
+            "count": 1,
+            "id": 568,
+            "name": "Genius Wing"
+        }
+    ],
+    "items_key": [
+        {
+            "id": 450,
+            "name": "Bicycle"
+        },
+        {
+            "id": 627,
+            "name": "Medal Box"
+        },
+        {
+            "id": 437,
+            "name": "Pal Pad"
+        },
+        {
+            "id": 442,
+            "name": "Town Map"
+        },
+        {
+            "id": 626,
+            "name": "Xtransceiver"
+        },
+        {
+            "id": 471,
+            "name": "Dowsing MCHN"
+        },
+        {
+            "id": 465,
+            "name": "Vs. Recorder"
+        }
+    ],
+    "items_medicine": [
+        {
+            "count": 5,
+            "id": 18,
+            "name": "Antidote"
+        },
+        {
+            "count": 10,
+            "id": 32,
+            "name": "Lemonade"
+        },
+        {
+            "count": 13,
+            "id": 33,
+            "name": "Moomoo Milk"
+        },
+        {
+            "count": 48,
+            "id": 591,
+            "name": "Casteliacone"
+        },
+        {
+            "count": 1,
+            "id": 46,
+            "name": "Protein"
+        },
+        {
+            "count": 1,
+            "id": 51,
+            "name": "PP Up"
+        },
+        {
+            "count": 1,
+            "id": 49,
+            "name": "Calcium"
+        },
+        {
+            "count": 1,
+            "id": 43,
+            "name": "Berry Juice"
+        },
+        {
+            "count": 8,
+            "id": 30,
+            "name": "Fresh Water"
+        },
+        {
+            "count": 5,
+            "id": 25,
+            "name": "Hyper Potion"
+        },
+        {
+            "count": 6,
+            "id": 28,
+            "name": "Revive"
+        },
+        {
+            "count": 12,
+            "id": 17,
+            "name": "Potion"
+        }
+    ],
+    "items_tm": [
+        {
+            "id": 348,
+            "name": "TM21"
+        },
+        {
+            "id": 354,
+            "name": "TM27"
+        },
+        {
+            "id": 619,
+            "name": "TM94"
+        },
+        {
+            "id": 336,
+            "name": "TM09"
+        },
+        {
+            "id": 397,
+            "name": "TM70"
+        },
+        {
+            "id": 371,
+            "name": "TM44"
+        },
+        {
+            "id": 403,
+            "name": "TM76"
+        },
+        {
+            "id": 392,
+            "name": "TM65"
+        },
+        {
+            "id": 400,
+            "name": "TM73"
+        }
+    ],
+    "map_id": 62,
+    "money": 74672,
+    "name": "Luma",
+    "options": {
+        "battle_scene": "On",
+        "battle_style": "Shift",
+        "box_mode": "Auto",
+        "save_before_ir": "Save",
+        "sound": "Stereo",
+        "text_speed": "Fast"
+    },
+    "secret": 43766,
+    "seen_list": [
+        2,
+        7,
+        14,
+        16,
+        17,
+        19,
+        21,
+        28,
+        32,
+        35,
+        39,
+        41,
+        46,
+        51,
+        52,
+        54,
+        66,
+        70,
+        74,
+        81,
+        82,
+        83,
+        86,
+        89,
+        95,
+        102,
+        107,
+        111,
+        116,
+        120,
+        132,
+        147,
+        148,
+        155,
+        163,
+        165,
+        170,
+        175,
+        176,
+        183,
+        187,
+        188,
+        193,
+        201,
+        218,
+        220,
+        223,
+        227,
+        231,
+        237,
+        246,
+        263,
+        271,
+        274,
+        276,
+        278,
+        284,
+        287,
+        293,
+        300,
+        304,
+        305,
+        309,
+        318,
+        322,
+        325,
+        326,
+        327,
+        328,
+        332,
+        333,
+        339,
+        340,
+        343,
+        345,
+        347,
+        353,
+        354,
+        359,
+        360,
+        363,
+        364,
+        371,
+        374,
+        389,
+        390,
+        391,
+        396,
+        399,
+        403,
+        406,
+        408,
+        410,
+        415,
+        420,
+        425,
+        427,
+        434,
+        436,
+        443,
+        444,
+        449,
+        481,
+        489,
+        495,
+        499,
+        506,
+        509,
+        511,
+        519,
+        520,
+        521,
+        529,
+        532,
+        533,
+        536,
+        543,
+        545,
+        552,
+        554,
+        570,
+        580,
+        595,
+        599,
+        607,
+        610,
+        613,
+        614,
+        619,
+        622,
+        624,
+        633,
+        634,
+        636
+    ],
+    "pc": {},
+    "party": [
+        {
+            "condition": {
+                "beauty": 0,
+                "coolness": 0,
+                "cuteness": 0,
+                "feel": 0,
+                "smartness": 0,
+                "toughness": 0
+            },
+            "evs": {
+                "attack": 45,
+                "defense": 11,
+                "hp": 44,
+                "special_attack": 30,
+                "special_defense": 18,
+                "speed": 23
+            },
+            "experience": {
+                "current": 28153,
+                "next_level": 0,
+                "this_level": 27000,
+                "remaining": -28153
+            },
+            "form": 0,
+            "friendship": 207,
+            "gender": "Female",
+            "health": [
+                69,
+                69
+            ],
+            "held_item": {
+                "id": 538,
+                "name": "Eviolite"
+            },
+            "is_egg": false,
+            "is_nicknamed": 1,
+            "ivs": {
+                "attack": 30,
+                "defense": 5,
+                "hp": 26,
+                "special_attack": 11,
+                "special_defense": 11,
+                "speed": 10
+            },
+            "language": "English (US/UK/AU)",
+            "level": 30,
+            "markings": 0,
+            "met": {
+                "caught_in": "PokÃ© Ball",
+                "date": "2017-4-30",
+                "date_egg_received": "",
+                "encounter_type": "Hatched",
+                "game": 22,
+                "level": 14,
+                "map_id": 17,
+                "map_id_egg": 0,
+                "area_name": "Nacrene City"
+            },
+            "moves": [
+                {
+                    "id": 403,
+                    "max_pp": 20,
+                    "name": "Air Slash",
+                    "pp": 20,
+                    "pp_up": 0,
+                    "accuracy": 95,
+                    "base_power": 75,
+                    "type": "Flying"
+                },
+                {
+                    "id": 324,
+                    "max_pp": 15,
+                    "name": "Signal Beam",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 75,
+                    "type": "Bug"
+                },
+                {
+                    "id": 539,
+                    "max_pp": 10,
+                    "name": "Night Daze",
+                    "pp": 10,
+                    "pp_up": 0,
+                    "accuracy": 95,
+                    "base_power": 85,
+                    "type": "Dark"
+                },
+                {
+                    "id": 222,
+                    "max_pp": 30,
+                    "name": "Magnitude",
+                    "pp": 30,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 1,
+                    "type": "Ground"
+                }
+            ],
+            "name": "Queen",
+            "nature": 16,
+            "original_trainer": {
+                "gender": "Female",
+                "id": 55231,
+                "name": "Luma",
+                "secret": 43766
+            },
+            "personality_value": 877264497,
+            "pokerus": 0,
+            "ribbons": [],
+            "species": {
+                "id": 116,
+                "name": "Horsea",
+                "national_dex": 116,
+                "type1": "Water",
+                "type2": "Water",
+                "growth_rate": ""
+            },
+            "stats": {
+                "attack": 41,
+                "defense": 44,
+                "hp": 69,
+                "special_attack": 57,
+                "special_defense": 24,
+                "speed": 45
+            },
+            "status": 0
+        },
+        {
+            "condition": {
+                "beauty": 0,
+                "coolness": 0,
+                "cuteness": 0,
+                "feel": 0,
+                "smartness": 0,
+                "toughness": 0
+            },
+            "evs": {
+                "attack": 51,
+                "defense": 5,
+                "hp": 31,
+                "special_attack": 28,
+                "special_defense": 14,
+                "speed": 49
+            },
+            "experience": {
+                "current": 25317,
+                "next_level": 0,
+                "this_level": 24294,
+                "remaining": -25317
+            },
+            "form": 0,
+            "friendship": 255,
+            "gender": "Male",
+            "health": [
+                86,
+                86
+            ],
+            "held_item": {
+                "id": 232,
+                "name": "Scope Lens"
+            },
+            "is_egg": false,
+            "is_nicknamed": 1,
+            "ivs": {
+                "attack": 23,
+                "defense": 23,
+                "hp": 17,
+                "special_attack": 18,
+                "special_defense": 20,
+                "speed": 27
+            },
+            "language": "English (US/UK/AU)",
+            "level": 31,
+            "markings": 0,
+            "met": {
+                "caught_in": "Great Ball",
+                "date": "2017-4-29",
+                "date_egg_received": "",
+                "encounter_type": "Hatched",
+                "game": 22,
+                "level": 15,
+                "map_id": 129,
+                "map_id_egg": 0,
+                "area_name": "Opelucid City"
+            },
+            "moves": [
+                {
+                    "id": 19,
+                    "max_pp": 15,
+                    "name": "Fly",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 95,
+                    "base_power": 90,
+                    "type": "Flying"
+                },
+                {
+                    "id": 400,
+                    "max_pp": 15,
+                    "name": "Night Slash",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 70,
+                    "type": "Dark"
+                },
+                {
+                    "id": 327,
+                    "max_pp": 15,
+                    "name": "Sky Uppercut",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 90,
+                    "base_power": 85,
+                    "type": "Fighting"
+                },
+                {
+                    "id": 79,
+                    "max_pp": 15,
+                    "name": "Sleep Powder",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 75,
+                    "base_power": 0,
+                    "type": "Grass"
+                }
+            ],
+            "name": "Luna",
+            "nature": 8,
+            "original_trainer": {
+                "gender": "Female",
+                "id": 55231,
+                "name": "Luma",
+                "secret": 43766
+            },
+            "personality_value": -389275218,
+            "pokerus": 0,
+            "ribbons": [],
+            "species": {
+                "id": 520,
+                "name": "Tranquill",
+                "national_dex": 520,
+                "type1": "Normal",
+                "type2": "Flying",
+                "growth_rate": ""
+            },
+            "stats": {
+                "attack": 63,
+                "defense": 55,
+                "hp": 86,
+                "special_attack": 38,
+                "special_defense": 38,
+                "speed": 57
+            },
+            "status": 0
+        },
+        {
+            "condition": {
+                "beauty": 0,
+                "coolness": 0,
+                "cuteness": 0,
+                "feel": 0,
+                "smartness": 0,
+                "toughness": 0
+            },
+            "evs": {
+                "attack": 45,
+                "defense": 23,
+                "hp": 33,
+                "special_attack": 22,
+                "special_defense": 22,
+                "speed": 31
+            },
+            "experience": {
+                "current": 24442,
+                "next_level": 0,
+                "this_level": 24294,
+                "remaining": -24442
+            },
+            "form": 0,
+            "friendship": 255,
+            "gender": "Female",
+            "health": [
+                72,
+                72
+            ],
+            "held_item": {
+                "id": 296,
+                "name": "Big Root"
+            },
+            "is_egg": false,
+            "is_nicknamed": 1,
+            "ivs": {
+                "attack": 12,
+                "defense": 11,
+                "hp": 5,
+                "special_attack": 4,
+                "special_defense": 16,
+                "speed": 12
+            },
+            "language": "English (US/UK/AU)",
+            "level": 31,
+            "markings": 0,
+            "met": {
+                "caught_in": "PokÃ© Ball",
+                "date": "2017-4-29",
+                "date_egg_received": "",
+                "encounter_type": "Hatched",
+                "game": 22,
+                "level": 11,
+                "map_id": 131,
+                "map_id_egg": 0,
+                "area_name": "Opelucid Gate"
+            },
+            "moves": [
+                {
+                    "id": 409,
+                    "max_pp": 10,
+                    "name": "Drain Punch",
+                    "pp": 10,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 75,
+                    "type": "Fighting"
+                },
+                {
+                    "id": 442,
+                    "max_pp": 15,
+                    "name": "Iron Head",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 80,
+                    "type": "Steel"
+                },
+                {
+                    "id": 9,
+                    "max_pp": 15,
+                    "name": "ThunderPunch",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 75,
+                    "type": "Electric"
+                },
+                {
+                    "id": 70,
+                    "max_pp": 15,
+                    "name": "Strength",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 80,
+                    "type": "Normal"
+                }
+            ],
+            "name": "PogChamp",
+            "nature": 7,
+            "original_trainer": {
+                "gender": "Female",
+                "id": 55231,
+                "name": "Luma",
+                "secret": 43766
+            },
+            "personality_value": -1504426918,
+            "pokerus": 0,
+            "ribbons": [],
+            "species": {
+                "id": 619,
+                "name": "Mienfoo",
+                "national_dex": 619,
+                "type1": "Fighting",
+                "type2": "Fighting",
+                "growth_rate": ""
+            },
+            "stats": {
+                "attack": 64,
+                "defense": 44,
+                "hp": 72,
+                "special_attack": 41,
+                "special_defense": 42,
+                "speed": 45
+            },
+            "status": 0
+        },
+        {
+            "condition": {
+                "beauty": 0,
+                "coolness": 0,
+                "cuteness": 0,
+                "feel": 0,
+                "smartness": 0,
+                "toughness": 0
+            },
+            "evs": {
+                "attack": 58,
+                "defense": 34,
+                "hp": 47,
+                "special_attack": 38,
+                "special_defense": 20,
+                "speed": 55
+            },
+            "experience": {
+                "current": 37658,
+                "next_level": 0,
+                "this_level": 37238,
+                "remaining": -37658
+            },
+            "form": 0,
+            "friendship": 255,
+            "gender": "Male",
+            "health": [
+                89,
+                89
+            ],
+            "held_item": {
+                "id": 243,
+                "name": "Mystic Water"
+            },
+            "is_egg": false,
+            "is_nicknamed": 1,
+            "ivs": {
+                "attack": 11,
+                "defense": 9,
+                "hp": 25,
+                "special_attack": 24,
+                "special_defense": 18,
+                "speed": 24
+            },
+            "language": "English (US/UK/AU)",
+            "level": 31,
+            "markings": 0,
+            "met": {
+                "caught_in": "PokÃ© Ball",
+                "date": "2017-4-27",
+                "date_egg_received": "",
+                "encounter_type": "Hatched",
+                "game": 22,
+                "level": 5,
+                "map_id": 117,
+                "map_id_egg": 0,
+                "area_name": "Icirrus City"
+            },
+            "moves": [
+                {
+                    "id": 152,
+                    "max_pp": 10,
+                    "name": "Crabhammer",
+                    "pp": 10,
+                    "pp_up": 0,
+                    "accuracy": 90,
+                    "base_power": 90,
+                    "type": "Water"
+                },
+                {
+                    "id": 7,
+                    "max_pp": 15,
+                    "name": "Fire Punch",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 75,
+                    "type": "Fire"
+                },
+                {
+                    "id": 177,
+                    "max_pp": 7,
+                    "name": "Aeroblast",
+                    "pp": 7,
+                    "pp_up": 2,
+                    "accuracy": 95,
+                    "base_power": 100,
+                    "type": "Flying"
+                },
+                {
+                    "id": 473,
+                    "max_pp": 10,
+                    "name": "Psyshock",
+                    "pp": 10,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 80,
+                    "type": "Psychic"
+                }
+            ],
+            "name": "GivePLZ",
+            "nature": 17,
+            "original_trainer": {
+                "gender": "Female",
+                "id": 55231,
+                "name": "Luma",
+                "secret": 43766
+            },
+            "personality_value": -1714294621,
+            "pokerus": 0,
+            "ribbons": [],
+            "species": {
+                "id": 148,
+                "name": "Dragonair",
+                "national_dex": 148,
+                "type1": "Dragon",
+                "type2": "Dragon",
+                "growth_rate": ""
+            },
+            "stats": {
+                "attack": 64,
+                "defense": 50,
+                "hp": 89,
+                "special_attack": 63,
+                "special_defense": 55,
+                "speed": 53
+            },
+            "status": 0
+        },
+        {
+            "condition": {
+                "beauty": 0,
+                "coolness": 0,
+                "cuteness": 0,
+                "feel": 0,
+                "smartness": 0,
+                "toughness": 0
+            },
+            "evs": {
+                "attack": 39,
+                "defense": 29,
+                "hp": 39,
+                "special_attack": 27,
+                "special_defense": 23,
+                "speed": 23
+            },
+            "experience": {
+                "current": 34718,
+                "next_level": 0,
+                "this_level": 33750,
+                "remaining": -34718
+            },
+            "form": 0,
+            "friendship": 177,
+            "health": [
+                95,
+                95
+            ],
+            "held_item": {
+                "id": 314,
+                "name": "Odd Incense"
+            },
+            "is_egg": false,
+            "is_nicknamed": 1,
+            "ivs": {
+                "attack": 11,
+                "defense": 12,
+                "hp": 17,
+                "special_attack": 19,
+                "special_defense": 11,
+                "speed": 23
+            },
+            "language": "English (US/UK/AU)",
+            "level": 30,
+            "markings": 0,
+            "met": {
+                "caught_in": "PokÃ© Ball",
+                "date": "2017-4-30",
+                "date_egg_received": "",
+                "encounter_type": "Hatched",
+                "game": 22,
+                "level": 17,
+                "map_id": 8,
+                "map_id_egg": 0,
+                "area_name": "Striaton City"
+            },
+            "moves": [
+                {
+                    "id": 450,
+                    "max_pp": 20,
+                    "name": "Bug Bite",
+                    "pp": 20,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 60,
+                    "type": "Bug"
+                },
+                {
+                    "id": 427,
+                    "max_pp": 20,
+                    "name": "Psycho Cut",
+                    "pp": 20,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 70,
+                    "type": "Psychic"
+                },
+                {
+                    "id": 419,
+                    "max_pp": 10,
+                    "name": "Avalanche",
+                    "pp": 10,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 60,
+                    "type": "Ice"
+                },
+                {
+                    "id": 490,
+                    "max_pp": 20,
+                    "name": "Low Sweep",
+                    "pp": 20,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 60,
+                    "type": "Fighting"
+                }
+            ],
+            "name": "Potato",
+            "nature": 2,
+            "original_trainer": {
+                "gender": "Female",
+                "id": 55231,
+                "name": "Luma",
+                "secret": 43766
+            },
+            "personality_value": 775418997,
+            "pokerus": 0,
+            "ribbons": [],
+            "species": {
+                "id": 481,
+                "name": "Mesprit",
+                "national_dex": 481,
+                "type1": "Psychic",
+                "type2": "Psychic",
+                "growth_rate": ""
+            },
+            "stats": {
+                "attack": 81,
+                "defense": 73,
+                "hp": 95,
+                "special_attack": 75,
+                "special_defense": 72,
+                "speed": 54
+            },
+            "status": 0
+        },
+        {
+            "condition": {
+                "beauty": 0,
+                "coolness": 0,
+                "cuteness": 0,
+                "feel": 0,
+                "smartness": 0,
+                "toughness": 0
+            },
+            "evs": {
+                "attack": 59,
+                "defense": 23,
+                "hp": 32,
+                "special_attack": 31,
+                "special_defense": 24,
+                "speed": 35
+            },
+            "experience": {
+                "current": 34055,
+                "next_level": 0,
+                "this_level": 33750,
+                "remaining": -34055
+            },
+            "form": 0,
+            "friendship": 184,
+            "gender": "Female",
+            "health": [
+                85,
+                85
+            ],
+            "held_item": {
+                "id": 213,
+                "name": "BrightPowder"
+            },
+            "is_egg": false,
+            "is_nicknamed": 1,
+            "ivs": {
+                "attack": 16,
+                "defense": 17,
+                "hp": 8,
+                "special_attack": 20,
+                "special_defense": 2,
+                "speed": 3
+            },
+            "language": "English (US/UK/AU)",
+            "level": 30,
+            "markings": 0,
+            "met": {
+                "caught_in": "PokÃ© Ball",
+                "date": "2017-5-1",
+                "date_egg_received": "",
+                "encounter_type": "Hatched",
+                "game": 22,
+                "level": 21,
+                "map_id": 34,
+                "map_id_egg": 0,
+                "area_name": "Castelia City"
+            },
+            "moves": [
+                {
+                    "id": 460,
+                    "max_pp": 8,
+                    "name": "Spacial Rend",
+                    "pp": 8,
+                    "pp_up": 3,
+                    "accuracy": 95,
+                    "base_power": 100,
+                    "type": "Dragon"
+                },
+                {
+                    "id": 362,
+                    "max_pp": 10,
+                    "name": "Brine",
+                    "pp": 10,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 65,
+                    "type": "Water"
+                },
+                {
+                    "id": 79,
+                    "max_pp": 15,
+                    "name": "Sleep Powder",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 75,
+                    "base_power": 0,
+                    "type": "Grass"
+                },
+                {
+                    "id": 442,
+                    "max_pp": 15,
+                    "name": "Iron Head",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "accuracy": 100,
+                    "base_power": 80,
+                    "type": "Steel"
+                }
+            ],
+            "name": "Diana",
+            "nature": 1,
+            "original_trainer": {
+                "gender": "Female",
+                "id": 55231,
+                "name": "Luma",
+                "secret": 43766
+            },
+            "personality_value": -1163627945,
+            "pokerus": 0,
+            "ribbons": [],
+            "species": {
+                "id": 444,
+                "name": "Gabite",
+                "national_dex": 444,
+                "type1": "Dragon",
+                "type2": "Ground",
+                "growth_rate": ""
+            },
+            "stats": {
+                "attack": 74,
+                "defense": 45,
+                "hp": 85,
+                "special_attack": 43,
+                "special_defense": 40,
+                "speed": 57
+            },
+            "status": 0
+        }
+    ],
+    "caught": 13,
+    "seen": 134,
+    "ball_count": 17,
+    "area_name": "Nimbasa City"
+}
