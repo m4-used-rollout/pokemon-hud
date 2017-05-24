@@ -1,4 +1,4 @@
-/// <reference path="shared.ts" />
+/// <reference path="../shared.ts" />
 
 class Pokedex extends React.Component<{seen:number[], owned:number[]},{newEntry:number, scrollTo:number}> {
     constructor(props) {
@@ -22,7 +22,7 @@ class Pokedex extends React.Component<{seen:number[], owned:number[]},{newEntry:
             let owned = this.props.owned.indexOf(i) >= 0;
             let newEntry = this.state.newEntry == i;
             mons.push(<li key={i} className={`${owned ? "owned" : "unowned"} ${newEntry ? "new-entry" : ""}`} data-index={ `000${i}`.substring(i.toString().length) }>
-                <img src={ seen ? `./img/sprites/${config.spriteFolder}/${i}.gif` : "./img/empty-sprite.png" }/>
+                <img src={ seen || owned ? `./img/sprites/${config.spriteFolder}/${i}.gif` : "./img/empty-sprite.png" }/>
             </li>);
         }
         let style = {transform: this.state.scrollTo ? `translateY(${this.state.scrollTo}%)` : null};

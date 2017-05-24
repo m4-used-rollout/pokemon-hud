@@ -4,6 +4,7 @@ declare interface Config {
     mainRegion?: string;
     totalInDex?: number;
     romDexToNatDex?: number[];
+    displayOptions?:string[];
     romFile?: string;
     extractedRomFolder?: string;
     spriteFolder?: string;

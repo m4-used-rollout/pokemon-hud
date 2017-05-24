@@ -37,19 +37,23 @@ declare namespace Pokemon {
     }
 }
 declare namespace Pokemon {
+    interface Stats {
+        hp: number;
+        atk: number;
+        def: number;
+        spatk: number;
+        spdef: number;
+        speed: number;
+    }
+}
+declare namespace Pokemon {
     interface Species {
         id: number;
         name: string;
         dexNumber: number;
         type1: string;
         type2: string;
-        baseStats: {
-            hp: number;
-            atk: number;
-            def: number;
-            spatk: number;
-            spdef: number;
-        };
+        baseStats: Stats;
         abilities: string[];
         catchRate: number;
         expYield?: number;
@@ -93,13 +97,26 @@ declare namespace RomReader {
         protected moves: Pokemon.Move[];
         protected items: Pokemon.Item[];
         protected maps: Pokemon.Map[];
+        protected abilities: string[];
         protected ballIds: number[];
+        protected natures: string[];
+        protected characteristics: {
+            hp: string[];
+            atk: string[];
+            def: string[];
+            speed: string[];
+            spatk: string[];
+            spdef: string[];
+        };
         abstract ConvertText(text: string): string;
         GetSpecies(id: number): Pokemon.Species;
         GetMove(id: number): Pokemon.Move;
         GetMap(id: number): Pokemon.Map;
         GetItem(id: number): Pokemon.Item;
+        GetAbility(id: number): string;
         ItemIsBall(id: number | Pokemon.Item): boolean;
+        GetNature(id: number): string;
+        GetCharacteristic(stats: Pokemon.Stats, pv: number): any;
     }
 }
 declare namespace NDS {
@@ -140,4 +157,7 @@ declare module TPP.Server {
 }
 declare namespace NDS.DSDecmp {
     function Decompress(data: Buffer, offset?: number): Buffer;
+}
+declare namespace RomReader {
+    function AugmentState(romData: RomReaderBase, state: TPP.RunStatus): void;
 }

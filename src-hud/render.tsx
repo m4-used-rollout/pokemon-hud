@@ -1,6 +1,6 @@
 /// <reference path="party.tsx" />
-/// <reference path="trainer.tsx" />
-/// <reference path="pokedex.tsx" />
+/// <reference path="trainer/trainer.tsx" />
+/// <reference path="pokedex/pokedex.tsx" />
 
 var data: TPP.RunStatus = null;
 

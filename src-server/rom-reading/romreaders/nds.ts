@@ -12,6 +12,8 @@ namespace RomReader {
             if (!this.basePath.endsWith('/') && !this.basePath.endsWith('\\')) {
                 this.basePath += '/';
             }
+            this.characteristics.hp[1] = "Often dozes off";
+            this.characteristics.hp[2] = "Often scatters things";
         }
 
         protected readNARC(path: string) {

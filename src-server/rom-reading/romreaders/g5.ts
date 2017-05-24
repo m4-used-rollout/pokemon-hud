@@ -44,6 +44,8 @@ namespace RomReader {
             let itemNames = getStrings(config.TextOffsets.ItemNames);
             let mapNames = getStrings(config.TextOffsets.MapNames);
 
+            this.abilities = abilityNames;
+
             this.moves = moveNarc.files.map((data, i) => (<Pokemon.Move>{
                 name: moveNames[i],
                 id: i,

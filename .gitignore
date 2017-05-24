@@ -1,6 +1,7 @@
 **/config.json
 node_modules/
 bin/
+img/items/
 img/sprites/
 img/badges/
 cache/

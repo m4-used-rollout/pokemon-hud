@@ -83,6 +83,7 @@ declare namespace TPP {
         language?: number;
         ability?: string;
         nature?: string;
+        characteristic?:string;
         marking?: string;
         ivs?: Stats;
         evs?: Stats;

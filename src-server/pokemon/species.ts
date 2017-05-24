@@ -1,4 +1,5 @@
 /// <reference path="expcurve.ts" />
+/// <reference path="stats.ts" />
 
 namespace Pokemon {
     export interface Species {
@@ -7,13 +8,7 @@ namespace Pokemon {
         dexNumber: number;
         type1: string;
         type2: string;
-        baseStats: {
-            hp: number;
-            atk: number;
-            def: number;
-            spatk: number;
-            spdef: number;
-        }
+        baseStats: Stats;
         abilities: string[];
         catchRate: number;
         expYield?: number;
