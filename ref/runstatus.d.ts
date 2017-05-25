@@ -61,6 +61,7 @@ declare namespace TPP {
         held_item: Item;
         gender: string;
         shiny: boolean;
+        form?: number;
         species: {
             id: number;
             name: string;

@@ -13,7 +13,7 @@ class Trainer extends React.Component<{ trainer: TPP.TrainerData }, {}> {
                 </div>
                 {
                     t.options &&
-                    <div className="options">
+                    <div className={"options" + (displayOpts.length > 2 ? " slim" : "")}>
                         {displayOpts.map(opt => <span key={opt}>{t.options[opt]}</span>)}
                     </div>
                 }

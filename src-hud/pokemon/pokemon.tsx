@@ -39,7 +39,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
         return <li className={classes}>
             <Sleepy status={mon.status} />
             <div className="pokemon-image">
-                <img src={`./img/sprites/${config.spriteFolder}/${mon.is_egg ? 'egg' : mon.species.national_dex || mon.species.id}.gif`} />
+                <img src={`./img/sprites/${config.spriteFolder}/${mon.shiny ? "shiny/" : ""}${mon.gender == "Female" ? "female/" : "" }${mon.is_egg ? 'egg' : (mon.species.national_dex || mon.species.id)}${mon.form ? "-" + mon.form : ""}.png`} />
             </div>
             {mon.is_egg ?
                 <div className="pokemon-info">
@@ -62,6 +62,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
                             <div className="exp" style={{ width: expPercent + '%' }} />
                         </div>
                     </div>
+                    {mon.ability ? <div className="ability"> {mon.ability} </div> : null}
                     <ul className="moves">
                         {mon.moves.map(m => <Move move={m} key={m.id} />)}
                     </ul>
