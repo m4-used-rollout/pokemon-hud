@@ -8,6 +8,7 @@ var gen5FilesOffsets = { //White 2 only for now
     ItemGraphics: "/a/0/2/5",
     BadgeGraphics: "/a/0/3/9",
     EncounterData: "a/1/2/7",
+    PokemonFormIndex: "/a/2/0/8",
     TextOffsets: {
         PokemonNames: 90,
         MoveNames: 403,

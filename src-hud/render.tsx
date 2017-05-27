@@ -45,5 +45,3 @@ document.addEventListener('drop', e=>{
         // }
     }
 });
-
-(window as any).Render = Render;

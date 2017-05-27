@@ -11,8 +11,11 @@ namespace Pokemon {
         baseStats: Stats;
         abilities: string[];
         catchRate: number;
-        expYield?: number;
-        genderRatio?: number;
+        eggCycles: number;
+        eggGroup1: number;
+        eggGroup2: number;
+        baseExp: number;
+        genderRatio: number;
         frontSpritePointer?: number;
         spriteSize?: number;
         expFunction: ExpCurve.CalcExp;

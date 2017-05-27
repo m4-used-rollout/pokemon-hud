@@ -45,6 +45,10 @@ module TPP.Server {
         }
     }
 
+    export function MainProcessRegisterStateHandler(stateFunc:(state: TPP.RunStatus) => void) {
+        stateChangeHandlers.push(stateFunc);
+    }
+
     export function getState() {
         return state;
     }
@@ -53,7 +57,7 @@ module TPP.Server {
         return json.replace(/\\\\u/g, '\\u');
     }
 
-    const RomData = new RomReader.Gen5(config.extractedRomFolder);
+    export const RomData = new RomReader.Gen5(config.extractedRomFolder);
 
     let trainerString = "", partyString = "", pcString = "";
 

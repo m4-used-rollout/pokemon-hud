@@ -1,5 +1,6 @@
 /// <reference path="base.ts" />
 /// <reference path="../nds/narchive.ts" />
+/// <reference path="../nds/blzcoder.ts" />
 /// <reference path="../../../node_modules/@types/node/index.d.ts" />
 
 namespace RomReader {
@@ -7,7 +8,7 @@ namespace RomReader {
     const fs = require("fs");
 
     export abstract class NDSReader extends RomReaderBase {
-        constructor(private basePath:string) {
+        constructor(private basePath: string) {
             super();
             if (!this.basePath.endsWith('/') && !this.basePath.endsWith('\\')) {
                 this.basePath += '/';
@@ -20,7 +21,11 @@ namespace RomReader {
             return new NARCArchive(this.readFile('data/' + path));
         }
 
-        private readFile(path:string):Buffer {
+        protected readArm9() {
+            return BLZCoder.Decode(this.readFile('arm9.bin'));
+        }
+
+        private readFile(path: string): Buffer {
             return fs.readFileSync(this.basePath + path);
         }
     }

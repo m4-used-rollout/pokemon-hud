@@ -4,7 +4,7 @@ declare interface Config {
     mainRegion?: string;
     totalInDex?: number;
     romDexToNatDex?: number[];
-    displayOptions?:string[];
+    displayOptions?: string[];
     romFile?: string;
     extractedRomFolder?: string;
     spriteFolder?: string;
@@ -16,4 +16,9 @@ declare interface Config {
     windowX?: number;
     windowY?: number;
     frameless?: boolean;
+    showDexNav?: boolean;
+    dexNavWidth?: number;
+    dexNavHeight?: number;
+    dexNavX?: number;
+    dexNavY?: number;
 }

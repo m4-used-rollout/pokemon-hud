@@ -15,15 +15,19 @@ namespace RomReader {
     const encounterTypeNames = ["Grass/Cave", "Doubles Grass", "Shaking Spots", "Surfing", "Surfing Spots", "Fishing", "Fishing Spots"];
     const habitatClassificationOfEachType = ["grass", "grass", "grass", "surfing", "surfing", "fishing", "fishing"];
 
+    const tmDataPrefix = "87038803";
+    const tmCount = 95, hmCount = 6, tmBlockOneCount = 92, tmBlockOneOffset = 328, tmBlockTwoOffset = 618;
+
     export class Gen5 extends NDSReader {
 
-        ConvertText(text:string) {
+        ConvertText(text: string) {
             return NDS.PPTxt.PokeToText(text || "");
         }
 
         constructor(basePath: string) {
             super(basePath);
 
+            let arm9 = this.readArm9();
             let stringsNarc = this.readNARC(config.TextStrings);
             let pokeNarc = this.readNARC(config.PokemonStats);
             let moveNarc = this.readNARC(config.MoveData);
@@ -71,18 +75,38 @@ namespace RomReader {
                 type1: types[stats[6] & 0xFF],
                 type2: types[stats[7] & 0xFF],
                 catchRate: stats[8] & 0xFF,
+                genderRatio: stats[18] & 0xFF,
+                eggCycles: stats[19] & 0xFF,
                 expFunction: expCurves[stats[21] & 0xFF],
-                abilities: [abilityNames[stats[24] & 0xFF], abilityNames[stats[25] & 0xFF], abilityNames[stats[26] & 0xFF]]
+                eggGroup1: stats[22] & 0xFF,
+                eggGroup2: stats[23] & 0xFF,
+                abilities: [abilityNames[stats[24] & 0xFF], abilityNames[stats[25] & 0xFF], abilityNames[stats[26] & 0xFF]],
+                baseExp: stats[32] & 0xFF,
             }));
 
             this.pokemon = pokemon;
+
+            let tmHmMoves: number[] = (function GetTMHMMapping() {
+                let tmhm: number[] = [];
+                let offset = arm9.indexOf(tmDataPrefix, 0, 'hex');
+                offset += tmDataPrefix.length / 2; //skip the prefix
+                if (offset > 0) {
+                    for (let i = 0; i < tmCount + hmCount; i++) {
+                        tmhm.push(arm9.readInt16LE(offset + i * 2));
+                    }
+                }
+                return tmhm;
+            })();
 
             this.items = itemNarc.files.map((data, i) => (<Pokemon.Item>{
                 id: i,
                 name: itemNames[i],
                 isKeyItem: (data[8] & 32) > 0,
-                data:data
+                // data: data
             }));
+
+            //Give TMs and HMs their move names
+            this.items.filter(i=> i.name.indexOf("TM") >= 0 || i.name.indexOf("HM") >= 0).forEach((tm, index) => tm.name += " " + (this.moves[tmHmMoves[index]] || {name:"???"}).name);
 
             let encounters: { rate: number; encounters: Pokemon.Species[]; type: string; offset: number }[] = [];
 

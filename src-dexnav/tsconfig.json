@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"removeComments": true,
+        "jsx": "react",
+        "outFile": "dexnav.js"
+    },
+	"include": [
+        "./**/*.tsx",
+		"./**/*.ts"
+	]
+}

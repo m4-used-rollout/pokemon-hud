@@ -371,7 +371,6 @@ function pullDataFromPersonalityAndTrainer(data, pv, ot)
 	data["gender"] = pv % 256 -- check against species gender ratio. >= is male, < is female
 	data["ability"] = pv % 2 -- 0 is Ability 1, 1 is Ability 2
 	data["nature"] = Natures[pv % 25]
-	data["shiny"] = bit.bxor(bit.bxor(otId, otSecret), bit.bxor(math.floor(pv / 65536), pv % 65536)) < 8
 	data["original_trainer"]["id"] = otId
 	data["original_trainer"]["secret"] = otSecret
 end

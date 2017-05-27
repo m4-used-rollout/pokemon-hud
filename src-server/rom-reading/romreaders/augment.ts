@@ -56,6 +56,9 @@ namespace RomReader {
             p.species.type1 = p.species.type1 || romMon.type1;
             p.species.type2 = p.species.type2 || romMon.type2;
             p.species.growth_rate = p.species.growth_rate || (romMon.expFunction.name || "").replace(/([A-Z])/g, " $1").trim();
+            if (p.original_trainer) {
+                p.shiny = ((p.original_trainer.id ^ p.original_trainer.secret) ^ (Math.floor(p.personality_value / 65536) ^ (p.personality_value % 65536))) < 8;
+            }
             if (!p.level) {
                 p.level = Pokemon.ExpCurve.ExpToLevel(p.experience.current, romMon.expFunction);
             }

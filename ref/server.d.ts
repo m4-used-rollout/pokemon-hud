@@ -14,6 +14,7 @@ declare var gen5FilesOffsets: {
     ItemGraphics: string;
     BadgeGraphics: string;
     EncounterData: string;
+    PokemonFormIndex: string;
     TextOffsets: {
         PokemonNames: number;
         MoveNames: number;
@@ -56,8 +57,11 @@ declare namespace Pokemon {
         baseStats: Stats;
         abilities: string[];
         catchRate: number;
-        expYield?: number;
-        genderRatio?: number;
+        eggCycles: number;
+        eggGroup1: number;
+        eggGroup2: number;
+        baseExp: number;
+        genderRatio: number;
         frontSpritePointer?: number;
         spriteSize?: number;
         expFunction: ExpCurve.CalcExp;
@@ -129,11 +133,15 @@ declare namespace NDS {
         private readNitroFrames(data);
     }
 }
+declare namespace BLZCoder {
+    function Decode(data: Buffer): Buffer;
+}
 declare namespace RomReader {
     abstract class NDSReader extends RomReaderBase {
         private basePath;
         constructor(basePath: string);
         protected readNARC(path: string): NDS.NARChive;
+        protected readArm9(): Buffer;
         private readFile(path);
     }
 }
@@ -149,11 +157,31 @@ declare namespace RomReader {
 }
 declare module TPP.Server {
     function getConfig(): Config;
+    function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
+    const RomData: RomReader.Gen5;
     function setState(dataJson: string): void;
     const fileExists: (path: string) => any;
 }
 declare module TPP.Server {
+}
+declare namespace TPP.Server.DexNav {
+    interface KnownEncounter {
+        speciesId: number;
+        owned: boolean;
+    }
+    class State {
+        MapName: string;
+        MapID: number;
+        KnownEncounters: {
+            grass: KnownEncounter[];
+            surfing: KnownEncounter[];
+            fishing: KnownEncounter[];
+        };
+        constructor(map: Pokemon.Map, runState: TPP.RunStatus);
+    }
+}
+declare namespace TPP.Server.DexNav {
 }
 declare namespace NDS.DSDecmp {
     function Decompress(data: Buffer, offset?: number): Buffer;
