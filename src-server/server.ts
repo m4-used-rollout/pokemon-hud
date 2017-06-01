@@ -37,7 +37,7 @@ module TPP.Server {
         server.listen(config.listenPort || 1337);
     });
 
-    var inputs:JoyPad.Generic = null;
+    var inputs:any/*JoyPad.Generic*/ = null;
 
     function endpointResponse(request) {
         var state = TPP.Server.getState();
@@ -49,12 +49,14 @@ module TPP.Server {
             case "input":
                 if (!inputs) {
                     setInterval(()=>inputs = {
-                        left: Math.random() > .7,
-                        right: Math.random() > .7,
-                        up: Math.random() > .7,
-                        down: Math.random() > .7,
-                        B: Math.random() > .4,
-                        A: Math.random() > .3,
+                        touch_screen_x: Math.random() * (255 - 160) + 160,
+                        touch_screen_y: Math.random() * (140 - 110) + 110,
+                        // left: Math.random() > .7,
+                        // right: Math.random() > .7,
+                        // up: Math.random() > .7,
+                        // down: Math.random() > .7,
+                        // B: Math.random() > .4,
+                        // A: Math.random() > .3,
                         //Start: Math.random() > .9
                     },100);
                 }

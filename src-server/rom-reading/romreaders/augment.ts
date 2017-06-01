@@ -17,7 +17,8 @@ namespace RomReader {
                 if (!item.count)
                     delete item.count;
             }));
-        (state.pc.boxes || []).map(b => b.box_contents).reduce((arr: TPP.Pokemon[], val: TPP.Pokemon[]) => val, state.party || []).filter(p => !!p).forEach(p => {
+
+        function augmentPokemon(p:TPP.Pokemon) {
             p.name = romData.ConvertText(p.name);
             if (p.original_trainer) {
                 p.original_trainer.name = romData.ConvertText(p.original_trainer.name);
@@ -72,8 +73,40 @@ namespace RomReader {
                 m.base_power = m.base_power || romMove.basePower;
                 m.type = m.type || romMove.type;
             });
-        });
+        }
+
+        // (state.pc.boxes || []).map(b => b.box_contents).reduce((arr: TPP.Pokemon[], val: TPP.Pokemon[]) => val, state.party || []).filter(p => !!p).forEach(p => {
+
+        function augmentPartyPokemon(p:TPP.PartyPokemon) {
+            if (p.status && typeof p.status !== "string") {
+                let s = parseInt(p.status);
+                if (s < 8)
+                    p.sleep_turns = s;
+                p.status = parseStatus(s);
+            }
+            return p;
+        }
+
+        (state.party || []).filter(p=>!!p).map(augmentPartyPokemon).forEach(augmentPokemon);
+        (state.pc.boxes || []).forEach(b=>(b.box_contents || []).filter(p=>!!p).forEach(augmentPokemon));
+
         state.area_name = romData.GetMap(state.area_id || state.map_id).name;
+    }
+
+    function parseStatus(status:number) {
+        if (status % 8 > 0)
+            return "SLP";
+        if (status & 8)
+            return "PSN";
+        if (status & 16)
+            return "BRN";
+        if (status & 32)
+            return "FRZ";
+        if (status & 64)
+            return "PAR";
+        if (status & 128)
+            return "TOX";
+        return null;
     }
 
 }

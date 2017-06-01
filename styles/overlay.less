@@ -122,6 +122,7 @@ body {
         padding:0;
         margin-bottom: 5px;
         height: (@party-member-height * 6);
+        transition: filter .2s ease-in-out;
         
         > li {
             display:flex;
@@ -516,6 +517,13 @@ body {
             }
         }
 
+    }
+
+    &.evolving {
+        ul.party {
+            transition: filter 30s ease-in-out;
+            filter:blur(20vw);
+        }
     }
 
     .trainer-info {

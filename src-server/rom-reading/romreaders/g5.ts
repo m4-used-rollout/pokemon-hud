@@ -106,7 +106,7 @@ namespace RomReader {
             }));
 
             //Give TMs and HMs their move names
-            this.items.filter(i=> i.name.indexOf("TM") >= 0 || i.name.indexOf("HM") >= 0).forEach((tm, index) => tm.name += " " + (this.moves[tmHmMoves[index]] || {name:"???"}).name);
+            this.items.filter(i => i.name.indexOf("TM") >= 0 || i.name.indexOf("HM") >= 0).forEach((tm, index) => tm.name += " " + (this.moves[tmHmMoves[index]] || { name: "???" }).name);
 
             let encounters: { rate: number; encounters: Pokemon.Species[]; type: string; offset: number }[] = [];
 
@@ -161,8 +161,9 @@ namespace RomReader {
                     name: mapNames[mapNameIndex],
                     encounters: null
                 }
+
                 let wildSet = mapHeaderData[baseOffset + 20] & 0xFF; //this is for BW2. For BW, wildSet is a word, not a byte
-                if (wildSet != 255) {
+                if (wildSet != 255 && wildSet != 65535) {
                     map.encounters = {
                         grass: [],
                         surfing: [],

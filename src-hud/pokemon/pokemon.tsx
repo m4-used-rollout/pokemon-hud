@@ -5,22 +5,6 @@
 
 
 class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
-    get status() {
-        let status = this.props.pokemon.status;
-        if (status % 8 > 0)
-            return "SLP";
-        if (status & 8)
-            return "PSN";
-        if (status & 16)
-            return "BRN";
-        if (status & 32)
-            return "FRZ";
-        if (status & 64)
-            return "PAR";
-        if (status & 128)
-            return "TOX";
-        return null;
-    }
     render() {
         let mon = this.props.pokemon;
         if (!mon)
@@ -32,12 +16,12 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
             Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) > 50 ? "health-high" : "health-med",
             mon.gender,
             mon.health[0] == 0 ? "fainted" : "",
-            this.status
+            mon.status
         ].filter(c => !!c).map(cleanString).join(' ');
         if (mon.is_egg)
             classes = "egg" + (!mon.friendship ? " shimmy-shake" : "");
         return <li className={classes}>
-            <Sleepy status={mon.status} />
+            <Sleepy status={mon.sleep_turns} />
             <div className="pokemon-image">
                 <img src={`./img/sprites/${config.spriteFolder}/${mon.shiny ? "shiny/" : ""}${mon.gender == "Female" ? "female/" : "" }${mon.is_egg ? 'egg' : (mon.species.national_dex || mon.species.id)}${mon.form ? "-" + mon.form : ""}.png`} />
             </div>

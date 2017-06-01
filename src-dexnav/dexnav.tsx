@@ -5,18 +5,18 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
         let map = this.props.state;
         if (!map)
             return null;
-        let totalEncounters = Object.keys(map.KnownEncounters || {}).reduce((a, k) => a + map.KnownEncounters[k].length, 0);
+        let totalKnownEncounters = Object.keys(map.KnownEncounters || {}).reduce((a, k) => a + map.KnownEncounters[k].length, 0);
         let classes = [
             "dexnav",
-            totalEncounters ? null : "no-encounters"
+            map.TotalEncounters ? null : "no-encounters"
         ];
         return <div className={classes.filter(c => !!c).join(' ')}>
             <h3>DexNav</h3>
             {map.MapName ? <h4>{map.MapName}</h4> : null}
             <div className="encounters">
-                <EncounterGroup encounters={map.KnownEncounters} total={totalEncounters} key="1" />
-                <EncounterGroup encounters={map.KnownEncounters} total={totalEncounters} key="2" />
-                <EncounterGroup encounters={map.KnownEncounters} total={totalEncounters} key="3" />
+                <EncounterGroup encounters={map.KnownEncounters} total={totalKnownEncounters} key="1" />
+                <EncounterGroup encounters={map.KnownEncounters} total={totalKnownEncounters} key="2" />
+                <EncounterGroup encounters={map.KnownEncounters} total={totalKnownEncounters} key="3" />
             </div>
         </div>;
     }

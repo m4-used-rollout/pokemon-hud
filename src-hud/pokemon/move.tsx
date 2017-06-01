@@ -3,6 +3,7 @@
 class Move extends React.PureComponent<{move:TPP.Move},{}> {
     render() {
         let m = this.props.move;
+        m.name = m.name || "???";
         let ppPercentage = m.pp / m.max_pp * 100;
         let classes = [
             m.name.length > 8 ? "long-name" : null,

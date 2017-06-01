@@ -173,11 +173,14 @@ declare namespace TPP.Server.DexNav {
     class State {
         MapName: string;
         MapID: number;
+        TotalEncounters: number;
+        IncompleteCategories: number;
         KnownEncounters: {
             grass: KnownEncounter[];
             surfing: KnownEncounter[];
             fishing: KnownEncounter[];
         };
+        readonly HasEncounters: boolean;
         constructor(map: Pokemon.Map, runState: TPP.RunStatus);
     }
 }

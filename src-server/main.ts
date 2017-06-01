@@ -64,8 +64,16 @@ module TPP.Server {
     export function setState(dataJson: string) {
         if (dataJson == trainerString || dataJson == partyString || dataJson == pcString)
             return; //same exact data, no update needed.
-        let data = JSON.parse(fixDoubleEscapedUnicode(dataJson));
-        if (Array.isArray(data) && data.length && data[0] && typeof (data[0].personality_value) == "number") {
+        try {
+            var data = JSON.parse(fixDoubleEscapedUnicode(dataJson));
+        }
+        catch (e) {
+            console.error(e);
+            return console.log(dataJson);
+        }
+        if (!data)
+            return; //junk
+        else if (Array.isArray(data) && data.length && data[0] && typeof (data[0].personality_value) == "number") {
             partyString = dataJson;
             delete state.party;
             state.party = data;

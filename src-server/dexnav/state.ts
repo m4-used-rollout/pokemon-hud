@@ -11,10 +11,15 @@ namespace TPP.Server.DexNav {
     export class State {
         public MapName = "";
         public MapID = 0;
+        public TotalEncounters = 0;
+        public IncompleteCategories = 0;
         public KnownEncounters = {
             grass: new Array<KnownEncounter>(),
             surfing: new Array<KnownEncounter>(),
             fishing: new Array<KnownEncounter>()
+        }
+        public get HasEncounters() {
+            return this.TotalEncounters > 0;
         }
         constructor(map: Pokemon.Map, runState: TPP.RunStatus) {
             if (!map || !runState) return;
@@ -33,6 +38,7 @@ namespace TPP.Server.DexNav {
             if ((runState.pc.boxes || []).map(b => b.box_contents).reduce((arr: TPP.Pokemon[], val: TPP.Pokemon[]) => val, runState.party || []).filter(p => !!p && p.moves.filter(m => !!m && surfExp.test(m.name))).length == 0) {
                 delete this.KnownEncounters.surfing; //have no Pokemon with surf, delete surfing encounters
             }
+            this.TotalEncounters = Object.keys(map.encounters || {}).reduce((a, k) => a + map.encounters[k].length, 0);
         }
     }
 }
