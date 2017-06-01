@@ -4,6 +4,7 @@ declare namespace TPP {
     export interface RunStatus extends TrainerData {
         party: PartyData;
         pc: CombinedPCData;
+        evolution_is_happening:boolean;
     }
 
     //sent from lua
@@ -114,7 +115,8 @@ declare namespace TPP {
 
     export interface PartyPokemon extends Pokemon {
         health: number[];
-        status: number;
+        status: string;
+        sleep_turns?;
         stats: Stats;
         pokerus_remaining?: number;
     }
