@@ -75,8 +75,6 @@ namespace RomReader {
             });
         }
 
-        // (state.pc.boxes || []).map(b => b.box_contents).reduce((arr: TPP.Pokemon[], val: TPP.Pokemon[]) => val, state.party || []).filter(p => !!p).forEach(p => {
-
         function augmentPartyPokemon(p:TPP.PartyPokemon) {
             if (p.status && typeof p.status !== "string") {
                 let s = parseInt(p.status);

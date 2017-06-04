@@ -14,3 +14,9 @@
 var config = TPP.Server.getConfig();
 
 var cleanString = (str: string) => typeof str === "string" ? str.replace(/[^A-Z0-9-]/ig, '').toLowerCase() : str;
+
+function* countTo(n: number) {
+    let i = 0;
+    while (i < n)
+        yield i++;
+}

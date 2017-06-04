@@ -73,8 +73,11 @@ declare namespace Pokemon {
         id: number;
         encounters: {
             grass: Species[];
+            hidden_grass?: Species[];
             surfing: Species[];
+            hidden_surfing?: Species[];
             fishing: Species[];
+            hidden_fishing?: Species[];
         };
     }
 }

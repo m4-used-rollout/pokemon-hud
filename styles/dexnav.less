@@ -31,6 +31,31 @@
         transition: opacity 1s ease-in-out;
     }
 
+    &:after {
+        content:'';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width:50vw;
+        height:30vh;
+        background-position: top right;
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+
+    &[data-incomplete=2]:after {
+        background-image: url("img/dexnav/bronze.png");
+    }
+    &[data-incomplete=1]:after {
+        background-image: url("img/dexnav/silver.png");
+    }
+    &[data-incomplete=0]:after {
+        background-image: url("img/dexnav/gold.png");
+    }
+    &.caught-them-all:after {
+        background-image: url("img/dexnav/platinum.png");
+    }
+
     h3, h4 {
         position: absolute;
         z-index: 2;
@@ -61,7 +86,7 @@
         font-family: pokeplatinum;
         background-image: radial-gradient(farthest-side at bottom right,black 0%, rgba(0,0,0,.5) 60%, rgba(0,0,0,0) 100%);
         text-align: right;
-        font-size: 1.5em;
+        font-size: 2em;
     }
 
     .encounters {
@@ -94,10 +119,10 @@
 
             span {
                 flex:0 0 auto;
+                position: relative;
                 padding:0;
                 transform: translateX(50%);
                 height:100%;
-                transition: filter 1s ease-in-out;
                 
                 &.seen img {
                     filter:contrast(0%) brightness(0%);
@@ -108,12 +133,40 @@
                 img {
                     image-rendering: pixelated;
                     height:100%;
+                    transition: filter 1s ease-in-out;
+                    position: relative;
+                }
+                
+                &.surfing:before {
+                    position: absolute;
+                    left:0;
+                    top:0;
+                    bottom:0;
+                    right:0;
+                    content:'';
+                    background-image:url("img/dexnav/surf.png");
+                    -webkit-mask-image:linear-gradient(to top, black 0%,black 25%,transparent 75%, transparent 100%);
+                    image-rendering: pixelated;
+                }
+
+                &.fishing:after {
+                    content:'';
+                    background-position: top right;
+                    background-repeat: no-repeat;
+                    background-size: contain;
+                    image-rendering: pixelated;
+                    background-image: url("img/dexnav/rod.png");
                 }
             }
         }
     }
+    &.nothing-to-show {
+        &:before {
+            content:'{';
+        }
+    }
 
-    &.no-encounters {
+    &.no-encounters, &.nothing-to-show {
 
         &:before {
             opacity: 1;

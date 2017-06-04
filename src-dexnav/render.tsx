@@ -2,15 +2,19 @@
 
 var data: TPP.Server.DexNav.State = null;
 
-var targetId:string;
+var targetId: string;
 function Render(id: string = targetId) {
     targetId = id;
     if (!id || !data) return;
-    ReactDOM.render(<DexNav state={data}/>, document.getElementById(id));
+    try {
+        ReactDOM.render(<DexNav state={data} />, document.getElementById(id));
+    } catch (e) {
+        console.error(e);
+    }
 }
 
-const {ipcRenderer} = require('electron')
-ipcRenderer.on('dexnav-update', (event, state:TPP.Server.DexNav.State) => {
+const { ipcRenderer } = require('electron')
+ipcRenderer.on('dexnav-update', (event, state: TPP.Server.DexNav.State) => {
     data = state;
     Render();
 });

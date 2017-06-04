@@ -13,7 +13,7 @@ namespace RomReader {
     const perSeasonEncounterDataLength = 232, bw2AreaDataEntryLength = 345, bw2EncounterAreaCount = 85;
     const encountersOfEachType = [12, 12, 12, 5, 5, 5, 5];
     const encounterTypeNames = ["Grass/Cave", "Doubles Grass", "Shaking Spots", "Surfing", "Surfing Spots", "Fishing", "Fishing Spots"];
-    const habitatClassificationOfEachType = ["grass", "grass", "grass", "surfing", "surfing", "fishing", "fishing"];
+    const habitatClassificationOfEachType = ["grass", "grass", "hidden_grass", "surfing", "hidden_surfing", "fishing", "hidden_fishing"];
 
     const tmDataPrefix = "87038803";
     const tmCount = 95, hmCount = 6, tmBlockOneCount = 92, tmBlockOneOffset = 328, tmBlockTwoOffset = 618;
@@ -166,8 +166,11 @@ namespace RomReader {
                 if (wildSet != 255 && wildSet != 65535) {
                     map.encounters = {
                         grass: [],
+                        hidden_grass: [],
                         surfing: [],
-                        fishing: []
+                        hidden_surfing: [],
+                        fishing: [],
+                        hidden_fishing: []
                     };
                     encounters.filter(e => e.offset == wildSet).forEach(e => map.encounters[e.type] = Array.prototype.concat.apply(map.encounters[e.type], e.encounters));
                 }
