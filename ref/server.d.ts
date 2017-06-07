@@ -72,6 +72,7 @@ declare namespace Pokemon {
         name: string;
         id: number;
         encounters: {
+            [key: string]: Species[];
             grass: Species[];
             hidden_grass?: Species[];
             surfing: Species[];
@@ -178,10 +179,14 @@ declare namespace TPP.Server.DexNav {
         MapID: number;
         TotalEncounters: number;
         IncompleteCategories: number;
+        FoundAllHidden: boolean;
         KnownEncounters: {
             grass: KnownEncounter[];
+            hidden_grass: KnownEncounter[];
             surfing: KnownEncounter[];
+            hidden_surfing: KnownEncounter[];
             fishing: KnownEncounter[];
+            hidden_fishing: KnownEncounter[];
         };
         readonly HasEncounters: boolean;
         constructor(map: Pokemon.Map, runState: TPP.RunStatus);
