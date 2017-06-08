@@ -63,7 +63,7 @@ namespace RomReader {
             if (!p.level) {
                 p.level = Pokemon.ExpCurve.ExpToLevel(p.experience.current, romMon.expFunction);
             }
-            p.experience.next_level = p.experience.next_level || p.level == 100 ? 0 : romMon.expFunction(p.level + 1);
+            p.experience.next_level = p.experience.next_level || (p.level == 100 ? 0 : romMon.expFunction(p.level + 1));
             p.experience.this_level = p.experience.this_level || romMon.expFunction(p.level);
             p.experience.remaining = p.experience.next_level - p.experience.current;
             p.moves.filter(m => !!m).forEach(m => {
