@@ -34,26 +34,32 @@
     &:after {
         content:'';
         position: absolute;
-        top: 0;
-        right: 0;
-        width:50vw;
-        height:30vh;
+        top: -7vh;
+        right: -2vh;
+        width: 50vw;
+        height: 40vh;
         background-position: top right;
         background-repeat: no-repeat;
         background-size: contain;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
     }
 
-    &[data-incomplete=2]:after {
+    &[data-completed="1"]:after {
         background-image: url("img/dexnav/bronze.png");
+        opacity: 1;
     }
-    &[data-incomplete=1]:after {
+    &[data-completed="2"]:after {
         background-image: url("img/dexnav/silver.png");
+        opacity: 1;
     }
-    &[data-incomplete=0]:after {
+    &[data-completed="3"]:after {
         background-image: url("img/dexnav/gold.png");
+        opacity: 1;
     }
     &.caught-them-all:after {
         background-image: url("img/dexnav/platinum.png");
+        opacity: 1;
     }
 
     h3, h4 {
@@ -121,7 +127,7 @@
                 flex:0 0 auto;
                 position: relative;
                 padding:0;
-                transform: translateX(50%);
+                //transform: translateX(50%);
                 height:100%;
                 
                 &.seen img {
@@ -137,25 +143,36 @@
                     position: relative;
                 }
                 
-                &.surfing:before {
-                    position: absolute;
-                    left:0;
-                    top:0;
-                    bottom:0;
-                    right:0;
-                    content:'';
-                    background-image:url("img/dexnav/surf.png");
-                    -webkit-mask-image:linear-gradient(to top, black 0%,black 25%,transparent 75%, transparent 100%);
-                    image-rendering: pixelated;
+                &.surfing, &.fishing {
+                    perspective: 100vh;
+                    perspective-origin: top;
+
+                    &:before {
+                        content:'';
+                        position: absolute;
+                        left:0;
+                        top:0;
+                        bottom:0;
+                        right:0;
+                        content:'';
+                        image-rendering: pixelated;
+                        transform: rotateX(60deg);
+                        background-image:url("img/dexnav/surf.png");
+                        -webkit-mask-image:linear-gradient(to top, black 0%,black 25%,transparent 60%, transparent 100%);
+                    }
                 }
 
-                &.fishing:after {
-                    content:'';
-                    background-position: top right;
-                    background-repeat: no-repeat;
-                    background-size: contain;
-                    image-rendering: pixelated;
-                    background-image: url("img/dexnav/rod.png");
+                // &.surfing:before {
+                    
+                // }
+
+                &.fishing:before {
+                    // background-position: center;
+                    // background-repeat: no-repeat;
+                    // background-size: contain;
+                    // transform: translateY(25%)rotateX(90deg);
+                    // background-image: radial-gradient(closest-side, rgba(89,158,202,1) 0%,rgba(10,27,103,1) 62%,rgba(95,154,207,0.7) 68%,rgba(125,185,232,0) 100%); 
+                    background-image:url("img/dexnav/ocean.png");
                 }
             }
         }

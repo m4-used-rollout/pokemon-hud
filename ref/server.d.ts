@@ -178,8 +178,8 @@ declare namespace TPP.Server.DexNav {
         MapName: string;
         MapID: number;
         TotalEncounters: number;
-        IncompleteCategories: number;
-        FoundAllHidden: boolean;
+        CompletedCategories: number;
+        MoreLeftToCatch: boolean;
         KnownEncounters: {
             grass: KnownEncounter[];
             hidden_grass: KnownEncounter[];
