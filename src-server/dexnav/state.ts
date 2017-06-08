@@ -62,9 +62,9 @@ namespace TPP.Server.DexNav {
             if ((Array.prototype.concat(runState.items, runState.items_key, runState.items_free_space, runState.pc_items) as TPP.Item[]).filter(i => !!i && fishingExp.test(i.name)).length == 0) {
                 delete this.KnownEncounters.fishing; //have no fishing rod, delete fishing encounters
             }
-            if ((runState.pc.boxes || []).map(b => b.box_contents).reduce((arr: TPP.Pokemon[], val: TPP.Pokemon[]) => val, runState.party || []).filter(p => !!p && p.moves.filter(m => !!m && surfExp.test(m.name)).length > 0).length == 0) {
-                delete this.KnownEncounters.surfing; //have no Pokemon with surf, delete surfing encounters
-            }
+            // if ((runState.pc.boxes || []).map(b => b.box_contents).reduce((arr: TPP.Pokemon[], val: TPP.Pokemon[]) => val, runState.party || []).filter(p => !!p && p.moves.filter(m => !!m && surfExp.test(m.name)).length > 0).length == 0) {
+            //     delete this.KnownEncounters.surfing; //have no Pokemon with surf, delete surfing encounters
+            // }
             this.TotalEncounters = Object.keys(map.encounters || {}).reduce((a, k) => a + map.encounters[k].length, 0);
         }
     }
