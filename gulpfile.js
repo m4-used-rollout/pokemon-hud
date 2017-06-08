@@ -37,7 +37,7 @@ gulp.task('package-app', ['clean-old-release', 'build-app'], () => {
             packageJson: packageJson,
             release: './release',
             cache: './cache',
-            version: 'v1.6.8',
+            version: 'v1.6.10',
             packaging: false,
             // token: 'abc123...',
             platforms: ['win32-x64'],
