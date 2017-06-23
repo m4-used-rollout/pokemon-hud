@@ -9,6 +9,7 @@ namespace RomReader {
     const moveCategories = ["Status", "Physical", "Special"];
     const types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
+    const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
 
     const perSeasonEncounterDataLength = 232, bw2AreaDataEntryLength = 345, bw2EncounterAreaCount = 85;
     const encountersOfEachType = [12, 12, 12, 5, 5, 5, 5];
@@ -76,7 +77,8 @@ namespace RomReader {
                 type2: types[stats[7] & 0xFF],
                 catchRate: stats[8] & 0xFF,
                 genderRatio: stats[18] & 0xFF,
-                eggCycles: stats[19] & 0xFF,
+                eggCycles: (stats[19] & 0xFF) - 1, //eggs hatch upon hitting 0 in gen 5, not ticking past 0.
+                growth_rate: expCurveNames[stats[21] & 0xFF],
                 expFunction: expCurves[stats[21] & 0xFF],
                 eggGroup1: stats[22] & 0xFF,
                 eggGroup2: stats[23] & 0xFF,

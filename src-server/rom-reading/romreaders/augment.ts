@@ -2,10 +2,12 @@
 /// <reference path="../../../ref/runstatus.d.ts" />
 
 namespace RomReader {
-    export function AugmentState(romData:RomReaderBase, state:TPP.RunStatus) {
+    export function AugmentState(romData: RomReaderBase, state: TPP.RunStatus) {
         state.name = romData.ConvertText(state.name);
-        state.caught = (state.caught_list || []).length;
-        state.seen = (state.seen_list || []).length;
+        state.caught_list = (state.caught_list || []).filter((item, position, arr) => arr.indexOf(item) == position).sort((x, y) => parseInt(x.toString()) - parseInt(y.toString()));
+        state.seen_list = (state.seen_list || []).filter((item, position, arr) => arr.indexOf(item) == position).sort((x, y) => parseInt(x.toString()) - parseInt(y.toString()));
+        state.caught = state.caught || state.caught_list.length;
+        state.seen = state.seen || state.seen_list.length;
         state.ball_count = 0;
         [state.items, state.items_ball, state.items_berry, state.items_free_space, state.items_key, state.items_medicine, state.items_tm, state.pc_items]
             .filter(i => i && i.length)
@@ -18,8 +20,11 @@ namespace RomReader {
                     delete item.count;
             }));
 
-        function augmentPokemon(p:TPP.Pokemon) {
+        function augmentPokemon(p: TPP.Pokemon) {
             p.name = romData.ConvertText(p.name);
+            if (p.personality_value) {
+                p.personality_value = p.personality_value >>> 0; //make sure pv is an unsigned 32-bit int
+            }
             if (p.original_trainer) {
                 p.original_trainer.name = romData.ConvertText(p.original_trainer.name);
             }
@@ -56,7 +61,8 @@ namespace RomReader {
             p.species.national_dex = p.species.national_dex || romMon.dexNumber;
             p.species.type1 = p.species.type1 || romMon.type1;
             p.species.type2 = p.species.type2 || romMon.type2;
-            p.species.growth_rate = p.species.growth_rate || (romMon.expFunction.name || "").replace(/([A-Z])/g, " $1").trim();
+            p.species.egg_cycles = p.species.egg_cycles || romMon.eggCycles;
+            p.species.growth_rate = p.species.growth_rate || romMon.growth_rate;
             if (p.original_trainer) {
                 p.shiny = ((p.original_trainer.id ^ p.original_trainer.secret) ^ (Math.floor(p.personality_value / 65536) ^ (p.personality_value % 65536))) < 8;
             }
@@ -73,9 +79,20 @@ namespace RomReader {
                 m.base_power = m.base_power || romMove.basePower;
                 m.type = m.type || romMove.type;
             });
+            if (p.is_egg) {
+                //no egg spoilers
+                p.ability = p.species.type1 = p.species.type2 = p.species.growth_rate = "???";
+                p.species.id = p.species.national_dex = 0;
+                p.species.name = p.name = "Egg";
+                p.moves = [];
+                delete p.ivs;
+                delete (<TPP.PartyPokemon>p).stats;
+                delete p.evs;
+                delete p.condition;
+            }
         }
 
-        function augmentPartyPokemon(p:TPP.PartyPokemon) {
+        function augmentPartyPokemon(p: TPP.PartyPokemon) {
             if (p.status && typeof p.status !== "string") {
                 let s = parseInt(p.status);
                 if (s < 8)
@@ -85,13 +102,13 @@ namespace RomReader {
             return p;
         }
 
-        (state.party || []).filter(p=>!!p).map(augmentPartyPokemon).forEach(augmentPokemon);
-        (state.pc.boxes || []).forEach(b=>(b.box_contents || []).filter(p=>!!p).forEach(augmentPokemon));
+        (state.party || []).filter(p => !!p).map(augmentPartyPokemon).forEach(augmentPokemon);
+        (state.pc.boxes || []).forEach(b => (b.box_contents || []).filter(p => !!p).forEach(augmentPokemon));
 
         state.area_name = romData.GetMap(state.area_id || state.map_id).name;
     }
 
-    function parseStatus(status:number) {
+    function parseStatus(status: number) {
         if (status % 8 > 0)
             return "SLP";
         if (status & 8)
