@@ -73,7 +73,7 @@ module TPP.Server {
         }
         if (!data)
             return; //junk
-        else if (Array.isArray(data) && data.length && data[0] && typeof (data[0].personality_value) == "number") {
+        else if (Array.isArray(data) && data.length && data[0] && data[0].species && data[0].species.id) {
             partyString = dataJson;
             delete state.party;
             state.party = data;
@@ -82,7 +82,7 @@ module TPP.Server {
             pcString = dataJson;
             state.pc = state.pc || data;
             state.pc.boxes = state.pc.boxes || [];
-            state.pc.current_box_number = data.current_box_number;
+            state.pc.current_box_number = data.current_box_number || state.pc.current_box_number;
             (data.boxes || []).forEach(b => state.pc.boxes[b.box_number - 1] = b);
         }
         else if (data.id || data.secret) {
