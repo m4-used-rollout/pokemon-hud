@@ -1,0 +1,19 @@
+.shimmy-shake {
+    .pokemon-image img {
+        transform:translateX(-50%)translateY(-50%);
+        transform-origin: 50% 70%;
+        animation: shimmy-shake 2s infinite;
+    }
+}
+
+@keyframes shimmy-shake {
+    10% {
+        transform:translateX(-50%)translateY(-50%)rotate(-15deg);
+        }
+    20% {
+        transform:translateX(-50%)translateY(-50%)rotate(15deg);
+    }
+    30% {
+        transform:translateX(-50%)translateY(-50%);
+    }
+}

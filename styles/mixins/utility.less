@@ -1,0 +1,15 @@
+@import 'responsive.less';
+
+.outline(@color:black){
+    filter: drop-shadow(1px 1px 0 @color)drop-shadow(-1px -1px 0 @color)drop-shadow(-1px 1px 0 @color)drop-shadow(1px -1px 0 @color);
+}
+
+.crush-text() {
+    font-size:.7em;
+    transform: scaleY(1.4);
+    transform-origin:50%;
+    .skinny-screen({
+        font-size:.5em;
+        transform: scaleY(2);
+    });
+}

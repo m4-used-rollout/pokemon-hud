@@ -3,7 +3,7 @@
 		"target": "es6",
 		"removeComments": true,
         "jsx": "react",
-        "outFile": "overlay.js"
+        "outFile": "hud.js"
     },
 	"include": [
         "./**/*.tsx",

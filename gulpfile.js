@@ -55,7 +55,7 @@ gulp.task('package-app', ['clean-old-release', 'build-app'], () => {
 
 gulp.task('clean-old-release', () => del('release/'));
 
-gulp.task('compile-less', ['copy-fonts'], () => gulp.src('./styles/**/*.less').pipe(less()).pipe(gulp.dest('bin/')));
+gulp.task('compile-less', ['copy-fonts'], () => gulp.src('./styles/*.less').pipe(less()).pipe(gulp.dest('bin/')));
 
 gulp.task('copy-config', () => gulp.src('./config.json').pipe(gulp.dest('bin/')));
 

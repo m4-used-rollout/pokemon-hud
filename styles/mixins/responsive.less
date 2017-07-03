@@ -1,0 +1,10 @@
+.skinny-screen(@rules){
+    @media screen and (max-aspect-ratio: 34/92) {
+        @rules();
+    }
+}
+.normal-screen(@rules){
+    @media screen and (min-aspect-ratio: 34/92) {
+        @rules();
+    }
+}
