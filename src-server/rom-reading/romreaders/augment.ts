@@ -9,8 +9,7 @@ namespace RomReader {
         state.caught = state.caught || state.caught_list.length;
         state.seen = state.seen || state.seen_list.length;
         state.ball_count = 0;
-        [state.items, state.items_ball, state.items_berry, state.items_free_space, state.items_key, state.items_medicine, state.items_tm, state.pc_items]
-            .filter(i => i && i.length)
+        Object.keys(state.items || {}).map(k => state.items[k]).filter(i => i && i.length)
             .forEach(itemList => itemList.filter(i => !!i).forEach(item => {
                 state.ball_count += romData.ItemIsBall(item.id) ? item.count : 0;
                 let romItem = romData.GetItem(item.id);
@@ -19,6 +18,9 @@ namespace RomReader {
                 if (!item.count)
                     delete item.count;
             }));
+        if (state.items.balls && !state.ball_count) {
+            state.ball_count = state.items.balls.reduce<number>((sum, i) => i.count + sum, 0);
+        }
 
         function augmentPokemon(p: TPP.Pokemon) {
             p.name = romData.ConvertText(p.name);
@@ -63,7 +65,7 @@ namespace RomReader {
             p.species.type2 = p.species.type2 || romMon.type2;
             p.species.egg_cycles = p.species.egg_cycles || romMon.eggCycles;
             p.species.growth_rate = p.species.growth_rate || romMon.growth_rate;
-            if (p.original_trainer) {
+            if (typeof p.shiny !== "boolean" && p.original_trainer) {
                 p.shiny = ((p.original_trainer.id ^ p.original_trainer.secret) ^ (Math.floor(p.personality_value / 65536) ^ (p.personality_value % 65536))) < 8;
             }
             if (!p.level) {
