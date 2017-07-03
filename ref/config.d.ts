@@ -5,6 +5,7 @@ declare interface Config {
     totalInDex?: number;
     romDexToNatDex?: number[];
     displayOptions?: string[];
+    hudTheme: string;
     romFile?: string;
     extractedRomFolder?: string;
     spriteFolder?: string;
