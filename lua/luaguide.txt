@@ -1,0 +1,143 @@
+Here's what data is expected by the HUD. Please provide as much of this as possible.
+The HUD listens for JSON dumps in the following 3 formats:
+
+"TRAINER" (basic game state)
+{
+    badges: int
+    caught_list: int[]
+    coins: int --not applicable for games with no game corner
+    evolution_is_happening: boolean
+    in_battle: boolean
+    id: int --trainer Id number
+    secret: int --trainer secret number (the other half of the trainer Id post-Gen2)
+    items: {
+        [key:string]: { --for example, "items", "key", "balls", "berries", "pc", etc.
+            id: int
+            count: int
+        }
+    }
+    map_bank: int --if applicable
+    map_id: int
+    area_id: int --if it needs to be different from map_id
+    money: int
+    name: string
+    options: {
+        box_mode: string --"Manual" or "Auto"
+        button_mode: string --"Normal", "L=A", etc...
+        frame: number
+        text_speed: string  --"Slow", "Med" or "Fast"
+        sound: string --"Mono" or "Stereo"
+        battle_style: string --"Set" or "Shift"
+        battle_scene: string --"On" or "Off"
+    }
+    seen_list: int[] -- be aware that Gen 5 splits this up into 4 lists: male / female / shiny male / shiny female (I think). Other gens may as well.
+                        -- It's fine if you just dump all the lists into this array and let the HUD de-dupe.
+    x: int
+    y: int
+}
+
+
+PARTY (an array of pokemon)
+{
+    personality_value: int
+    original_trainer: {
+        id: int
+        secret: int
+        name: string
+        gender: string --"Male" or "Female"
+    }
+    name: string
+    held_item: {
+        id: int --set this to 0 if no held item
+    }
+    gender: string --"Male", "Female", or ""
+    shiny: boolean
+    form: int
+    species: {
+        id: int
+        type1: int -- if types can change in battle
+        type2: int -- if types can change in battle (same as type1 if monotype)
+    }
+    experience: {
+        current: int
+    };
+    level: int -- don't forget that this could be changed for a battle
+    moves: {
+        id: int
+        pp: int
+        pp_up: int --can be calculated from max_pp
+        max_pp: int --can be calculated from pp_up
+    }[]
+    language: int
+    ability: int -- don't forget that this could change during battle
+    nature: int
+    marking: int
+    ivs: {
+        hp: int
+        attack: int
+        defense: int
+        speed: int
+        special_attack: int
+        special_defense: int
+    }
+    evs: {
+        hp: int
+        attack: int
+        defense: int
+        speed: int
+        special_attack: int
+        special_defense: int
+    }
+    condition: { --for contests. Not a priority in games with no contests.
+        coolness: int
+        beauty: int
+        cuteness: int
+        smartness: int
+        toughness: int
+        feel: int --also called "Sheen"
+    }
+    friendship: int
+    pokerus: {
+        infected: boolean
+        days_left: int
+        strain: int
+        cured: boolean
+    }
+    met: {
+        area_id: int
+        level: int
+        game: string --this could be an int really, I've just always done the mapping in Lua
+        caught_in: int
+    }
+    ribbons: string[] --just an array of earned ribbons' names. Not a priority.
+    is_egg: boolean
+
+    --this part only applies to party pokemon
+    health: int --just the current health. max health is stats.hp
+    status: int --unless the game pulls a Gen 5 and doesn't use the normal values for status, in which case return the string "SLP", "PAR", "PSN", "FRZ", or "BRN"
+    stats: {
+        hp: int
+        attack: int
+        defense: int
+        speed: int
+        special_attack: int
+        special_defense: int
+    }
+    pokerus_remaining: int --probably only applies to Gen 3
+}[]
+
+PC (can be sent in pieces)
+{
+    current_box_number: int --this is the current PC box the player has selected, not the one being transmitted
+    boxes: {
+        box_number: int
+        box_name: string
+        box_contents: {
+            box_slot: int
+            --this is the boxed pokemon.
+            --Use the same properties from the party above,
+            --except for health, status, stats, and pokerus_remaining.
+        }[]
+    }[] -- to keep load low, you can send as many or as few of PC boxes at a time as you want.
+        -- the HUD will keep track of the PC boxes it has and overwrite them as you send them again
+}
