@@ -18,7 +18,7 @@ namespace RomReader {
                 if (!item.count)
                     delete item.count;
             }));
-        if (state.items.balls && !state.ball_count) {
+        if (state.items && state.items.balls && !state.ball_count) {
             state.ball_count = state.items.balls.reduce<number>((sum, i) => i.count + sum, 0);
         }
 

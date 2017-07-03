@@ -4,6 +4,7 @@ var flatten = require('gulp-flatten');
 var less = require('gulp-less');
 var merge = require('merge2');
 var electron = require('gulp-electron');
+var sourcemaps = require('gulp-sourcemaps');
 var del = require('del');
 
 var hudProject = ts.createProject('src-hud/tsconfig.json');
@@ -13,16 +14,16 @@ var appProject = ts.createProject('src-app/tsconfig.json');
 
 gulp.task('build', ['package-app']);
 
-gulp.task('build-hud', ['build-backend'], () => hudProject.src().pipe(hudProject()).js.pipe(gulp.dest("bin/")));
+gulp.task('build-hud', ['build-backend'], () => hudProject.src().pipe(sourcemaps.init()).pipe(hudProject()).js.pipe(sourcemaps.write()).pipe(gulp.dest("bin/")));
 
-gulp.task('build-dexnav', ['build-backend'], () => dexNavProject.src().pipe(dexNavProject()).js.pipe(gulp.dest("bin/")));
+gulp.task('build-dexnav', ['build-backend'], () => dexNavProject.src().pipe(sourcemaps.init()).pipe(dexNavProject()).js.pipe(sourcemaps.write()).pipe(gulp.dest("bin/")));
 
 gulp.task('build-frontend', ['build-backend', 'build-hud', 'build-dexnav', 'copy-html', 'copy-img', 'compile-less']);
 
 gulp.task('build-backend', () => {
-    let ts = srvProject.src().pipe(srvProject());
+    let ts = srvProject.src().pipe(sourcemaps.init()).pipe(srvProject());
     return merge(
-        ts.js.pipe(gulp.dest("bin/")),
+        ts.js.pipe(sourcemaps.write()).pipe(gulp.dest("bin/")),
         ts.dts.pipe(gulp.dest("ref/"))
     );
 });
@@ -55,7 +56,7 @@ gulp.task('package-app', ['clean-old-release', 'build-app'], () => {
 
 gulp.task('clean-old-release', () => del('release/'));
 
-gulp.task('compile-less', ['copy-fonts'], () => gulp.src('./styles/*.less').pipe(less()).pipe(gulp.dest('bin/')));
+gulp.task('compile-less', ['copy-fonts'], () => gulp.src('./styles/*.less').pipe(sourcemaps.init()).pipe(less()).pipe(sourcemaps.write()).pipe(gulp.dest('bin/')));
 
 gulp.task('copy-config', () => gulp.src('./config.json').pipe(gulp.dest('bin/')));
 
