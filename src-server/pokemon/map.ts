@@ -4,6 +4,7 @@ namespace Pokemon {
     export interface Map {
         name: string;
         id: number;
+        bank?: number;
         encounters: {
             [key: string]: Species[];
             grass: Species[];

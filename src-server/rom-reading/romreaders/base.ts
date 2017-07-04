@@ -8,6 +8,7 @@ namespace RomReader {
         protected moves: Pokemon.Move[] = [];
         protected items: Pokemon.Item[] = [];
         protected maps: Pokemon.Map[] = [];
+        protected areas: string[] = [];
         protected abilities: string[] = [];
         protected ballIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 492, 493, 494, 495, 496, 497, 498, 499, 500, 576, 851];
         protected natures = ["Hardy", "Lonely", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed", "Impish", "Lax", "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest", "Mild", "Quiet", "Bashful", "Rash", "Calm", "Gentle", "Sassy", "Careful", "Quirky"];
@@ -28,14 +29,17 @@ namespace RomReader {
         GetMove(id: number) {
             return this.moves.filter(m => m.id == id).pop() || <Pokemon.Move>{};
         }
-        GetMap(id: number) {
-            return this.maps.filter(m => m.id == id).pop() || <Pokemon.Map>{};
+        GetMap(id: number, bank = 0) {
+            return this.maps.filter(m => id == m.id && bank == 0 || bank == m.bank).pop() || <Pokemon.Map>{};
         }
         GetItem(id: number) {
             return this.items.filter(i => i.id == id).pop() || <Pokemon.Item>{};
         }
         GetAbility(id: number) {
-            return this.abilities[id];
+            return this.abilities[id] || '';
+        }
+        GetAreaName(id: number) {
+            return this.areas[id] || '';
         }
         ItemIsBall(id: number | Pokemon.Item) {
             if ((<Pokemon.Item>id).id) {

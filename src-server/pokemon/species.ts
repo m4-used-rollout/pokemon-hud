@@ -18,7 +18,7 @@ namespace Pokemon {
         genderRatio: number;
         frontSpritePointer?: number;
         spriteSize?: number;
-        growth_rate: string;
+        growthRate: string;
         expFunction: ExpCurve.CalcExp;
     }
 }

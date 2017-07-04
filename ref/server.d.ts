@@ -9,14 +9,22 @@ declare const gen2Offsets: {
     TMMovesOffset: number;
     WildPokemonOffset: number;
     MoveDataOffset: number;
-    PokemonNamesOffset: number;
     PokemonStatsOffset: number;
+    PokemonNamesOffset: number;
     FishingWildsOffset: number;
     HeadbuttWildsOffset: number;
     PicPointers: number;
-    MoveNamesOffset: number;
     ItemNamesOffset: number;
+    MoveNamesOffset: number;
+    AreaNamesOffset: number;
     charmap: any[];
+    mapNames: {
+        [key: number]: {
+            [key: number]: {
+                name: string;
+            };
+        };
+    };
 };
 declare namespace Pokemon {
     namespace ExpCurve {
@@ -59,7 +67,7 @@ declare namespace Pokemon {
         genderRatio: number;
         frontSpritePointer?: number;
         spriteSize?: number;
-        growth_rate: string;
+        growthRate: string;
         expFunction: ExpCurve.CalcExp;
     }
 }
@@ -67,6 +75,7 @@ declare namespace Pokemon {
     interface Map {
         name: string;
         id: number;
+        bank?: number;
         encounters: {
             [key: string]: Species[];
             grass: Species[];
@@ -101,6 +110,7 @@ declare namespace RomReader {
         protected moves: Pokemon.Move[];
         protected items: Pokemon.Item[];
         protected maps: Pokemon.Map[];
+        protected areas: string[];
         protected abilities: string[];
         protected ballIds: number[];
         protected natures: string[];
@@ -115,9 +125,10 @@ declare namespace RomReader {
         abstract ConvertText(text: string | Buffer | number[]): string;
         GetSpecies(id: number): Pokemon.Species;
         GetMove(id: number): Pokemon.Move;
-        GetMap(id: number): Pokemon.Map;
+        GetMap(id: number, bank?: number): Pokemon.Map;
         GetItem(id: number): Pokemon.Item;
         GetAbility(id: number): string;
+        GetAreaName(id: number): string;
         ItemIsBall(id: number | Pokemon.Item): boolean;
         GetNature(id: number): string;
         GetCharacteristic(stats: Pokemon.Stats, pv: number): any;
@@ -132,6 +143,11 @@ declare namespace RomReader {
         protected loadROM(): Buffer;
         protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number): Buffer[];
         protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number): string[];
+        protected LinearAddrToROMBank(linear: number): {
+            bank: number;
+            address: number;
+        };
+        protected ROMBankAddrToLinear(bank: number, address: number): number;
     }
 }
 declare namespace RomReader {
@@ -141,6 +157,7 @@ declare namespace RomReader {
     }
     class Gen2 extends GBReader {
         constructor(romFileLocation: string);
+        private ReadAreaNames(romData);
         private ReadMoveData(romData);
         private ReadItemData(romData);
         private ReadPokeData(romData);

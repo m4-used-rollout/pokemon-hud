@@ -78,7 +78,7 @@ namespace RomReader {
                 catchRate: stats[8] & 0xFF,
                 genderRatio: stats[18] & 0xFF,
                 eggCycles: (stats[19] & 0xFF) - 1, //eggs hatch upon hitting 0 in gen 5, not ticking past 0.
-                growth_rate: expCurveNames[stats[21] & 0xFF],
+                growthRate: expCurveNames[stats[21] & 0xFF],
                 expFunction: expCurves[stats[21] & 0xFF],
                 eggGroup1: stats[22] & 0xFF,
                 eggGroup2: stats[23] & 0xFF,

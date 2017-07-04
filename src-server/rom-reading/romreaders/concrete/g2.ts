@@ -27,17 +27,20 @@ namespace RomReader {
             this.items = this.ReadItemData(romData);
             this.ballIds = this.items.filter((i: Gen2Item) => i.pocket == "Ball").map(i => i.id);
             this.moves = this.ReadMoveData(romData);
+            this.areas = this.ReadAreaNames(romData);
+            console.log(JSON.stringify(this.areas));
+        }
 
-            //TODO: turn "landmarks" into map names
-
+        private ReadAreaNames(romData: Buffer) {
+            return this.ReadStridedData(romData, config.AreaNamesOffset, 4, 96)
+                .map(data => this.ReadStringBundle(romData, this.ROMBankAddrToLinear(this.LinearAddrToROMBank(config.AreaNamesOffset).bank, data.readUInt16LE(2)), 1).shift() || '');
         }
 
         private ReadMoveData(romData: Buffer) {
             const dataBytes = 7;
             let movesOffset = config.MoveDataOffset - dataBytes; //include 00
-            let moveNames = this.ReadStringBundle(romData, config.MoveNamesOffset, moveCount);
+            let moveNames = this.ReadStringBundle(romData, config.MoveNamesOffset, moveCount - 1);
             moveNames.unshift(''); //move 0
-            console.log(JSON.stringify(moveNames));
             return this.ReadStridedData(romData, movesOffset, dataBytes, moveCount).map((data, i) => (<Pokemon.Move>{
                 id: i,
                 name: moveNames[i],
@@ -86,10 +89,11 @@ namespace RomReader {
                 baseExp: data[0x0A],
                 genderRatio: data[0x0D],
                 eggCycles: data[0x0F],
-                growth_rate: expCurveNames[data[0x16]],
+                spriteSize: data[0x11],
+                growthRate: expCurveNames[data[0x16]],
                 expFunction: expCurves[data[0x16]],
                 eggGroup1: data[0x17] % 16,
-                eggGroup2: data[0x17] >> 4,
+                eggGroup2: data[0x17] >> 4
             }));
         }
     }

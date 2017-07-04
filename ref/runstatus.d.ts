@@ -27,9 +27,10 @@ declare namespace TPP {
             pc?:Item[];
         };
         map_bank?: number;
-        map_id: number;
-        area_id: number;
-        area_name: string;
+        map_id?: number;
+        map_name?: string;
+        area_id?: number;
+        area_name?: string;
         money: number;
         name: string;
         options: Options;
