@@ -1,6 +1,6 @@
-/// <reference path="../config/g5.ts" />
-/// <reference path="nds.ts" />
-/// <reference path="../nds/pptxt.ts" />
+/// <reference path="../../config/g5.ts" />
+/// <reference path="../nds.ts" />
+/// <reference path="../../nds/pptxt.ts" />
 
 namespace RomReader {
 

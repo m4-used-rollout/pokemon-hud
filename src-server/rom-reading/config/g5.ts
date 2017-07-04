@@ -1,4 +1,4 @@
-var gen5FilesOffsets = { //White 2 only for now
+const gen5FilesOffsets = { //White 2 only for now
     TextStrings: "a/0/0/2",
     PokemonGraphics: "a/0/0/4",
     PokemonStats: "a/0/1/6",

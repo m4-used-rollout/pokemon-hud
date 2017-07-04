@@ -12,8 +12,8 @@ namespace Pokemon {
         abilities: string[];
         catchRate: number;
         eggCycles: number;
-        eggGroup1: number;
-        eggGroup2: number;
+        eggGroup1: string | number;
+        eggGroup2: string | number;
         baseExp: number;
         genderRatio: number;
         frontSpritePointer?: number;

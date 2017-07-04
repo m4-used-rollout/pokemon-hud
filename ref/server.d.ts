@@ -4,24 +4,19 @@
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 /// <reference path="../ref/joypad.d.ts" />
 /// <reference types="node" />
-declare var gen5FilesOffsets: {
-    TextStrings: string;
-    PokemonGraphics: string;
-    PokemonStats: string;
-    MapTableFile: string;
-    MoveData: string;
-    ItemData: string;
-    ItemGraphics: string;
-    BadgeGraphics: string;
-    EncounterData: string;
-    PokemonFormIndex: string;
-    TextOffsets: {
-        PokemonNames: number;
-        MoveNames: number;
-        AbilityNames: number;
-        ItemNames: number;
-        MapNames: number;
-    };
+declare const gen2Offsets: {
+    ItemAttributesOffset: number;
+    TMMovesOffset: number;
+    WildPokemonOffset: number;
+    MoveDataOffset: number;
+    PokemonNamesOffset: number;
+    PokemonStatsOffset: number;
+    FishingWildsOffset: number;
+    HeadbuttWildsOffset: number;
+    PicPointers: number;
+    MoveNamesOffset: number;
+    ItemNamesOffset: number;
+    charmap: any[];
 };
 declare namespace Pokemon {
     namespace ExpCurve {
@@ -58,8 +53,8 @@ declare namespace Pokemon {
         abilities: string[];
         catchRate: number;
         eggCycles: number;
-        eggGroup1: number;
-        eggGroup2: number;
+        eggGroup1: string | number;
+        eggGroup2: string | number;
         baseExp: number;
         genderRatio: number;
         frontSpritePointer?: number;
@@ -117,7 +112,7 @@ declare namespace RomReader {
             spatk: string[];
             spdef: string[];
         };
-        abstract ConvertText(text: string): string;
+        abstract ConvertText(text: string | Buffer | number[]): string;
         GetSpecies(id: number): Pokemon.Species;
         GetMove(id: number): Pokemon.Move;
         GetMap(id: number): Pokemon.Map;
@@ -128,43 +123,34 @@ declare namespace RomReader {
         GetCharacteristic(stats: Pokemon.Stats, pv: number): any;
     }
 }
-declare namespace NDS {
-    class NARChive {
-        filenames: string[];
-        files: Buffer[];
-        hasFilenames: boolean;
-        constructor(data?: Buffer);
-        getBytes(): Buffer;
-        private readNitroFrames(data);
+declare namespace RomReader {
+    abstract class GBReader extends RomReaderBase {
+        private romFileLocation;
+        private charmap;
+        constructor(romFileLocation: string, charmap: string[]);
+        ConvertText(text: string | Buffer | number[]): string;
+        protected loadROM(): Buffer;
+        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number): Buffer[];
+        protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number): string[];
     }
 }
-declare namespace BLZCoder {
-    function Decode(data: Buffer): Buffer;
-}
 declare namespace RomReader {
-    abstract class NDSReader extends RomReaderBase {
-        private basePath;
-        constructor(basePath: string);
-        protected readNARC(path: string): NDS.NARChive;
-        protected readArm9(): Buffer;
-        private readFile(path);
+    interface Gen2Item extends Pokemon.Item {
+        price: number;
+        pocket: string;
     }
-}
-declare namespace NDS.PPTxt {
-    function GetStrings(ds: Buffer): string[];
-    function PokeToText(str: string): string;
-}
-declare namespace RomReader {
-    class Gen5 extends NDSReader {
-        ConvertText(text: string): string;
-        constructor(basePath: string);
+    class Gen2 extends GBReader {
+        constructor(romFileLocation: string);
+        private ReadMoveData(romData);
+        private ReadItemData(romData);
+        private ReadPokeData(romData);
     }
 }
 declare module TPP.Server {
     function getConfig(): Config;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
-    const RomData: RomReader.Gen5;
+    const RomData: RomReader.Gen2;
     function setState(dataJson: string): void;
     const fileExists: (path: string) => any;
 }
@@ -195,9 +181,60 @@ declare namespace TPP.Server.DexNav {
 }
 declare namespace TPP.Server.DexNav {
 }
+declare namespace RomReader {
+    function AugmentState(romData: RomReaderBase, state: TPP.RunStatus): void;
+}
+declare const gen5FilesOffsets: {
+    TextStrings: string;
+    PokemonGraphics: string;
+    PokemonStats: string;
+    MapTableFile: string;
+    MoveData: string;
+    ItemData: string;
+    ItemGraphics: string;
+    BadgeGraphics: string;
+    EncounterData: string;
+    PokemonFormIndex: string;
+    TextOffsets: {
+        PokemonNames: number;
+        MoveNames: number;
+        AbilityNames: number;
+        ItemNames: number;
+        MapNames: number;
+    };
+};
+declare namespace BLZCoder {
+    function Decode(data: Buffer): Buffer;
+}
 declare namespace NDS.DSDecmp {
     function Decompress(data: Buffer, offset?: number): Buffer;
 }
+declare namespace NDS {
+    class NARChive {
+        filenames: string[];
+        files: Buffer[];
+        hasFilenames: boolean;
+        constructor(data?: Buffer);
+        getBytes(): Buffer;
+        private readNitroFrames(data);
+    }
+}
+declare namespace NDS.PPTxt {
+    function GetStrings(ds: Buffer): string[];
+    function PokeToText(str: string): string;
+}
 declare namespace RomReader {
-    function AugmentState(romData: RomReaderBase, state: TPP.RunStatus): void;
+    abstract class NDSReader extends RomReaderBase {
+        private basePath;
+        constructor(basePath: string);
+        protected readNARC(path: string): NDS.NARChive;
+        protected readArm9(): Buffer;
+        private readFile(path);
+    }
+}
+declare namespace RomReader {
+    class Gen5 extends NDSReader {
+        ConvertText(text: string): string;
+        constructor(basePath: string);
+    }
 }

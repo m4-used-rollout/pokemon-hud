@@ -3,7 +3,7 @@ class Badges extends React.PureComponent<{bitfield:number},{}> {
     render() {
         if (!config.badgeCount)
             return <div className="badges">Badges Go Here</div>;
-        let badgeFolder = config.romFile == "Black" ? "black" : config.spriteFolder; //hack hack hack
+        let badgeFolder = config.spriteFolder;
         let badgeStr = (this.props.bitfield || 0).toString(2);
         while (badgeStr.length < config.badgeCount)
             badgeStr = '0' + badgeStr;

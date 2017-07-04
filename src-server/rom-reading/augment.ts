@@ -1,5 +1,5 @@
-/// <reference path="base.ts" />
-/// <reference path="../../../ref/runstatus.d.ts" />
+/// <reference path="romreaders/base.ts" />
+/// <reference path="../../ref/runstatus.d.ts" />
 
 namespace RomReader {
     export function AugmentState(romData: RomReaderBase, state: TPP.RunStatus) {
@@ -8,19 +8,21 @@ namespace RomReader {
         state.seen_list = (state.seen_list || []).filter((item, position, arr) => arr.indexOf(item) == position).sort((x, y) => parseInt(x.toString()) - parseInt(y.toString()));
         state.caught = state.caught || state.caught_list.length;
         state.seen = state.seen || state.seen_list.length;
-        state.ball_count = 0;
         Object.keys(state.items || {}).map(k => state.items[k]).filter(i => i && i.length)
             .forEach(itemList => itemList.filter(i => !!i).forEach(item => {
-                state.ball_count += romData.ItemIsBall(item.id) ? item.count : 0;
                 let romItem = romData.GetItem(item.id);
                 item.name = item.name || romItem.name;
                 item.count = romItem.isKeyItem && item.count == 1 ? null : item.count;
                 if (!item.count)
                     delete item.count;
             }));
-        if (state.items && state.items.balls && !state.ball_count) {
-            state.ball_count = state.items.balls.reduce<number>((sum, i) => i.count + sum, 0);
-        }
+
+        state.ball_count = Object.keys(state.items || {}).filter(k => k != "pc") //filter out PC
+            .map(k => state.items[k]).filter(i => i && i.length) //map to bag pockets
+            .reduce((total, pocket) => total +
+                pocket.filter(i => romData.ItemIsBall(i.id)) //filter to ball type items
+                    .reduce((sum, ball) => sum + ball.count, 0), //add up the counts
+            0) || (state.items && state.items.balls && state.items.balls.reduce((sum, ball) => sum + ball.count, 0)); //fall back to just counting ball pocket if available
 
         function augmentPokemon(p: TPP.Pokemon) {
             p.name = romData.ConvertText(p.name);

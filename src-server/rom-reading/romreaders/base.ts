@@ -20,7 +20,7 @@ namespace RomReader {
             spdef: ["Strong willed", "Somewhat vain", "Strongly defiant", "Hates to lose", "Somewhat stubborn"]
         }
 
-        abstract ConvertText(text: string): string;
+        abstract ConvertText(text: string | Buffer | number[]): string;
 
         GetSpecies(id: number) {
             return this.pokemon.filter(p => p.id == id).pop() || <Pokemon.Species>{};
@@ -34,7 +34,7 @@ namespace RomReader {
         GetItem(id: number) {
             return this.items.filter(i => i.id == id).pop() || <Pokemon.Item>{};
         }
-        GetAbility(id:number) {
+        GetAbility(id: number) {
             return this.abilities[id];
         }
         ItemIsBall(id: number | Pokemon.Item) {
