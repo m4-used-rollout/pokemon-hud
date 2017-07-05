@@ -5,6 +5,8 @@ namespace Pokemon {
         name: string;
         id: number;
         bank?: number;
+        areaId?: number;
+        areaName?: string;
         encounters: {
             [key: string]: Species[];
             grass: Species[];

@@ -19,8 +19,8 @@ namespace TPP.Server.DexNav {
     });
 
     MainProcessRegisterStateHandler(runState=>{
-        if (!state || runState.map_id != state.MapID || ownedCount != runState.caught || seenCount != runState.seen) {
-            state = new State(RomData.GetMap(runState.map_id), runState);
+        if (!state || runState.map_id != state.MapID || runState.map_bank != state.MapBank || runState.area_id != state.AreaID || ownedCount != runState.caught || seenCount != runState.seen) {
+            state = new State(RomData.GetMap(runState.map_id, runState.map_bank), runState);
             ownedCount = runState.caught;
             seenCount = runState.seen;
             transmitState();

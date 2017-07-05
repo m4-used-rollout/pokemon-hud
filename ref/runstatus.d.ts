@@ -4,7 +4,7 @@ declare namespace TPP {
     export interface RunStatus extends TrainerData {
         party: PartyData;
         pc: CombinedPCData;
-        evolution_is_happening:boolean;
+        evolution_is_happening: boolean;
     }
 
     //sent from lua
@@ -16,16 +16,17 @@ declare namespace TPP {
         coins?: number;
         id: number;
         items: {
-            [key:string]:Item[];
-            items?:Item[];
-            free_space?:Item[];
-            key?:Item[];
-            balls?:Item[];
-            medicine?:Item[];
-            berries?:Item[];
-            tms?:Item[];
-            pc?:Item[];
+            [key: string]: Item[];
+            items?: Item[];
+            free_space?: Item[];
+            key?: Item[];
+            balls?: Item[];
+            medicine?: Item[];
+            berries?: Item[];
+            tms?: Item[];
+            pc?: Item[];
         };
+        level_cap?: number;
         map_bank?: number;
         map_id?: number;
         map_name?: string;
@@ -89,7 +90,7 @@ declare namespace TPP {
         language?: number;
         ability?: string;
         nature?: string;
-        characteristic?:string;
+        characteristic?: string;
         marking?: string;
         ivs?: Stats;
         evs?: Stats;
@@ -142,11 +143,11 @@ declare namespace TPP {
         id: number;
         name: string;
         pp: number;
-        pp_up ?: number;
-        max_pp ?: number;
-        type ?: string;
-        accuracy ?: number;
-        base_power ?: number;
+        pp_up?: number;
+        max_pp?: number;
+        type?: string;
+        accuracy?: number;
+        base_power?: number;
     }
 
     export interface Stats {
@@ -168,13 +169,13 @@ declare namespace TPP {
     }
 
     export interface Options {
-        [key:string]:string;
-        box_mode?:string;
-        button_mode?:string;
-        frame?:string;
-        text_speed:string;
-        sound:string;
-        battle_style:string;
-        battle_scene:string;
+        [key: string]: string;
+        box_mode?: string;
+        button_mode?: string;
+        frame?: string;
+        text_speed: string;
+        sound: string;
+        battle_style: string;
+        battle_scene: string;
     }
 }

@@ -5,6 +5,8 @@ namespace RomReader {
     const fs = require("fs");
 
     export abstract class GBReader extends RomReaderBase {
+        protected stringTerminator = 0x50;
+
         constructor(private romFileLocation: string, private charmap: string[]) {
             super();
             this.ballIds = this.natures = this.abilities = [];
@@ -23,7 +25,7 @@ namespace RomReader {
             }
             else
                 charArray = text;
-            let end = charArray.indexOf(0x50) //string terminator character
+            let end = charArray.indexOf(this.stringTerminator);
             if (end >= 0)
                 charArray.splice(end);
             return charArray.map(c => this.charmap[c] || ' ').join('');
@@ -44,7 +46,7 @@ namespace RomReader {
         protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number) {
             let foundStrings = new Array<string>();
             for (let i = startOffset, strStart = startOffset; i < romData.length && foundStrings.length < numStrings; i++) {
-                if (romData[i] == 0x50) { //string terminator
+                if (romData[i] == this.stringTerminator) {
                     foundStrings.push(this.ConvertText(romData.slice(strStart, i)));
                     strStart = i + 1;
                 }
@@ -60,6 +62,10 @@ namespace RomReader {
 
         protected ROMBankAddrToLinear(bank: number, address: number) {
             return (bank << 14) | (address & 0x3fff);
+        }
+
+        protected SameBankPtrToLinear(baseAddr:number, ptr:number) {
+            return this.ROMBankAddrToLinear(this.LinearAddrToROMBank(baseAddr).bank, ptr);
         }
     }
 }

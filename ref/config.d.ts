@@ -1,4 +1,4 @@
-declare interface Config {
+declare interface Config extends DexNavConfig {
     runName: string;
     badgeCount?: number;
     mainRegion?: string;
@@ -17,7 +17,11 @@ declare interface Config {
     windowX?: number;
     windowY?: number;
     frameless?: boolean;
+}
+
+declare interface DexNavConfig {
     showDexNav?: boolean;
+    dexNavUseAreaName?: boolean;
     dexNavWidth?: number;
     dexNavHeight?: number;
     dexNavX?: number;

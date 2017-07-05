@@ -131,6 +131,7 @@ namespace RomReader {
             }
         }
 
+        normalizeDex();
         augmentItems();
         (state.party || []).filter(p => !!p).map(augmentPartyPokemon).forEach(augmentPokemon);
         (state.pc.boxes || []).forEach(b => (b.box_contents || []).filter(p => !!p).forEach(augmentPokemon));
@@ -138,6 +139,7 @@ namespace RomReader {
         state.name = romData.ConvertText(state.name);
         state.ball_count = countBalls();
 
+        state.level_cap = romData.GetCurrentLevelCap(state.badges || 0);
 
         if (state.area_id) {
             state.area_name = romData.GetAreaName(state.area_id);

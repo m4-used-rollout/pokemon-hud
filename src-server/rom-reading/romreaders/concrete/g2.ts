@@ -13,9 +13,13 @@ namespace RomReader {
 
     const tmCount = 50, hmCount = 7, itemCount = 256, dexCount = 256, moveCount = 251;
 
-    export interface Gen2Item extends Pokemon.Item {
+    interface Gen2Item extends Pokemon.Item {
         price: number;
         pocket: string;
+    }
+
+    interface Gen2Map extends Pokemon.Map {
+        fishingGroup: number;
     }
 
     export class Gen2 extends GBReader {
@@ -28,12 +32,36 @@ namespace RomReader {
             this.ballIds = this.items.filter((i: Gen2Item) => i.pocket == "Ball").map(i => i.id);
             this.moves = this.ReadMoveData(romData);
             this.areas = this.ReadAreaNames(romData);
-            console.log(JSON.stringify(this.areas));
+            this.maps = this.ReadMaps(romData);
+            this.levelCaps = this.ReadPyriteLevelCaps(romData);
+            console.log(JSON.stringify(this));
+
+        }
+
+        private ReadPyriteLevelCaps(romData: Buffer) {
+            return this.ReadStridedData(romData, 0x3fef, 1, 17).map(l => l[0]).filter(l => l > 0);
+        }
+
+        private ReadMaps(romData: Buffer) {
+            const mapHeaderBytes = 9;
+            return this.ReadStridedData(romData, config.MapHeaders, 2, 26)
+                .map(bankPtr => this.SameBankPtrToLinear(config.MapHeaders, bankPtr.readUInt16LE(0)))
+                .map((ptr, b, arr) => this.ReadStridedData(romData, ptr, mapHeaderBytes, (arr[b + 1] - ptr) / mapHeaderBytes)
+                    .map((mapHeader, m) => (<Gen2Map>{
+                        bank: b + 1,
+                        id: m + 1,
+                        name: config.mapNames[b + 1][m + 1].name,
+                        areaId: mapHeader[5],
+                        areaName: this.areas[mapHeader[5]],
+                        fishingGroup: mapHeader[8],
+                        encounters: {}
+                    }))
+                ).reduce((allMaps, currBank) => Array.prototype.concat.apply(allMaps, currBank), []);
         }
 
         private ReadAreaNames(romData: Buffer) {
-            return this.ReadStridedData(romData, config.AreaNamesOffset, 4, 96)
-                .map(data => this.ReadStringBundle(romData, this.ROMBankAddrToLinear(this.LinearAddrToROMBank(config.AreaNamesOffset).bank, data.readUInt16LE(2)), 1).shift() || '');
+            return this.ReadStridedData(romData, config.AreaNamesOffset, 4, 97)
+                .map(data => this.ReadStringBundle(romData, this.SameBankPtrToLinear(config.AreaNamesOffset, data.readUInt16LE(2)), 1).shift() || '');
         }
 
         private ReadMoveData(romData: Buffer) {
@@ -89,7 +117,7 @@ namespace RomReader {
                 baseExp: data[0x0A],
                 genderRatio: data[0x0D],
                 eggCycles: data[0x0F],
-                spriteSize: data[0x11],
+                spriteSize: data[0x11] % 16, //sprites are always square
                 growthRate: expCurveNames[data[0x16]],
                 expFunction: expCurves[data[0x16]],
                 eggGroup1: data[0x17] % 16,

@@ -12,6 +12,7 @@ declare const gen2Offsets: {
     PokemonStatsOffset: number;
     PokemonNamesOffset: number;
     FishingWildsOffset: number;
+    MapHeaders: number;
     HeadbuttWildsOffset: number;
     PicPointers: number;
     ItemNamesOffset: number;
@@ -76,6 +77,8 @@ declare namespace Pokemon {
         name: string;
         id: number;
         bank?: number;
+        areaId?: number;
+        areaName?: string;
         encounters: {
             [key: string]: Species[];
             grass: Species[];
@@ -112,6 +115,7 @@ declare namespace RomReader {
         protected maps: Pokemon.Map[];
         protected areas: string[];
         protected abilities: string[];
+        protected levelCaps: number[];
         protected ballIds: number[];
         protected natures: string[];
         protected characteristics: {
@@ -130,6 +134,7 @@ declare namespace RomReader {
         GetAbility(id: number): string;
         GetAreaName(id: number): string;
         ItemIsBall(id: number | Pokemon.Item): boolean;
+        GetCurrentLevelCap(badges: number): number;
         GetNature(id: number): string;
         GetCharacteristic(stats: Pokemon.Stats, pv: number): any;
     }
@@ -138,6 +143,7 @@ declare namespace RomReader {
     abstract class GBReader extends RomReaderBase {
         private romFileLocation;
         private charmap;
+        protected stringTerminator: number;
         constructor(romFileLocation: string, charmap: string[]);
         ConvertText(text: string | Buffer | number[]): string;
         protected loadROM(): Buffer;
@@ -148,15 +154,14 @@ declare namespace RomReader {
             address: number;
         };
         protected ROMBankAddrToLinear(bank: number, address: number): number;
+        protected SameBankPtrToLinear(baseAddr: number, ptr: number): number;
     }
 }
 declare namespace RomReader {
-    interface Gen2Item extends Pokemon.Item {
-        price: number;
-        pocket: string;
-    }
     class Gen2 extends GBReader {
         constructor(romFileLocation: string);
+        private ReadPyriteLevelCaps(romData);
+        private ReadMaps(romData);
         private ReadAreaNames(romData);
         private ReadMoveData(romData);
         private ReadItemData(romData);
@@ -181,6 +186,9 @@ declare namespace TPP.Server.DexNav {
     class State {
         MapName: string;
         MapID: number;
+        MapBank: number;
+        AreaID: number;
+        AreaName: string;
         TotalEncounters: number;
         CompletedCategories: number;
         MoreLeftToCatch: boolean;

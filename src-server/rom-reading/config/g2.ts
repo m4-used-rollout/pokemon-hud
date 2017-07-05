@@ -6,6 +6,7 @@ const gen2Offsets = {  //Crystal only for now
     PokemonStatsOffset: 0x51424,
     PokemonNamesOffset: 0x53384,
     FishingWildsOffset: 0x924E3,
+    MapHeaders: 0x94000,
     HeadbuttWildsOffset: 0xB82FA,
     PicPointers: 0x120000,
     ItemNamesOffset: 0x1C8000,

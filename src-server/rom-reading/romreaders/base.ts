@@ -10,6 +10,7 @@ namespace RomReader {
         protected maps: Pokemon.Map[] = [];
         protected areas: string[] = [];
         protected abilities: string[] = [];
+        protected levelCaps = [100];  //some romhacks have these
         protected ballIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 492, 493, 494, 495, 496, 497, 498, 499, 500, 576, 851];
         protected natures = ["Hardy", "Lonely", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed", "Impish", "Lax", "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest", "Mild", "Quiet", "Bashful", "Rash", "Calm", "Gentle", "Sassy", "Careful", "Quirky"];
         protected characteristics = {
@@ -30,7 +31,7 @@ namespace RomReader {
             return this.moves.filter(m => m.id == id).pop() || <Pokemon.Move>{};
         }
         GetMap(id: number, bank = 0) {
-            return this.maps.filter(m => id == m.id && bank == 0 || bank == m.bank).pop() || <Pokemon.Map>{};
+            return this.maps.filter(m => id == m.id && (!bank || bank == m.bank)).pop() || <Pokemon.Map>{};
         }
         GetItem(id: number) {
             return this.items.filter(i => i.id == id).pop() || <Pokemon.Item>{};
@@ -46,6 +47,20 @@ namespace RomReader {
                 id = (<Pokemon.Item>id).id;
             }
             return this.ballIds.indexOf(<number>id) >= 0;
+        }
+        GetCurrentLevelCap(badges:number) {
+            if (this.levelCaps.length < 2) {
+                return this.levelCaps.map(l=>l).pop() || 100;
+            }
+            let badgeCount = 0;
+            while (badges) {
+                badges &= badges - 1;
+                badgeCount++;
+            }
+            if (badgeCount >= this.levelCaps.length) {
+                return this.levelCaps.map(l=>l).pop();
+            }
+            return this.levelCaps[badgeCount];
         }
         GetNature(id: number) {
             return this.natures[id];

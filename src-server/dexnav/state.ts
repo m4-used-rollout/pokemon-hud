@@ -1,7 +1,10 @@
 /// <reference path="../pokemon/map.ts" />
+/// <reference path="../main.ts" />
 /// <reference path="../../ref/runstatus.d.ts" />
 
 namespace TPP.Server.DexNav {
+
+    let config = getConfig();
 
     export interface KnownEncounter {
         speciesId: number;
@@ -11,6 +14,9 @@ namespace TPP.Server.DexNav {
     export class State {
         public MapName = "";
         public MapID = 0;
+        public MapBank = 0;
+        public AreaID = 0;
+        public AreaName= "";
         public TotalEncounters = 0;
         public CompletedCategories = 0;
         public MoreLeftToCatch = false;
@@ -28,7 +34,13 @@ namespace TPP.Server.DexNav {
         constructor(map: Pokemon.Map, runState: TPP.RunStatus) {
             if (!map || !runState) return;
             this.MapName = map.name;
-            this.MapID = map.id;
+            this.MapID = runState.map_id;
+            this.MapBank = runState.map_bank;
+            this.AreaID = map.areaId || runState.area_id;
+            this.AreaName = map.areaName || runState.area_name;
+            if (config.dexNavUseAreaName) {
+                this.MapName = this.AreaName || this.MapName;
+            }
             Object.keys(map.encounters || {}).forEach(k => {
                 this.KnownEncounters[k] = map.encounters[k]
                     .map(s => s.id).filter((s, i, arr) => arr.indexOf(s) == i) //distinct species IDs
