@@ -8,7 +8,11 @@
             "task": "build",
             "problemMatcher": [
                 "$gulp-tsc"
-            ]
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ] 
 }

@@ -10,6 +10,7 @@
             "name": "Launch App",
             "program": "${workspaceRoot}/bin/app.js",
             "cwd": "${workspaceRoot}/bin/",
+            "protocol": "legacy",
             "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
             "windows": {
                 "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
