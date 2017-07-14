@@ -4,7 +4,7 @@
 /*--  Originally ported to Java and bugfixed/customized by Dabomstew        --*/
 /*----------------------------------------------------------------------------*/
 
-namespace NDS.PPTxt {
+namespace Tools.PPTxt {
 
     /**
      * Decompress the words given into chars according to 9bits per char format

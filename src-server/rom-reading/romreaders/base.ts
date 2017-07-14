@@ -1,6 +1,9 @@
 /// <reference path="../../pokemon/map.ts" />
 /// <reference path="../../pokemon/move.ts" />
 /// <reference path="../../pokemon/item.ts" />
+/// <reference path="../tools/sprites.ts" />
+/// <reference path="../../../ref/runstatus.d.ts" />
+
 
 namespace RomReader {
     export abstract class RomReaderBase {
@@ -8,6 +11,8 @@ namespace RomReader {
         protected moves: Pokemon.Move[] = [];
         protected items: Pokemon.Item[] = [];
         protected maps: Pokemon.Map[] = [];
+        protected pokemonSprites: { base: string, shiny: string  }[] = [];
+        protected trainerSprites: (string | Sprites.ImageMap)[] = [];
         protected areas: string[] = [];
         protected abilities: string[] = [];
         protected levelCaps = [100];  //some romhacks have these
@@ -23,6 +28,7 @@ namespace RomReader {
         }
 
         abstract ConvertText(text: string | Buffer | number[]): string;
+        abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
 
         GetSpecies(id: number) {
             return this.pokemon.filter(p => p.id == id).pop() || <Pokemon.Species>{};
@@ -48,9 +54,9 @@ namespace RomReader {
             }
             return this.ballIds.indexOf(<number>id) >= 0;
         }
-        GetCurrentLevelCap(badges:number) {
+        GetCurrentLevelCap(badges: number) {
             if (this.levelCaps.length < 2) {
-                return this.levelCaps.map(l=>l).pop() || 100;
+                return this.levelCaps.map(l => l).pop() || 100;
             }
             let badgeCount = 0;
             while (badges) {
@@ -58,7 +64,7 @@ namespace RomReader {
                 badgeCount++;
             }
             if (badgeCount >= this.levelCaps.length) {
-                return this.levelCaps.map(l=>l).pop();
+                return this.levelCaps.map(l => l).pop();
             }
             return this.levelCaps[badgeCount];
         }
@@ -89,6 +95,37 @@ namespace RomReader {
             }
             return null;
         }
-
+        GetAllMapEncounters(map: Pokemon.Map) {
+            //Collapse all encounter sets for a map into a single encounterset
+            let encounters: Pokemon.EncounterSet = {};
+            if (map && map.encounters) {
+                Object.keys(map.encounters).forEach(timeOfDay => Object.keys(map.encounters[timeOfDay])
+                    .forEach(group => encounters[group] = Array.prototype.concat.apply(encounters[group] || [], map.encounters[timeOfDay][group] || [])));
+            }
+            return encounters;
+        }
+        GetPokemonSprite(id: number, shiny = false) {
+            return (this.pokemonSprites[id] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${id}.gif`;
+        }
+        GetTrainerSprite(id: number) {
+            return this.trainerSprites[id] || "./img/empty-sprite.png";
+        }
+        CachePokemonSprite(id: number, data: string, shiny = false) {
+            (this.pokemonSprites[id] || { base: '', shiny: '' })[shiny ? "shiny" : "base"] = data;
+        }
+        CacheTrainerSprite(id: number, data: string) {
+            this.trainerSprites[id] = data;
+        }
+        CheckIfCanSurf(runState: TPP.RunStatus) {
+            //check all PC and Party pokemon for anyone who knows Surf
+            return (runState.pc.boxes || []).map(b => b.box_contents).reduce((arr: TPP.Pokemon[], val: TPP.Pokemon[]) => val, runState.party || [])
+                .some(p => !!p && p.moves.some(m => !!m && this.surfExp.test(m.name)));
+        }
+        CheckIfCanFish(runState: TPP.RunStatus) {
+            return true;
+            //DexNav will filter out any fishing encounters that require a specific rod
+            //Override this if there's another restriction.
+        }
+        private surfExp = /^surf$/i;
     }
 }

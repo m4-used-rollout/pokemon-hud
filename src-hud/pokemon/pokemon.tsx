@@ -2,6 +2,8 @@
 /// <reference path="move.tsx" />
 /// <reference path="sleepy.tsx" />
 /// <reference path="helditem.tsx" />
+/// <reference path="../pokesprite.tsx" />
+
 
 
 class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
@@ -23,7 +25,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
         return <li className={classes}>
             <Sleepy status={mon.sleep_turns} />
             <div className="pokemon-image">
-                <img src={`./img/sprites/${config.spriteFolder}/${mon.shiny ? "shiny/" : ""}${mon.gender == "Female" ? "female/" : "" }${mon.is_egg ? 'egg' : (mon.species.national_dex || mon.species.id)}${mon.form ? "-" + mon.form : ""}.gif`} />
+                {mon.is_egg ? <img src="./img/egg.gif" /> : <PokeSprite pokemonId={mon.species.id} shiny={mon.shiny} />}
             </div>
             {mon.is_egg ?
                 <div className="pokemon-info">

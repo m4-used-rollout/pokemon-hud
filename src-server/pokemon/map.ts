@@ -1,4 +1,4 @@
-/// <reference path="species.ts" />
+/// <reference path="encounters.ts" />
 
 namespace Pokemon {
     export interface Map {
@@ -7,14 +7,6 @@ namespace Pokemon {
         bank?: number;
         areaId?: number;
         areaName?: string;
-        encounters: {
-            [key: string]: Species[];
-            grass: Species[];
-            hidden_grass?: Species[];
-            surfing: Species[];
-            hidden_surfing?: Species[];
-            fishing: Species[];
-            hidden_fishing?: Species[];
-        }
+        encounters: Encounters;
     }
 }

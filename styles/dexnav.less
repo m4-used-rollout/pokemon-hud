@@ -1,4 +1,5 @@
 @import 'fonts.less';
+@import 'mixins/utility.less';
 
 .dexnav {
     border: 2px outset #600;
@@ -43,6 +44,7 @@
         background-size: contain;
         opacity: 0;
         transition: opacity 1s ease-in-out;
+        z-index: 6;
     }
 
     &[data-completed="1"]:after {
@@ -72,7 +74,7 @@
         right:0;
         box-sizing: border-box;
         text-shadow: 1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black;
-
+        z-index: 5;
     }
 
     h3 {
@@ -141,6 +143,7 @@
                     height:100%;
                     transition: filter 1s ease-in-out;
                     position: relative;
+                    z-index: 2;
                 }
                 
                 &.surfing, &.fishing {
@@ -159,6 +162,7 @@
                         transform: rotateX(60deg);
                         background-image:url("img/dexnav/surf.png");
                         -webkit-mask-image:linear-gradient(to top, black 0%,black 25%,transparent 60%, transparent 100%);
+                        z-index: 0;
                     }
                 }
 
@@ -166,14 +170,67 @@
                     
                 // }
 
-                &.fishing:before {
-                    // background-position: center;
-                    // background-repeat: no-repeat;
-                    // background-size: contain;
-                    // transform: translateY(25%)rotateX(90deg);
-                    // background-image: radial-gradient(closest-side, rgba(89,158,202,1) 0%,rgba(10,27,103,1) 62%,rgba(95,154,207,0.7) 68%,rgba(125,185,232,0) 100%); 
-                    background-image:url("img/dexnav/ocean.png");
+                &.fishing{
+                    perspective-origin: bottom;
+
+                    &:before {
+                        transform: rotateX(120deg);
+                        background-image:url("img/dexnav/ocean.png");
+                    }
                 }
+
+
+                .rarity {
+                    position: absolute;
+                    display: inline-block;
+                    left:auto;
+                    top:auto;
+                    right:.5em;
+                    bottom:.5em;
+                    font-size: 20vh;
+                    height:1em;
+                    line-height: 1em;
+                    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+                    white-space: nowrap;
+                    .outline(black);
+                    z-index: 3;
+
+                    &.ultra-common {
+                        color:white;
+                        &:before{
+                            content: '●';
+                        }
+                    }
+                    &.common {
+                        color:lime;
+                        &:before{
+                            content: '●';
+                        }
+                    }
+                    &.uncommon {
+                        color:dodgerblue;
+                        &:before{
+                            content: '♦';
+                        }
+                    }
+                    &.rare {
+                        color:violet;
+                        &:before{
+                            content: '★';
+                        }
+                    }
+                    &.ultra-rare {
+                        color:gold;
+                        &:before{
+                            content: '★';
+                        }
+                    }
+                }
+
+                &.hidden .rarity:after {
+                    content:'H';
+                }
+
             }
         }
     }

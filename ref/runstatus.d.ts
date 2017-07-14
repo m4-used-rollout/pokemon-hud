@@ -38,6 +38,12 @@ declare namespace TPP {
         seen: number;
         seen_list: number[];
         secret: number;
+        time?: {
+            d:string;
+            h:number;
+            m:number;
+            s:number;
+        };
         x: number;
         y: number;
     }

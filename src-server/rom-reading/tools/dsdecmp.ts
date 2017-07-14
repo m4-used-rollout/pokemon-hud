@@ -21,7 +21,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
-namespace NDS.DSDecmp {
+namespace Tools.DSDecmp {
 
     export function Decompress(data: Buffer, offset = 0) {
         switch (data[offset] & 0xFF) {

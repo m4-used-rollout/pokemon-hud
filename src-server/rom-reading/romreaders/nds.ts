@@ -1,10 +1,10 @@
 /// <reference path="base.ts" />
-/// <reference path="../nds/narchive.ts" />
-/// <reference path="../nds/blzcoder.ts" />
+/// <reference path="../tools/narchive.ts" />
+/// <reference path="../tools/blzcoder.ts" />
 /// <reference path="../../../node_modules/@types/node/index.d.ts" />
 
 namespace RomReader {
-    const NARCArchive = NDS.NARChive;
+    const NARCArchive = Tools.NARChive;
     const fs = require("fs");
 
     export abstract class NDSReader extends RomReaderBase {

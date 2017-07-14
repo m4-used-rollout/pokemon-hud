@@ -35,10 +35,14 @@ namespace RomReader {
             return fs.readFileSync(this.romFileLocation);
         }
 
-        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number) {
+        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false) {
             let choppedData = new Array<Buffer>();
-            for (let i = 0; i < length && (startOffset + (strideBytes * (i + 1))) < romData.length; i++) {
-                choppedData.push(romData.slice(startOffset + (strideBytes * i), startOffset + (strideBytes * (i + 1))));
+            for (let i = 0; (i < length || length <= 0) && (startOffset + (strideBytes * (i + 1))) <= romData.length; i++) {
+                let chunk = romData.slice(startOffset + (strideBytes * i), startOffset + (strideBytes * (i + 1)));
+                if ((length <= 0 || lengthIsMax) && chunk[0] == 0xFF) {
+                    return choppedData;
+                }
+                choppedData.push(chunk);
             }
             return choppedData;
         }
@@ -64,7 +68,7 @@ namespace RomReader {
             return (bank << 14) | (address & 0x3fff);
         }
 
-        protected SameBankPtrToLinear(baseAddr:number, ptr:number) {
+        protected SameBankPtrToLinear(baseAddr: number, ptr: number) {
             return this.ROMBankAddrToLinear(this.LinearAddrToROMBank(baseAddr).bank, ptr);
         }
     }

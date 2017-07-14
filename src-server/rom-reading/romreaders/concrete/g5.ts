@@ -1,6 +1,6 @@
 /// <reference path="../../config/g5.ts" />
 /// <reference path="../nds.ts" />
-/// <reference path="../../nds/pptxt.ts" />
+/// <reference path="../../tools/pptxt.ts" />
 
 namespace RomReader {
 
@@ -22,7 +22,11 @@ namespace RomReader {
     export class Gen5 extends NDSReader {
 
         ConvertText(text: string) {
-            return NDS.PPTxt.PokeToText(text || "");
+            return Tools.PPTxt.PokeToText(text || "");
+        }
+
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData) {
+            return map.encounters.all; //TODO: Seasons
         }
 
         constructor(basePath: string) {
@@ -40,7 +44,7 @@ namespace RomReader {
             let itemgrNarc = this.readNARC(config.ItemGraphics);
 
             function getStrings(index: number) {
-                return NDS.PPTxt.GetStrings(stringsNarc.files[index]);
+                return Tools.PPTxt.GetStrings(stringsNarc.files[index]);
             }
 
             let moveNames = getStrings(config.TextOffsets.MoveNames);
@@ -167,14 +171,16 @@ namespace RomReader {
                 let wildSet = mapHeaderData[baseOffset + 20] & 0xFF; //this is for BW2. For BW, wildSet is a word, not a byte
                 if (wildSet != 255 && wildSet != 65535) {
                     map.encounters = {
-                        grass: [],
-                        hidden_grass: [],
-                        surfing: [],
-                        hidden_surfing: [],
-                        fishing: [],
-                        hidden_fishing: []
+                        all: {
+                            grass: [],
+                            hidden_grass: [],
+                            surfing: [],
+                            hidden_surfing: [],
+                            fishing: [],
+                            hidden_fishing: []
+                        }
                     };
-                    encounters.filter(e => e.offset == wildSet).forEach(e => map.encounters[e.type] = Array.prototype.concat.apply(map.encounters[e.type], e.encounters));
+                    encounters.filter(e => e.offset == wildSet).forEach(e => map.encounters.all[e.type] = Array.prototype.concat.apply(map.encounters.all[e.type], e.encounters.map(enc => (<Pokemon.EncounterMon>{ species: enc, rate: e.rate }))));
                 }
                 this.maps.push(map);
             }

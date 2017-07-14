@@ -1,23 +1,30 @@
-/// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../ref/runstatus.d.ts" />
+/// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../ref/config.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 /// <reference path="../ref/joypad.d.ts" />
 /// <reference types="node" />
 declare const gen2Offsets: {
     ItemAttributesOffset: number;
+    PokemonPalettes: number;
+    TrainerPalettes: number;
     TMMovesOffset: number;
+    TimeOfDayOffset: number;
     WildPokemonOffset: number;
     MoveDataOffset: number;
     PokemonStatsOffset: number;
     PokemonNamesOffset: number;
     FishingWildsOffset: number;
+    TimeFishGroups: number;
     MapHeaders: number;
     HeadbuttWildsOffset: number;
-    PicPointers: number;
+    PokemonPicPointers: number;
+    UnownPicPointers: number;
+    TrainerPicPointers: number;
     ItemNamesOffset: number;
     MoveNamesOffset: number;
     AreaNamesOffset: number;
+    PicBankOffset: number;
     charmap: any[];
     mapNames: {
         [key: number]: {
@@ -27,6 +34,9 @@ declare const gen2Offsets: {
         };
     };
 };
+declare namespace Tools.LZGSC {
+    function Decompress(compressed: Buffer): Buffer;
+}
 declare namespace Pokemon {
     namespace ExpCurve {
         interface CalcExp {
@@ -73,21 +83,32 @@ declare namespace Pokemon {
     }
 }
 declare namespace Pokemon {
+    interface EncounterMon {
+        species: Pokemon.Species;
+        rate: number;
+        requiredItem?: Pokemon.Item;
+    }
+    interface EncounterSet {
+        [key: string]: EncounterMon[];
+        grass?: EncounterMon[];
+        hidden_grass?: EncounterMon[];
+        surfing?: EncounterMon[];
+        hidden_surfing?: EncounterMon[];
+        fishing?: EncounterMon[];
+        hidden_fishing?: EncounterMon[];
+    }
+    interface Encounters {
+        [key: string]: EncounterSet;
+    }
+}
+declare namespace Pokemon {
     interface Map {
         name: string;
         id: number;
         bank?: number;
         areaId?: number;
         areaName?: string;
-        encounters: {
-            [key: string]: Species[];
-            grass: Species[];
-            hidden_grass?: Species[];
-            surfing: Species[];
-            hidden_surfing?: Species[];
-            fishing: Species[];
-            hidden_fishing?: Species[];
-        };
+        encounters: Encounters;
     }
 }
 declare namespace Pokemon {
@@ -107,12 +128,29 @@ declare namespace Pokemon {
         isKeyItem: boolean;
     }
 }
+declare namespace Tools {
+    function ZeroPad(str: string, len: number, left?: boolean): string;
+}
+declare namespace Sprites {
+    interface ImageMap {
+        palette: string[];
+        pixels: number[][];
+    }
+    function Parse2BPPToImageMap(data: Buffer, palette: string[], tilesWide: number, tilesHigh: number, fullTilesWide?: number, fullTilesHigh?: number): ImageMap;
+    function Convert16BitColorToRGB(color16: number): string;
+    function FloodClear(img: ImageMap, paletteIndex: number): void;
+}
 declare namespace RomReader {
     abstract class RomReaderBase {
         protected pokemon: Pokemon.Species[];
         protected moves: Pokemon.Move[];
         protected items: Pokemon.Item[];
         protected maps: Pokemon.Map[];
+        protected pokemonSprites: {
+            base: string;
+            shiny: string;
+        }[];
+        protected trainerSprites: (string | Sprites.ImageMap)[];
         protected areas: string[];
         protected abilities: string[];
         protected levelCaps: number[];
@@ -127,6 +165,7 @@ declare namespace RomReader {
             spdef: string[];
         };
         abstract ConvertText(text: string | Buffer | number[]): string;
+        abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         GetSpecies(id: number): Pokemon.Species;
         GetMove(id: number): Pokemon.Move;
         GetMap(id: number, bank?: number): Pokemon.Map;
@@ -137,6 +176,14 @@ declare namespace RomReader {
         GetCurrentLevelCap(badges: number): number;
         GetNature(id: number): string;
         GetCharacteristic(stats: Pokemon.Stats, pv: number): any;
+        GetAllMapEncounters(map: Pokemon.Map): Pokemon.EncounterSet;
+        GetPokemonSprite(id: number, shiny?: boolean): string;
+        GetTrainerSprite(id: number): string | Sprites.ImageMap;
+        CachePokemonSprite(id: number, data: string, shiny?: boolean): void;
+        CacheTrainerSprite(id: number, data: string): void;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        CheckIfCanFish(runState: TPP.RunStatus): boolean;
+        private surfExp;
     }
 }
 declare namespace RomReader {
@@ -147,7 +194,7 @@ declare namespace RomReader {
         constructor(romFileLocation: string, charmap: string[]);
         ConvertText(text: string | Buffer | number[]): string;
         protected loadROM(): Buffer;
-        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number): Buffer[];
+        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
         protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number): string[];
         protected LinearAddrToROMBank(linear: number): {
             bank: number;
@@ -159,13 +206,23 @@ declare namespace RomReader {
 }
 declare namespace RomReader {
     class Gen2 extends GBReader {
+        private swarms;
+        private timeOfDay;
         constructor(romFileLocation: string);
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         private ReadPyriteLevelCaps(romData);
+        private FindFishingEncounters(romData);
+        private FindMapEncounters(romData);
+        private CombineDuplicateEncounters(mons);
         private ReadMaps(romData);
         private ReadAreaNames(romData);
         private ReadMoveData(romData);
         private ReadItemData(romData);
         private ReadPokeData(romData);
+        private ProcessPalette(palData);
+        private ReadPokemonSprites(romData);
+        private CalculateTimesOfDay(romData);
     }
 }
 declare module TPP.Server {
@@ -181,6 +238,7 @@ declare module TPP.Server {
 declare namespace TPP.Server.DexNav {
     interface KnownEncounter {
         speciesId: number;
+        rate: number;
         owned: boolean;
     }
     class State {
@@ -189,6 +247,7 @@ declare namespace TPP.Server.DexNav {
         MapBank: number;
         AreaID: number;
         AreaName: string;
+        Hour: number;
         TotalEncounters: number;
         CompletedCategories: number;
         MoreLeftToCatch: boolean;
@@ -201,7 +260,10 @@ declare namespace TPP.Server.DexNav {
             hidden_fishing: KnownEncounter[];
         };
         readonly HasEncounters: boolean;
-        constructor(map: Pokemon.Map, runState: TPP.RunStatus);
+        constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus);
+        private categories;
+        private PopulateKnownEncounters(encounters, runState);
+        private PopulateCompletionTotals(allMapEncounters, runState);
     }
 }
 declare namespace TPP.Server.DexNav {
@@ -228,13 +290,7 @@ declare const gen5FilesOffsets: {
         MapNames: number;
     };
 };
-declare namespace BLZCoder {
-    function Decode(data: Buffer): Buffer;
-}
-declare namespace NDS.DSDecmp {
-    function Decompress(data: Buffer, offset?: number): Buffer;
-}
-declare namespace NDS {
+declare namespace Tools {
     class NARChive {
         filenames: string[];
         files: Buffer[];
@@ -244,22 +300,50 @@ declare namespace NDS {
         private readNitroFrames(data);
     }
 }
-declare namespace NDS.PPTxt {
-    function GetStrings(ds: Buffer): string[];
-    function PokeToText(str: string): string;
+declare namespace BLZCoder {
+    function Decode(data: Buffer): Buffer;
 }
 declare namespace RomReader {
     abstract class NDSReader extends RomReaderBase {
         private basePath;
         constructor(basePath: string);
-        protected readNARC(path: string): NDS.NARChive;
+        protected readNARC(path: string): Tools.NARChive;
         protected readArm9(): Buffer;
         private readFile(path);
     }
 }
+declare namespace Tools.PPTxt {
+    function GetStrings(ds: Buffer): string[];
+    function PokeToText(str: string): string;
+}
 declare namespace RomReader {
     class Gen5 extends NDSReader {
         ConvertText(text: string): string;
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         constructor(basePath: string);
+    }
+}
+declare namespace Tools.DSDecmp {
+    function Decompress(data: Buffer, offset?: number): Buffer;
+}
+declare namespace Tools {
+    class Gen2LZDecmp {
+        data: Buffer;
+        address: number;
+        private output;
+        private out_idx;
+        private cmd;
+        private len;
+        private offset;
+        constructor(input: Buffer, baseOffset: number, tilesWide: number, tilesHigh: number);
+        getData(): Buffer;
+        getFlattenedData(): Buffer;
+        private cutAndTranspose(width, height);
+        private decompress();
+        private repeat(direction?, table?);
+        private get_offset();
+        private resizeOutput();
+        peek(): number;
+        next(): number;
     }
 }
