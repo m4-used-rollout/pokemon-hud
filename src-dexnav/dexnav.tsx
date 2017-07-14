@@ -12,13 +12,13 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
             "dexnav",
             map.TotalEncounters ? totalKnownEncounters ? map.MoreLeftToCatch ? null : "caught-them-all" : "nothing-to-show" : "no-encounters"
         ];
-        let numDisplays = totalKnownEncounters ? Math.max(3, 10 / (totalKnownEncounters * 3)) : 3, displays: number[] = [];
+        let numDisplays = Math.max(3, Math.floor((window.innerWidth / (totalKnownEncounters * .66)) / (window.innerHeight || 1)) * 3), displays: number[] = [];
         for (let i = 0; i < numDisplays; displays.push(i++));
         return <div className={classes.filter(c => !!c).join(' ')} data-completed={map.CompletedCategories}>
             <h3>DexNav</h3>
             {map.MapName ? <h4>{map.MapName}</h4> : null}
             <div className="encounters">
-                {displays.map(k => <EncounterGroup encounters={map.KnownEncounters} total={totalKnownEncounters} key={k} />)}
+                {displays.map(k => <EncounterGroup encounters={map.KnownEncounters} total={totalKnownEncounters} key={k.toString() + numDisplays.toString()} />)}
             </div>
         </div>;
     }
