@@ -54,7 +54,7 @@ namespace Sprites {
         return '#' + Tools.ZeroPad(red.toString(16), 2) + Tools.ZeroPad(green.toString(16), 2) + Tools.ZeroPad(blue.toString(16), 2);
     }
 
-    export function FloodClear(img: ImageMap, paletteIndex: number) {
+    export function FloodClear(img: ImageMap, paletteIndex: number, stopPixels: number[][] = [], startPixels: number[][] = [], clearDiagonal = false) {
         let width = img.pixels.length;
         let height = (img.pixels[0] || []).length;
         let visitPixels = new Array<number[]>();
@@ -67,6 +67,8 @@ namespace Sprites {
                 queued[x][y] = true;
             }
         }
+
+        startPixels.forEach(pix => queuePixel(pix[0], pix[1]));
 
         for (let x = 0; x < width; x++) {
             queuePixel(x, 0);
@@ -82,12 +84,18 @@ namespace Sprites {
             let nextPixel = visitPixels.shift();
             let x = nextPixel.shift();
             let y = nextPixel.pop();
-            if (img.pixels[x][y] == paletteIndex) {
+            if (img.pixels[x][y] == paletteIndex && !stopPixels.some(pix => pix[0] == x && pix[1] == y)) {
                 img.pixels[x][y] = -1;
                 queuePixel(x - 1, y);
                 queuePixel(x + 1, y);
                 queuePixel(x, y - 1);
                 queuePixel(x, y + 1);
+                if (clearDiagonal) {
+                    queuePixel(x - 1, y - 1);
+                    queuePixel(x + 1, y - 1);
+                    queuePixel(x + 1, y - 1);
+                    queuePixel(x - 1, y + 1);
+                }
             }
         }
     }

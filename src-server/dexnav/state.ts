@@ -45,7 +45,6 @@ namespace TPP.Server.DexNav {
             }
             this.PopulateKnownEncounters(encounters, runState);
             this.PopulateCompletionTotals(allMapEncounters, runState);
-            console.log(JSON.stringify(this, null, 2));
         }
 
         private categories = Object.keys(this.KnownEncounters);

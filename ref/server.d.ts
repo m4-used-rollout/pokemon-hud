@@ -138,7 +138,7 @@ declare namespace Sprites {
     }
     function Parse2BPPToImageMap(data: Buffer, palette: string[], tilesWide: number, tilesHigh: number, fullTilesWide?: number, fullTilesHigh?: number): ImageMap;
     function Convert16BitColorToRGB(color16: number): string;
-    function FloodClear(img: ImageMap, paletteIndex: number): void;
+    function FloodClear(img: ImageMap, paletteIndex: number, stopPixels?: number[][], startPixels?: number[][], clearDiagonal?: boolean): void;
 }
 declare namespace RomReader {
     abstract class RomReaderBase {
