@@ -90,6 +90,35 @@
             }
         }
     }
+
+    &.show-all { //tries to fit all pokemon sprites onscreen, used during development
+        font-size: 0;
+        transform:none;
+
+        &:before, &:after {
+            content:none;
+        }
+
+        .pokemon-display {
+            left:5px;
+            top:5px;
+            right:5px;
+            bottom:5px;
+            font-size: 10px;
+            overflow:auto;
+
+            ul.pokemon-list {
+                li {
+                    padding: 12px 6px;
+                    display: inline-block;
+
+                    img {
+                        height:auto;
+                    }
+                }
+            }
+        }
+    }
 }
 
 @keyframes new-entry {
