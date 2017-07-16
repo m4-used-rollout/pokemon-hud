@@ -18,7 +18,7 @@ namespace RomReader {
     const fishingRods = ['oldRod', 'goodRod', 'superRod'];
     const fishingRodIds = { oldRod: 58, goodRod: 59, superRod: 61 };
 
-    const tmCount = 50, hmCount = 7, itemCount = 256, dexCount = 256, moveCount = 251, mapBanks = 26;
+    const tmCount = 50, hmCount = 7, itemCount = 256, dexCount = 256, moveCount = 251, mapBanks = 26, trainerClasses = 67;
 
     const pokeSpriteClearFix: { [key: number]: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } } = {};
     pokeSpriteClearFix[5] = { start: [[16, 37], [41, 23]] }; //Charmeleon
@@ -94,6 +94,8 @@ namespace RomReader {
             this.CalculateTimesOfDay(romData);
             this.pokemon = this.ReadPokeData(romData);
             this.pokemonSprites = this.ReadPokemonSprites(romData);
+            this.trainers = this.ReadTrainerData(romData);
+            this.trainerSprites = this.ReadTrainerSprites(romData);
             this.items = this.ReadItemData(romData);
             this.ballIds = this.items.filter((i: Gen2Item) => i.pocket == "Ball").map(i => i.id);
             this.moves = this.ReadMoveData(romData);
@@ -102,8 +104,7 @@ namespace RomReader {
             this.FindMapEncounters(romData);
             this.FindFishingEncounters(romData);
             this.levelCaps = this.ReadPyriteLevelCaps(romData);
-            //console.log(JSON.stringify(this.items, null, 2));
-            //console.log(JSON.stringify(this.maps, null, 2));
+            // console.log(JSON.stringify(this.trainers, null, 2));
         }
 
         public GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData) {
@@ -233,7 +234,7 @@ namespace RomReader {
 
         private ReadAreaNames(romData: Buffer) {
             return this.ReadStridedData(romData, config.AreaNamesOffset, 4, 97)
-                .map(data => this.ReadStringBundle(romData, this.SameBankPtrToLinear(config.AreaNamesOffset, data.readUInt16LE(2)), 1).shift() || '');
+                .map(data => this.ConvertText(romData.slice(this.SameBankPtrToLinear(config.AreaNamesOffset, data.readUInt16LE(2)))) || '');
         }
 
         private ReadMoveData(romData: Buffer) {
@@ -263,6 +264,25 @@ namespace RomReader {
                 pocket: bagPockets[data[0x05]],
                 isKeyItem: data[0x05] == 2
             }));
+        }
+
+        private ReadTrainerData(romData: Buffer) {
+            let classNames = this.ReadStringBundle(romData, config.TrainerClassNamesOffset, trainerClasses);
+            let trainers: Pokemon.Trainer[] = [];
+            let bank = this.LinearAddrToROMBank(config.TrainerGroupsOffset).bank;
+            this.ReadStridedData(romData, config.TrainerGroupsOffset, 2, trainerClasses).forEach((ptr, cId, ptrArr) => {
+                let thisAddr = this.ROMBankAddrToLinear(bank, ptr.readUInt16LE(0));
+                let nextAddr = ptrArr[cId + 1] ? this.ROMBankAddrToLinear(bank, ptrArr[cId + 1].readUInt16LE(0)) : 0;
+                this.ReadBundledData(romData, thisAddr, 0xFF, nextAddr || 1, nextAddr).forEach((tData, tId) => {
+                    trainers.push({
+                        classId: cId,
+                        id: tId,
+                        className: classNames[cId],
+                        name: this.ConvertText(tData)
+                    });
+                });
+            });
+            return trainers;
         }
 
         private ReadPokeData(romData: Buffer) {
@@ -301,6 +321,18 @@ namespace RomReader {
             return ['white', Sprites.Convert16BitColorToRGB(palData.readUInt16LE(2)), Sprites.Convert16BitColorToRGB(palData.readUInt16LE(0)), 'black'];
         }
 
+        private ReadTrainerSprites(romData: Buffer) {
+            let palettes = this.ReadStridedData(romData, config.TrainerPalettes, 4, trainerClasses).map(data => this.ProcessPalette(data));
+            return new Array(trainerClasses).fill(0).map((x, classId) => {
+                let ptrAddr = config.TrainerPicPointers + (classId * 3);
+                let spriteAddr = this.ROMBankAddrToLinear(romData[ptrAddr] + config.PicBankOffset, romData[ptrAddr + 2] * 0x100 + romData[ptrAddr + 1]);
+                let spriteData = Tools.LZGSC.Decompress(romData.slice(spriteAddr));
+                let imgData = Sprites.Parse2BPPToImageMap(spriteData, palettes[classId], 7, 7);
+                Sprites.FloodClear(imgData, 0);
+                return JSON.stringify(imgData);
+            });
+        }
+
         private ReadPokemonSprites(romData: Buffer) {
             let palettes = this.ReadStridedData(romData, config.PokemonPalettes, 8, this.pokemon.length)
                 .map(data => ({ base: this.ProcessPalette(data), shiny: this.ProcessPalette(data.slice(4)) }));
@@ -316,11 +348,12 @@ namespace RomReader {
             }
             return this.pokemon.map(mon => {
                 let ptrAddr = config.PokemonPicPointers + ((mon.id - 1) * 6); //front and back pointer, 3 bytes each
-                if (mon.id == 201) { //unown, just pick the first one
-                    ptrAddr = config.UnownPicPointers;
-                }
                 if (mon.id < 1 || mon.id > 251) return;
-                return readPokeSprite.call(this, ptrAddr, mon, pokeSpriteClearFix[mon.id] || {});
+                if (mon.id == 201) { //Unown
+                    ptrAddr = config.UnownPicPointers;
+                    return new Array(26).fill(0).map((x, unown) => readPokeSprite.call(this, ptrAddr + (unown * 6), mon));
+                }
+                return [readPokeSprite.call(this, ptrAddr, mon, pokeSpriteClearFix[mon.id] || {})];
             });
         }
 

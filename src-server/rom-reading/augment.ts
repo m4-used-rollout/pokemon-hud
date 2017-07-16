@@ -73,12 +73,7 @@ namespace RomReader {
 
         function augmentPokemonSpeciesAndExp(p: TPP.Pokemon) {
             let romMon = romData.GetSpecies(p.species.id);
-            p.species.name = p.species.name || romMon.name;
-            p.species.national_dex = p.species.national_dex || romMon.dexNumber;
-            p.species.type1 = p.species.type1 || romMon.type1;
-            p.species.type2 = p.species.type2 || romMon.type2;
-            p.species.egg_cycles = p.species.egg_cycles || romMon.eggCycles;
-            p.species.growth_rate = p.species.growth_rate || romMon.growthRate;
+            augmentSpecies(p.species, romMon);
             if (romMon.expFunction) {
                 if (!p.level) {
                     p.level = Pokemon.ExpCurve.ExpToLevel(p.experience.current, romMon.expFunction);
@@ -87,6 +82,17 @@ namespace RomReader {
                 p.experience.this_level = p.experience.this_level || romMon.expFunction(p.level);
                 p.experience.remaining = p.experience.next_level - p.experience.current;
             }
+        }
+
+        function augmentSpecies(s: TPP.PokemonSpecies, romMon: Pokemon.Species = null) {
+            romMon = romMon || romData.GetSpecies(s.id);
+            s.name = s.name || romMon.name;
+            s.national_dex = s.national_dex || romMon.dexNumber;
+            s.type1 = s.type1 || romMon.type1;
+            s.type2 = s.type2 || romMon.type2;
+            s.egg_cycles = s.egg_cycles || romMon.eggCycles;
+            s.growth_rate = s.growth_rate || romMon.growthRate;
+            s.catch_rate = s.catch_rate || romMon.catchRate;
         }
 
         function augmentPokemonMet(p: TPP.Pokemon) {
@@ -131,6 +137,16 @@ namespace RomReader {
             }
         }
 
+        function augmentEnemyTrainer(t: TPP.Trainer) {
+            let romTrainer = romData.GetTrainer(t.id,t.class_id);
+            if (t.class_id) {
+                t.class_name = t.class_name || romTrainer.className;
+            }
+            if (t.id) {
+                t.name = t.name || romTrainer.name;
+            }
+        }
+
         normalizeDex();
         augmentItems();
         (state.party || []).filter(p => !!p).map(augmentPartyPokemon).forEach(augmentPokemon);
@@ -141,6 +157,12 @@ namespace RomReader {
 
         state.level_cap = romData.GetCurrentLevelCap(state.badges || 0);
 
+        if (state.wild_species) {
+            augmentSpecies(state.wild_species);
+        }
+        if (state.enemy_trainer) {
+            augmentEnemyTrainer(state.enemy_trainer);
+        }
         if (state.area_id) {
             state.area_name = romData.GetAreaName(state.area_id);
         }
@@ -152,7 +174,7 @@ namespace RomReader {
     function CensorEgg(mon: TPP.Pokemon) {
         if (mon.is_egg) {
             //no egg spoilers
-            mon.ability = mon.species.type1 = mon.species.type2 = mon.species.growth_rate = "???";
+            mon.species.type1 = mon.species.type2 = mon.species.growth_rate = "???";
             mon.species.id = mon.species.national_dex = 0;
             mon.species.name = mon.name = "Egg";
             mon.moves = [];
@@ -160,6 +182,7 @@ namespace RomReader {
             delete (<TPP.PartyPokemon>mon).stats;
             delete mon.evs;
             delete mon.condition;
+            delete mon.ability;
         }
     }
 

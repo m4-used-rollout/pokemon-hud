@@ -1,6 +1,9 @@
 @import 'fonts.less';
 @import 'mixins/utility.less';
 
+@screen-on-color: #F0F0FC; //darkolivegreen;
+@screen-off-color: #666;
+
 .dexnav {
     border: 2px outset #600;
     background-color: #c00;
@@ -100,7 +103,7 @@
     .encounters {
         border: 2px inset #600;
         box-shadow: 0 0 4px 4px #600;
-        background-color: darkolivegreen;
+        background-color: @screen-on-color;
         box-sizing: border-box;
         padding:2px;
         overflow: hidden;
@@ -116,10 +119,20 @@
         align-items: center;
         transition: background-color 4s ease-in-out;
 
+        + .encounters {
+            transition: opacity 4s ease-in-out;
+            opacity: 0;
+            > * {
+                opacity: 0;
+            }
+        }
+
         .encounter-group {
             display:flex;
             flex-flow: row nowrap;
+            flex: 0 0 auto;
             align-items: center;
+            // white-space: nowrap;
             height:100%;
             animation: scroll-forever 30s infinite;
             animation-timing-function: linear;
@@ -128,6 +141,7 @@
             span {
                 flex:0 0 auto;
                 position: relative;
+                // vertical-align: middle;
                 padding:0;
                 //transform: translateX(50%);
                 height:100%;
@@ -178,59 +192,74 @@
                         background-image:url("img/dexnav/ocean.png");
                     }
                 }
+            }
+        }
 
+        &.wild-battle, &.enemy-trainer {
+            justify-content: space-between;
+            background-color: @screen-on-color!important; //turn on even if otherwise no encounters
 
-                .rarity {
-                    position: absolute;
-                    display: inline-block;
-                    left:auto;
-                    top:auto;
-                    right:.5em;
-                    bottom:.5em;
-                    font-size: 20vh;
-                    height:1em;
-                    line-height: 1em;
-                    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-                    white-space: nowrap;
-                    .outline(black);
-                    z-index: 3;
+            .info-left {
+                flex: 2 1 auto;
+                margin-right:auto;
+                font-family: pokeplatinum;
+                font-weight:bold;
+                font-size: 20vh;
+                text-align: center;
 
-                    &.ultra-common {
-                        color:white;
-                        &:before{
-                            content: '●';
-                        }
+                .catch-rate {
+                    display: flex;
+                    flex-flow: row nowrap;
+                    vertical-align: middle;
+                    &:before {
+                        font-family: pokered;
+                        font-size: .8em;
+                        font-weight: normal;
+                        margin-right:auto;
+                        vertical-align: top;
+                        content:'{';
                     }
-                    &.common {
-                        color:lime;
-                        &:before{
-                            content: '●';
-                        }
-                    }
-                    &.uncommon {
-                        color:dodgerblue;
-                        &:before{
-                            content: '♦';
-                        }
-                    }
-                    &.rare {
-                        color:violet;
-                        &:before{
-                            content: '★';
-                        }
-                    }
-                    &.ultra-rare {
-                        color:gold;
-                        &:before{
-                            content: '★';
-                        }
+                    &:after {
+                        content: '%';
+                        font-size: 1.2em;
+                        width: .7em;
+                        vertical-align: top;
+                        position: relative;
+                        margin-left: auto;
+                        top: -.07em;
                     }
                 }
-
-                &.hidden .rarity:after {
-                    content:'H';
+            }
+            .types {
+                flex: 1 1 auto;
+                display: flex;
+                flex-flow:column nowrap;
+                margin:1vw;
+                img {
+                    border-radius: 50%;
+                    flex: 1 1 auto;
+                    height:15vh;
+                    margin:auto;
+                    margin-bottom:10vh;
+                    width:15vh;
+                    + img {
+                        margin:auto;
+                    }
                 }
-
+            }
+            .pokemon, .trainer {
+                flex: 0 0 auto;
+                margin-left:auto;
+                position: relative;
+                img {
+                    image-rendering: pixelated;
+                    height:70vh;
+                    transition: filter 1s ease-in-out;
+                    position: relative;
+                }
+                &.seen img {
+                    filter:contrast(0%) brightness(0%);
+                }
             }
         }
     }
@@ -247,7 +276,7 @@
         }
 
         .encounters {
-            background-color:#666;
+            background-color:@screen-off-color;
             transition: background-color 1s ease-in-out;
 
             .encounter-group {
@@ -256,7 +285,56 @@
             }
         }
     }
+}
 
+.rarity {
+    position: absolute;
+    display: inline-block;
+    left:auto;
+    top:auto;
+    right:.5em;
+    bottom:.5em;
+    font-size: 20vh;
+    height:1em;
+    line-height: 1em;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    white-space: nowrap;
+    .outline(black);
+
+    &.ultra-common {
+        color:white;
+        &:before{
+            content: '●';
+        }
+    }
+    &.common {
+        color:lime;
+        &:before{
+            content: '●';
+        }
+    }
+    &.uncommon {
+        color:dodgerblue;
+        &:before{
+            content: '♦';
+        }
+    }
+    &.rare {
+        color:violet;
+        &:before{
+            content: '★';
+        }
+    }
+    &.ultra-rare {
+        color:gold;
+        &:before{
+            content: '★';
+        }
+    }
+}
+
+.hidden .rarity:after {
+    content:'H';
 }
 
 @keyframes scroll-forever {

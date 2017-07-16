@@ -93,7 +93,7 @@ namespace Sprites {
                 if (clearDiagonal) {
                     queuePixel(x - 1, y - 1);
                     queuePixel(x + 1, y - 1);
-                    queuePixel(x + 1, y - 1);
+                    queuePixel(x + 1, y + 1);
                     queuePixel(x - 1, y + 1);
                 }
             }

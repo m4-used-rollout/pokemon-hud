@@ -1,5 +1,6 @@
 /// <reference path="../pokemon/map.ts" />
 /// <reference path="../main.ts" />
+/// <reference path="../pokemon/convert.ts" />
 /// <reference path="../../ref/runstatus.d.ts" />
 
 namespace TPP.Server.DexNav {
@@ -10,6 +11,11 @@ namespace TPP.Server.DexNav {
         speciesId: number;
         rate: number;
         owned: boolean;
+    }
+
+    export interface OwnedSpecies extends Pokemon.Species {
+        owned: boolean;
+        encounterRate?: number;
     }
 
     export class State {
@@ -33,6 +39,8 @@ namespace TPP.Server.DexNav {
         public get HasEncounters() {
             return this.TotalEncounters > 0;
         }
+        public WildBattle: OwnedSpecies = null;
+        public EnemyTrainer: Pokemon.Trainer = null;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {
             if (!map || !runState) return;
             this.MapName = map.name;
@@ -45,6 +53,16 @@ namespace TPP.Server.DexNav {
             }
             this.PopulateKnownEncounters(encounters, runState);
             this.PopulateCompletionTotals(allMapEncounters, runState);
+            if (runState.in_battle) {
+                this.WildBattle = <OwnedSpecies>Pokemon.Convert.SpeciesFromRunStatus(runState.wild_species);
+                if (this.WildBattle && this.WildBattle.id) {
+                    this.WildBattle.owned = (runState.caught_list || []).some(p => p == this.WildBattle.id);
+                    this.WildBattle.encounterRate = Object.keys(encounters).map(k => encounters[k].filter(e => e.species.id == this.WildBattle.id))
+                        .reduce((all, curr) => <Pokemon.EncounterMon[]>Array.prototype.concat.apply(all, curr), [])
+                        .reduce((total, curr) => ({ rate: total.rate + curr.rate, species: curr.species }), { rate: 0 }).rate;
+                }
+                this.EnemyTrainer = Pokemon.Convert.TrainerFromRunStatus(runState.enemy_trainer);
+            }
         }
 
         private categories = Object.keys(this.KnownEncounters);

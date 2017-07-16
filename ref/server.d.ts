@@ -11,6 +11,8 @@ declare const gen2Offsets: {
     TMMovesOffset: number;
     TimeOfDayOffset: number;
     WildPokemonOffset: number;
+    TrainerClassNamesOffset: number;
+    TrainerGroupsOffset: number;
     MoveDataOffset: number;
     PokemonStatsOffset: number;
     PokemonNamesOffset: number;
@@ -128,6 +130,14 @@ declare namespace Pokemon {
         isKeyItem: boolean;
     }
 }
+declare namespace Pokemon {
+    interface Trainer {
+        classId: number;
+        className: string;
+        id: number;
+        name: string;
+    }
+}
 declare namespace Tools {
     function ZeroPad(str: string, len: number, left?: boolean): string;
 }
@@ -149,8 +159,9 @@ declare namespace RomReader {
         protected pokemonSprites: {
             base: string;
             shiny: string;
-        }[];
-        protected trainerSprites: (string | Sprites.ImageMap)[];
+        }[][];
+        protected trainerSprites: string[];
+        protected trainers: Pokemon.Trainer[];
         protected areas: string[];
         protected abilities: string[];
         protected levelCaps: number[];
@@ -166,6 +177,7 @@ declare namespace RomReader {
         };
         abstract ConvertText(text: string | Buffer | number[]): string;
         abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        abstract GetForm(pokemon: TPP.Pokemon): number;
         GetSpecies(id: number): Pokemon.Species;
         GetMove(id: number): Pokemon.Move;
         GetMap(id: number, bank?: number): Pokemon.Map;
@@ -177,9 +189,10 @@ declare namespace RomReader {
         GetNature(id: number): string;
         GetCharacteristic(stats: Pokemon.Stats, pv: number): any;
         GetAllMapEncounters(map: Pokemon.Map): Pokemon.EncounterSet;
-        GetPokemonSprite(id: number, shiny?: boolean): string;
-        GetTrainerSprite(id: number): string | Sprites.ImageMap;
-        CachePokemonSprite(id: number, data: string, shiny?: boolean): void;
+        GetTrainer(id: number, classId?: number): Pokemon.Trainer;
+        GetPokemonSprite(id: number, form?: number, shiny?: boolean): string;
+        GetTrainerSprite(id: number): string;
+        CachePokemonSprite(id: number, data: string, form?: number, shiny?: boolean): void;
         CacheTrainerSprite(id: number, data: string): void;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         CheckIfCanFish(runState: TPP.RunStatus): boolean;
@@ -193,8 +206,10 @@ declare namespace RomReader {
         protected stringTerminator: number;
         constructor(romFileLocation: string, charmap: string[]);
         ConvertText(text: string | Buffer | number[]): string;
+        GetForm(pokemon: TPP.Pokemon): number;
         protected loadROM(): Buffer;
         protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
+        protected ReadBundledData(romData: Buffer, startOffset: number, terminator: number, numBundles: number, endOffset?: number): Buffer[];
         protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number): string[];
         protected LinearAddrToROMBank(linear: number): {
             bank: number;
@@ -219,8 +234,10 @@ declare namespace RomReader {
         private ReadAreaNames(romData);
         private ReadMoveData(romData);
         private ReadItemData(romData);
+        private ReadTrainerData(romData);
         private ReadPokeData(romData);
         private ProcessPalette(palData);
+        private ReadTrainerSprites(romData);
         private ReadPokemonSprites(romData);
         private CalculateTimesOfDay(romData);
     }
@@ -235,11 +252,19 @@ declare module TPP.Server {
 }
 declare module TPP.Server {
 }
+declare namespace Pokemon.Convert {
+    function SpeciesFromRunStatus(s: TPP.PokemonSpecies): Species;
+    function TrainerFromRunStatus(t: TPP.Trainer): Trainer;
+}
 declare namespace TPP.Server.DexNav {
     interface KnownEncounter {
         speciesId: number;
         rate: number;
         owned: boolean;
+    }
+    interface OwnedSpecies extends Pokemon.Species {
+        owned: boolean;
+        encounterRate?: number;
     }
     class State {
         MapName: string;
@@ -260,6 +285,8 @@ declare namespace TPP.Server.DexNav {
             hidden_fishing: KnownEncounter[];
         };
         readonly HasEncounters: boolean;
+        WildBattle: OwnedSpecies;
+        EnemyTrainer: Pokemon.Trainer;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus);
         private categories;
         private PopulateKnownEncounters(encounters, runState);
@@ -307,6 +334,7 @@ declare namespace RomReader {
     abstract class NDSReader extends RomReaderBase {
         private basePath;
         constructor(basePath: string);
+        GetForm(pokemon: TPP.Pokemon): number;
         protected readNARC(path: string): Tools.NARChive;
         protected readArm9(): Buffer;
         private readFile(path);

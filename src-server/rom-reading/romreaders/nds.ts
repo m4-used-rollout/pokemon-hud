@@ -17,6 +17,10 @@ namespace RomReader {
             this.characteristics.hp[2] = "Often scatters things";
         }
 
+        GetForm(pokemon: TPP.Pokemon) {
+            return pokemon.form;
+        }
+
         protected readNARC(path: string) {
             return new NARCArchive(this.readFile('data/' + path));
         }

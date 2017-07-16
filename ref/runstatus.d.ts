@@ -5,6 +5,10 @@ declare namespace TPP {
         party: PartyData;
         pc: CombinedPCData;
         evolution_is_happening: boolean;
+        in_battle: boolean;
+        battle_kind?: string;
+        wild_species?: PokemonSpecies;
+        enemy_trainer?: Trainer;
     }
 
     //sent from lua
@@ -39,10 +43,10 @@ declare namespace TPP {
         seen_list: number[];
         secret: number;
         time?: {
-            d:string;
-            h:number;
-            m:number;
-            s:number;
+            d: string;
+            h: number;
+            m: number;
+            s: number;
         };
         x: number;
         y: number;
@@ -66,6 +70,19 @@ declare namespace TPP {
         boxes: BoxData[];
     }
 
+    export interface PokemonSpecies {
+        id: number;
+        name: string;
+        type1?: string;
+        type2?: string;
+        catch_rate?: number;
+        egg_cycles: number;
+        egg_type1?: string;
+        egg_type2?: string;
+        growth_rate?: string;
+        national_dex?: number;
+    }
+
     export interface Pokemon {
         personality_value: number;
         original_trainer: Trainer;
@@ -74,17 +91,7 @@ declare namespace TPP {
         gender: string;
         shiny: boolean;
         form?: number;
-        species: {
-            id: number;
-            name: string;
-            type1?: string;
-            type2?: string;
-            egg_cycles: number;
-            egg_type1?: string;
-            egg_type2?: string;
-            growth_rate?: string;
-            national_dex?: number;
-        }
+        species: PokemonSpecies;
         experience: {
             current: number;
             next_level?: number;
@@ -141,6 +148,8 @@ declare namespace TPP {
     export interface Trainer {
         id: number;
         name: string;
+        class_id?: number;
+        class_name?: string;
         gender?: string;
         secret?: number;
     }

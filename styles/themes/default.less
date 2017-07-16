@@ -132,6 +132,10 @@
                         height:(@party-member-height * .9);
                         image-rendering: pixelated;
                     }
+
+                    &.unown img {
+                        transform:translateX(-50%)translateY(-50%); //don't flip
+                    }
                 }
 
                 .pokemon-info {

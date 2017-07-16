@@ -5,6 +5,8 @@ const gen2Offsets = {  //Crystal only for now
     TMMovesOffset: 0x1167A,
     TimeOfDayOffset: 0x14044,
     WildPokemonOffset: 0x2A5E9,
+    TrainerClassNamesOffset: 0x2C1EF,
+    TrainerGroupsOffset: 0x39999,
     MoveDataOffset: 0x41AFB,
     PokemonStatsOffset: 0x51424,
     PokemonNamesOffset: 0x53384,
@@ -23,6 +25,7 @@ const gen2Offsets = {  //Crystal only for now
     mapNames: <{ [key: number]: { [key: number]: { name: string } } }>{}
 }
 
+gen2Offsets.charmap[0x4A] = 'ÊË';
 gen2Offsets.charmap[0x54] = "POKé";
 gen2Offsets.charmap[0x5B] = "PC";
 gen2Offsets.charmap[0x5C] = "TM";
@@ -106,7 +109,7 @@ gen2Offsets.charmap[0xE3] = '-';
 gen2Offsets.charmap[0xE6] = '?';
 gen2Offsets.charmap[0xE7] = '!';
 gen2Offsets.charmap[0xE8] = '.';
-//gen2Offsets.charmap[0xE9]='&';
+gen2Offsets.charmap[0xE9] = '+';//'&'; //literal ampersand
 gen2Offsets.charmap[0xEA] = 'é';
 gen2Offsets.charmap[0xEB] = '→';
 gen2Offsets.charmap[0xEF] = '♂';

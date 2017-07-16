@@ -1,9 +1,9 @@
 /// <reference path="../../pokemon/map.ts" />
 /// <reference path="../../pokemon/move.ts" />
 /// <reference path="../../pokemon/item.ts" />
+/// <reference path="../../pokemon/trainer.ts" />
 /// <reference path="../tools/sprites.ts" />
 /// <reference path="../../../ref/runstatus.d.ts" />
-
 
 namespace RomReader {
     export abstract class RomReaderBase {
@@ -11,8 +11,9 @@ namespace RomReader {
         protected moves: Pokemon.Move[] = [];
         protected items: Pokemon.Item[] = [];
         protected maps: Pokemon.Map[] = [];
-        protected pokemonSprites: { base: string, shiny: string  }[] = [];
-        protected trainerSprites: (string | Sprites.ImageMap)[] = [];
+        protected pokemonSprites: { base: string, shiny: string }[][] = [];
+        protected trainerSprites: string[] = [];
+        protected trainers: Pokemon.Trainer[] = [];
         protected areas: string[] = [];
         protected abilities: string[] = [];
         protected levelCaps = [100];  //some romhacks have these
@@ -29,6 +30,7 @@ namespace RomReader {
 
         abstract ConvertText(text: string | Buffer | number[]): string;
         abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        abstract GetForm(pokemon: TPP.Pokemon): number;
 
         GetSpecies(id: number) {
             return this.pokemon.filter(p => p.id == id).pop() || <Pokemon.Species>{};
@@ -104,14 +106,17 @@ namespace RomReader {
             }
             return encounters;
         }
-        GetPokemonSprite(id: number, shiny = false) {
-            return (this.pokemonSprites[id] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${id}.gif`;
+        GetTrainer(id: number, classId: number = null) {
+            return this.trainers.filter(t => t.classId == classId && t.id == id).shift() || this.trainers.filter(t => t.classId == classId).shift() || <Pokemon.Trainer>{};
+        }
+        GetPokemonSprite(id: number, form = 0, shiny = false) {
+            return ((this.pokemonSprites[id] || [])[form] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${id}.gif`;
         }
         GetTrainerSprite(id: number) {
             return this.trainerSprites[id] || "./img/empty-sprite.png";
         }
-        CachePokemonSprite(id: number, data: string, shiny = false) {
-            (this.pokemonSprites[id] || { base: '', shiny: '' })[shiny ? "shiny" : "base"] = data;
+        CachePokemonSprite(id: number, data: string, form = 0, shiny = false) {
+            ((this.pokemonSprites[id] || [])[form] || { base: '', shiny: '' })[shiny ? "shiny" : "base"] = data;
         }
         CacheTrainerSprite(id: number, data: string) {
             this.trainerSprites[id] = data;

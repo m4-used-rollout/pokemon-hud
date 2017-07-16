@@ -13,7 +13,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
             return null;
         let hpPercent = mon.health[0] / mon.health[1] * 100;
         let expPercent = mon.experience ? (mon.experience.current - mon.experience.this_level) / (mon.experience.next_level - mon.experience.this_level) * 100 : 0;
-        let eggPercent = mon.species ? 100 - (mon.friendship / mon.species.egg_cycles * 100) : 0;
+        let eggPercent = mon.species ? 100 - ((mon.friendship - 1) / (mon.species.egg_cycles - 1) * 100) : 0;
         let classes = [
             Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) > 50 ? "health-high" : "health-med",
             mon.gender,
@@ -21,11 +21,11 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
             mon.status
         ].filter(c => !!c).map(cleanString).join(' ');
         if (mon.is_egg)
-            classes = "egg" + (!mon.friendship ? " shimmy-shake" : "");
+            classes = "egg" + (eggPercent > 99 ? " shimmy-shake" : "");
         return <li className={classes}>
             <Sleepy status={mon.sleep_turns} />
-            <div className="pokemon-image">
-                {mon.is_egg ? <img src="./img/egg.gif" /> : <PokeSprite pokemonId={mon.species.id} shiny={mon.shiny} />}
+            <div className={`pokemon-image ${cleanString(mon.species.name)}`}>
+                {mon.is_egg ? <img src="./img/egg.gif" /> : <PokeSprite pokemonId={mon.species.id} shiny={mon.shiny} form={TPP.Server.RomData.GetForm(mon)} />}
             </div>
             {mon.is_egg ?
                 <div className="pokemon-info">

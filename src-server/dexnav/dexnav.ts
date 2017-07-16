@@ -6,7 +6,7 @@ namespace TPP.Server.DexNav {
 
     let state: State = null;
 
-    let ownedCount = 0, seenCount = 0, hour = 0;
+    let ownedCount = 0, seenCount = 0, hour = 0, in_battle = false;
 
     ipcMain.on('register-dexnav', e => {
         let renderer = e.sender;
@@ -21,12 +21,18 @@ namespace TPP.Server.DexNav {
     const getHour = (rs: RunStatus) => (rs.time || { h: 0 }).h;
 
     MainProcessRegisterStateHandler(runState => {
-        if (!state || runState.map_id != state.MapID || runState.map_bank != state.MapBank || runState.area_id != state.AreaID || ownedCount != runState.caught || seenCount != runState.seen || hour != getHour(runState)) {
+        if (!state //No previous state
+            || runState.map_id != state.MapID || runState.map_bank != state.MapBank || runState.area_id != state.AreaID //Changed map
+            || ownedCount != runState.caught || seenCount != runState.seen //Changed Pokedex
+            || hour != getHour(runState) //Changed time of day
+            || runState.in_battle != in_battle //Got into/out of a battle
+        ) {
             let map = RomData.GetMap(runState.map_id, runState.map_bank);
             state = new State(map, RomData.GetCurrentMapEncounters(map, runState), RomData.GetAllMapEncounters(map), runState);
             ownedCount = runState.caught;
             seenCount = runState.seen;
             hour = getHour(runState);
+            in_battle = runState.in_battle;
             transmitState();
         }
     });
