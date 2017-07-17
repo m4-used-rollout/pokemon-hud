@@ -19,22 +19,6 @@
     pointer-events: none;
     user-select: none;
 
-    &:before {
-        opacity: 0;
-        font-family:pokered;
-        content:'# πµ';
-        font-size:2.5em;
-        padding-left:.2em;
-        position: absolute;
-        left:50%;
-        top:50%;
-        transform: translateX(-50%)translateY(-50%);
-        z-index: 5;
-        color:black;
-        white-space: nowrap;
-        transition: opacity 1s ease-in-out;
-    }
-
     &:after {
         content:'';
         position: absolute;
@@ -194,6 +178,29 @@
                 }
             }
         }
+        &.nothing-to-show, &.no-encounters {
+            background-color:@screen-off-color;
+
+            &:before {
+                font-family:pokered;
+                content:'# πµ';
+                font-size:2.5em;
+                padding-left:.2em;
+                position: absolute;
+                left:50%;
+                top:50%;
+                transform: translateX(-50%)translateY(-50%);
+                z-index: 5;
+                color:black;
+                white-space: nowrap;
+                animation: fade-in 1s 1;
+                animation-timing-function: ease-in-out;
+            }
+
+            &.nothing-to-show:before {
+                content:'{';
+            }
+        }
 
         &.wild-battle, &.enemy-trainer {
             justify-content: space-between;
@@ -211,12 +218,31 @@
                 font-weight:bold;
                 font-size: 20vh;
                 text-align: center;
+                white-space: nowrap;
+
+                .enemy-party {
+                    display: flex;
+                    flex-flow: row nowrap;
+
+                    span {
+                        flex: 0 1 auto;
+                        transition: filter 1s ease-in-out;
+
+                        img {
+                            height: 20vh;
+                        }
+
+                        &.fainted {
+                            filter:contrast(0%) brightness(0%);
+                        }
+                    }
+                }
 
                 .catch-rate {
                     display: flex;
                     flex-flow: row nowrap;
                     vertical-align: middle;
-                    &:before {
+                    &:before, &:after {
                         font-family: pokered;
                         font-size: .8em;
                         font-weight: normal;
@@ -225,13 +251,8 @@
                         content:'{';
                     }
                     &:after {
-                        content: '%';
-                        font-size: 1.2em;
-                        width: .7em;
-                        vertical-align: top;
-                        position: relative;
+                        margin-right: 0;
                         margin-left: auto;
-                        top: -.07em;
                     }
                 }
             }
@@ -267,28 +288,6 @@
                 &.seen img {
                     filter:contrast(0%) brightness(0%);
                 }
-            }
-        }
-    }
-    &.nothing-to-show {
-        &:before {
-            content:'{';
-        }
-    }
-
-    &.no-encounters, &.nothing-to-show {
-
-        &:before {
-            opacity: 1;
-        }
-
-        .encounters {
-            background-color:@screen-off-color;
-            transition: background-color 1s ease-in-out;
-
-            .encounter-group {
-                opacity: 0;
-                transition:none;
             }
         }
     }
@@ -359,6 +358,15 @@
     }
     100% {
         transform: none;
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
     }
 }
 

@@ -72,6 +72,7 @@ namespace RomReader {
         }
 
         function augmentPokemonSpeciesAndExp(p: TPP.Pokemon) {
+            if (!p.species.id) return;
             let romMon = romData.GetSpecies(p.species.id);
             augmentSpecies(p.species, romMon);
             if (romMon.expFunction) {
@@ -85,6 +86,7 @@ namespace RomReader {
         }
 
         function augmentSpecies(s: TPP.PokemonSpecies, romMon: Pokemon.Species = null) {
+            if (!s.id) return;
             romMon = romMon || romData.GetSpecies(s.id);
             s.name = s.name || romMon.name;
             s.national_dex = s.national_dex || romMon.dexNumber;
@@ -137,7 +139,7 @@ namespace RomReader {
             }
         }
 
-        function augmentEnemyTrainer(t: TPP.Trainer) {
+        function augmentEnemyTrainer(t: TPP.EnemyTrainer) {
             let romTrainer = romData.GetTrainer(t.id,t.class_id);
             if (t.class_id) {
                 t.class_name = t.class_name || romTrainer.className;
@@ -145,6 +147,7 @@ namespace RomReader {
             if (t.id) {
                 t.name = t.name || romTrainer.name;
             }
+            (t.party || []).forEach(p=>augmentSpecies(p.species));
         }
 
         normalizeDex();

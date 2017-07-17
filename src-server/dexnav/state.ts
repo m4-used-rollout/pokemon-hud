@@ -40,7 +40,7 @@ namespace TPP.Server.DexNav {
             return this.TotalEncounters > 0;
         }
         public WildBattle: OwnedSpecies = null;
-        public EnemyTrainer: Pokemon.Trainer = null;
+        public EnemyTrainer: TPP.EnemyTrainer = null;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {
             if (!map || !runState) return;
             this.MapName = map.name;
@@ -61,7 +61,7 @@ namespace TPP.Server.DexNav {
                         .reduce((all, curr) => <Pokemon.EncounterMon[]>Array.prototype.concat.apply(all, curr), [])
                         .reduce((total, curr) => ({ rate: total.rate + curr.rate, species: curr.species }), { rate: 0 }).rate;
                 }
-                this.EnemyTrainer = Pokemon.Convert.TrainerFromRunStatus(runState.enemy_trainer);
+                this.EnemyTrainer = runState.enemy_trainer;
             }
         }
 

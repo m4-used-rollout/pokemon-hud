@@ -18,7 +18,7 @@ namespace Pokemon.Convert {
         }
     }
 
-    export function TrainerFromRunStatus(t: TPP.Trainer) {
+    export function EnemyTrainerFromRunStatus(t: TPP.EnemyTrainer) {
         if (!t) return null;
         return <Trainer>{
             id: t.id,

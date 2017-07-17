@@ -8,7 +8,7 @@ declare namespace TPP {
         in_battle: boolean;
         battle_kind?: string;
         wild_species?: PokemonSpecies;
-        enemy_trainer?: Trainer;
+        enemy_trainer?: EnemyTrainer;
     }
 
     //sent from lua
@@ -145,11 +145,18 @@ declare namespace TPP {
         count?: number;
     }
 
+    export interface EnemyTrainer extends Trainer {
+        class_id?: number;
+        class_name?: string;
+        party: {
+            species:PokemonSpecies;
+            health:number[];
+        }[]
+    }
+
     export interface Trainer {
         id: number;
         name: string;
-        class_id?: number;
-        class_name?: string;
         gender?: string;
         secret?: number;
     }

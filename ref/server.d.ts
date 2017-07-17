@@ -254,7 +254,7 @@ declare module TPP.Server {
 }
 declare namespace Pokemon.Convert {
     function SpeciesFromRunStatus(s: TPP.PokemonSpecies): Species;
-    function TrainerFromRunStatus(t: TPP.Trainer): Trainer;
+    function EnemyTrainerFromRunStatus(t: TPP.EnemyTrainer): Trainer;
 }
 declare namespace TPP.Server.DexNav {
     interface KnownEncounter {
@@ -286,7 +286,7 @@ declare namespace TPP.Server.DexNav {
         };
         readonly HasEncounters: boolean;
         WildBattle: OwnedSpecies;
-        EnemyTrainer: Pokemon.Trainer;
+        EnemyTrainer: TPP.EnemyTrainer;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus);
         private categories;
         private PopulateKnownEncounters(encounters, runState);

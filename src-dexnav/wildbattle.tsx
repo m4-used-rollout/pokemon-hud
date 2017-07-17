@@ -8,7 +8,7 @@ class WildBattle extends React.Component<{ wild: TPP.Server.DexNav.OwnedSpecies 
         return <div className="encounters wild-battle">
             <div className="info-left">
                 <div className="name">{mon.name}</div>
-                <div className="catch-rate">{(Math.floor((mon.catchRate / 256) * 1000) / 10).toFixed(1)}</div>
+                <div className="catch-rate">{mon.catchRate}</div>
             </div>
             <div className="types">
                 <TypeImg type={mon.type1} />
