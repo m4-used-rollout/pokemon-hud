@@ -6,6 +6,7 @@
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 /// <reference path="../ref/server.d.ts" />
 
+
 (function () { //add TPP.Server module to global scope
     let scopeInject = require('electron').remote.require('./server');
     Object.keys(scopeInject).forEach(k => window[k] = scopeInject[k]);

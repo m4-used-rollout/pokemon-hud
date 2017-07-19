@@ -84,7 +84,7 @@
         font-size: 2em;
     }
 
-    .encounters {
+    .dexnav-screen() {
         border: 2px inset #600;
         box-shadow: 0 0 4px 4px #600;
         background-color: @screen-on-color;
@@ -93,22 +93,27 @@
         overflow: hidden;
         color:black;
         position: absolute;
-        overflow: hidden;
         left: 1em;
         top: 1em;
         bottom: 1em;
         right: 1em;
+    }
+
+    &:before {
+        content:'';
+        .dexnav-screen();
+    }
+
+    .encounters {
+        .dexnav-screen();
         display:flex;
         flex-flow: row nowrap;
         align-items: center;
-        transition: background-color 4s ease-in-out;
+        transition: opacity 1s ease-in-out;
+        
 
-        + .encounters {
-            transition: opacity 4s ease-in-out;
+        &.encounters:not(.hidden) ~ .encounters, &.hidden {
             opacity: 0;
-            > * {
-                opacity: 0;
-            }
         }
 
         .encounter-group {
@@ -120,7 +125,7 @@
             height:100%;
             animation: scroll-forever 30s infinite;
             animation-timing-function: linear;
-            transition: opacity 4s ease-in-out;
+            transition: opacity 1s ease-in-out;
 
             span {
                 flex:0 0 auto;
@@ -193,8 +198,8 @@
                 z-index: 5;
                 color:black;
                 white-space: nowrap;
-                animation: fade-in 1s 1;
-                animation-timing-function: ease-in-out;
+                // animation: fade-in 1s 1;
+                // animation-timing-function: ease-in-out;
             }
 
             &.nothing-to-show:before {
@@ -223,6 +228,7 @@
                 .enemy-party {
                     display: flex;
                     flex-flow: row nowrap;
+                    justify-content: center;
 
                     span {
                         flex: 0 1 auto;
@@ -339,7 +345,7 @@
     }
 }
 
-.hidden .rarity:after {
+.hidden > .rarity:after {
     content:'H';
 }
 

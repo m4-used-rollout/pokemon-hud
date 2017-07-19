@@ -1,4 +1,4 @@
-/// <reference path="shared.ts" />
+/// <reference path="persistent.ts" />
 /// <reference path="../src-hud/pokesprite.tsx" />
 
 interface EncounterProps {
@@ -6,13 +6,13 @@ interface EncounterProps {
     total: number
 }
 
-class Encounters extends React.Component<EncounterProps, {}> {
+class Encounters extends PersistentComponent<EncounterProps> {
     render() {
-        let totalKnownEncounters = this.props.total;
+        let totalKnownEncounters = this.state.total;
         let numDisplays = Math.max(3, Math.floor((window.innerWidth / ((totalKnownEncounters || 1) * .66)) / (window.innerHeight || 1)) * 3), displays: number[] = [];
         for (let i = 0; i < numDisplays; displays.push(i++));
         return <div className="encounters">
-            {displays.map(k => <EncounterGroup encounters={this.props.encounters} total={totalKnownEncounters} key={k.toString() + numDisplays.toString()} />)}
+            {displays.map(k => <EncounterGroup encounters={this.state.encounters} total={totalKnownEncounters} key={k.toString() + numDisplays.toString()} />)}
         </div>
     }
 }

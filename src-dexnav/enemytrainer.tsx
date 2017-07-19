@@ -1,11 +1,14 @@
 /// <reference path="encounters.tsx" />
 /// <reference path="../src-hud/trainersprite.tsx" />
 
-class EnemyTrainer extends React.Component<{ trainer: TPP.EnemyTrainer }, {}> {
+class EnemyTrainer extends PersistentComponent<{ trainer: TPP.EnemyTrainer }> {
+    constructor(props) {
+        super(props, 2);
+    }
     render() {
-        let trainer = this.props.trainer;
+        let trainer = this.state.trainer;
         if (!trainer) return null;
-        return <div className="encounters enemy-trainer">
+        return <div className={`encounters enemy-trainer ${this.props.trainer ? "" : "hidden"}`} key={`${trainer.class_id}${trainer.id}`}>
             <div className="info-left">
                 <div className="name">{`${trainer.class_name || ''} ${trainer.name || ''}`.trim()}</div>
                 <EnemyParty trainer={trainer} />
