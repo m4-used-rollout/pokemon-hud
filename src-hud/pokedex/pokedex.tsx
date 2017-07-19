@@ -1,5 +1,5 @@
 /// <reference path="../pokesprite.tsx" />
-
+/// <reference path="../trainersprite.tsx" />
 
 class Pokedex extends React.Component<{ seen: number[], owned: number[] }, { newEntry: number, scrollTo: number }> {
     constructor(props) {
@@ -29,6 +29,18 @@ class Pokedex extends React.Component<{ seen: number[], owned: number[] }, { new
                 {seen || owned ? <PokeSprite pokemonId={i} /> : <img src="./img/empty-sprite.png" />}
             </li>);
         }
+        // //show all unown for dev
+        // for (let i = 0; i < 26; i++) {
+        //     mons.push(<li key={`unown-${i}`} className="unowned" data-index={`000${i}`.substring(i.toString().length)}>
+        //         <PokeSprite pokemonId={201} form={i} />
+        //     </li>);
+        // }
+        // //show all trainers for dev
+        // for (let i = 0; i < 67; i++) {
+        //     mons.push(<li key={`trainer-${i}`} className="unowned" data-index={`000${i}`.substring(i.toString().length)}>
+        //         <TrainerSprite trainerId={0} classId={i} />
+        //     </li>);
+        // }
         let style = { transform: this.state.scrollTo ? `translateY(${this.state.scrollTo}%)` : null };
         return <div className={`pokedex ${this.state.newEntry ? "new-entry" : ""}`} data-region={config.mainRegion || "National"}>
             <div className="pokemon-display">
