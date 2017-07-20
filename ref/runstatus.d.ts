@@ -79,6 +79,7 @@ declare namespace TPP {
         egg_cycles: number;
         egg_type1?: string;
         egg_type2?: string;
+        gender_ratio?: number;
         growth_rate?: string;
         national_dex?: number;
     }
@@ -149,8 +150,8 @@ declare namespace TPP {
         class_id?: number;
         class_name?: string;
         party: {
-            species:PokemonSpecies;
-            health:number[];
+            species: PokemonSpecies;
+            health: number[];
         }[]
     }
 

@@ -46,8 +46,9 @@ namespace RomReader {
             augmentPokemonMet(p);
             augmentPokemonSpeciesAndExp(p);
             augmentPokemonMoves(p);
-            calculatePokemonAbilityNatureCharacteristic(p);
+            calculateGender(p);
             calculateShiny(p);
+            calculatePokemonAbilityNatureCharacteristic(p);
             CensorEgg(p);
         }
 
@@ -93,6 +94,7 @@ namespace RomReader {
             s.type1 = s.type1 || romMon.type1;
             s.type2 = s.type2 || romMon.type2;
             s.egg_cycles = s.egg_cycles || romMon.eggCycles;
+            s.gender_ratio = s.gender_ratio || romMon.genderRatio;
             s.growth_rate = s.growth_rate || romMon.growthRate;
             s.catch_rate = s.catch_rate || romMon.catchRate;
         }
@@ -107,6 +109,26 @@ namespace RomReader {
                 }
                 if (typeof p.met.caught_in !== "string") {
                     p.met.caught_in = romData.GetItem(parseInt(p.met.caught_in)).name;
+                }
+            }
+        }
+
+        function calculateGender(p: TPP.Pokemon) {
+            if (p.species.gender_ratio && typeof (p.gender) !== "string") {
+                if (p.species.gender_ratio == 255) {
+                    p.gender = p.gender || '';
+                }
+                else if (p.species.gender_ratio == 254) {
+                    p.gender = p.gender || "Female";
+                }
+                else if (p.species.gender_ratio == 0) {
+                    p.gender = p.gender || "Male";
+                }
+                else if (p.gender) { //Generation 3
+                    p.gender = parseInt(p.gender) > p.species.gender_ratio ? "Male" : "Female";
+                }
+                else { //Generation 2
+                    p.gender = ((p.ivs || { attack: 0 }).attack << 4) > p.species.gender_ratio ? "Male" : "Female";
                 }
             }
         }
@@ -140,14 +162,14 @@ namespace RomReader {
         }
 
         function augmentEnemyTrainer(t: TPP.EnemyTrainer) {
-            let romTrainer = romData.GetTrainer(t.id,t.class_id);
+            let romTrainer = romData.GetTrainer(t.id, t.class_id);
             if (t.class_id) {
                 t.class_name = t.class_name || romTrainer.className;
             }
             if (t.id) {
                 t.name = t.name || romTrainer.name;
             }
-            (t.party || []).forEach(p=>augmentSpecies(p.species));
+            (t.party || []).forEach(p => augmentSpecies(p.species));
         }
 
         normalizeDex();
