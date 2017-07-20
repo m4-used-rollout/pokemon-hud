@@ -1,0 +1,41 @@
+// @dex-frame-border: #600;
+// @dex-frame-color: #c00;
+// @dex-frame-bevel: #600;
+// @dex-frame-highlight: #900;
+// @dex-label-color: white;
+
+@dex-frame-border: #4A2F28;
+@dex-frame-color: #F8D8B1;
+@dex-frame-bevel: #D8A878;
+@dex-frame-highlight: #F8F8F8;
+@dex-label-color: #213953;
+
+@screen-on-color: darkolivegreen;
+@screen-off-color: #666;
+
+.dexFrame() {
+     border: 1px outset @dex-frame-border;
+    background-color: @dex-frame-color;
+    box-shadow: 0 0 2px 2px @dex-frame-bevel inset;
+}
+
+.dexLabel() {
+    color: @dex-label-color;
+    .outline(@dex-frame-highlight);
+    // text-shadow: 2px 2px 0 @dex-frame-highlight, -2px 2px 0 @dex-frame-highlight, 2px -2px 0 @dex-frame-highlight, -2px -2px 0 @dex-frame-highlight;
+}
+
+.dexContent() {
+    border: 1px inset @dex-frame-border;
+    box-shadow: 0 0 4px 4px @dex-frame-bevel;
+    background-color: @screen-on-color;
+    box-sizing: border-box;
+    padding:2px;
+    overflow: hidden;
+    color:black;
+    position: absolute;
+    left:5vw;
+    right:5vw;
+    top:5vh;
+    bottom:5vh;
+}

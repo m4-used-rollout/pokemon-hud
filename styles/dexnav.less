@@ -1,13 +1,9 @@
 @import 'fonts.less';
 @import 'mixins/utility.less';
-
-@screen-on-color: darkolivegreen;
-@screen-off-color: #666;
+@import 'mixins/dexframe.less';
 
 .dexnav {
-    border: 2px outset #600;
-    background-color: #c00;
-    box-shadow: 0 0 4px 4px #600 inset;
+    .dexFrame();
     font-size:10vh;
     color:white;
     position: fixed;
@@ -85,14 +81,7 @@
     }
 
     .dexnav-screen() {
-        border: 2px inset #600;
-        box-shadow: 0 0 4px 4px #600;
-        background-color: @screen-on-color;
-        box-sizing: border-box;
-        padding:2px;
-        overflow: hidden;
-        color:black;
-        position: absolute;
+        .dexContent();
         left: 1em;
         top: 1em;
         bottom: 1em;
