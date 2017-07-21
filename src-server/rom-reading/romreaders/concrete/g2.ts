@@ -34,6 +34,7 @@ namespace RomReader {
     pokeSpriteClearFix[65] = { start: [[42, 15]] }; //Alakazam
     pokeSpriteClearFix[69] = { start: [[31, 31], [31, 27], [32, 28], [33, 30]] }; //Bellsprout
     pokeSpriteClearFix[71] = { start: [[37, 5], [38, 6]] }; //Victreebel
+    pokeSpriteClearFix[73] = { start: [[37, 41], [38, 42], [37, 48], [45, 43], [46, 44]] }; //Tentacruel
     pokeSpriteClearFix[78] = { start: [[39, 10]] }; //Rapidash
     pokeSpriteClearFix[81] = { start: [[19, 33], [20, 32], [24, 34]] }; //Magnemite
     pokeSpriteClearFix[82] = { start: [[23, 29], [24, 28], [25, 27], [33, 27]] }; //Magneton
