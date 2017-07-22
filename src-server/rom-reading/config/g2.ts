@@ -14,6 +14,7 @@ const gen2Offsets = {  //Crystal only for now
     TimeFishGroups: 0x9266f,
     MapHeaders: 0x94000,
     HeadbuttWildsOffset: 0xB82FA,
+    FrameBordersOffset: 0xF8800,
     PokemonPicPointers: 0x120000,
     UnownPicPointers: 0x124000,
     TrainerPicPointers: 0x128000,

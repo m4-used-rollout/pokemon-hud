@@ -21,7 +21,6 @@ function RenderImageMap(imgData: Sprites.ImageMap) {
 class PokeSprite extends React.PureComponent<{ pokemonId: number; shiny?: boolean; form?: number }, {}> {
     render() {
         let src = TPP.Server.RomData.GetPokemonSprite(this.props.pokemonId, this.props.form || 0, this.props.shiny);
-        // if (typeof src !== "string") {
         if (src.charAt(0) == "{") {
             src = RenderImageMap(JSON.parse(src));
             if (src) {
@@ -29,6 +28,5 @@ class PokeSprite extends React.PureComponent<{ pokemonId: number; shiny?: boolea
             }
         }
         return <img src={src} />
-        //return <img src={`./img/sprites/${config.spriteFolder}/${mon.shiny ? "shiny/" : ""}${mon.gender == "Female" ? "female/" : "" }${mon.is_egg ? 'egg' : (mon.species.national_dex || mon.species.id)}${mon.form ? "-" + mon.form : ""}.gif`} />
     }
 }

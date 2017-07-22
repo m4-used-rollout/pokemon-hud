@@ -13,3 +13,11 @@
         transform: scaleY(2);
     });
 }
+
+.blink(@speed:1s) {
+    animation: blink @speed step-end infinite;
+}
+
+@keyframes blink {  
+    50% { opacity: 0 }
+}

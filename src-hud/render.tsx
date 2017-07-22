@@ -14,7 +14,7 @@ function Render(id: string = targetId) {
         config.hudTheme || "default-theme"
     ]
     ReactDOM.render(<div className={classes.filter(c => !!c).join(' ')}>
-        <Party party={data.party} />
+        <Party party={data.party} gameState={data} />
         <Trainer trainer={data} />
         <Pokedex seen={data.seen_list || []} owned={data.caught_list || []} />
     </div>, document.getElementById(id));

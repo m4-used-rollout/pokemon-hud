@@ -8,15 +8,18 @@ namespace Sprites {
         pixels: number[][];
     }
 
-    class Tile2BPP {
+    class Tile {
         pixels: number[][] = [];
-        constructor(data: Buffer) {
+        constructor(data: Buffer, bpp: number) {
             for (let y = 0; y < 8; y++) {
-                let leftBits = data[y * 2], rightBits = data[(y * 2) + 1];
+                let bytes = data.slice(y * bpp, (y + 1) * bpp);
                 for (let x = 0; x < 8; x++) {
                     let bit = 7 - x;
                     this.pixels[x] = this.pixels[x] || [];
-                    this.pixels[x][y] = (((leftBits & (1 << bit)) >> bit) << 1) | ((rightBits & (1 << bit)) >> bit);
+                    this.pixels[x][y] = 0;
+                    for (let byte = 1; byte <= bytes.length; byte++) {
+                        this.pixels[x][y] |= (((bytes[byte - 1] & (1 << bit)) >> bit) << (bytes.length - byte));
+                    }
                 }
             }
         }
@@ -29,11 +32,15 @@ namespace Sprites {
         }
     }
 
-    export function Parse2BPPToImageMap(data: Buffer, palette: string[], tilesWide: number, tilesHigh: number, fullTilesWide = 7, fullTilesHigh = 7): ImageMap {
-        let tiles: Tile2BPP[] = [];
-        for (let t = 0; t < tilesHigh * tilesWide; t++) {
-            tiles.push(new Tile2BPP(data.slice(t * 16)));
+    function ParseTiles(data: Buffer, numTiles: number, bpp = 2) {
+        let tiles: Tile[] = [];
+        for (let t = 0; t < numTiles; t++) {
+            tiles.push(new Tile(data.slice(t * (8 * bpp)), bpp));
         }
+        return tiles;
+    }
+
+    function TilesToPixels(tiles: Tile[], tilesWide: number, tilesHigh: number, fullTilesWide = 7, fullTilesHigh = 7) {
         let pixels: number[][] = [];
         for (let x = 0; x < fullTilesWide * 8; x++) {
             pixels[x] = [];
@@ -43,8 +50,19 @@ namespace Sprites {
         }
         let xOffset = ((fullTilesWide - tilesWide) / 2) * 8; //horizontally center
         let yOffset = ((fullTilesHigh - tilesHigh) / 2) * 8; //vertically center
-        tiles.forEach((tile, t) => tile.copyPixelsTo(pixels, (Math.floor(t / tilesHigh) * 8) + xOffset, ((t % tilesHigh) * 8) + yOffset));
-        return { palette: palette, pixels: pixels };
+        tiles.forEach((tile, t) => tile ? tile.copyPixelsTo(pixels, (Math.floor(t / tilesHigh) * 8) + xOffset, ((t % tilesHigh) * 8) + yOffset) : null);
+        return pixels;
+    }
+
+    export function ParseTilesToLayout(data: Buffer, palette: string[], numTiles: number, layout: number[][], bpp: number): ImageMap {
+        let tiles = ParseTiles(data, numTiles, bpp);
+        tiles.unshift(null);
+        let flat = layout.reduce((all, row) => <number[]>Array.prototype.concat.apply(all, row), []).reverse().map(n => tiles[n]);
+        return { palette: palette, pixels: TilesToPixels(flat, layout[0].length, layout.length, layout[0].length, layout.length) };
+    }
+
+    export function ParseTilesToImageMap(data: Buffer, palette: string[], tilesWide: number, tilesHigh: number, fullTilesWide = 7, fullTilesHigh = 7, bpp = 2): ImageMap {
+        return { palette: palette, pixels: TilesToPixels(ParseTiles(data, tilesWide * tilesHigh, bpp), tilesWide, tilesHigh, fullTilesWide, fullTilesHigh) };
     }
 
     export function Convert16BitColorToRGB(color16: number) {
@@ -98,6 +116,8 @@ namespace Sprites {
                 }
             }
         }
+
+        return img;
     }
 
 }

@@ -3,10 +3,9 @@
 /// <reference path="sleepy.tsx" />
 /// <reference path="helditem.tsx" />
 /// <reference path="../pokesprite.tsx" />
+/// <reference path="../frameborder.tsx" />
 
-
-
-class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
+class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TPP.TrainerData; }, {}> {
     render() {
         let mon = this.props.pokemon;
         if (!mon)
@@ -18,13 +17,15 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
             Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) > 50 ? "health-high" : "health-med",
             mon.gender,
             mon.health[0] == 0 ? "fainted" : "",
-            mon.status
+            mon.status,
+            this.props.gameState.level_cap && mon.level == this.props.gameState.level_cap ? "level-cap" : ""
         ].filter(c => !!c).map(cleanString).join(' ');
         if (mon.is_egg)
             classes = "egg" + (eggPercent > 99 ? " shimmy-shake" : "");
         return <li className={classes}>
             <Sleepy status={mon.sleep_turns} />
             <div className={`pokemon-image ${cleanString(mon.species.name)}`}>
+                <FrameBorder frame={parseInt((this.props.gameState.options || { frame: '0' }).frame)} />
                 {mon.is_egg ? <img src="./img/egg.gif" /> : <PokeSprite pokemonId={mon.species.id} shiny={mon.shiny} form={TPP.Server.RomData.GetForm(mon)} />}
             </div>
             {mon.is_egg ?
@@ -57,7 +58,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; }, {}> {
                         <div className="hp" data-current={mon.health[0]} data-max={mon.health[1]} />
                     </div>
                 </div>}
-            <HeldItem id={mon.held_item ? mon.held_item.id : 0} />
+            <HeldItem id={mon.held_item ? mon.held_item.id : 0} name={mon.held_item ? mon.held_item.name : ""} />
         </li>
     }
 }

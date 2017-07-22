@@ -11,7 +11,7 @@ module TPP.Server {
     fs.readFile(__dirname + '/location.html', 'utf8', (err, data)=> {
         if (err)
             console.error(err);
-        else 
+        else
             locationTemplate = data || locationTemplate;
     });
 
@@ -37,7 +37,7 @@ module TPP.Server {
         server.listen(config.listenPort || 1337);
     });
 
-    var inputs:any/*JoyPad.Generic*/ = null;
+    var inputs:JoyPad.BizHawk = null;
 
     function endpointResponse(request) {
         var state = TPP.Server.getState();
@@ -49,14 +49,14 @@ module TPP.Server {
             case "input":
                 if (!inputs) {
                     setInterval(()=>inputs = {
-                        touch_screen_x: Math.random() * (255 - 160) + 160,
-                        touch_screen_y: Math.random() * (140 - 110) + 110,
-                        // left: Math.random() > .7,
-                        // right: Math.random() > .7,
-                        // up: Math.random() > .7,
-                        // down: Math.random() > .7,
-                        // B: Math.random() > .4,
-                        // A: Math.random() > .3,
+                        // touch_screen_x: Math.random() * (255 - 160) + 160,
+                        // touch_screen_y: Math.random() * (140 - 110) + 110,
+                        Left: Math.random() > .7,
+                        Right: Math.random() > .7,
+                        Up: Math.random() > .7,
+                        Down: Math.random() > .7,
+                        B: Math.random() > .4,
+                        A: Math.random() > .3,
                         //Start: Math.random() > .9
                     },100);
                 }

@@ -20,6 +20,7 @@ declare const gen2Offsets: {
     TimeFishGroups: number;
     MapHeaders: number;
     HeadbuttWildsOffset: number;
+    FrameBordersOffset: number;
     PokemonPicPointers: number;
     UnownPicPointers: number;
     TrainerPicPointers: number;
@@ -146,9 +147,10 @@ declare namespace Sprites {
         palette: string[];
         pixels: number[][];
     }
-    function Parse2BPPToImageMap(data: Buffer, palette: string[], tilesWide: number, tilesHigh: number, fullTilesWide?: number, fullTilesHigh?: number): ImageMap;
+    function ParseTilesToLayout(data: Buffer, palette: string[], numTiles: number, layout: number[][], bpp: number): ImageMap;
+    function ParseTilesToImageMap(data: Buffer, palette: string[], tilesWide: number, tilesHigh: number, fullTilesWide?: number, fullTilesHigh?: number, bpp?: number): ImageMap;
     function Convert16BitColorToRGB(color16: number): string;
-    function FloodClear(img: ImageMap, paletteIndex: number, stopPixels?: number[][], startPixels?: number[][], clearDiagonal?: boolean): void;
+    function FloodClear(img: ImageMap, paletteIndex: number, stopPixels?: number[][], startPixels?: number[][], clearDiagonal?: boolean): ImageMap;
 }
 declare namespace RomReader {
     abstract class RomReaderBase {
@@ -161,6 +163,7 @@ declare namespace RomReader {
             shiny: string;
         }[][];
         protected trainerSprites: string[];
+        protected frameBorders: string[];
         protected trainers: Pokemon.Trainer[];
         protected areas: string[];
         protected abilities: string[];
@@ -192,8 +195,10 @@ declare namespace RomReader {
         GetTrainer(id: number, classId?: number): Pokemon.Trainer;
         GetPokemonSprite(id: number, form?: number, shiny?: boolean): string;
         GetTrainerSprite(id: number): string;
+        GetFrameBorder(id: number): string;
         CachePokemonSprite(id: number, data: string, form?: number, shiny?: boolean): void;
         CacheTrainerSprite(id: number, data: string): void;
+        CacheFrameBorder(id: number, data: string): void;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         CheckIfCanFish(runState: TPP.RunStatus): boolean;
         private surfExp;
@@ -236,6 +241,7 @@ declare namespace RomReader {
         private ReadItemData(romData);
         private ReadTrainerData(romData);
         private ReadPokeData(romData);
+        private ReadFrameBorders(romData);
         private ProcessPalette(palData);
         private ReadTrainerSprites(romData);
         private ReadPokemonSprites(romData);

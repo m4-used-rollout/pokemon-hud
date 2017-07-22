@@ -139,6 +139,7 @@ namespace RomReader {
             this.pokemonSprites = this.ReadPokemonSprites(romData);
             this.trainers = this.ReadTrainerData(romData);
             this.trainerSprites = this.ReadTrainerSprites(romData);
+            this.frameBorders = this.ReadFrameBorders(romData);
             this.items = this.ReadItemData(romData);
             this.ballIds = this.items.filter((i: Gen2Item) => i.pocket == "Ball").map(i => i.id);
             this.moves = this.ReadMoveData(romData);
@@ -360,6 +361,25 @@ namespace RomReader {
             }));
         }
 
+        private ReadFrameBorders(romData: Buffer) {
+            let framePal = ["white", "black"];
+            return this.ReadStridedData(romData, config.FrameBordersOffset, 48, 9).map(frameData =>
+                JSON.stringify(
+                    Sprites.FloodClear(
+                        Sprites.ParseTilesToLayout(frameData, framePal, 6, [
+                            [6, 4, 4, 4, 4, 4, 4, 3],
+                            [2, 0, 0, 0, 0, 0, 0, 2],
+                            [2, 0, 0, 0, 0, 0, 0, 2],
+                            [2, 0, 0, 0, 0, 0, 0, 2],
+                            [2, 0, 0, 0, 0, 0, 0, 2],
+                            [2, 0, 0, 0, 0, 0, 0, 2],
+                            [2, 0, 0, 0, 0, 0, 0, 2],
+                            [5, 4, 4, 4, 4, 4, 4, 1]
+                        ], 1), 0, [], [[20, 20]])
+                )
+            );
+        }
+
         private ProcessPalette(palData: Buffer) {
             return ['white', Sprites.Convert16BitColorToRGB(palData.readUInt16LE(2)), Sprites.Convert16BitColorToRGB(palData.readUInt16LE(0)), 'black'];
         }
@@ -370,7 +390,7 @@ namespace RomReader {
                 let ptrAddr = config.TrainerPicPointers + (classId * 3);
                 let spriteAddr = this.ROMBankAddrToLinear(romData[ptrAddr] + config.PicBankOffset, romData[ptrAddr + 2] * 0x100 + romData[ptrAddr + 1]);
                 let spriteData = Tools.LZGSC.Decompress(romData.slice(spriteAddr));
-                let imgData = Sprites.Parse2BPPToImageMap(spriteData, palettes[classId], 7, 7);
+                let imgData = Sprites.ParseTilesToImageMap(spriteData, palettes[classId], 7, 7);
                 let clearFix = trainerSpriteClearFix[classId] || {};
                 Sprites.FloodClear(imgData, 0, clearFix.stop, clearFix.start, clearFix.clearDiagonal);
                 return JSON.stringify(imgData);
@@ -383,7 +403,7 @@ namespace RomReader {
             function readPokeSprite(ptrAddr: number, mon: Pokemon.Species, clearFix: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } = {}) {
                 let spriteAddr = this.ROMBankAddrToLinear(romData[ptrAddr] + config.PicBankOffset, romData[ptrAddr + 2] * 0x100 + romData[ptrAddr + 1]);
                 let spriteData = Tools.LZGSC.Decompress(romData.slice(spriteAddr));
-                let imgData = Sprites.Parse2BPPToImageMap(spriteData, palettes[mon.id].base, mon.spriteSize, mon.spriteSize);
+                let imgData = Sprites.ParseTilesToImageMap(spriteData, palettes[mon.id].base, mon.spriteSize, mon.spriteSize);
                 Sprites.FloodClear(imgData, 0, clearFix.stop || [], clearFix.start || [], clearFix.clearDiagonal);
                 return {
                     base: JSON.stringify(imgData),

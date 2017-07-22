@@ -13,6 +13,7 @@ namespace RomReader {
         protected maps: Pokemon.Map[] = [];
         protected pokemonSprites: { base: string, shiny: string }[][] = [];
         protected trainerSprites: string[] = [];
+        protected frameBorders: string[] = [];
         protected trainers: Pokemon.Trainer[] = [];
         protected areas: string[] = [];
         protected abilities: string[] = [];
@@ -115,11 +116,17 @@ namespace RomReader {
         GetTrainerSprite(id: number) {
             return this.trainerSprites[id] || "./img/empty-sprite.png";
         }
+        GetFrameBorder(id:number) {
+            return this.frameBorders[id % this.frameBorders.length];
+        }
         CachePokemonSprite(id: number, data: string, form = 0, shiny = false) {
             ((this.pokemonSprites[id] || [])[form] || { base: '', shiny: '' })[shiny ? "shiny" : "base"] = data;
         }
         CacheTrainerSprite(id: number, data: string) {
             this.trainerSprites[id] = data;
+        }
+        CacheFrameBorder(id: number, data: string) {
+            this.frameBorders[id] = data;
         }
         CheckIfCanSurf(runState: TPP.RunStatus) {
             //check all PC and Party pokemon for anyone who knows Surf
