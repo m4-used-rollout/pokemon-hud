@@ -155,7 +155,7 @@
                     position: relative;
                     min-width: 0;
                     margin-left: 1vw;
-                    background-image: linear-gradient(to left, black 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
+                    //background-image: linear-gradient(to left, black 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
 
                     .top-line {
                         font-family: pokered;
@@ -305,6 +305,7 @@
                             text-align: center;
                             font-size: 1.8em;
                             height:1em;
+                            font-family: pokered;
 
                             &:before {
                                 content:attr(data-current);
@@ -346,6 +347,8 @@
                     }
                     &:after {
                         content:attr(data-name);
+                        font-family: pokered;
+                        font-size:.8em;
                     }
 
                     img {
