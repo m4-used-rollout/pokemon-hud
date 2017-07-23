@@ -237,6 +237,7 @@ declare namespace RomReader {
         private CombineDuplicateEncounters(mons);
         private ReadMaps(romData);
         private ReadAreaNames(romData);
+        private GetTMHMNames(romData);
         private ReadMoveData(romData);
         private ReadItemData(romData);
         private ReadTrainerData(romData);

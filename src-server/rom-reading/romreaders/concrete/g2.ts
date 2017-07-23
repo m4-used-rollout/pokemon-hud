@@ -147,6 +147,7 @@ namespace RomReader {
             this.maps = this.ReadMaps(romData);
             this.FindMapEncounters(romData);
             this.FindFishingEncounters(romData);
+            this.GetTMHMNames(romData);
             this.levelCaps = this.ReadPyriteLevelCaps(romData);
             // console.log(JSON.stringify(this.trainers, null, 2));
         }
@@ -279,6 +280,13 @@ namespace RomReader {
         private ReadAreaNames(romData: Buffer) {
             return this.ReadStridedData(romData, config.AreaNamesOffset, 4, 97)
                 .map(data => this.ConvertText(romData.slice(this.SameBankPtrToLinear(config.AreaNamesOffset, data.readUInt16LE(2)))) || '');
+        }
+
+        private GetTMHMNames(romData: Buffer) {
+            let tmExp = /^[TH]M\d\d$/;
+            let tms = this.items.filter(i => tmExp.test(i.name));
+            this.ReadStridedData(romData, config.TMMovesOffset, 1, tms.length)
+                .forEach((m, i) => tms[i].name += ' ' + this.moves[m[0]].name);
         }
 
         private ReadMoveData(romData: Buffer) {
