@@ -1,0 +1,12 @@
+.gbfade(@duration: 2s) {
+    animation: gbfade @duration ease-out 1;
+}
+
+@keyframes gbfade {
+    0% {
+        filter:brightness(0%)contrast(200%);
+    }
+    100% {
+        filter:none;
+    }
+}

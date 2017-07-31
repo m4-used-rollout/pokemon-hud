@@ -1,6 +1,7 @@
 @import 'fonts.less';
 @import 'mixins/utility.less';
 @import 'mixins/dexframe.less';
+@import 'animations/gbfade.less';
 
 .dexnav {
     .dexFrame();
@@ -14,6 +15,7 @@
     right:0;
     pointer-events: none;
     user-select: none;
+    .gbfade(10s);
 
     &:after {
         content:'';

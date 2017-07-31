@@ -1,4 +1,5 @@
 @import '../mixins/all.less';
+@import '../animations/gbfade.less';
 
 .gbc-theme {
     @low-health: red;
@@ -24,6 +25,7 @@
         overflow: hidden;
         user-select: none;
         pointer-events: none;
+        .gbfade();
 
         * {
             box-sizing: border-box;

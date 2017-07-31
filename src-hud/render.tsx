@@ -7,7 +7,7 @@ var data: TPP.RunStatus = null;
 var targetId: string;
 function Render(id: string = targetId) {
     targetId = id;
-    if (!id || !data) return;
+    if (!id || !data || !data.name) return;
     let classes = [
         "pokemon-hud",
         data.evolution_is_happening ? "evolving" : null,
