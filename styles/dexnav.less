@@ -200,7 +200,6 @@
 
         &.wild-battle, &.enemy-trainer {
             justify-content: space-between;
-            background-color: @screen-on-color!important; //turn on even if otherwise no encounters
 
             > * { 
                 animation: slide-in 4s 1;
@@ -215,7 +214,7 @@
                 font-size: 20vh;
                 text-align: center;
                 white-space: nowrap;
-                max-width: 65vw;
+                // max-width: 65vw;
 
                 .enemy-party {
                     display: flex;
@@ -295,7 +294,16 @@
                     position: relative;
                 }
                 &.seen img {
-                    filter:contrast(0%) brightness(0%);
+                    filter:brightness(0%) contrast(200%);
+                }
+            }
+            .trainer {
+                flex:0 1 80vh;
+                img {
+                    height: auto;
+                    width:100%;
+                    max-width: 80vh;
+                    min-width: 50vh;
                 }
             }
         }
