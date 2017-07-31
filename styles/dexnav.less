@@ -215,22 +215,34 @@
                 font-size: 20vh;
                 text-align: center;
                 white-space: nowrap;
+                max-width: 65vw;
 
                 .enemy-party {
                     display: flex;
                     flex-flow: row nowrap;
-                    justify-content: center;
+                    position: relative;
+                    z-index: 2;
 
                     span {
-                        flex: 0 1 auto;
+                        flex: 1 1 30vh;
+                        filter: drop-shadow(0 0 1px black) brightness(100%) contrast(100%);
                         transition: filter 1s ease-in-out;
 
+                        &:first-of-type {
+                            margin-left:auto;
+                        }
+                        &:last-of-type {
+                            margin-right:auto;
+                        }
+
                         img {
-                            height: 20vh;
+                            width:100%;
+                            max-width:40vh;
+                            min-width:25vh;
                         }
 
                         &.fainted {
-                            filter:contrast(0%) brightness(0%);
+                            filter:drop-shadow(0 0 0 black) brightness(0%) contrast(200%);
                         }
                     }
                 }

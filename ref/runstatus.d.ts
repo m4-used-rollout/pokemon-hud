@@ -42,6 +42,7 @@ declare namespace TPP {
         seen: number;
         seen_list: number[];
         secret: number;
+        rival_name?: string;
         time?: {
             d: string;
             h: number;

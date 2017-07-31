@@ -62,6 +62,9 @@ namespace TPP.Server.DexNav {
                         .reduce((total, curr) => ({ rate: total.rate + curr.rate, species: curr.species }), { rate: 0 }).rate;
                 }
                 this.EnemyTrainer = runState.enemy_trainer;
+                if (this.EnemyTrainer && this.EnemyTrainer.class_name && this.EnemyTrainer.class_name.toLowerCase() == "rival" && (!this.EnemyTrainer.name || !this.EnemyTrainer.name.trim().length)) {
+                    this.EnemyTrainer.name = runState.rival_name;
+                }
             }
         }
 
