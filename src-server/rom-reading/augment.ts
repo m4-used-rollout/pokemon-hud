@@ -43,6 +43,7 @@ namespace RomReader {
             if (p.held_item) {
                 p.held_item.name = romData.GetItem(p.held_item.id).name;
             }
+            doubleCheckHPIVStat(p.ivs);
             augmentPokemonMet(p);
             augmentPokemonSpeciesAndExp(p);
             augmentPokemonMoves(p);
@@ -62,6 +63,10 @@ namespace RomReader {
             return p;
         }
 
+        function doubleCheckHPIVStat(stats: TPP.Stats) {
+            stats.hp = typeof stats.hp === "number" ? stats.hp : (((stats.attack % 2) << 3) | ((stats.defense % 2) << 2) | ((stats.speed % 2) << 1) | (stats.special_attack % 2));
+        }
+
         function augmentPokemonMoves(p: TPP.Pokemon) {
             p.moves.filter(m => !!m).forEach(m => {
                 let romMove = romData.GetMove(m.id);
@@ -69,6 +74,18 @@ namespace RomReader {
                 m.accuracy = m.accuracy || romMove.accuracy;
                 m.base_power = m.base_power || romMove.basePower;
                 m.type = m.type || romMove.type;
+                if (m.name.toLowerCase() == "hidden power") {
+                    m.type = romData.CalcHiddenPowerType(p.ivs);
+                    m.base_power = romData.CalcHiddenPowerPower(p.ivs);
+                }
+                else if (m.name.toLowerCase() == "curse") {
+                    if (p.species.type1.toLowerCase() == "ghost" || p.species.type2.toLowerCase() == "ghost") {
+                        m.type = "Ghost";
+                    }
+                    else {
+                        m.type = "Normal";
+                    }
+                }
             });
         }
 

@@ -116,7 +116,7 @@ namespace RomReader {
         GetTrainerSprite(id: number) {
             return this.trainerSprites[id] || "./img/empty-sprite.png";
         }
-        GetFrameBorder(id:number) {
+        GetFrameBorder(id: number) {
             return this.frameBorders[id % this.frameBorders.length];
         }
         CachePokemonSprite(id: number, data: string, form = 0, shiny = false) {
@@ -137,6 +137,13 @@ namespace RomReader {
             return true;
             //DexNav will filter out any fishing encounters that require a specific rod
             //Override this if there's another restriction.
+        }
+        CalcHiddenPowerType(stats: TPP.Stats) {
+            const types = ['Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark'];
+            return types[Math.floor(((stats.hp % 2) + ((stats.attack % 2) << 1) + ((stats.defense % 2) << 2) + ((stats.speed % 2) << 3) + ((stats.special_attack % 2) << 4) + ((stats.special_defense % 2) << 5)) * 15 / 63)];
+        }
+        CalcHiddenPowerPower(stats: TPP.Stats) {
+            return Math.floor((((stats.hp >> 1) % 2) + (((stats.attack >> 1) % 2) << 1) + (((stats.defense >> 1) % 2) << 2) + (((stats.speed >> 1) % 2) << 3) + (((stats.special_attack >> 1) % 2) << 4) + (((stats.special_defense >> 1) % 2) << 5)) * 40 / 63) + 30;
         }
         private surfExp = /^surf$/i;
     }

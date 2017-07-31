@@ -95,7 +95,7 @@ namespace RomReader {
     trainerSpriteClearFix[14] = { start: [[22, 32], [22, 40]] }; //Koga
     trainerSpriteClearFix[16] = { start: [[28, 44]] }; //Brock
     trainerSpriteClearFix[22] = { start: [[32, 37], [33, 39], [35, 42], [40, 41], [32, 46], [33, 48]] }; //Schoolboy
-    trainerSpriteClearFix[23] = { start: [[44, 44], [42, 36]], stop: [[39, 54], [17, 53], [17, 20], [20, 14], [21, 11], [22, 9], [23, 8]], clearDiagonal: true }; //Bird Keeper
+    trainerSpriteClearFix[23] = { start: [[33, 35], [44, 44], [42, 36]], stop: [[39, 54], [17, 53], [17, 20], [20, 14], [21, 11], [22, 9], [23, 8]], clearDiagonal: true }; //Bird Keeper
     trainerSpriteClearFix[24] = { start: [[16, 14]] }; //Lass
     trainerSpriteClearFix[26] = { start: [[40, 28], [41, 27]] }; //Cooltrainer F
     trainerSpriteClearFix[27] = { start: [[32, 36]] }; //Beauty
@@ -160,6 +160,15 @@ namespace RomReader {
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
             return (runState.badges & 8) == 8; //Fog Badge
+        }
+
+        public CalcHiddenPowerType(stats: TPP.Stats) {
+            const types = ['Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark'];
+            return types[4 * (stats.attack % 4) + (stats.defense % 4)];
+        }
+
+        public CalcHiddenPowerPower(stats: TPP.Stats) {
+            return Math.floor((5 * ((stats.special_attack >> 3) + ((stats.speed >> 3) << 1) + ((stats.defense >> 3) << 2) + ((stats.attack >> 3) << 3)) + (stats.special_defense % 4)) / 2) + 31;
         }
 
         private ReadPyriteLevelCaps(romData: Buffer) {

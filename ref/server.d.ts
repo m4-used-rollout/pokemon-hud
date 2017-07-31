@@ -201,6 +201,8 @@ declare namespace RomReader {
         CacheFrameBorder(id: number, data: string): void;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         CheckIfCanFish(runState: TPP.RunStatus): boolean;
+        CalcHiddenPowerType(stats: TPP.Stats): string;
+        CalcHiddenPowerPower(stats: TPP.Stats): number;
         private surfExp;
     }
 }
@@ -231,6 +233,8 @@ declare namespace RomReader {
         constructor(romFileLocation: string);
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        CalcHiddenPowerType(stats: TPP.Stats): string;
+        CalcHiddenPowerPower(stats: TPP.Stats): number;
         private ReadPyriteLevelCaps(romData);
         private FindFishingEncounters(romData);
         private FindMapEncounters(romData);
