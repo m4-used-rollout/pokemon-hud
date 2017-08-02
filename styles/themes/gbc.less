@@ -125,6 +125,7 @@
                     height: @party-member-height;
                     perspective: 100vw;
                     perspective-origin: bottom;
+                    transition: transform .25s ease-in-out, opacity .25s ease-in-out;
 
                     img {
                         position: absolute;
@@ -532,13 +533,6 @@
 
         }
 
-        &.evolving {
-            ul.party {
-                transition: filter 30s ease-in-out;
-                filter:blur(20vw);
-            }
-        }
-
         .trainer-info {
             .badges {
                 font-size: 10vw;
@@ -678,6 +672,15 @@
                     }
                 }
             }
+        }
+    }
+    .evolving {
+        perspective: 100vw;
+        transform-style: preserve-3d;
+        .pokemon-image {
+            transition: transform 30s ease-in, opacity 40s ease-out!important;
+            transform:rotateY(178490.5deg);//rotateX(1080deg);
+            opacity: 0;
         }
     }
 }

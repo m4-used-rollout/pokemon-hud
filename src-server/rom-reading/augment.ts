@@ -64,7 +64,9 @@ namespace RomReader {
         }
 
         function doubleCheckHPIVStat(stats: TPP.Stats) {
-            stats.hp = typeof stats.hp === "number" ? stats.hp : (((stats.attack % 2) << 3) | ((stats.defense % 2) << 2) | ((stats.speed % 2) << 1) | (stats.special_attack % 2));
+            if (stats) {
+                stats.hp = typeof stats.hp === "number" ? stats.hp : (((stats.attack % 2) << 3) | ((stats.defense % 2) << 2) | ((stats.speed % 2) << 1) | (stats.special_attack % 2));
+            }
         }
 
         function augmentPokemonMoves(p: TPP.Pokemon) {
@@ -197,7 +199,7 @@ namespace RomReader {
         state.name = romData.ConvertText(state.name);
         state.ball_count = countBalls();
 
-        state.level_cap = romData.GetCurrentLevelCap(state.badges || 0);
+        state.level_cap = state.level_cap || romData.GetCurrentLevelCap(state.badges || 0);
 
         if (state.wild_species) {
             augmentSpecies(state.wild_species);

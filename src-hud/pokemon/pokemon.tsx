@@ -16,9 +16,10 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
         let classes = [
             Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) > 50 ? "health-high" : "health-med",
             mon.gender,
-            mon.health[0] == 0 ? "fainted" : "",
+            mon.health[0] == 0 && "fainted",
             mon.status,
-            this.props.gameState.level_cap && mon.level == this.props.gameState.level_cap ? "level-cap" : ""
+            this.props.gameState.level_cap && mon.level == this.props.gameState.level_cap && "level-cap",
+            mon.is_evolving && "evolving",
         ].filter(c => !!c).map(cleanString).join(' ');
         if (mon.is_egg)
             classes = "egg" + (eggPercent > 99 ? " shimmy-shake" : "");

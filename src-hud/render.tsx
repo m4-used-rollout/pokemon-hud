@@ -10,7 +10,7 @@ function Render(id: string = targetId) {
     if (!id || !data || !data.name) return;
     let classes = [
         "pokemon-hud",
-        data.evolution_is_happening ? "evolving" : null,
+        //data.evolution_is_happening && !(data.party || []).some(p=>p && p.is_evolving) ? "evolving" : null,
         config.hudTheme || "default-theme"
     ]
     ReactDOM.render(<div className={classes.filter(c => !!c).join(' ')}>

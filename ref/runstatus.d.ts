@@ -136,9 +136,10 @@ declare namespace TPP {
     export interface PartyPokemon extends Pokemon {
         health: number[];
         status: string;
-        sleep_turns?;
+        sleep_turns?: number;
         stats: Stats;
         pokerus_remaining?: number;
+        is_evolving?: boolean;
     }
 
     export interface Item {
