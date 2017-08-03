@@ -11,6 +11,10 @@ const config: Config = require('./config.json');
 // be closed automatically when the JavaScript object is garbage collected.
 let windowList: Electron.BrowserWindow[] = [];
 
+if (config.useGPU === false) {
+     app.disableHardwareAcceleration();
+}
+
 function createWindow(page: string = 'hud', windowWidth: number = 640, windowHeight: number = 480, x: number = null, y: number = null, frameless: boolean = false) {
     const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
     if (x < 0)
@@ -23,7 +27,7 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
         width: windowWidth, height: windowHeight,
         webPreferences: {
             webSecurity: false,
-            // backgroundThrottling: false
+            backgroundThrottling: false
         },
         useContentSize: true,
         frame: !frameless,
