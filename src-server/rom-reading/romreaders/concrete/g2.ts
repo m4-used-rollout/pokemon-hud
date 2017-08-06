@@ -149,7 +149,6 @@ namespace RomReader {
             this.FindFishingEncounters(romData);
             this.GetTMHMNames(romData);
             this.levelCaps = this.ReadPyriteLevelCaps(romData);
-            // console.log(JSON.stringify(this.trainers, null, 2));
         }
 
         public GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData) {
@@ -288,20 +287,20 @@ namespace RomReader {
 
         private ReadAreaNames(romData: Buffer) {
             return this.ReadStridedData(romData, config.AreaNamesOffset, 4, 97)
-                .map(data => this.ConvertText(romData.slice(this.SameBankPtrToLinear(config.AreaNamesOffset, data.readUInt16LE(2)))) || '');
+                .map(data => this.FixAllCaps(this.ConvertText(romData.slice(this.SameBankPtrToLinear(config.AreaNamesOffset, data.readUInt16LE(2)))) || ''));
         }
 
         private GetTMHMNames(romData: Buffer) {
-            let tmExp = /^[TH]M\d\d$/;
+            let tmExp = /^[TH]M\d\d$/i;
             let tms = this.items.filter(i => tmExp.test(i.name));
             this.ReadStridedData(romData, config.TMMovesOffset, 1, tms.length)
-                .forEach((m, i) => tms[i].name += ' ' + this.moves[m[0]].name);
+                .forEach((m, i) => tms[i].name = tms[i].name.toUpperCase() + ' ' + this.moves[m[0]].name);
         }
 
         private ReadMoveData(romData: Buffer) {
             const dataBytes = 7;
             let movesOffset = config.MoveDataOffset - dataBytes; //include 00
-            let moveNames = this.ReadStringBundle(romData, config.MoveNamesOffset, moveCount - 1);
+            let moveNames = this.ReadStringBundle(romData, config.MoveNamesOffset, moveCount - 1).map(m => this.FixAllCaps(m));
             moveNames.unshift(''); //move 0
             return this.ReadStridedData(romData, movesOffset, dataBytes, moveCount).map((data, i) => (<Pokemon.Move>{
                 id: i,
@@ -316,7 +315,7 @@ namespace RomReader {
         private ReadItemData(romData: Buffer) {
             const dataBytes = 7;
             let itemsOffset = config.ItemAttributesOffset - dataBytes; //include 00
-            let itemNames = this.ReadStringBundle(romData, config.ItemNamesOffset, itemCount - 1); //ReadStridedData(romData, namesOffset, nameBytes, itemCount).map(b => convertText(b));
+            let itemNames = this.ReadStringBundle(romData, config.ItemNamesOffset, itemCount - 1).map(i => this.FixAllCaps(i));
             itemNames.unshift(''); //item 0
             return this.ReadStridedData(romData, itemsOffset, dataBytes, itemCount).map((data, i) => (<Gen2Item>{
                 id: i,
@@ -328,7 +327,7 @@ namespace RomReader {
         }
 
         private ReadTrainerData(romData: Buffer) {
-            let classNames = this.ReadStringBundle(romData, config.TrainerClassNamesOffset, trainerClasses);
+            let classNames = this.ReadStringBundle(romData, config.TrainerClassNamesOffset, trainerClasses).map(n => this.FixAllCaps(n));
             let trainers: Pokemon.Trainer[] = [];
             let bank = this.LinearAddrToROMBank(config.TrainerGroupsOffset).bank;
             this.ReadStridedData(romData, config.TrainerGroupsOffset, 2, trainerClasses).forEach((ptr, cId, ptrArr) => {
@@ -339,7 +338,7 @@ namespace RomReader {
                         classId: cId,
                         id: tId,
                         className: classNames[cId],
-                        name: this.ConvertText(tData)
+                        name: this.FixAllCaps(this.ConvertText(tData))
                     });
                 });
             });
@@ -351,7 +350,7 @@ namespace RomReader {
             const dataBytes = 32;
             let namesOffset = config.PokemonNamesOffset - nameBytes; //include 00
             let statsOffset = config.PokemonStatsOffset - dataBytes; //include 00
-            let pokeNames = this.ReadStridedData(romData, namesOffset, nameBytes, dexCount).map(b => this.ConvertText(b));
+            let pokeNames = this.ReadStridedData(romData, namesOffset, nameBytes, dexCount).map(b => this.FixAllCaps(this.ConvertText(b)));
             return this.ReadStridedData(romData, statsOffset, dataBytes, dexCount).map((data, i) => (<Pokemon.Species>{
                 id: i,
                 dexNumber: data[0x00],

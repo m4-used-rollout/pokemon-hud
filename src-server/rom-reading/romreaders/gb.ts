@@ -3,6 +3,7 @@
 
 namespace RomReader {
     const fs = require("fs");
+    const fixCaps = /(\b[a-z])/g;
 
     export abstract class GBReader extends RomReaderBase {
         protected stringTerminator = 0x50;
@@ -31,7 +32,7 @@ namespace RomReader {
             return charArray.map(c => this.charmap[c] || ' ').join('');
         }
 
-        GetForm(pokemon:TPP.Pokemon) {
+        GetForm(pokemon: TPP.Pokemon) {
             if (pokemon.species.id == 201) {
                 return Math.floor((((pokemon.ivs.attack & 6) << 5) | ((pokemon.ivs.defense & 6) << 3) | ((pokemon.ivs.speed & 6) << 1) | ((pokemon.ivs.special_attack & 6) >> 1)) / 10);
             }
@@ -85,6 +86,10 @@ namespace RomReader {
 
         protected SameBankPtrToLinear(baseAddr: number, ptr: number) {
             return this.ROMBankAddrToLinear(this.LinearAddrToROMBank(baseAddr).bank, ptr);
+        }
+
+        protected FixAllCaps(str: string) {
+            return str.toLowerCase().replace(fixCaps, c => c.toUpperCase()).replace("'D", "'d");
         }
     }
 }

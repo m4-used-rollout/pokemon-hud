@@ -231,7 +231,7 @@ namespace RomReader {
     }
 
     function DeDupe(array: number[]) {
-        return (array || []).filter((item, position, arr) => arr.indexOf(item) == position).sort((x, y) => parseInt(x.toString()) - parseInt(y.toString()));
+        return (array || []).filter((item, position, arr) => item && arr.indexOf(item) == position).sort((x, y) => parseInt(x.toString()) - parseInt(y.toString()));
     }
 
     function parseStatus(status: number) {

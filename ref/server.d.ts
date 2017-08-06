@@ -224,6 +224,7 @@ declare namespace RomReader {
         };
         protected ROMBankAddrToLinear(bank: number, address: number): number;
         protected SameBankPtrToLinear(baseAddr: number, ptr: number): number;
+        protected FixAllCaps(str: string): string;
     }
 }
 declare namespace RomReader {
