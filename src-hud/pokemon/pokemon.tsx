@@ -18,13 +18,14 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
             mon.gender,
             mon.health[0] == 0 && "fainted",
             mon.status,
+            mon.sleep_turns ? `slp${mon.sleep_turns}` : null,
             this.props.gameState.level_cap && mon.level == this.props.gameState.level_cap && "level-cap",
             mon.is_evolving && "evolving",
         ].filter(c => !!c).map(cleanString).join(' ');
         if (mon.is_egg)
             classes = "egg" + (eggPercent > 99 ? " shimmy-shake" : "");
         return <li className={classes}>
-            <Sleepy status={mon.sleep_turns} />
+            {/*<Sleepy status={mon.sleep_turns} />*/}
             <div className={`pokemon-image ${cleanString(mon.species.name)}`}>
                 <FrameBorder frame={parseInt((this.props.gameState.options || { frame: '0' }).frame)} />
                 {mon.is_egg ? <img src="./img/egg.gif" /> : <PokeSprite pokemonId={mon.species.id} shiny={mon.shiny} form={TPP.Server.RomData.GetForm(mon)} />}

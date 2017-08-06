@@ -31,10 +31,10 @@
             box-sizing: border-box;
         }
         
-        .health-info(@color) {
+        .health-info(@color, @secondColor: white) {
             .pokemon-image {
                  .frame-border {
-                    background-image:linear-gradient(45deg, @color 0%, @color 50%, white 50%, white 100%);
+                    background-image:linear-gradient(45deg, @color 0%, @color 50%, @secondColor 50%, @secondColor 100%);
                 }
             }
             .health {
@@ -110,6 +110,7 @@
                 }
 
                 .sleepy {
+                    display: none;
                     position:absolute;
                     width: (@party-member-height);
                     text-align: right;
@@ -126,6 +127,11 @@
                     perspective: 100vw;
                     perspective-origin: bottom;
                     transition: transform .25s ease-in-out, opacity .25s ease-in-out;
+                    .outline(white);
+
+                    background-size: 87%;
+                    background-position: 50% 64%;
+                    background-repeat: no-repeat;
 
                     img {
                         position: absolute;
@@ -138,7 +144,6 @@
                         &.frame-border {
                             transform:translateX(-50%)translateY(-50%);
                             height:@party-member-height;
-                            .outline(white);
                             transition: all @transition-time ease-in-out;
                             background-image:linear-gradient(45deg, white 0%, white 50%, white 50%, white 100%);
                             background-size: 87%;
@@ -150,6 +155,24 @@
 
                     &.unown img {
                         transform:translateX(-50%)translateY(-50%); //don't flip
+                    }
+
+                    &:before, &:after {
+                        content:'';
+                        position:absolute;
+                        left:0;
+                        right:0;
+                        top:0;
+                        bottom:0;
+                        background-position: left center;
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        opacity: 0;
+                        transform: scale(1.05);
+                        transition: opacity @transition-time ease-in-out;
+                        image-rendering: pixelated;
+                        background-size:cover;
+                        -webkit-mask-size: contain;
                     }
                 }
 
@@ -269,6 +292,7 @@
                             .move-name {
                                 margin:auto;
                                 text-align: center;
+                                text-transform: capitalize;
                             }
                             span:last-of-type {
                                 margin-left:auto;
@@ -352,6 +376,7 @@
                         content:attr(data-name);
                         font-family: pokered;
                         font-size:.8em;
+                        text-transform: capitalize;
                     }
 
                     img {
@@ -364,13 +389,15 @@
                     content:'';
                     position:absolute;
                     left:0;
-                    right:0;
                     top:0;
                     bottom:0;
+                    width:@party-member-height;
+                    background-image:radial-gradient(ellipse at center, white 0%, transparent 75%);
                     background-position: left center;
                     background-size: contain;
                     background-repeat: no-repeat;
                     opacity: 0;
+                    z-index: 3;
                     transition: transform @transition-time ease-in-out, opacity @transition-time ease-in-out;
                 }
 
@@ -402,23 +429,47 @@
 
                 &:not(.fainted){
                     &.slp, &.psn, &.brn, &.frz, &.par, &.tox {
-                        &:before {
-                            transform:none;
-                            opacity: .9;
+                        .pokemon-image:before, .pokemon-image:after {
+                            opacity: 1;
                         }
                         &:after {
                             transform: none;
                         }
-                        .pokemon-image .frame-border {
-                            opacity: .5;
+                        &.health-high {
+                            .health-info(@high-health, transparent);
+                        }
+                        &.health-med {
+                            .health-info(@med-health, transparent);
+                        }
+                        &.health-low {
+                            .health-info(@low-health, transparent);
                         }
                     }
                 }
 
                 &.slp{
-                    &:before {
-                        background-image:url('./img/status/bg/slp.jpg');
+                    .pokemon-image:before {
+                        //background-image:url('./img/status/bg/slp.jpg');
+                        background-image:url('./img/status/gb/bg/slp.png');
                     }
+                    .pokemon-image:after { 
+                        background-image: url('./img/status/gb/slp.png'),
+                            url('./img/status/gb/slp/1.png'),
+                            url('./img/status/gb/slp/2.png'),
+                            url('./img/status/gb/slp/3.png'),
+                            url('./img/status/gb/slp/4.png'),
+                            url('./img/status/gb/slp/5.png'),
+                            url('./img/status/gb/slp/6.png'),
+                            url('./img/status/gb/slp/7.png');
+                     }
+                    &.slp1 .pokemon-image:after { -webkit-mask-image:url('./img/status/gb/slp/1.png'); }
+                    &.slp2 .pokemon-image:after { -webkit-mask-image:url('./img/status/gb/slp/2.png'); }
+                    &.slp3 .pokemon-image:after { -webkit-mask-image:url('./img/status/gb/slp/3.png'); }
+                    &.slp4 .pokemon-image:after { -webkit-mask-image:url('./img/status/gb/slp/4.png'); }
+                    &.slp5 .pokemon-image:after { -webkit-mask-image:url('./img/status/gb/slp/5.png'); }
+                    &.slp6 .pokemon-image:after { -webkit-mask-image:url('./img/status/gb/slp/6.png'); }
+                    &.slp7 .pokemon-image:after { -webkit-mask-image:url('./img/status/gb/slp/7.png'); }
+
                     &:after {
                         content:'SLP';
                         background-color:#8C888C;
@@ -426,8 +477,12 @@
                     }
                 }
                 &.psn {
-                    &:before {
-                        background-image:url('./img/status/bg/psn.jpg');
+                    .pokemon-image:before {
+                        //background-image:url('./img/status/bg/psn.jpg');
+                        background-image:url('./img/status/gb/bg/psn.png');
+                    }
+                    .pokemon-image:after {
+                        background-image:url('./img/status/gb/psn.png');
                     }
                     &:after {
                         content:'PSN';
@@ -436,8 +491,12 @@
                     }
                 }
                 &.brn {
-                    &:before {
-                        background-image:url('./img/status/bg/brn.jpg');
+                    .pokemon-image:before {
+                        //background-image:url('./img/status/bg/brn.jpg');
+                        background-image:url('./img/status/gb/bg/brn.png');
+                    }
+                    .pokemon-image:after {
+                        background-image:url('./img/status/gb/brn.png');
                     }
                     &:after {
                         content:'BRN';
@@ -446,8 +505,29 @@
                     }
                 }
                 &.frz {
-                    &:before {
+                    .pokemon-image:before {
                         background-image:url('./img/status/bg/frz.jpg');
+                        -webkit-mask-image:url('./img/status/gb/bg/frz.png');
+                        -webkit-mask-size: contain;
+                        background-repeat: no-repeat;
+                        transform: scale(1.05);//translateY(1%);
+                    }
+                    &.health-high .pokemon-image:before {
+                        background-image:linear-gradient(45deg, @high-health 0%, @high-health 50%, transparent 50%, transparent 100%), url('./img/status/gb/bg/frz.png');;
+                    }
+                    &.health-med .pokemon-image:before {
+                        background-image:linear-gradient(45deg, @med-health 0%, @med-health 50%, transparent 50%, transparent 100%), url('./img/status/gb/bg/frz.png');;
+                    }
+                    &.health-low .pokemon-image:before {
+                        background-image:linear-gradient(45deg, @low-health 0%, @low-health 50%, transparent 50%, transparent 100%), url('./img/status/gb/bg/frz.png');;
+                    }
+                    .pokemon-image:after {
+                        background-image:url('./img/status/gb/frz.png');
+                        // transform: scale(1.075)translateY(2.5%);
+                    }
+                    .frame-border {
+                        z-index: 2;
+                        background-image:linear-gradient(45deg, transparent 0%, transparent 50%, transparent 50%, transparent 100%)!important;
                     }
                     &:after {
                         content:'FRZ';
@@ -456,8 +536,12 @@
                     }
                 }
                 &.par {
-                    &:before {
-                        background-image:url('./img/status/bg/par.jpg');
+                    .pokemon-image:before {
+                        //background-image:url('./img/status/bg/par.jpg');
+                        background-image:url('./img/status/gb/bg/par.png');
+                    }
+                    .pokemon-image:after {
+                        background-image:url('./img/status/gb/par.png');
                     }
                     &:after {
                         content:'PAR';
@@ -466,8 +550,12 @@
                     }
                 }
                 &.tox {
-                    &:before {
-                        background-image:url('./img/status/bg/tox.jpg');
+                    .pokemon-image:before {
+                        //background-image:url('./img/status/bg/tox.jpg');
+                        background-image:url('./img/status/gb/bg/psn.png');
+                    }
+                    .pokemon-image:after {
+                        background-image:url('./img/status/gb/psn.png');
                     }
                     &:after {
                         content:'PSN';
@@ -488,9 +576,12 @@
                         color:white!important;
                         opacity: 1!important;
                     }
-                    .pokemon-image .frame-border {
-                        transition: all (@transition-time * 5) cubic-bezier(.65, 1.95, .03, .32);
-                        transform:translateX(-50%)translateY(-50%)rotateX(90deg);
+                    .pokemon-image {
+                        opacity: .5;
+                        .frame-border {
+                            transition: all (@transition-time * 5) cubic-bezier(.65, 1.95, .03, .32);
+                            transform:translateX(-50%) translateY(-50%) rotateX(90deg);
+                        }
                     }
                 }
 
@@ -677,8 +768,12 @@
     .evolving {
         perspective: 100vw;
         transform-style: preserve-3d;
+        &:before {
+            opacity: 1!important;
+            transition: opacity 10s ease-in!important;
+        }
         .pokemon-image {
-            transition: transform 30s ease-in, opacity 40s ease-out!important;
+            transition: transform 40s ease-in, opacity 30s ease-out!important;
             transform:rotateY(178490.5deg);//rotateX(1080deg);
             opacity: 0;
         }
