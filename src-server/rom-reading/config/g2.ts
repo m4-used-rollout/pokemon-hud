@@ -26,7 +26,7 @@ const gen2Offsets = {  //Crystal only for now
     mapNames: <{ [key: number]: { [key: number]: { name: string } } }>{}
 }
 
-gen2Offsets.charmap[0x4A] = 'ÊË';
+gen2Offsets.charmap[0x4A] = 'πµ';//PkMn
 gen2Offsets.charmap[0x54] = "POKé";
 gen2Offsets.charmap[0x5B] = "PC";
 gen2Offsets.charmap[0x5C] = "TM";
@@ -104,8 +104,8 @@ gen2Offsets.charmap[0xD4] = '&';
 gen2Offsets.charmap[0xD5] = '}';
 gen2Offsets.charmap[0xD6] = '@';
 gen2Offsets.charmap[0xE0] = "'";
-gen2Offsets.charmap[0xE1] = 'Ê';
-gen2Offsets.charmap[0xE2] = 'Ë';
+gen2Offsets.charmap[0xE1] = 'π';//Pk
+gen2Offsets.charmap[0xE2] = 'µ';//Mn
 gen2Offsets.charmap[0xE3] = '-';
 gen2Offsets.charmap[0xE6] = '?';
 gen2Offsets.charmap[0xE7] = '!';
