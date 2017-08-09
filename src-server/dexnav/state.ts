@@ -13,6 +13,10 @@ namespace TPP.Server.DexNav {
         owned: boolean;
     }
 
+    export interface KnownEncounters {
+        [key: string]: KnownEncounter[];
+    }
+
     export interface OwnedSpecies extends Pokemon.Species {
         owned: boolean;
         encounterRate?: number;
@@ -28,7 +32,7 @@ namespace TPP.Server.DexNav {
         public TotalEncounters = 0;
         public CompletedCategories = 0;
         public MoreLeftToCatch = true;
-        public KnownEncounters = {
+        public KnownEncounters: KnownEncounters = {
             grass: new Array<KnownEncounter>(),
             hidden_grass: new Array<KnownEncounter>(),
             surfing: new Array<KnownEncounter>(),
@@ -57,9 +61,9 @@ namespace TPP.Server.DexNav {
                 this.WildBattle = <OwnedSpecies>Pokemon.Convert.SpeciesFromRunStatus(runState.wild_species);
                 if (this.WildBattle && this.WildBattle.id) {
                     this.WildBattle.owned = (runState.caught_list || []).some(p => p == this.WildBattle.id);
-                    this.WildBattle.encounterRate = Object.keys(encounters).map(k => encounters[k].filter(e => e.species.id == this.WildBattle.id))
-                        .reduce((all, curr) => <Pokemon.EncounterMon[]>Array.prototype.concat.apply(all, curr), [])
-                        .reduce((total, curr) => ({ rate: total.rate + curr.rate, species: curr.species }), { rate: 0 }).rate;
+                    this.WildBattle.encounterRate = this.categories.map(k => (this.KnownEncounters[k] || []).filter(e => e.speciesId == this.WildBattle.id))
+                        .reduce((all, curr) => <KnownEncounter[]>Array.prototype.concat.apply(all, curr), [])
+                        .reduce((total, curr) => ({ rate: total.rate + curr.rate, speciesId: curr.speciesId }), { rate: 0 }).rate;
                 }
                 this.EnemyTrainer = runState.enemy_trainer;
                 if (this.EnemyTrainer && this.EnemyTrainer.class_name && this.EnemyTrainer.class_name.toLowerCase() == "rival" && (!this.EnemyTrainer.name || !this.EnemyTrainer.name.trim().length)) {

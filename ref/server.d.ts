@@ -274,6 +274,9 @@ declare namespace TPP.Server.DexNav {
         rate: number;
         owned: boolean;
     }
+    interface KnownEncounters {
+        [key: string]: KnownEncounter[];
+    }
     interface OwnedSpecies extends Pokemon.Species {
         owned: boolean;
         encounterRate?: number;
@@ -288,14 +291,7 @@ declare namespace TPP.Server.DexNav {
         TotalEncounters: number;
         CompletedCategories: number;
         MoreLeftToCatch: boolean;
-        KnownEncounters: {
-            grass: KnownEncounter[];
-            hidden_grass: KnownEncounter[];
-            surfing: KnownEncounter[];
-            hidden_surfing: KnownEncounter[];
-            fishing: KnownEncounter[];
-            hidden_fishing: KnownEncounter[];
-        };
+        KnownEncounters: KnownEncounters;
         readonly HasEncounters: boolean;
         WildBattle: OwnedSpecies;
         EnemyTrainer: TPP.EnemyTrainer;
