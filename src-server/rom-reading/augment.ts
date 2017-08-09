@@ -185,8 +185,8 @@ namespace RomReader {
             if (t.class_id) {
                 t.class_name = t.class_name || romTrainer.className;
             }
-            if (t.id) {
-                t.name = t.name || romTrainer.name;
+            if (t.id || t.id === 0) {
+                t.name = (t.name || '').trim() || romTrainer.name;
             }
             (t.party || []).forEach(p => augmentSpecies(p.species));
         }
