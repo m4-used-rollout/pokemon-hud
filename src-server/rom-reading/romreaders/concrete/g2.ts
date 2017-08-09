@@ -114,6 +114,7 @@ namespace RomReader {
     trainerSpriteClearFix[50] = { start: [[27, 45]] }; //Rocket Executive
     trainerSpriteClearFix[58] = { start: [[19, 39], [20, 38]] }; //Pokefan
     trainerSpriteClearFix[60] = { start: [[8, 29], [10, 35], [22, 37], [23, 38], [42, 37], [27, 23]] }; //Twins
+    trainerSpriteClearFix[62] = { start: [[18, 23], [19, 22], [35, 29], [36, 28], [28, 43]] }; //Azure (TPP Red replacement for Pyrite)
     trainerSpriteClearFix[63] = { start: [[19, 21], [20, 20]] }; //Blue
     trainerSpriteClearFix[64] = { stop: [[19, 33], [19, 34], [20, 34]] }; //Officer
 
@@ -176,7 +177,7 @@ namespace RomReader {
 
         private FindFishingEncounters(romData: Buffer) {
             let switchFish = this.ReadStridedData(romData, config.TimeFishGroups, 4, 255, true).map(fish => ({ day: fish[0], night: fish[2] }));
-            switchFish.unshift({ day: 0, night: 0 });
+            // switchFish.unshift({ day: 0, night: 0 });
             const fishBank = this.LinearAddrToROMBank(config.FishingWildsOffset).bank, fishEncounterGroupsStartAddr = this.ROMBankAddrToLinear(fishBank, romData.readUInt16LE(config.FishingWildsOffset + 1));
             let fishEncounterGroups = this.ReadStridedData(romData.slice(config.FishingWildsOffset, fishEncounterGroupsStartAddr), 0, 7).map((header, i, arr) => {
                 let nibbleRate = header[0] / 255;
