@@ -15,7 +15,7 @@
     @bar-chrome: #666;
     @bar-skew: 15deg;
 
-    @party-member-height: 13vh;
+    @party-member-height: 13.5vh;
 
     &.pokemon-hud {
         font-family: pokeplatinum;
@@ -626,20 +626,26 @@
 
         .trainer-info {
             .badges {
-                font-size: 10vw;
                 width:100%;
                 text-align: center;
                 span {
                     background-size: contain;
                     background-repeat: no-repeat;
                     background-position: center;
+                    display: inline-block;
+                    margin:.5vw 1vw;
+                    // &:first-child, &:nth-child(9) {
+                    //     margin-left:2vw;
+                    // }
+                    // &:last-child, &:nth-child(8) {
+                    //     margin-right:2vw;
+                    // }
 
                     img {
                         vertical-align: middle;
                         transition: filter (@transition-time * 3) ease-in, opacity @transition-time ease-out, transform (@transition-time * 2) ease-out;
                         .outline(@bar-chrome);
-                        width: 11vw;
-                        margin:.5vw;
+                        width: 10vw;
                         transform-origin: center center;
                         image-rendering: pixelated;
 
@@ -659,6 +665,7 @@
                 margin-top: .25em;
                 text-align: center;
                 font-family: pokered;
+                font-size: 2.5vh;
                 > span {
                     + span{
                         &:before, &.meridian:before {
@@ -674,23 +681,27 @@
             .bottom-row {
                 font-family: pokered;
                 display: flex;
+                flex-flow:row nowrap;
                 position: absolute;
                 bottom:0;
                 left:0;
                 right:0;
                 justify-content: space-between;
-                font-size: .6em;
+                font-size: .65em;
                 padding-bottom:.1em;
+                white-space: nowrap;
 
                 .wallet {
                     margin-right:auto;
+                    display:flex;
+                    flex-flow:row nowrap;
+                    justify-content: space-between;
+                    margin-right:1em;
                     .skinny-screen({
-                        display:flex;
                         width:100%;
                     });
 
                     span {
-                        margin-left: .25em;
                         vertical-align: baseline;
 
                         .skinny-screen({
