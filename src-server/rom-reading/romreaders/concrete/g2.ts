@@ -255,8 +255,8 @@ namespace RomReader {
                 encounterTimesOfDay.forEach(time => map.encounters[time].surfing = encounters);
             });
             let bugCatchingContest = prepMap(0x10, 3);
-            let bugCatchingEncounters = this.CombineDuplicateEncounters(this.ReadStridedData(romData, config.BugContestWilds, 4, 11).map(data => (<Pokemon.EncounterMon>{
-                rate: data[0] > 100 ? (1 / data[0]) * 100 : data[0],
+            let bugCatchingEncounters = this.CombineDuplicateEncounters(this.ReadStridedData(romData, config.BugContestWilds, 4, 11).filter(data => data[0] <= 100).map(data => (<Pokemon.EncounterMon>{
+                rate: data[0],
                 species: this.GetSpecies(data[1])
             })));
             encounterTimesOfDay.forEach(time => bugCatchingContest.encounters[time].grass = bugCatchingContest.encounters[time].grass || bugCatchingEncounters)
