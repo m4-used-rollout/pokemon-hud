@@ -1,5 +1,6 @@
 @import '../mixins/all.less';
 @import '../animations/gbfade.less';
+@import '../animations/healthwarning.less';
 
 .gbc-theme {
     @low-health: red;
@@ -253,6 +254,7 @@
                     }
 
                     .ability {
+                        display: none;
                         font-size: .9em;
                         height:1em;
                         width:100%;
@@ -268,6 +270,7 @@
                         position: relative;
                         display: flex;
                         flex-flow: row wrap;
+                        transition: transform @transition-time ease-in-out;
                         .outline();
 
                         li {
@@ -326,9 +329,9 @@
 
                         .hp {
                             position: absolute;
-                            left:0;
-                            right:0;
-                            bottom:0;
+                            // left:0;
+                            right:.25em;
+                            bottom:.05em;
                             text-align: center;
                             font-size: 1.8em;
                             height:1em;
@@ -361,6 +364,7 @@
                     font-size: .65em;
                     text-align: center;
                     box-sizing: content-box;
+                    transition: transform @transition-time ease-in-out;
                     .outline();
 
                     &[data-id="0"] {
@@ -424,6 +428,9 @@
                 &.level-cap { 
                     .exp-bar {
                         transform: translateX(120%);
+                    }
+                    div.held-item, .moves {
+                        transform: translateY(-(@party-member-height / 30));
                     }
                 }
 
@@ -593,6 +600,11 @@
                 }
                 &.health-low {
                     .health-info(@low-health);
+                    &:not(.fainted) {
+                        .hp {
+                            .health-warning();
+                        }
+                    }
                 }
 
                 &.egg {

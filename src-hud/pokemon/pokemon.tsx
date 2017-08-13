@@ -14,7 +14,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
         let expPercent = mon.experience ? (mon.experience.current - mon.experience.this_level) / (mon.experience.next_level - mon.experience.this_level) * 100 : 0;
         let eggPercent = mon.species ? 100 - ((mon.friendship - 1) / (mon.species.egg_cycles - 1) * 100) : 0;
         let classes = [
-            Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) > 50 ? "health-high" : "health-med",
+            Math.ceil(hpPercent) <= 20 ? "health-low" : Math.ceil(hpPercent) > 50 ? "health-high" : "health-med",
             mon.gender,
             mon.health[0] == 0 && "fainted",
             mon.status,
@@ -57,7 +57,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                     </ul>
                     <div className="health-bar">
                         <div className="health" style={{ width: hpPercent + '%' }} />
-                        <div className="hp" data-current={mon.health[0]} data-max={mon.health[1]} />
+                        <div className="hp" data-current={mon.health[0]} data-max={new Array(3 - mon.health[1].toString().length).fill(' ').join('') + mon.health[1]} />
                     </div>
                 </div>}
             <HeldItem id={mon.held_item ? mon.held_item.id : 0} name={mon.held_item ? mon.held_item.name : ""} />

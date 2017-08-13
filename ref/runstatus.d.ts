@@ -18,6 +18,7 @@ declare namespace TPP {
         caught: number;
         caught_list: number[];
         coins?: number;
+        extra?: { [key: string]: any };
         id: number;
         items: {
             [key: string]: Item[];
