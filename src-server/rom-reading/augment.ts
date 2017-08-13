@@ -183,10 +183,13 @@ namespace RomReader {
         function augmentEnemyTrainer(t: TPP.EnemyTrainer) {
             let romTrainer = romData.GetTrainer(t.id, t.class_id);
             if (t.class_id) {
-                t.class_name = t.class_name || romTrainer.className;
+                t.class_name = t.class_name || romTrainer.className
             }
             if (t.id || t.id === 0) {
                 t.name = (t.name || '').trim() || romTrainer.name;
+            }
+            if (state.rival_name && t.class_name && t.class_name.toLowerCase() == "rival") {
+                t.name = state.rival_name;
             }
             (t.party || []).forEach(p => augmentSpecies(p.species));
         }

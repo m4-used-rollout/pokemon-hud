@@ -1,0 +1,1936 @@
+{
+    "area_id": 12,
+    "area_name": "Azalea Town",
+    "badges": 1,
+    "ball_count": 10,
+    "battle_kind": "Trainer",
+    "caught": 15,
+    "caught_list": [
+        13,
+        16,
+        27,
+        41,
+        43,
+        60,
+        74,
+        92,
+        95,
+        158,
+        159,
+        161,
+        163,
+        175,
+        194
+    ],
+    "coins": 0,
+    "daycare": [],
+    "enemy_trainer": {
+        "class_id": 8,
+        "class_name": "Rival",
+        "id": 3,
+        "name": "?",
+        "party": [
+            {
+                "health": [
+                    0,
+                    51
+                ],
+                "species": {
+                    "catch_rate": 255,
+                    "egg_cycles": 20,
+                    "gender_ratio": 63,
+                    "growth_rate": "Medium Fast",
+                    "id": 63,
+                    "name": "Abra",
+                    "national_dex": 63,
+                    "type1": "Psychic",
+                    "type2": "Psychic"
+                }
+            },
+            {
+                "health": [
+                    53,
+                    53
+                ],
+                "species": {
+                    "catch_rate": 175,
+                    "egg_cycles": 20,
+                    "gender_ratio": 127,
+                    "growth_rate": "Medium Fast",
+                    "id": 92,
+                    "name": "Gastly",
+                    "national_dex": 92,
+                    "type1": "Ghost",
+                    "type2": "Poison"
+                }
+            },
+            {
+                "health": [
+                    0,
+                    72
+                ],
+                "species": {
+                    "catch_rate": 175,
+                    "egg_cycles": 20,
+                    "gender_ratio": 63,
+                    "growth_rate": "Medium Fast",
+                    "id": 66,
+                    "name": "Machop",
+                    "national_dex": 66,
+                    "type1": "Fighting",
+                    "type2": "Fighting"
+                }
+            },
+            {
+                "health": [
+                    0,
+                    65
+                ],
+                "species": {
+                    "catch_rate": 45,
+                    "egg_cycles": 20,
+                    "gender_ratio": 31,
+                    "growth_rate": "Fast",
+                    "id": 152,
+                    "name": "Chikorita",
+                    "national_dex": 152,
+                    "type1": "Grass",
+                    "type2": "Grass"
+                }
+            }
+        ]
+    },
+    "evolution_is_happening": false,
+    "extra": {
+        "egg_is_ready": false
+    },
+    "gender": "Female",
+    "id": 25756,
+    "in_battle": true,
+    "items": {
+        "balls": [
+            {
+                "count": 9,
+                "id": 5,
+                "name": "Pok\u00e9 Ball"
+            },
+            {
+                "count": 1,
+                "id": 160,
+                "name": "Lure Ball"
+            }
+        ],
+        "items": [
+            {
+                "count": 2,
+                "id": 74,
+                "name": "Psncureberry"
+            },
+            {
+                "count": 1,
+                "id": 173,
+                "name": "Berry"
+            },
+            {
+                "count": 8,
+                "id": 18,
+                "name": "Potion"
+            },
+            {
+                "count": 1,
+                "id": 49,
+                "name": "X Attack"
+            },
+            {
+                "count": 1,
+                "id": 13,
+                "name": "Parlyz Heal"
+            },
+            {
+                "count": 1,
+                "id": 9,
+                "name": "Antidote"
+            },
+            {
+                "count": 1,
+                "id": 125,
+                "name": "Hard Stone"
+            },
+            {
+                "count": 1,
+                "id": 19,
+                "name": "Escape Rope"
+            },
+            {
+                "count": 1,
+                "id": 117,
+                "name": "Miracle Seed"
+            },
+            {
+                "count": 1,
+                "id": 20,
+                "name": "Repel"
+            },
+            {
+                "count": 1,
+                "id": 51,
+                "name": "X Defend"
+            },
+            {
+                "count": 1,
+                "id": 10,
+                "name": "Burn Heal"
+            },
+            {
+                "count": 1,
+                "id": 39,
+                "name": "Revive"
+            },
+            {
+                "count": 1,
+                "id": 17,
+                "name": "Super Potion"
+            }
+        ],
+        "key": [],
+        "pc": [],
+        "tms": [
+            {
+                "count": 1,
+                "id": 223,
+                "name": "TM31 Mud-Slap"
+            },
+            {
+                "count": 1,
+                "id": 247,
+                "name": "HM05 Flash"
+            }
+        ]
+    },
+    "level_cap": 30,
+    "map_bank": 8,
+    "map_id": 7,
+    "map_name": "Azalea Town",
+    "money": 1920,
+    "name": "EWWYPPP",
+    "options": {
+        "battle_scene": "On",
+        "battle_style": "Set",
+        "frame": 7,
+        "menu_account": "Off",
+        "print": "Darkest",
+        "sound": "Stereo",
+        "text_speed": "Fast"
+    },
+    "party": [
+        {
+            "evs": {
+                "attack": 494,
+                "defense": 426,
+                "hp": 449,
+                "special_attack": 491,
+                "special_defense": 491,
+                "speed": 471
+            },
+            "experience": {
+                "current": 1754,
+                "next_level": 1757,
+                "remaining": 3,
+                "this_level": 1382
+            },
+            "friendship": 115,
+            "gender": "Female",
+            "health": [
+                0,
+                32
+            ],
+            "held_item": {
+                "id": 5,
+                "name": "Pok\u00e9 Ball"
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 6,
+                "defense": 7,
+                "hp": 7,
+                "special_attack": 3,
+                "special_defense": 3,
+                "speed": 7
+            },
+            "level": 12,
+            "met": {
+                "area_id": 2,
+                "area_name": "Route 29",
+                "game": "Pok\u00e9mon Pyrite",
+                "level": 4
+            },
+            "moves": [
+                {
+                    "accuracy": 255,
+                    "base_power": 40,
+                    "id": 98,
+                    "name": "Quick Attack",
+                    "pp": 26,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "id": 111,
+                    "name": "Defense Curl",
+                    "pp": 40,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 242,
+                    "base_power": 35,
+                    "id": 33,
+                    "name": "Tackle",
+                    "pp": 35,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 204,
+                    "base_power": 18,
+                    "id": 154,
+                    "name": "Fury Swipes",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "type": "Normal"
+                }
+            ],
+            "name": "HHHIIIIHGH",
+            "original_trainer": {
+                "gender": "Female",
+                "id": 25756,
+                "name": "EWWYPPP"
+            },
+            "personality_value": 1165413852,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "shiny": false,
+            "species": {
+                "catch_rate": 235,
+                "egg_cycles": 15,
+                "gender_ratio": 127,
+                "growth_rate": "Fast",
+                "id": 161,
+                "name": "Sentret",
+                "national_dex": 161,
+                "type1": "Normal",
+                "type2": "Normal"
+            },
+            "stats": {
+                "attack": 18,
+                "defense": 15,
+                "hp": 32,
+                "special_attack": 14,
+                "special_defense": 17,
+                "speed": 12
+            },
+            "status": 0
+        },
+        {
+            "evs": {
+                "attack": 1548,
+                "defense": 1273,
+                "hp": 1228,
+                "special_attack": 1015,
+                "special_defense": 1015,
+                "speed": 1882
+            },
+            "experience": {
+                "current": 6610,
+                "next_level": 6859,
+                "remaining": 249,
+                "this_level": 5832
+            },
+            "friendship": 126,
+            "gender": "Male",
+            "health": [
+                46,
+                46
+            ],
+            "held_item": {
+                "id": 5,
+                "name": "Pok\u00e9 Ball"
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 14,
+                "defense": 1,
+                "hp": 7,
+                "special_attack": 3,
+                "special_defense": 3,
+                "speed": 5
+            },
+            "level": 18,
+            "met": {
+                "area_id": 44,
+                "area_name": "Dark Cave",
+                "game": "Pok\u00e9mon Pyrite",
+                "level": 7
+            },
+            "moves": [
+                {
+                    "accuracy": 229,
+                    "base_power": 50,
+                    "id": 88,
+                    "name": "Rock Throw",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "type": "Rock"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "id": 111,
+                    "name": "Defense Curl",
+                    "pp": 40,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 242,
+                    "base_power": 35,
+                    "id": 33,
+                    "name": "Tackle",
+                    "pp": 35,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 1,
+                    "id": 222,
+                    "name": "Magnitude",
+                    "pp": 30,
+                    "pp_up": 0,
+                    "type": "Ground"
+                }
+            ],
+            "name": "!!",
+            "original_trainer": {
+                "gender": "Female",
+                "id": 25756,
+                "name": "EWWYPPP"
+            },
+            "personality_value": 1534109468,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "shiny": false,
+            "species": {
+                "catch_rate": 200,
+                "egg_cycles": 15,
+                "gender_ratio": 127,
+                "growth_rate": "Medium Fast",
+                "id": 74,
+                "name": "Geodude",
+                "national_dex": 74,
+                "type1": "Rock",
+                "type2": "Ground"
+            },
+            "stats": {
+                "attack": 40,
+                "defense": 42,
+                "hp": 46,
+                "special_attack": 18,
+                "special_defense": 18,
+                "speed": 15
+            },
+            "status": 0
+        },
+        {
+            "evs": {
+                "attack": 49,
+                "defense": 49,
+                "hp": 52,
+                "special_attack": 58,
+                "special_defense": 58,
+                "speed": 36
+            },
+            "experience": {
+                "current": 1052,
+                "next_level": 1064,
+                "remaining": 12,
+                "this_level": 800
+            },
+            "friendship": 126,
+            "gender": "Male",
+            "health": [
+                27,
+                27
+            ],
+            "held_item": {
+                "id": 0,
+                "name": ""
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 2,
+                "defense": 12,
+                "hp": 1,
+                "special_attack": 7,
+                "special_defense": 7,
+                "speed": 8
+            },
+            "level": 10,
+            "met": {
+                "area_id": 12,
+                "area_name": "Azalea Town",
+                "game": "Pok\u00e9mon Pyrite",
+                "level": 1,
+                "time_of_day": "Day"
+            },
+            "moves": [
+                {
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "id": 45,
+                    "name": "Growl",
+                    "pp": 40,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "id": 204,
+                    "name": "Charm",
+                    "pp": 20,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "id": 118,
+                    "name": "Metronome",
+                    "pp": 10,
+                    "pp_up": 0,
+                    "type": "Normal"
+                }
+            ],
+            "name": "YXXWVVVN",
+            "original_trainer": {
+                "gender": "Female",
+                "id": 25756,
+                "name": "EWWYPPP"
+            },
+            "personality_value": 754966812,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "shiny": false,
+            "species": {
+                "catch_rate": 190,
+                "egg_cycles": 10,
+                "gender_ratio": 31,
+                "growth_rate": "Fast",
+                "id": 175,
+                "name": "Togepi",
+                "national_dex": 175,
+                "type1": "Normal",
+                "type2": "Normal"
+            },
+            "stats": {
+                "attack": 9,
+                "defense": 20,
+                "hp": 27,
+                "special_attack": 14,
+                "special_defense": 19,
+                "speed": 10
+            },
+            "status": 0
+        },
+        {
+            "evs": {
+                "attack": 594,
+                "defense": 509,
+                "hp": 583,
+                "special_attack": 544,
+                "special_defense": 544,
+                "speed": 720
+            },
+            "experience": {
+                "current": 2586,
+                "next_level": 2700,
+                "remaining": 114,
+                "this_level": 2195
+            },
+            "friendship": 126,
+            "gender": "Male",
+            "health": [
+                0,
+                36
+            ],
+            "held_item": {
+                "id": 5,
+                "name": "Pok\u00e9 Ball"
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 10,
+                "defense": 0,
+                "hp": 1,
+                "special_attack": 5,
+                "special_defense": 5,
+                "speed": 10
+            },
+            "level": 14,
+            "met": {
+                "area_id": 4,
+                "area_name": "Route 30",
+                "game": "Pok\u00e9mon Pyrite",
+                "level": 5
+            },
+            "moves": [
+                {
+                    "accuracy": 255,
+                    "base_power": 40,
+                    "id": 16,
+                    "name": "Gust",
+                    "pp": 34,
+                    "pp_up": 0,
+                    "type": "Flying"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 40,
+                    "id": 98,
+                    "name": "Quick Attack",
+                    "pp": 29,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "id": 28,
+                    "name": "Sand-Attack",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "type": "Ground"
+                },
+                {
+                    "accuracy": 242,
+                    "base_power": 35,
+                    "id": 33,
+                    "name": "Tackle",
+                    "pp": 35,
+                    "pp_up": 0,
+                    "type": "Normal"
+                }
+            ],
+            "name": "PIDGEY",
+            "original_trainer": {
+                "gender": "Female",
+                "id": 25756,
+                "name": "EWWYPPP"
+            },
+            "personality_value": 1108204572,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "shiny": false,
+            "species": {
+                "catch_rate": 235,
+                "egg_cycles": 15,
+                "gender_ratio": 127,
+                "growth_rate": "Fast",
+                "id": 16,
+                "name": "Pidgey",
+                "national_dex": 16,
+                "type1": "Normal",
+                "type2": "Flying"
+            },
+            "stats": {
+                "attack": 21,
+                "defense": 16,
+                "hp": 36,
+                "special_attack": 16,
+                "special_defense": 16,
+                "speed": 24
+            },
+            "status": 0
+        },
+        {
+            "evs": {
+                "attack": 551,
+                "defense": 434,
+                "hp": 493,
+                "special_attack": 623,
+                "special_defense": 623,
+                "speed": 747
+            },
+            "experience": {
+                "current": 4846,
+                "next_level": 4913,
+                "remaining": 67,
+                "this_level": 4096
+            },
+            "friendship": 121,
+            "gender": "Female",
+            "health": [
+                0,
+                40
+            ],
+            "held_item": {
+                "id": 112,
+                "name": "Everstone"
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 6,
+                "defense": 10,
+                "hp": 3,
+                "special_attack": 11,
+                "special_defense": 11,
+                "speed": 11
+            },
+            "level": 16,
+            "met": {
+                "area_id": 45,
+                "area_name": "Route 46",
+                "game": "Pok\u00e9mon Pyrite",
+                "level": 4
+            },
+            "moves": [
+                {
+                    "accuracy": 229,
+                    "base_power": 50,
+                    "id": 88,
+                    "name": "Rock Throw",
+                    "pp": 15,
+                    "pp_up": 0,
+                    "type": "Rock"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "id": 111,
+                    "name": "Defense Curl",
+                    "pp": 40,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 242,
+                    "base_power": 35,
+                    "id": 33,
+                    "name": "Tackle",
+                    "pp": 34,
+                    "pp_up": 0,
+                    "type": "Normal"
+                }
+            ],
+            "name": "XXYYY  WWP",
+            "original_trainer": {
+                "gender": "Female",
+                "id": 25756,
+                "name": "EWWYPPP"
+            },
+            "personality_value": 819346048,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "shiny": false,
+            "species": {
+                "catch_rate": 200,
+                "egg_cycles": 15,
+                "gender_ratio": 127,
+                "growth_rate": "Medium Fast",
+                "id": 74,
+                "name": "Geodude",
+                "national_dex": 74,
+                "type1": "Rock",
+                "type2": "Ground"
+            },
+            "stats": {
+                "attack": 33,
+                "defense": 41,
+                "hp": 40,
+                "special_attack": 18,
+                "special_defense": 18,
+                "speed": 15
+            },
+            "status": 0
+        },
+        {
+            "evs": {
+                "attack": 10298,
+                "defense": 8787,
+                "hp": 8663,
+                "special_attack": 8019,
+                "special_defense": 8019,
+                "speed": 10560
+            },
+            "experience": {
+                "current": 21600,
+                "next_level": 23832,
+                "remaining": 2232,
+                "this_level": 21600
+            },
+            "friendship": 178,
+            "gender": "Male",
+            "health": [
+                0,
+                89
+            ],
+            "held_item": {
+                "id": 0,
+                "name": ""
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 6,
+                "defense": 1,
+                "hp": 6,
+                "special_attack": 6,
+                "special_defense": 6,
+                "speed": 11
+            },
+            "level": 30,
+            "met": {
+                "area_id": 1,
+                "area_name": "New Bark Town",
+                "game": "Pok\u00e9mon Pyrite",
+                "level": 5,
+                "time_of_day": "Day"
+            },
+            "moves": [
+                {
+                    "accuracy": 255,
+                    "base_power": 70,
+                    "id": 163,
+                    "name": "Slash",
+                    "pp": 11,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "id": 43,
+                    "name": "Leer",
+                    "pp": 30,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 20,
+                    "id": 99,
+                    "name": "Rage",
+                    "pp": 20,
+                    "pp_up": 0,
+                    "type": "Normal"
+                },
+                {
+                    "accuracy": 255,
+                    "base_power": 40,
+                    "id": 55,
+                    "name": "Water Gun",
+                    "pp": 25,
+                    "pp_up": 0,
+                    "type": "Water"
+                }
+            ],
+            "name": "CROCONAW",
+            "original_trainer": {
+                "gender": "Female",
+                "id": 25756,
+                "name": "EWWYPPP"
+            },
+            "personality_value": 1656639548,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "shiny": false,
+            "species": {
+                "catch_rate": 45,
+                "egg_cycles": 20,
+                "gender_ratio": 31,
+                "growth_rate": "Fast",
+                "id": 159,
+                "name": "Croconaw",
+                "national_dex": 159,
+                "type1": "Water",
+                "type2": "Water"
+            },
+            "stats": {
+                "attack": 64,
+                "defense": 60,
+                "hp": 89,
+                "special_attack": 50,
+                "special_defense": 53,
+                "speed": 53
+            },
+            "status": 0
+        }
+    ],
+    "pc": {
+        "boxes": [
+            {
+                "box_contents": [
+                    {
+                        "box_slot": 1,
+                        "evs": {
+                            "attack": 0,
+                            "defense": 0,
+                            "hp": 0,
+                            "special_attack": 0,
+                            "special_defense": 0,
+                            "speed": 0
+                        },
+                        "experience": {
+                            "current": 3276,
+                            "next_level": 3930,
+                            "remaining": 654,
+                            "this_level": 3276
+                        },
+                        "friendship": 70,
+                        "gender": "Male",
+                        "held_item": {
+                            "id": 0,
+                            "name": ""
+                        },
+                        "is_egg": false,
+                        "ivs": {
+                            "attack": 15,
+                            "defense": 0,
+                            "hp": 11,
+                            "special_attack": 7,
+                            "special_defense": 7,
+                            "speed": 3
+                        },
+                        "level": 16,
+                        "met": {
+                            "area_id": 10,
+                            "area_name": "Union Cave",
+                            "game": "Pok\u00e9mon Pyrite",
+                            "level": 16,
+                            "time_of_day": "Day"
+                        },
+                        "moves": [
+                            {
+                                "accuracy": 255,
+                                "base_power": 20,
+                                "id": 141,
+                                "name": "Leech Life",
+                                "pp": 15,
+                                "pp_up": 0,
+                                "type": "Bug"
+                            },
+                            {
+                                "accuracy": 140,
+                                "base_power": 0,
+                                "id": 48,
+                                "name": "Supersonic",
+                                "pp": 20,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 60,
+                                "id": 44,
+                                "name": "Bite",
+                                "pp": 25,
+                                "pp_up": 0,
+                                "type": "Dark"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 60,
+                                "id": 17,
+                                "name": "Wing Attack",
+                                "pp": 35,
+                                "pp_up": 0,
+                                "type": "Flying"
+                            }
+                        ],
+                        "name": " QTK",
+                        "original_trainer": {
+                            "gender": "Female",
+                            "id": 25756,
+                            "name": "EWWYPPP"
+                        },
+                        "personality_value": 2618858204,
+                        "pokerus": {
+                            "cured": false,
+                            "days_left": 0,
+                            "infected": false,
+                            "strain": 0
+                        },
+                        "shiny": false,
+                        "species": {
+                            "catch_rate": 235,
+                            "egg_cycles": 15,
+                            "gender_ratio": 127,
+                            "growth_rate": "Fast",
+                            "id": 41,
+                            "name": "Zubat",
+                            "national_dex": 41,
+                            "type1": "Poison",
+                            "type2": "Flying"
+                        }
+                    },
+                    {
+                        "box_slot": 2,
+                        "evs": {
+                            "attack": 0,
+                            "defense": 0,
+                            "hp": 0,
+                            "special_attack": 0,
+                            "special_defense": 0,
+                            "speed": 0
+                        },
+                        "experience": {
+                            "current": 2700,
+                            "next_level": 3276,
+                            "remaining": 576,
+                            "this_level": 2700
+                        },
+                        "friendship": 70,
+                        "gender": "Male",
+                        "held_item": {
+                            "id": 0,
+                            "name": ""
+                        },
+                        "is_egg": false,
+                        "ivs": {
+                            "attack": 10,
+                            "defense": 7,
+                            "hp": 5,
+                            "special_attack": 3,
+                            "special_defense": 3,
+                            "speed": 10
+                        },
+                        "level": 15,
+                        "met": {
+                            "area_id": 10,
+                            "area_name": "Union Cave",
+                            "game": "Pok\u00e9mon Pyrite",
+                            "level": 15,
+                            "time_of_day": "Day"
+                        },
+                        "moves": [
+                            {
+                                "accuracy": 255,
+                                "base_power": 40,
+                                "id": 10,
+                                "name": "Scratch",
+                                "pp": 35,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 0,
+                                "id": 111,
+                                "name": "Defense Curl",
+                                "pp": 40,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 0,
+                                "id": 28,
+                                "name": "Sand-Attack",
+                                "pp": 15,
+                                "pp_up": 0,
+                                "type": "Ground"
+                            }
+                        ],
+                        "name": "KMNNEEEEEE",
+                        "original_trainer": {
+                            "gender": "Female",
+                            "id": 25756,
+                            "name": "EWWYPPP"
+                        },
+                        "personality_value": 1919222236,
+                        "pokerus": {
+                            "cured": false,
+                            "days_left": 0,
+                            "infected": false,
+                            "strain": 0
+                        },
+                        "shiny": false,
+                        "species": {
+                            "catch_rate": 200,
+                            "egg_cycles": 20,
+                            "gender_ratio": 127,
+                            "growth_rate": "Fast",
+                            "id": 27,
+                            "name": "Sandshrew",
+                            "national_dex": 27,
+                            "type1": "Ground",
+                            "type2": "Ground"
+                        }
+                    },
+                    {
+                        "box_slot": 3,
+                        "evs": {
+                            "attack": 0,
+                            "defense": 0,
+                            "hp": 0,
+                            "special_attack": 0,
+                            "special_defense": 0,
+                            "speed": 0
+                        },
+                        "experience": {
+                            "current": 4096,
+                            "next_level": 4913,
+                            "remaining": 817,
+                            "this_level": 4096
+                        },
+                        "friendship": 70,
+                        "gender": "Female",
+                        "held_item": {
+                            "id": 0,
+                            "name": ""
+                        },
+                        "is_egg": false,
+                        "ivs": {
+                            "attack": 4,
+                            "defense": 2,
+                            "hp": 3,
+                            "special_attack": 13,
+                            "special_defense": 13,
+                            "speed": 13
+                        },
+                        "level": 16,
+                        "met": {
+                            "area_id": 10,
+                            "area_name": "Union Cave",
+                            "game": "Pok\u00e9mon Pyrite",
+                            "level": 16
+                        },
+                        "moves": [
+                            {
+                                "accuracy": 242,
+                                "base_power": 35,
+                                "id": 33,
+                                "name": "Tackle",
+                                "pp": 35,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 0,
+                                "id": 106,
+                                "name": "Harden",
+                                "pp": 30,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 191,
+                                "base_power": 15,
+                                "id": 20,
+                                "name": "Bind",
+                                "pp": 20,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 229,
+                                "base_power": 50,
+                                "id": 88,
+                                "name": "Rock Throw",
+                                "pp": 15,
+                                "pp_up": 0,
+                                "type": "Rock"
+                            }
+                        ],
+                        "name": "G",
+                        "original_trainer": {
+                            "gender": "Female",
+                            "id": 25756,
+                            "name": "EWWYPPP"
+                        },
+                        "personality_value": 2332471008,
+                        "pokerus": {
+                            "cured": false,
+                            "days_left": 0,
+                            "infected": false,
+                            "strain": 0
+                        },
+                        "shiny": false,
+                        "species": {
+                            "catch_rate": 75,
+                            "egg_cycles": 25,
+                            "gender_ratio": 127,
+                            "growth_rate": "Medium Fast",
+                            "id": 95,
+                            "name": "Onix",
+                            "national_dex": 95,
+                            "type1": "Rock",
+                            "type2": "Ground"
+                        }
+                    },
+                    {
+                        "box_slot": 4,
+                        "evs": {
+                            "attack": 0,
+                            "defense": 0,
+                            "hp": 0,
+                            "special_attack": 0,
+                            "special_defense": 0,
+                            "speed": 0
+                        },
+                        "experience": {
+                            "current": 3276,
+                            "next_level": 3930,
+                            "remaining": 654,
+                            "this_level": 3276
+                        },
+                        "friendship": 70,
+                        "gender": "Male",
+                        "held_item": {
+                            "id": 0,
+                            "name": ""
+                        },
+                        "is_egg": false,
+                        "ivs": {
+                            "attack": 15,
+                            "defense": 7,
+                            "hp": 14,
+                            "special_attack": 4,
+                            "special_defense": 4,
+                            "speed": 5
+                        },
+                        "level": 16,
+                        "met": {
+                            "area_id": 10,
+                            "area_name": "Union Cave",
+                            "game": "Pok\u00e9mon Pyrite",
+                            "level": 16
+                        },
+                        "moves": [
+                            {
+                                "accuracy": 255,
+                                "base_power": 20,
+                                "id": 141,
+                                "name": "Leech Life",
+                                "pp": 15,
+                                "pp_up": 0,
+                                "type": "Bug"
+                            },
+                            {
+                                "accuracy": 140,
+                                "base_power": 0,
+                                "id": 48,
+                                "name": "Supersonic",
+                                "pp": 20,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 60,
+                                "id": 44,
+                                "name": "Bite",
+                                "pp": 25,
+                                "pp_up": 0,
+                                "type": "Dark"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 60,
+                                "id": 17,
+                                "name": "Wing Attack",
+                                "pp": 35,
+                                "pp_up": 0,
+                                "type": "Flying"
+                            }
+                        ],
+                        "name": "OOX,,,",
+                        "original_trainer": {
+                            "gender": "Female",
+                            "id": 25756,
+                            "name": "EWWYPPP"
+                        },
+                        "personality_value": 1039849180,
+                        "pokerus": {
+                            "cured": false,
+                            "days_left": 0,
+                            "infected": false,
+                            "strain": 0
+                        },
+                        "shiny": false,
+                        "species": {
+                            "catch_rate": 235,
+                            "egg_cycles": 15,
+                            "gender_ratio": 127,
+                            "growth_rate": "Fast",
+                            "id": 41,
+                            "name": "Zubat",
+                            "national_dex": 41,
+                            "type1": "Poison",
+                            "type2": "Flying"
+                        }
+                    },
+                    {
+                        "box_slot": 5,
+                        "evs": {
+                            "attack": 0,
+                            "defense": 0,
+                            "hp": 0,
+                            "special_attack": 0,
+                            "special_defense": 0,
+                            "speed": 0
+                        },
+                        "experience": {
+                            "current": 2195,
+                            "next_level": 2700,
+                            "remaining": 505,
+                            "this_level": 2195
+                        },
+                        "friendship": 70,
+                        "gender": "Female",
+                        "held_item": {
+                            "id": 0,
+                            "name": ""
+                        },
+                        "is_egg": false,
+                        "ivs": {
+                            "attack": 5,
+                            "defense": 0,
+                            "hp": 8,
+                            "special_attack": 8,
+                            "special_defense": 8,
+                            "speed": 8
+                        },
+                        "level": 14,
+                        "met": {
+                            "area_id": 8,
+                            "area_name": "Route 32",
+                            "game": "Pok\u00e9mon Pyrite",
+                            "level": 14
+                        },
+                        "moves": [
+                            {
+                                "accuracy": 242,
+                                "base_power": 35,
+                                "id": 33,
+                                "name": "Tackle",
+                                "pp": 35,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 0,
+                                "id": 45,
+                                "name": "Growl",
+                                "pp": 40,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 0,
+                                "id": 193,
+                                "name": "Foresight",
+                                "pp": 40,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 35,
+                                "id": 64,
+                                "name": "Peck",
+                                "pp": 35,
+                                "pp_up": 0,
+                                "type": "Flying"
+                            }
+                        ],
+                        "name": "P",
+                        "original_trainer": {
+                            "gender": "Female",
+                            "id": 25756,
+                            "name": "EWWYPPP"
+                        },
+                        "personality_value": 133035932,
+                        "pokerus": {
+                            "cured": false,
+                            "days_left": 0,
+                            "infected": false,
+                            "strain": 0
+                        },
+                        "shiny": false,
+                        "species": {
+                            "catch_rate": 235,
+                            "egg_cycles": 15,
+                            "gender_ratio": 127,
+                            "growth_rate": "Fast",
+                            "id": 163,
+                            "name": "Hoothoot",
+                            "national_dex": 163,
+                            "type1": "Normal",
+                            "type2": "Flying"
+                        }
+                    },
+                    {
+                        "box_slot": 6,
+                        "evs": {
+                            "attack": 0,
+                            "defense": 0,
+                            "hp": 0,
+                            "special_attack": 0,
+                            "special_defense": 0,
+                            "speed": 0
+                        },
+                        "experience": {
+                            "current": 1382,
+                            "next_level": 1757,
+                            "remaining": 375,
+                            "this_level": 1382
+                        },
+                        "friendship": 70,
+                        "gender": "Male",
+                        "held_item": {
+                            "id": 0,
+                            "name": ""
+                        },
+                        "is_egg": false,
+                        "ivs": {
+                            "attack": 10,
+                            "defense": 2,
+                            "hp": 3,
+                            "special_attack": 11,
+                            "special_defense": 11,
+                            "speed": 3
+                        },
+                        "level": 12,
+                        "met": {
+                            "area_id": 8,
+                            "area_name": "Route 32",
+                            "game": "Pok\u00e9mon Pyrite",
+                            "level": 12
+                        },
+                        "moves": [
+                            {
+                                "accuracy": 242,
+                                "base_power": 35,
+                                "id": 33,
+                                "name": "Tackle",
+                                "pp": 35,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 0,
+                                "id": 45,
+                                "name": "Growl",
+                                "pp": 40,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 0,
+                                "id": 193,
+                                "name": "Foresight",
+                                "pp": 40,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 35,
+                                "id": 64,
+                                "name": "Peck",
+                                "pp": 35,
+                                "pp_up": 0,
+                                "type": "Flying"
+                            }
+                        ],
+                        "name": "DF",
+                        "original_trainer": {
+                            "gender": "Female",
+                            "id": 25756,
+                            "name": "EWWYPPP"
+                        },
+                        "personality_value": 1508412828,
+                        "pokerus": {
+                            "cured": false,
+                            "days_left": 0,
+                            "infected": false,
+                            "strain": 0
+                        },
+                        "shiny": false,
+                        "species": {
+                            "catch_rate": 235,
+                            "egg_cycles": 15,
+                            "gender_ratio": 127,
+                            "growth_rate": "Fast",
+                            "id": 163,
+                            "name": "Hoothoot",
+                            "national_dex": 163,
+                            "type1": "Normal",
+                            "type2": "Flying"
+                        }
+                    },
+                    {
+                        "box_slot": 7,
+                        "evs": {
+                            "attack": 0,
+                            "defense": 0,
+                            "hp": 0,
+                            "special_attack": 0,
+                            "special_defense": 0,
+                            "speed": 0
+                        },
+                        "experience": {
+                            "current": 1757,
+                            "next_level": 2195,
+                            "remaining": 438,
+                            "this_level": 1757
+                        },
+                        "friendship": 70,
+                        "gender": "Female",
+                        "held_item": {
+                            "id": 0,
+                            "name": ""
+                        },
+                        "is_egg": false,
+                        "ivs": {
+                            "attack": 5,
+                            "defense": 8,
+                            "hp": 8,
+                            "special_attack": 4,
+                            "special_defense": 4,
+                            "speed": 0
+                        },
+                        "level": 13,
+                        "met": {
+                            "area_id": 8,
+                            "area_name": "Route 32",
+                            "game": "Pok\u00e9mon Pyrite",
+                            "level": 13
+                        },
+                        "moves": [
+                            {
+                                "accuracy": 255,
+                                "base_power": 0,
+                                "id": 230,
+                                "name": "Sweet Scent",
+                                "pp": 20,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 20,
+                                "id": 71,
+                                "name": "Absorb",
+                                "pp": 20,
+                                "pp_up": 0,
+                                "type": "Grass"
+                            },
+                            {
+                                "accuracy": 191,
+                                "base_power": 0,
+                                "id": 77,
+                                "name": "Poisonpowder",
+                                "pp": 35,
+                                "pp_up": 0,
+                                "type": "Poison"
+                            },
+                            {
+                                "accuracy": 191,
+                                "base_power": 0,
+                                "id": 78,
+                                "name": "Stun Spore",
+                                "pp": 30,
+                                "pp_up": 0,
+                                "type": "Grass"
+                            }
+                        ],
+                        "name": "AA\u00d7\u00d7uuu",
+                        "original_trainer": {
+                            "gender": "Female",
+                            "id": 25756,
+                            "name": "EWWYPPP"
+                        },
+                        "personality_value": 2928211612,
+                        "pokerus": {
+                            "cured": false,
+                            "days_left": 0,
+                            "infected": false,
+                            "strain": 0
+                        },
+                        "shiny": false,
+                        "species": {
+                            "catch_rate": 200,
+                            "egg_cycles": 20,
+                            "gender_ratio": 127,
+                            "growth_rate": "Fast",
+                            "id": 43,
+                            "name": "Oddish",
+                            "national_dex": 43,
+                            "type1": "Grass",
+                            "type2": "Poison"
+                        }
+                    },
+                    {
+                        "box_slot": 8,
+                        "evs": {
+                            "attack": 0,
+                            "defense": 0,
+                            "hp": 0,
+                            "special_attack": 0,
+                            "special_defense": 0,
+                            "speed": 0
+                        },
+                        "experience": {
+                            "current": 2197,
+                            "next_level": 2744,
+                            "remaining": 547,
+                            "this_level": 2197
+                        },
+                        "friendship": 70,
+                        "gender": "Male",
+                        "held_item": {
+                            "id": 0,
+                            "name": ""
+                        },
+                        "is_egg": false,
+                        "ivs": {
+                            "attack": 15,
+                            "defense": 10,
+                            "hp": 10,
+                            "special_attack": 12,
+                            "special_defense": 12,
+                            "speed": 15
+                        },
+                        "level": 13,
+                        "met": {
+                            "area_id": 8,
+                            "area_name": "Route 32",
+                            "game": "Pok\u00e9mon Pyrite",
+                            "level": 13
+                        },
+                        "moves": [
+                            {
+                                "accuracy": 255,
+                                "base_power": 40,
+                                "id": 55,
+                                "name": "Water Gun",
+                                "pp": 25,
+                                "pp_up": 0,
+                                "type": "Water"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 0,
+                                "id": 39,
+                                "name": "Tail Whip",
+                                "pp": 30,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 191,
+                                "base_power": 80,
+                                "id": 21,
+                                "name": "Slam",
+                                "pp": 20,
+                                "pp_up": 0,
+                                "type": "Normal"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 20,
+                                "id": 189,
+                                "name": "Mud-Slap",
+                                "pp": 10,
+                                "pp_up": 0,
+                                "type": "Ground"
+                            }
+                        ],
+                        "name": "VVVVVVVVVV",
+                        "original_trainer": {
+                            "gender": "Female",
+                            "id": 25756,
+                            "name": "EWWYPPP"
+                        },
+                        "personality_value": 2950059776,
+                        "pokerus": {
+                            "cured": false,
+                            "days_left": 0,
+                            "infected": false,
+                            "strain": 0
+                        },
+                        "shiny": false,
+                        "species": {
+                            "catch_rate": 200,
+                            "egg_cycles": 20,
+                            "gender_ratio": 127,
+                            "growth_rate": "Medium Fast",
+                            "id": 194,
+                            "name": "Wooper",
+                            "national_dex": 194,
+                            "type1": "Water",
+                            "type2": "Ground"
+                        }
+                    },
+                    {
+                        "box_slot": 9,
+                        "evs": {
+                            "attack": 0,
+                            "defense": 0,
+                            "hp": 0,
+                            "special_attack": 0,
+                            "special_defense": 0,
+                            "speed": 0
+                        },
+                        "experience": {
+                            "current": 274,
+                            "next_level": 409,
+                            "remaining": 135,
+                            "this_level": 274
+                        },
+                        "friendship": 70,
+                        "gender": "Female",
+                        "held_item": {
+                            "id": 0,
+                            "name": ""
+                        },
+                        "is_egg": false,
+                        "ivs": {
+                            "attack": 4,
+                            "defense": 14,
+                            "hp": 2,
+                            "special_attack": 12,
+                            "special_defense": 12,
+                            "speed": 7
+                        },
+                        "level": 7,
+                        "met": {
+                            "area_id": 5,
+                            "area_name": "Route 31",
+                            "game": "Pok\u00e9mon Pyrite",
+                            "level": 7
+                        },
+                        "moves": [
+                            {
+                                "accuracy": 255,
+                                "base_power": 20,
+                                "id": 145,
+                                "name": "Bubble",
+                                "pp": 30,
+                                "pp_up": 0,
+                                "type": "Water"
+                            },
+                            {
+                                "accuracy": 255,
+                                "base_power": 40,
+                                "id": 55,
+                                "name": "Water Gun",
+                                "pp": 25,
+                                "pp_up": 0,
+                                "type": "Water"
+                            }
+                        ],
+                        "name": "KMV!//MMMM",
+                        "original_trainer": {
+                            "gender": "Female",
+                            "id": 25756,
+                            "name": "EWWYPPP"
+                        },
+                        "personality_value": 3545627840,
+                        "pokerus": {
+                            "cured": false,
+                            "days_left": 0,
+                            "infected": false,
+                            "strain": 0
+                        },
+                        "shiny": false,
+                        "species": {
+                            "catch_rate": 220,
+                            "egg_cycles": 20,
+                            "gender_ratio": 127,
+                            "growth_rate": "Fast",
+                            "id": 60,
+                            "name": "Poliwag",
+                            "national_dex": 60,
+                            "type1": "Water",
+                            "type2": "Water"
+                        }
+                    }
+                ],
+                "box_name": "BOX1",
+                "box_number": 1
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX2",
+                "box_number": 2
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX3",
+                "box_number": 3
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX4",
+                "box_number": 4
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX5",
+                "box_number": 5
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX6",
+                "box_number": 6
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX7",
+                "box_number": 7
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX8",
+                "box_number": 8
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX9",
+                "box_number": 9
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX10",
+                "box_number": 10
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX11",
+                "box_number": 11
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX12",
+                "box_number": 12
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX13",
+                "box_number": 13
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX14",
+                "box_number": 14
+            }
+        ],
+        "current_box_number": 1
+    },
+    "rival_name": "JRJII..",
+    "secret": 33145,
+    "seen": 59,
+    "seen_list": [
+        1,
+        4,
+        10,
+        11,
+        13,
+        14,
+        16,
+        17,
+        19,
+        21,
+        23,
+        25,
+        27,
+        29,
+        32,
+        37,
+        41,
+        43,
+        46,
+        48,
+        52,
+        54,
+        56,
+        58,
+        60,
+        63,
+        66,
+        69,
+        72,
+        74,
+        77,
+        79,
+        83,
+        84,
+        88,
+        90,
+        92,
+        95,
+        96,
+        109,
+        118,
+        133,
+        152,
+        158,
+        159,
+        161,
+        163,
+        165,
+        167,
+        175,
+        177,
+        179,
+        187,
+        194,
+        198,
+        218,
+        223,
+        228,
+        231
+    ],
+    "time": {
+        "d": "WED",
+        "h": 8,
+        "m": 32,
+        "s": 44
+    },
+    "x": 10,
+    "y": 16
+}
