@@ -128,7 +128,6 @@ namespace RomReader {
     }
 
     export class Gen2 extends GBReader {
-        private swarms: Pokemon.Encounters = {}
         private timeOfDay = new Array<string>(24);
 
         constructor(romFileLocation: string) {
@@ -255,7 +254,13 @@ namespace RomReader {
                 );
                 encounterTimesOfDay.forEach(time => map.encounters[time].surfing = encounters);
             });
-            //TODO:Headbutt
+            let bugCatchingContest = prepMap(0x10, 3);
+            let bugCatchingEncounters = this.CombineDuplicateEncounters(this.ReadStridedData(romData, config.BugContestWilds, 4, 11).map(data => (<Pokemon.EncounterMon>{
+                rate: data[0] > 100 ? (1 / data[0]) * 100 : data[0],
+                species: this.GetSpecies(data[1])
+            })));
+            encounterTimesOfDay.forEach(time => bugCatchingContest.encounters[time].grass = bugCatchingContest.encounters[time].grass || bugCatchingEncounters)
+            //Not present: Headbutt (unhandled), Swarms (unhandled), Fishing (another function)
         }
 
         private CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {

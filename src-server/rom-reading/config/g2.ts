@@ -13,6 +13,7 @@ const gen2Offsets = {  //Crystal only for now
     FishingWildsOffset: 0x92488,
     TimeFishGroups: 0x9266f,
     MapHeaders: 0x94000,
+    BugContestWilds: 0x97D87,
     HeadbuttWildsOffset: 0xB82FA,
     FrameBordersOffset: 0xF8800,
     PokemonPicPointers: 0x120000,

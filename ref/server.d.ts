@@ -19,6 +19,7 @@ declare const gen2Offsets: {
     FishingWildsOffset: number;
     TimeFishGroups: number;
     MapHeaders: number;
+    BugContestWilds: number;
     HeadbuttWildsOffset: number;
     FrameBordersOffset: number;
     PokemonPicPointers: number;
@@ -229,7 +230,6 @@ declare namespace RomReader {
 }
 declare namespace RomReader {
     class Gen2 extends GBReader {
-        private swarms;
         private timeOfDay;
         constructor(romFileLocation: string);
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
