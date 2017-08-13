@@ -26,7 +26,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 {/* <div className="wallet"> */}
                     <span className="cash">{(t.money || 0).toLocaleString()}</span>
                     <span className="balls">{(t.ball_count || 0).toLocaleString()}</span>
-                    <span className="pc">{pcBoxCount.toLocaleString()}</span>
+                    <span className={`pc ${pcBoxCount >= 18 ? "almost-" : ""}${pcBoxCount >= 20 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>
                     { t.level_cap && t.level_cap < 100 ? 
                         <span className="level-cap">{t.level_cap}</span>
                         : null
