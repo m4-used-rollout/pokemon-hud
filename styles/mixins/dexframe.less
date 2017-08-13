@@ -8,7 +8,7 @@
 @dex-frame-color: #F8D8B1;
 @dex-frame-bevel: #D8A878;
 @dex-frame-highlight: #F8F8F8;
-@dex-label-color: #213953;
+@dex-label-color: black;//#213953;
 
 @screen-on-color: darkolivegreen;
 @screen-off-color: #666;
@@ -21,7 +21,7 @@
 
 .dexLabel() {
     color: @dex-label-color;
-    .outline(@dex-frame-highlight);
+    .outline(@dex-frame-bevel);
     // text-shadow: 2px 2px 0 @dex-frame-highlight, -2px 2px 0 @dex-frame-highlight, 2px -2px 0 @dex-frame-highlight, -2px -2px 0 @dex-frame-highlight;
 }
 
