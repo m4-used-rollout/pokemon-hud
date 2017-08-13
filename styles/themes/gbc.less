@@ -638,6 +638,7 @@
 
         .trainer-info {
             .badges {
+                position: relative;
                 width:100%;
                 text-align: center;
                 span {
@@ -703,18 +704,18 @@
                 padding-bottom:.1em;
                 white-space: nowrap;
 
-                .wallet {
-                    margin-right:auto;
-                    display:flex;
-                    flex-flow:row nowrap;
-                    justify-content: space-between;
-                    margin-right:1em;
-                    .skinny-screen({
-                        width:100%;
-                    });
+                // .wallet {
+                //     display:flex;
+                //     flex-flow:row nowrap;
+                //     justify-content: space-between;
+                //     margin-right:1em;
+                //     .skinny-screen({
+                //         width:100%;
+                //     });
 
                     span {
                         vertical-align: baseline;
+                        margin: auto;
 
                         .skinny-screen({
                             flex: 1 1 auto;
@@ -731,27 +732,34 @@
                         }
                     }
 
+                    .cash {
+                        margin-right:auto;
+                        margin-left:0;
+                    }
                     .cash:before {
                         content:"$";
                     }
                     .balls:before {
                         content:"Ó";
-                        margin-left: 1em;
                     }
                     .pc:before {
                         content:'';
                         display: inline-block;
                         width:1em;
                         height:1em;
-                        margin-left:1em;
                         background-image:url('img/pc.png');
                         background-size: cover;
                         background-repeat: no-repeat;
                         background-position: top center;
                     }
-                }
+
+                    .level-cap:before{
+                        content:"È";
+                    }
+                // }
 
                 .options {
+                    display: none;
                     flex: 1 1 auto;
                     display:flex;
                     justify-content: space-around;
@@ -778,10 +786,10 @@
                 }
 
                 .dex-counts {
-                    margin-right:auto;
-                    margin-right:.25em;
+                    margin-left:auto;
+                    margin-right:0;
 
-                    span:not(:last-of-type):after {
+                    span + span:before {
                         content:'/';
                     }
                 }
