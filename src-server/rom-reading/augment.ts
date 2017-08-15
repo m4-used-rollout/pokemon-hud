@@ -196,6 +196,7 @@ namespace RomReader {
 
         normalizeDex();
         augmentItems();
+        (state.daycare || []).filter(p=> !!p).forEach(augmentPokemon);
         (state.party || []).filter(p => !!p).map(augmentPartyPokemon).forEach(augmentPokemon);
         (state.pc.boxes || []).forEach(b => (b.box_contents || []).filter(p => !!p).forEach(augmentPokemon));
 

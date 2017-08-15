@@ -18,6 +18,7 @@ declare namespace TPP {
         caught: number;
         caught_list: number[];
         coins?: number;
+        daycare?: Pokemon[];
         extra?: { [key: string]: any };
         id: number;
         items: {
@@ -155,6 +156,7 @@ declare namespace TPP {
         party: {
             species: PokemonSpecies;
             health: number[];
+            active?: boolean;
         }[]
     }
 
