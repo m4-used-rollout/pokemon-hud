@@ -18,6 +18,7 @@ declare interface Config extends DexNavConfig {
     windowX?: number;
     windowY?: number;
     frameless?: boolean;
+    resetEveryHours?:number;
 }
 
 declare interface DexNavConfig {
@@ -27,4 +28,5 @@ declare interface DexNavConfig {
     dexNavHeight?: number;
     dexNavX?: number;
     dexNavY?: number;
+    dexNavResetEveryHours?:number;
 }
