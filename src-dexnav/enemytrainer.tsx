@@ -28,7 +28,7 @@ class EnemyParty extends React.Component<{ trainer: TPP.EnemyTrainer }, {}> {
             {party.map(p => <span className={p.species.id && p.health[0] ? "" : "fainted"} >
                 {p.species.id ?
                     <PokeSprite pokemonId={p.species.id} /> :
-                    <img src="./img/empty-sprite.png" />
+                    <img src="./img/unknown-sprite.png" />
                 }
             </span>)}
         </div>
