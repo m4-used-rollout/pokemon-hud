@@ -32,7 +32,7 @@ class FitToWidth extends React.Component<fitProps, fitState> {
         </div>;
     }
     componentDidMount() {
-        this.checkWidths();
+        setTimeout(() => this.checkWidths(), 100);
         window.addEventListener("resize", this.windowResizeListener);
     }
     componentWillUnmount() {

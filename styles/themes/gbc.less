@@ -692,111 +692,115 @@
             }
 
             .bottom-row {
-                font-family: pokered;
-                display: flex;
-                flex-flow:row nowrap;
                 position: absolute!important;
                 bottom:0;
                 left:0;
-                right:0;
-                justify-content: space-between;
-                font-size: .65em;
-                padding-bottom:.1em;
-                white-space: nowrap;
+                right:0; 
+                > div {
+                    font-family: pokered;
+                    display: flex;
+                    flex-flow:row nowrap;
+                    justify-content: space-between;
+                    font-size: .65em;
+                    padding-bottom:.1em;
+                    white-space: nowrap;
+                    min-width: 100%;
 
-                // .wallet {
-                //     display:flex;
-                //     flex-flow:row nowrap;
-                //     justify-content: space-between;
-                //     margin-right:1em;
-                //     .skinny-screen({
-                //         width:100%;
-                //     });
+                    // .wallet {
+                    //     display:flex;
+                    //     flex-flow:row nowrap;
+                    //     justify-content: space-between;
+                    //     margin-right:1em;
+                    //     .skinny-screen({
+                    //         width:100%;
+                    //     });
 
-                    span {
-                        vertical-align: baseline;
-                        margin: auto;
-
-                        .skinny-screen({
-                            flex: 1 1 auto;
-
-                            + span {
-                                margin-left:auto;
-                            }
-                        });
-
-                        &:before {
-                            font-size: .9em;
+                        > span {
                             vertical-align: baseline;
-                            margin-right:.1em;
+                            margin: auto;
+                            padding: 0 .5em;
+
+                            .skinny-screen({
+                                flex: 1 1 auto;
+
+                                + span {
+                                    margin-left:auto;
+                                }
+                            });
+
+                            &:before {
+                                font-size: .9em;
+                                vertical-align: baseline;
+                                margin-right:.1em;
+                            }
+                        }
+
+                        .cash {
+                            margin-right:auto;
+                            margin-left:0;
+                        }
+                        .cash:before {
+                            content:"$";
+                        }
+                        .balls:before {
+                            content:"Ó";
+                        }
+                        .pc:before {
+                            content:'';
+                            display: inline-block;
+                            width:1em;
+                            height:1em;
+                            background-image:url('img/pc.png');
+                            background-size: cover;
+                            background-repeat: no-repeat;
+                            background-position: top center;
+                        }
+                        .pc.almost-full {
+                            color:@med-health;
+                        }
+                        .pc.full {
+                            color:@low-health;
+                        }
+                        .level-cap:before{
+                            content:"È";
+                        }
+                    // }
+
+
+                    .options {
+                        display: none;
+                        flex: 1 1 auto;
+                        display:flex;
+                        justify-content: space-around;
+                        text-align: center;
+                        margin:auto;
+                        &.slim {
+                            .normal-screen({
+                                .crush-text()
+                            });
+                            .skinny-screen({
+                                position: absolute;
+                                left:0;
+                                right:0;
+                                bottom:100%;
+                                height: 1em;
+                                span {
+                                    width:30%;
+                                }
+                            });
+                        }
+                        span {
+                            flex: 1 1 auto;
                         }
                     }
 
-                    .cash {
-                        margin-right:auto;
-                        margin-left:0;
-                    }
-                    .cash:before {
-                        content:"$";
-                    }
-                    .balls:before {
-                        content:"Ó";
-                    }
-                    .pc:before {
-                        content:'';
-                        display: inline-block;
-                        width:1em;
-                        height:1em;
-                        background-image:url('img/pc.png');
-                        background-size: cover;
-                        background-repeat: no-repeat;
-                        background-position: top center;
-                    }
-                    .pc.almost-full {
-                        color:@med-health;
-                    }
-                    .pc.full {
-                        color:@low-health;
-                    }
-                    .level-cap:before{
-                        content:"È";
-                    }
-                // }
+                    .dex-counts {
+                        margin-left:auto;
+                        margin-right:0;
 
-
-                .options {
-                    display: none;
-                    flex: 1 1 auto;
-                    display:flex;
-                    justify-content: space-around;
-                    text-align: center;
-                    margin:auto;
-                    &.slim {
-                        .normal-screen({
-                            .crush-text()
-                        });
-                        .skinny-screen({
-                            position: absolute;
-                            left:0;
-                            right:0;
-                            bottom:100%;
-                            height: 1em;
-                            span {
-                                width:30%;
-                            }
-                        });
-                    }
-                    span {
-                        flex: 1 1 auto;
-                    }
-                }
-
-                .dex-counts {
-                    margin-left:auto;
-                    margin-right:0;
-
-                    span + span:before {
-                        content:'/';
+                        span + span:before {
+                            content:'/';
+                        }
                     }
                 }
             }
