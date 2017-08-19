@@ -1,4 +1,5 @@
 /// <reference path="badges.tsx" />
+/// <reference path="../utils/fittowidth.tsx" />
 
 class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
     private padTime(n: number) {
@@ -22,7 +23,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 </div>
                 : null
             }
-            <div className="bottom-row">
+            <FitToWidth className="bottom-row">
                 {/* <div className="wallet"> */}
                     <span className="cash">{(t.money || 0).toLocaleString()}</span>
                     <span className="balls">{(t.ball_count || 0).toLocaleString()}</span>
@@ -43,7 +44,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                     <span className="seen">{t.seen || 0}</span>
                     <span className="total">{config.totalInDex || "???"}</span>
                 </div>
-            </div>
+            </FitToWidth>
         </div>
     }
 }
