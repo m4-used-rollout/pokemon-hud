@@ -13,8 +13,10 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
         let hpPercent = mon.health[0] / mon.health[1] * 100;
         let expPercent = mon.experience ? (mon.experience.current - mon.experience.this_level) / (mon.experience.next_level - mon.experience.this_level) * 100 : 0;
         let eggPercent = mon.species ? 100 - ((mon.friendship - 1) / (mon.species.egg_cycles - 1) * 100) : 0;
+        let hpPixels = Math.floor(mon.health[0] * 48 / mon.health[1]);
         let classes = [
-            Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) >= 50 ? "health-high" : "health-med",
+            //Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) >= 50 ? "health-high" : "health-med",
+            hpPixels < 10 ? "health-low" : hpPixels >= 24 ? "health-high" : "health-med",
             mon.gender,
             mon.health[0] == 0 && "fainted",
             mon.status,
