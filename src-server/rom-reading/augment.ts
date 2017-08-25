@@ -72,7 +72,7 @@ namespace RomReader {
         function augmentPokemonMoves(p: TPP.Pokemon) {
             p.moves.filter(m => !!m).forEach(m => {
                 let romMove = romData.GetMove(m.id);
-                m.name = m.name || romMove.name;
+                m.name = m.name || romMove.name || "???";
                 m.accuracy = m.accuracy || romMove.accuracy;
                 m.base_power = m.base_power || romMove.basePower;
                 m.type = m.type || romMove.type;
