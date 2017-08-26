@@ -306,9 +306,9 @@ namespace RomReader {
         private ReadMoveData(romData: Buffer) {
             const dataBytes = 7;
             let movesOffset = config.MoveDataOffset - dataBytes; //include 00
-            let moveNames = this.ReadStringBundle(romData, config.MoveNamesOffset, moveCount - 1).map(m => this.FixAllCaps(m));
+            let moveNames = this.ReadStringBundle(romData, config.MoveNamesOffset, moveCount).map(m => this.FixAllCaps(m));
             moveNames.unshift(''); //move 0
-            return this.ReadStridedData(romData, movesOffset, dataBytes, moveCount).map((data, i) => (<Pokemon.Move>{
+            return this.ReadStridedData(romData, movesOffset, dataBytes, moveCount + 1).map((data, i) => (<Pokemon.Move>{
                 id: i,
                 name: moveNames[i],
                 basePower: data[0x02],
