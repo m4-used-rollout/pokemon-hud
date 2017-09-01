@@ -1,6 +1,6 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="../ref/config.d.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g2.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g3.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 
@@ -57,7 +57,7 @@ module TPP.Server {
         return json.replace(/\\\\u/g, '\\u');
     }
 
-    export const RomData = new RomReader.Gen2(config.romFile);
+    export const RomData = new RomReader.Gen3(config.romFile, config.iniFile);
 
     let trainerString = "", partyString = "", pcString = "";
 

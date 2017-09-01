@@ -1,46 +1,11 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
+/// <reference path="../ref/ini.d.ts" />
+/// <reference path="../ref/pge.ini.d.ts" />
 /// <reference path="../ref/config.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 /// <reference path="../ref/joypad.d.ts" />
 /// <reference types="node" />
-declare const gen2Offsets: {
-    ItemAttributesOffset: number;
-    PokemonPalettes: number;
-    TrainerPalettes: number;
-    TMMovesOffset: number;
-    TimeOfDayOffset: number;
-    WildPokemonOffset: number;
-    TrainerClassNamesOffset: number;
-    TrainerGroupsOffset: number;
-    MoveDataOffset: number;
-    PokemonStatsOffset: number;
-    PokemonNamesOffset: number;
-    FishingWildsOffset: number;
-    TimeFishGroups: number;
-    MapHeaders: number;
-    BugContestWilds: number;
-    HeadbuttWildsOffset: number;
-    FrameBordersOffset: number;
-    PokemonPicPointers: number;
-    UnownPicPointers: number;
-    TrainerPicPointers: number;
-    ItemNamesOffset: number;
-    MoveNamesOffset: number;
-    AreaNamesOffset: number;
-    PicBankOffset: number;
-    charmap: any[];
-    mapNames: {
-        [key: number]: {
-            [key: number]: {
-                name: string;
-            };
-        };
-    };
-};
-declare namespace Tools.LZGSC {
-    function Decompress(compressed: Buffer): Buffer;
-}
 declare namespace Pokemon {
     namespace ExpCurve {
         interface CalcExp {
@@ -228,37 +193,28 @@ declare namespace RomReader {
         protected FixAllCaps(str: string): string;
     }
 }
+declare const gen3Charmap: string[];
 declare namespace RomReader {
-    class Gen2 extends GBReader {
-        private timeOfDay;
-        constructor(romFileLocation: string);
+    abstract class GBAReader extends GBReader {
+        private iniFileLocation;
+        protected stringTerminator: number;
+        constructor(romFileLocation: string, iniFileLocation: string);
+        protected LoadConfig(romData: Buffer): PGEINI;
+    }
+}
+declare namespace RomReader {
+    class Gen3 extends GBAReader {
+        constructor(romFileLocation: string, iniFileLocation?: string);
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
-        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        CalcHiddenPowerType(stats: TPP.Stats): string;
-        CalcHiddenPowerPower(stats: TPP.Stats): number;
-        private ReadPyriteLevelCaps(romData);
-        private FindFishingEncounters(romData);
-        private FindMapEncounters(romData);
-        private CombineDuplicateEncounters(mons);
-        private ReadMaps(romData);
-        private ReadAreaNames(romData);
-        private GetTMHMNames(romData);
-        private ReadMoveData(romData);
-        private ReadItemData(romData);
-        private ReadTrainerData(romData);
-        private ReadPokeData(romData);
-        private ReadFrameBorders(romData);
-        private ProcessPalette(palData);
-        private ReadTrainerSprites(romData);
-        private ReadPokemonSprites(romData);
-        private CalculateTimesOfDay(romData);
+        private ReadAbilities(romData, config);
+        private ReadPokeData(romData, config);
     }
 }
 declare module TPP.Server {
     function getConfig(): Config;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
-    const RomData: RomReader.Gen2;
+    const RomData: RomReader.Gen3;
     function setState(dataJson: string): void;
     const fileExists: (path: string) => any;
 }
@@ -306,6 +262,40 @@ declare namespace TPP.Server.DexNav {
 declare namespace RomReader {
     function AugmentState(romData: RomReaderBase, state: TPP.RunStatus): void;
 }
+declare const gen2Offsets: {
+    ItemAttributesOffset: number;
+    PokemonPalettes: number;
+    TrainerPalettes: number;
+    TMMovesOffset: number;
+    TimeOfDayOffset: number;
+    WildPokemonOffset: number;
+    TrainerClassNamesOffset: number;
+    TrainerGroupsOffset: number;
+    MoveDataOffset: number;
+    PokemonStatsOffset: number;
+    PokemonNamesOffset: number;
+    FishingWildsOffset: number;
+    TimeFishGroups: number;
+    MapHeaders: number;
+    BugContestWilds: number;
+    HeadbuttWildsOffset: number;
+    FrameBordersOffset: number;
+    PokemonPicPointers: number;
+    UnownPicPointers: number;
+    TrainerPicPointers: number;
+    ItemNamesOffset: number;
+    MoveNamesOffset: number;
+    AreaNamesOffset: number;
+    PicBankOffset: number;
+    charmap: any[];
+    mapNames: {
+        [key: number]: {
+            [key: number]: {
+                name: string;
+            };
+        };
+    };
+};
 declare const gen5FilesOffsets: {
     TextStrings: string;
     PokemonGraphics: string;
@@ -346,6 +336,35 @@ declare namespace RomReader {
         protected readNARC(path: string): Tools.NARChive;
         protected readArm9(): Buffer;
         private readFile(path);
+    }
+}
+declare namespace Tools.LZGSC {
+    function Decompress(compressed: Buffer): Buffer;
+}
+declare namespace RomReader {
+    class Gen2 extends GBReader {
+        private timeOfDay;
+        constructor(romFileLocation: string);
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        CalcHiddenPowerType(stats: TPP.Stats): string;
+        CalcHiddenPowerPower(stats: TPP.Stats): number;
+        private ReadPyriteLevelCaps(romData);
+        private FindFishingEncounters(romData);
+        private FindMapEncounters(romData);
+        private CombineDuplicateEncounters(mons);
+        private ReadMaps(romData);
+        private ReadAreaNames(romData);
+        private GetTMHMNames(romData);
+        private ReadMoveData(romData);
+        private ReadItemData(romData);
+        private ReadTrainerData(romData);
+        private ReadPokeData(romData);
+        private ReadFrameBorders(romData);
+        private ProcessPalette(palData);
+        private ReadTrainerSprites(romData);
+        private ReadPokemonSprites(romData);
+        private CalculateTimesOfDay(romData);
     }
 }
 declare namespace Tools.PPTxt {

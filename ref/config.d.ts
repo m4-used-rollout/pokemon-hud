@@ -7,6 +7,7 @@ declare interface Config extends DexNavConfig {
     displayOptions?: string[];
     hudTheme: string;
     romFile?: string;
+    iniFile?: string;
     useGPU?: boolean;
     extractedRomFolder?: string;
     spriteFolder?: string;

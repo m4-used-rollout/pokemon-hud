@@ -58,7 +58,9 @@ gulp.task('clean-old-release', () => del('release/'));
 
 gulp.task('compile-less', ['copy-fonts'], () => gulp.src('./styles/*.less').pipe(sourcemaps.init()).pipe(less()).pipe(sourcemaps.write()).pipe(gulp.dest('bin/')));
 
-gulp.task('copy-config', () => gulp.src('./config.json').pipe(gulp.dest('bin/')));
+gulp.task('copy-config', ['copy-ini'], () => gulp.src('./config.json').pipe(gulp.dest('bin/')));
+
+gulp.task('copy-ini', () => gulp.src('./*.ini').pipe(gulp.dest('bin/')));
 
 gulp.task('copy-fonts', () => gulp.src('./styles/fonts/*').pipe(gulp.dest('bin/fonts/')));
 
