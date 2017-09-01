@@ -208,6 +208,7 @@ declare namespace RomReader {
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         private ReadAbilities(romData, config);
         private ReadPokeData(romData, config);
+        private ReadItemData(romData, config);
     }
 }
 declare module TPP.Server {

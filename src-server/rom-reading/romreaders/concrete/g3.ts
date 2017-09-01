@@ -7,6 +7,12 @@ namespace RomReader {
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
     const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
 
+    const bagPockets = ["???", "Items", "Poke Balls", "TM/HMs", "Berries", "Key Items"];
+    interface Gen3Item extends Pokemon.Item {
+        price: number;
+        pocket: string;
+    }
+
     export class Gen3 extends GBAReader {
         constructor(romFileLocation: string, iniFileLocation: string = "pge.ini") {
             super(romFileLocation, iniFileLocation);
@@ -14,14 +20,14 @@ namespace RomReader {
             let config = this.LoadConfig(romData);
             this.abilities = this.ReadAbilities(romData, config);
             this.pokemon = this.ReadPokeData(romData, config);
-            console.log(JSON.stringify(this.pokemon));
             // this.pokemonSprites = this.ReadPokemonSprites(romData, config);
             // this.trainers = this.ReadTrainerData(romData, config);
             // this.trainerSprites = this.ReadTrainerSprites(romData, config);
             // this.frameBorders = this.ReadFrameBorders(romData, config);
-            // this.items = this.ReadItemData(romData, config);
-            // this.ballIds = this.items.filter((i: Gen2Item) => i.pocket == "Ball").map(i => i.id);
+            this.items = this.ReadItemData(romData, config);
+            this.ballIds = this.items.filter((i: Gen3Item) => i.pocket == bagPockets[2]).map(i => i.id);
             // this.moves = this.ReadMoveData(romData, config);
+            // console.log(JSON.stringify(this.moves));
             // this.areas = this.ReadAreaNames(romData, config);
             // this.maps = this.ReadMaps(romData, config);
             // this.FindMapEncounters(romData, config);
@@ -69,6 +75,16 @@ namespace RomReader {
                 //safariZoneRate: data[24],
                 //dexColor: data[25] % 128,
                 //flipSprite: !!(data[25] & 128)
+            }));
+        }
+
+        private ReadItemData(romData: Buffer, config: PGEINI) {
+            return this.ReadStridedData(romData, parseInt(config.ItemData, 16), 44, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
+                name: this.FixAllCaps(this.ConvertText(data)),
+                id: i,
+                pocket: bagPockets[data[26]],
+                price: data.readInt16LE(16),
+                isKeyItem: data[26] == 5
             }));
         }
     }
