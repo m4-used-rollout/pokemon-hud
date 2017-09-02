@@ -88,6 +88,13 @@ declare namespace Pokemon {
         basePP: number;
         accuracy: number;
         type: string;
+        contestData?: ContestData;
+    }
+    interface ContestData {
+        effect: string;
+        type: string;
+        appeal: string;
+        jamming: string;
     }
 }
 declare namespace Pokemon {
@@ -169,6 +176,7 @@ declare namespace RomReader {
         CheckIfCanFish(runState: TPP.RunStatus): boolean;
         CalcHiddenPowerType(stats: TPP.Stats): string;
         CalcHiddenPowerPower(stats: TPP.Stats): number;
+        protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]): Pokemon.EncounterMon[];
         private surfExp;
     }
 }
@@ -200,15 +208,23 @@ declare namespace RomReader {
         protected stringTerminator: number;
         constructor(romFileLocation: string, iniFileLocation: string);
         protected LoadConfig(romData: Buffer): PGEINI;
+        protected fixRomPtr(ptr: number | Buffer): number;
+        protected parsePointerBlock(ptrBufferArr: Buffer[]): number[];
     }
 }
 declare namespace RomReader {
     class Gen3 extends GBAReader {
         constructor(romFileLocation: string, iniFileLocation?: string);
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        private isFRLG(config);
         private ReadAbilities(romData, config);
         private ReadPokeData(romData, config);
         private ReadItemData(romData, config);
+        private ReadMoveData(romData, config);
+        private ReadMapLabels(romData, config);
+        private ReadMaps(romData, config);
+        private FindMapEncounters(romData, config);
+        private ReadEncounterSet(romData, setAddr, encounterRates, requiredItems?);
     }
 }
 declare module TPP.Server {
@@ -353,7 +369,6 @@ declare namespace RomReader {
         private ReadPyriteLevelCaps(romData);
         private FindFishingEncounters(romData);
         private FindMapEncounters(romData);
-        private CombineDuplicateEncounters(mons);
         private ReadMaps(romData);
         private ReadAreaNames(romData);
         private GetTMHMNames(romData);

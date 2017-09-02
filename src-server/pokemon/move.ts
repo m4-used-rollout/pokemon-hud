@@ -6,5 +6,13 @@ namespace Pokemon {
         basePP: number;
         accuracy: number;
         type: string;
+        contestData?: ContestData;
+    }
+    
+    export interface ContestData {
+        effect: string;
+        type: string;
+        appeal: string;
+        jamming: string;
     }
 }

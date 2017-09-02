@@ -145,6 +145,16 @@ namespace RomReader {
         CalcHiddenPowerPower(stats: TPP.Stats) {
             return Math.floor((((stats.hp >> 1) % 2) + (((stats.attack >> 1) % 2) << 1) + (((stats.defense >> 1) % 2) << 2) + (((stats.speed >> 1) % 2) << 3) + (((stats.special_attack >> 1) % 2) << 4) + (((stats.special_defense >> 1) % 2) << 5)) * 40 / 63) + 30;
         }
+        protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {
+            return mons.filter(thisMon => {
+                let firstMon = mons.filter(m => m.species.name == thisMon.species.name && (m.requiredItem || { id: 0 }).id == (thisMon.requiredItem || { id: 0 }).id).shift();
+                if (firstMon != thisMon) {
+                    firstMon.rate += thisMon.rate;
+                    return false;
+                }
+                return true;
+            }).sort((e1, e2) => e2.rate - e1.rate).sort((e1, e2) => (e2.requiredItem || { id: 0 }).id - (e1.requiredItem || { id: 0 }).id);
+        }
         private surfExp = /^surf$/i;
     }
 }

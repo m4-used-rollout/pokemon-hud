@@ -132,6 +132,7 @@ namespace RomReader {
 
         constructor(romFileLocation: string) {
             super(romFileLocation, config.charmap);
+            this.natures = [];
 
             let romData = this.loadROM();
             this.CalculateTimesOfDay(romData);
@@ -261,17 +262,6 @@ namespace RomReader {
             })));
             encounterTimesOfDay.forEach(time => bugCatchingContest.encounters[time].grass = bugCatchingContest.encounters[time].grass || bugCatchingEncounters)
             //Not present: Headbutt (unhandled), Swarms (unhandled), Fishing (another function)
-        }
-
-        private CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {
-            return mons.filter(thisMon => {
-                let firstMon = mons.filter(m => m.species.name == thisMon.species.name).shift();
-                if (firstMon != thisMon) {
-                    firstMon.rate += thisMon.rate;
-                    return false;
-                }
-                return true;
-            }).sort((e1, e2) => e2.rate - e1.rate);
         }
 
         private ReadMaps(romData: Buffer) {

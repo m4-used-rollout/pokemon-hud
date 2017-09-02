@@ -9,7 +9,6 @@
 namespace RomReader {
     const fs = require("fs");
     const ini = require("ini");
-    const fixCaps = /(\b[a-z])/g;
 
     export abstract class GBAReader extends GBReader {
         protected stringTerminator = 0xFF;
@@ -26,6 +25,17 @@ namespace RomReader {
             let romIniData = iniData[romHeader] || {}
             romIniData.Header = romHeader;
             return romIniData;
+        }
+
+        protected fixRomPtr(ptr: number | Buffer) {
+            if (ptr instanceof Buffer) {
+                ptr = ptr.readInt32LE(0);
+            }
+            return ptr - 0x8000000;
+        }
+
+        protected parsePointerBlock(ptrBufferArr: Buffer[]) {
+            return ptrBufferArr.map(ptr => this.fixRomPtr(ptr)).map(ptr => ptr > 0 ? ptr : null).concat([null]).filter((ptr, i, arr) => i < arr.indexOf(null));
         }
 
     }

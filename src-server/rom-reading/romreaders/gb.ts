@@ -4,13 +4,15 @@
 namespace RomReader {
     const fs = require("fs");
     const fixCaps = /(\b[a-z])/g;
+    const fixWronglyCapped = /(['’][A-Z]|okéMon)/g;
+    const fixWronglyLowercased = /(^[T|H]m|\bTv\b)/g;
 
     export abstract class GBReader extends RomReaderBase {
         protected stringTerminator = 0x50;
 
         constructor(private romFileLocation: string, private charmap: string[]) {
             super();
-            this.ballIds = this.natures = this.abilities = [];
+            this.ballIds = this.abilities = [];
             this.characteristics = null;
         }
 
@@ -89,7 +91,7 @@ namespace RomReader {
         }
 
         protected FixAllCaps(str: string) {
-            return str.toLowerCase().replace(fixCaps, c => c.toUpperCase()).replace("'D", "'d");
+            return str.toLowerCase().replace(fixCaps, c => c.toUpperCase()).replace(fixWronglyCapped, c => c.toLowerCase()).replace(fixWronglyLowercased, c => c.toUpperCase());
         }
     }
 }
