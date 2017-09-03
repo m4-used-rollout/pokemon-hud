@@ -34,16 +34,16 @@ namespace RomReader {
         abstract GetForm(pokemon: TPP.Pokemon): number;
 
         GetSpecies(id: number) {
-            return this.pokemon.filter(p => p.id == id).pop() || <Pokemon.Species>{};
+            return this.pokemon.filter(p => p.id === id).shift() || <Pokemon.Species>{};
         }
         GetMove(id: number) {
-            return this.moves.filter(m => m.id == id).pop() || <Pokemon.Move>{};
+            return this.moves.filter(m => m.id === id).shift() || <Pokemon.Move>{};
         }
-        GetMap(id: number, bank = 0) {
-            return this.maps.filter(m => id == m.id && (!bank || bank == m.bank)).pop() || <Pokemon.Map>{};
+        GetMap(id: number, bank:number = null) {
+            return this.maps.filter(m => id === m.id && (bank === null || bank === m.bank)).shift() || <Pokemon.Map>{};
         }
         GetItem(id: number) {
-            return this.items.filter(i => i.id == id).pop() || <Pokemon.Item>{};
+            return this.items.filter(i => i.id === id).shift() || <Pokemon.Item>{};
         }
         GetAbility(id: number) {
             return this.abilities[id] || '';

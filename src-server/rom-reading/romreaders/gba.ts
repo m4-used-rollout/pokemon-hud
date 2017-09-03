@@ -27,15 +27,25 @@ namespace RomReader {
             return romIniData;
         }
 
-        protected fixRomPtr(ptr: number | Buffer) {
-            if (ptr instanceof Buffer) {
-                ptr = ptr.readInt32LE(0);
-            }
-            return ptr - 0x8000000;
+        protected readRomPtr(romData: Buffer, addr: number) {
+            return romData.readInt32LE(addr) - 0x8000000;
         }
 
-        protected parsePointerBlock(ptrBufferArr: Buffer[]) {
-            return ptrBufferArr.map(ptr => this.fixRomPtr(ptr)).map(ptr => ptr > 0 ? ptr : null).concat([null]).filter((ptr, i, arr) => i < arr.indexOf(null));
+        protected readPtrBlock(romData: Buffer, startAddr: number, endAddr?: number) {
+            endAddr = endAddr || 0;
+            let pointers = new Array<number>();
+            for (let i = startAddr; i < romData.length && (i < endAddr || startAddr > endAddr); i += 4) {
+                let ptr = this.readRomPtr(romData, i);
+                if (ptr < 0 || ptr > romData.length) {
+                    return pointers;
+                }
+                pointers.push(ptr);
+            }
+            return pointers;
+        }
+
+        protected findPtrFromPreceedingData(romData: Buffer, hexStr: string) {
+            return this.readRomPtr(romData, romData.indexOf(hexStr, 0, 'hex') + Math.ceil(hexStr.length / 2));
         }
 
     }

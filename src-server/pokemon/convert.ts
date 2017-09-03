@@ -24,6 +24,7 @@ namespace Pokemon.Convert {
             id: t.id,
             name: t.name,
             classId: t.class_id,
+            spriteId: t.class_id,
             className: t.class_name,
             gender: t.gender,
             secret: t.secret

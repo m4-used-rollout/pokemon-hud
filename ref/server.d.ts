@@ -110,6 +110,8 @@ declare namespace Pokemon {
         className: string;
         id: number;
         name: string;
+        spriteId: number;
+        gender?: string;
     }
 }
 declare namespace Tools {
@@ -208,8 +210,9 @@ declare namespace RomReader {
         protected stringTerminator: number;
         constructor(romFileLocation: string, iniFileLocation: string);
         protected LoadConfig(romData: Buffer): PGEINI;
-        protected fixRomPtr(ptr: number | Buffer): number;
-        protected parsePointerBlock(ptrBufferArr: Buffer[]): number[];
+        protected readRomPtr(romData: Buffer, addr: number): number;
+        protected readPtrBlock(romData: Buffer, startAddr: number, endAddr?: number): number[];
+        protected findPtrFromPreceedingData(romData: Buffer, hexStr: string): number;
     }
 }
 declare namespace RomReader {
@@ -219,8 +222,10 @@ declare namespace RomReader {
         private isFRLG(config);
         private ReadAbilities(romData, config);
         private ReadPokeData(romData, config);
+        private ReadTrainerData(romData, config);
         private ReadItemData(romData, config);
         private ReadMoveData(romData, config);
+        private GetTMHMNames(romData, config);
         private ReadMapLabels(romData, config);
         private ReadMaps(romData, config);
         private FindMapEncounters(romData, config);

@@ -332,6 +332,7 @@ namespace RomReader {
                 this.ReadBundledData(romData, thisAddr, 0xFF, nextAddr || 1, nextAddr).forEach((tData, tId) => {
                     trainers.push({
                         classId: cId,
+                        spriteId: cId,
                         id: tId,
                         className: classNames[cId],
                         name: this.FixAllCaps(this.ConvertText(tData))
