@@ -8,7 +8,8 @@ declare namespace TPP {
         in_battle: boolean;
         battle_kind?: string;
         wild_species?: PokemonSpecies;
-        enemy_trainer?: EnemyTrainer;
+        enemy_trainers?: EnemyTrainer[];
+        enemy_party?: EnemyParty;
     }
 
     //sent from lua
@@ -79,12 +80,14 @@ declare namespace TPP {
         type1?: string;
         type2?: string;
         catch_rate?: number;
-        egg_cycles: number;
+        egg_cycles?: number;
         egg_type1?: string;
         egg_type2?: string;
         gender_ratio?: number;
         growth_rate?: string;
         national_dex?: number;
+        abilities?: string[];
+        do_not_flip_sprite?: boolean;
     }
 
     export interface Pokemon {
@@ -150,14 +153,17 @@ declare namespace TPP {
         count?: number;
     }
 
+    export interface EnemyParty extends Array<{
+        species: PokemonSpecies;
+        health: number[];
+        active?: boolean;
+    }>
+    { }
+
     export interface EnemyTrainer extends Trainer {
         class_id?: number;
         class_name?: string;
-        party: {
-            species: PokemonSpecies;
-            health: number[];
-            active?: boolean;
-        }[]
+        pic_id?: number;
     }
 
     export interface Trainer {

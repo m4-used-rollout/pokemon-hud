@@ -18,13 +18,14 @@ function RenderImageMap(imgData: Sprites.ImageMap) {
     return canvas.toDataURL();
 }
 
-class PokeSprite extends React.PureComponent<{ pokemonId: number; shiny?: boolean; form?: number }, {}> {
+class PokeSprite extends React.PureComponent<{ pokemonId?: number; dexNum?: number, shiny?: boolean; form?: number }, {}> {
     render() {
-        let src = TPP.Server.RomData.GetPokemonSprite(this.props.pokemonId, this.props.form || 0, this.props.shiny);
+        let pokemonId = this.props.pokemonId || TPP.Server.RomData.GetSpeciesByDexNumber(this.props.dexNum).id;
+        let src = TPP.Server.RomData.GetPokemonSprite(pokemonId, this.props.form || 0, this.props.shiny);
         if (src.charAt(0) == "{") {
             src = RenderImageMap(JSON.parse(src));
             if (src) {
-                TPP.Server.RomData.CachePokemonSprite(this.props.pokemonId, src, this.props.form || 0, this.props.shiny);
+                TPP.Server.RomData.CachePokemonSprite(pokemonId, src, this.props.form || 0, this.props.shiny);
             }
         }
         return <img src={src} />

@@ -29,10 +29,7 @@ namespace RomReader {
             let config = this.LoadConfig(romData);
             this.abilities = this.ReadAbilities(romData, config);
             this.pokemon = this.ReadPokeData(romData, config);
-            // this.pokemonSprites = this.ReadPokemonSprites(romData, config);
             this.trainers = this.ReadTrainerData(romData, config);
-            // this.trainerSprites = this.ReadTrainerSprites(romData, config);
-            // this.frameBorders = this.ReadFrameBorders(romData, config);
             this.items = this.ReadItemData(romData, config);
             this.ballIds = this.items.filter((i: Gen3Item) => i.isPokeball).map(i => i.id);
             this.moves = this.ReadMoveData(romData, config);
@@ -40,6 +37,10 @@ namespace RomReader {
             this.areas = this.ReadMapLabels(romData, config);
             this.maps = this.ReadMaps(romData, config);
             this.FindMapEncounters(romData, config);
+        }
+
+        FixAllCaps(str:string) {
+            return str; //Theta Emerald EX already has the caps fixed
         }
 
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet {
@@ -89,7 +90,7 @@ namespace RomReader {
                 abilities: [this.abilities[data[22]], this.abilities[data[23]]],
                 //safariZoneRate: data[24],
                 //dexColor: data[25] % 128,
-                //flipSprite: !!(data[25] & 128)
+                doNotflipSprite: !!(data[25] & 128)
             }));
         }
 
@@ -173,23 +174,28 @@ namespace RomReader {
         }
 
         private GetTMHMNames(romData: Buffer, config: PGEINI) {
-            const tmHmExp = /^(T|H)M\d+/i;
-            let moveMap = this.ReadStridedData(romData, parseInt(config.TMData, 16), 2, parseInt(config.TotalTMsPlusHMs)).map(m => m.readInt16LE(0));
-            this.items.filter(i => tmHmExp.test(i.name)).forEach((tm, i) => tm.name += " " + this.GetMove(moveMap[i]).name);
+            const tmHmExp = /^(T|H)M(\d+)/i;
+            let moveMap = this.ReadStridedData(romData, parseInt(config.TMData, 16), 2, parseInt(config.TotalTMsPlusHMs)).map(m => m.readUInt16LE(0));
+            let TMs = this.items.filter(i => tmHmExp.test(i.name));
+            TMs.forEach(tm => {
+                let tmParse = tmHmExp.exec(tm.name);
+                let tmNo = parseInt(tmParse[2]) + (tmParse[1] == 'H' ? parseInt(config.TotalTMs) : 0) - 1;
+                tm.name += ` ${this.GetMove(moveMap[tmNo]).name}`
+            });
         }
 
         private ReadMapLabels(romData: Buffer, config: PGEINI) {
             return this.ReadStridedData(romData, parseInt(config.MapLabelData, 16), this.isFRLG(config) ? 4 : 8, parseInt(config.NumberOfMapLabels))
                 .map(ptr => {
-                    var addr = this.readRomPtr(ptr, 0);
+                    var addr = this.ReadRomPtr(ptr, 0);
                     return this.FixAllCaps(this.ConvertText(romData.slice(addr, addr + 20)));
                 });
         }
 
         private ReadMaps(romData: Buffer, config: PGEINI) {
-            let mapBanksPtr = this.findPtrFromPreceedingData(romData, mapBanksPtrMarker);
-            return this.readPtrBlock(romData, mapBanksPtr)
-                .map((bankPtr, b, arr) => this.readPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
+            let mapBanksPtr = this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
+            return this.ReadPtrBlock(romData, mapBanksPtr)
+                .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
                     .map((mapHeader, m) => (<Pokemon.Map>{
                         bank: b,
                         id: m,
@@ -202,7 +208,7 @@ namespace RomReader {
         }
 
         private FindMapEncounters(romData: Buffer, config: PGEINI) {
-            let wildPokemonPtr = this.findPtrFromPreceedingData(romData, wildPokemonPtrMarker);
+            let wildPokemonPtr = this.FindPtrFromPreceedingData(romData, wildPokemonPtrMarker);
             this.ReadStridedData(romData, wildPokemonPtr, 20).forEach(data => {
                 let mapBank = data[0], mapId = data[1];
                 if (mapBank == 0xFF && mapId == 0xFF)
@@ -210,10 +216,10 @@ namespace RomReader {
                 let map = this.GetMap(mapId, mapBank);
                 map.encounters = {
                     all: {
-                        grass: this.ReadEncounterSet(romData, this.readRomPtr(data, 4), grassEncounterRates),
-                        surfing: this.ReadEncounterSet(romData, this.readRomPtr(data, 8), surfEncounterRates),
-                        hidden_grass: this.ReadEncounterSet(romData, this.readRomPtr(data, 12), rockSmashEncounterRates),
-                        fishing: this.ReadEncounterSet(romData, this.readRomPtr(data, 16), fishingEncounterRates, fishingRequiredRods),
+                        grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 4), grassEncounterRates),
+                        surfing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 8), surfEncounterRates),
+                        hidden_grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 12), rockSmashEncounterRates),
+                        fishing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 16), fishingEncounterRates, fishingRequiredRods),
                     }
                 };
             });
@@ -222,7 +228,7 @@ namespace RomReader {
         private ReadEncounterSet(romData: Buffer, setAddr: number, encounterRates: number[], requiredItems: number[] = []) {
             if (setAddr <= 0)
                 return [];
-            let setPtr = this.readRomPtr(romData, setAddr + 4);
+            let setPtr = this.ReadRomPtr(romData, setAddr + 4);
             return this.CombineDuplicateEncounters(this.ReadStridedData(romData, setPtr, 4, encounterRates.length).map((data, i) => (<Pokemon.EncounterMon>{
                 species: this.GetSpecies(data.readInt16LE(2)),
                 rate: encounterRates[i],

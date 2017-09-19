@@ -16,7 +16,7 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
             <h3>DexNav</h3>
             {map.MapName ? <h4>{map.MapName}</h4> : null}
             <WildBattle wild={this.props.state.WildBattle} />
-            <EnemyTrainer trainer={this.props.state.EnemyTrainer} />
+            <EnemyTrainer trainers={this.props.state.EnemyTrainers} party={this.props.state.EnemyParty} />
             <div className={`encounters no-encounters ${map.TotalEncounters ? 'hidden' : ""}`} />
             <div className={`encounters nothing-to-show ${totalKnownEncounters ? 'hidden' : ""}`} />
             <Encounters encounters={totalKnownEncounters ? map.KnownEncounters : null} total={totalKnownEncounters} />

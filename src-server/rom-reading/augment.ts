@@ -116,6 +116,8 @@ namespace RomReader {
             s.gender_ratio = s.gender_ratio || romMon.genderRatio;
             s.growth_rate = s.growth_rate || romMon.growthRate;
             s.catch_rate = s.catch_rate || romMon.catchRate;
+            s.abilities = s.abilities || romMon.abilities;
+            s.do_not_flip_sprite = romMon.doNotFlipSprite;
         }
 
         function augmentPokemonMet(p: TPP.Pokemon) {
@@ -135,16 +137,16 @@ namespace RomReader {
         function calculateGender(p: TPP.Pokemon) {
             if (p.species.gender_ratio && typeof (p.gender) !== "string") {
                 if (p.species.gender_ratio == 255) {
-                    p.gender = p.gender || '';
+                    p.gender = '';
                 }
                 else if (p.species.gender_ratio == 254) {
-                    p.gender = p.gender || "Female";
+                    p.gender = "Female";
                 }
                 else if (p.species.gender_ratio == 0) {
-                    p.gender = p.gender || "Male";
+                    p.gender = "Male";
                 }
                 else if (p.gender) { //Generation 3
-                    p.gender = parseInt(p.gender) > p.species.gender_ratio ? "Male" : "Female";
+                    p.gender = (p.personality_value % 256) > p.species.gender_ratio ? "Male" : "Female";
                 }
                 else { //Generation 2
                     p.gender = ((p.ivs || { attack: 0 }).attack << 4) > p.species.gender_ratio ? "Male" : "Female";
@@ -159,11 +161,20 @@ namespace RomReader {
         }
 
         function calculatePokemonAbilityNatureCharacteristic(p: TPP.Pokemon) {
-            if (typeof p.ability === "number") {
-                p.ability = romData.GetAbility(parseInt(p.ability)) || p.ability;
+            if (typeof p.ability !== "string" && romData.HasAbilities) {
+                let abilityId = p.personality_value % 2;
+                if (typeof p.ability === "number") {
+                    abilityId = p.ability;
+                }
+                if (p.species.abilities && p.species.abilities.length > abilityId) {
+                    p.ability = p.species.abilities[abilityId];
+                }
+                else {
+                    p.ability = romData.GetAbility(abilityId) || abilityId.toString();
+                }
             }
-            if (typeof p.nature === "number") {
-                p.nature = romData.GetNature(parseInt(p.nature));
+            if (typeof p.nature !== "string" && romData.HasNatures) {
+                p.nature = romData.GetNature(parseInt(p.nature) || p.personality_value % 25);
             }
             if (p.ivs) {
                 let characteristic = romData.GetCharacteristic({
@@ -182,21 +193,20 @@ namespace RomReader {
 
         function augmentEnemyTrainer(t: TPP.EnemyTrainer) {
             let romTrainer = romData.GetTrainer(t.id, t.class_id);
-            if (t.class_id) {
-                t.class_name = t.class_name || romTrainer.className
-            }
+            t.class_id = t.class_id || romTrainer.classId;
+            t.class_name = t.class_name || romTrainer.className;
             if (t.id || t.id === 0) {
                 t.name = (t.name || '').trim() || romTrainer.name;
             }
+            t.pic_id = t.pic_id || romTrainer.spriteId;
             if (state.rival_name && t.class_name && t.class_name.toLowerCase() == "rival") {
                 t.name = state.rival_name;
             }
-            (t.party || []).forEach(p => augmentSpecies(p.species));
         }
 
         normalizeDex();
         augmentItems();
-        (state.daycare || []).filter(p=> !!p).forEach(augmentPokemon);
+        (state.daycare || []).filter(p => !!p).forEach(augmentPokemon);
         (state.party || []).filter(p => !!p).map(augmentPartyPokemon).forEach(augmentPokemon);
         (state.pc.boxes || []).forEach(b => (b.box_contents || []).filter(p => !!p).forEach(augmentPokemon));
 
@@ -208,8 +218,12 @@ namespace RomReader {
         if (state.wild_species) {
             augmentSpecies(state.wild_species);
         }
-        if (state.enemy_trainer) {
-            augmentEnemyTrainer(state.enemy_trainer);
+        if (state.enemy_trainers) {
+            state.enemy_trainers.forEach(augmentEnemyTrainer);
+        }
+        if (state.enemy_party) {
+            state.enemy_party = state.enemy_party.filter(p => !!p);
+            state.enemy_party.forEach(p => augmentSpecies(p.species));
         }
         if (state.area_id) {
             state.area_name = romData.GetAreaName(state.area_id);

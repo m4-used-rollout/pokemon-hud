@@ -44,7 +44,8 @@ namespace TPP.Server.DexNav {
             return this.TotalEncounters > 0;
         }
         public WildBattle: OwnedSpecies = null;
-        public EnemyTrainer: TPP.EnemyTrainer = null;
+        public EnemyTrainers: TPP.EnemyTrainer[] = null;
+        public EnemyParty: TPP.EnemyParty = null;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {
             if (!map || !runState) return;
             this.MapName = map.name;
@@ -60,15 +61,18 @@ namespace TPP.Server.DexNav {
             if (runState.in_battle) {
                 this.WildBattle = <OwnedSpecies>Pokemon.Convert.SpeciesFromRunStatus(runState.wild_species);
                 if (this.WildBattle && this.WildBattle.id) {
-                    this.WildBattle.owned = (runState.caught_list || []).some(p => p == this.WildBattle.id);
+                    this.WildBattle.owned = (runState.caught_list || []).some(p => p == this.WildBattle.dexNumber);
                     this.WildBattle.encounterRate = this.categories.map(k => (this.KnownEncounters[k] || []).filter(e => e.speciesId == this.WildBattle.id))
                         .reduce((all, curr) => <KnownEncounter[]>Array.prototype.concat.apply(all, curr), [])
                         .reduce((total, curr) => ({ rate: total.rate + curr.rate, speciesId: curr.speciesId }), { rate: 0 }).rate;
                 }
-                this.EnemyTrainer = runState.enemy_trainer;
-                if (this.EnemyTrainer && this.EnemyTrainer.class_name && this.EnemyTrainer.class_name.toLowerCase() == "rival" && (!this.EnemyTrainer.name || !this.EnemyTrainer.name.trim().length)) {
-                    this.EnemyTrainer.name = runState.rival_name;
-                }
+                this.EnemyTrainers = runState.enemy_trainers;
+                this.EnemyParty = runState.enemy_party;
+                (this.EnemyTrainers || []).forEach(t=>{
+                    if (t && t.class_name &&t.class_name.toLowerCase() == "rival" && (!t.name || !t.name.trim().length)) {
+                        t.name = runState.rival_name;
+                    }
+                });
             }
         }
 

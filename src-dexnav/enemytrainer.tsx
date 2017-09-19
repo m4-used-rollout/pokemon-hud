@@ -1,28 +1,28 @@
 /// <reference path="encounters.tsx" />
 /// <reference path="../src-hud/trainersprite.tsx" />
 
-class EnemyTrainer extends PersistentComponent<{ trainer: TPP.EnemyTrainer }> {
+class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], party: TPP.EnemyParty }> {
     constructor(props) {
         super(props, 2);
     }
     render() {
-        let trainer = this.state.trainer;
-        if (!trainer) return null;
-        return <div className={`encounters enemy-trainer ${this.props.trainer ? "" : "hidden"}`} key={`${trainer.class_id}${trainer.id}`}>
+        let trainers = this.state.trainers;
+        if (!trainers) return null;
+        return <div className={`encounters enemy-trainer ${this.props.trainers ? "" : "hidden"}`} key={`${trainers[0].class_id}${trainers[0].id}`}>
             <div className="info-left">
-                <div className="name">{`${trainer.class_name || ''} ${trainer.name || ''}`.trim()}</div>
-                <EnemyParty trainer={trainer} />
+                {trainers.map(trainer => <div className="name">{`${trainer.class_name || ''} ${trainer.name || ''}`.trim()}</div>)}
+                <EnemyParty party={this.state.party} />
             </div>
             <div className="trainer">
-                <TrainerSprite classId={trainer.class_id} trainerId={trainer.id} />
+                {trainers.map(trainer => <TrainerSprite picId={trainer.pic_id} classId={trainer.class_id} trainerId={trainer.id} />)}
             </div>
         </div>;
     }
 }
 
-class EnemyParty extends React.Component<{ trainer: TPP.EnemyTrainer }, {}> {
+class EnemyParty extends React.Component<{ party: TPP.EnemyParty }, {}> {
     render() {
-        let party = this.props.trainer.party;
+        let party = this.props.party;
         if (!party) return null;
         return <div className="enemy-party">
             {party.map(p => <span className={p.species.id && p.health[0] ? "" : "fainted"} >

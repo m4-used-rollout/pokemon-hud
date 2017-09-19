@@ -20,5 +20,6 @@ namespace Pokemon {
         spriteSize?: number;
         growthRate: string;
         expFunction: ExpCurve.CalcExp;
+        doNotFlipSprite?: boolean;
     }
 }

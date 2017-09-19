@@ -216,6 +216,15 @@
                 white-space: nowrap;
                 // max-width: 65vw;
 
+                .name {
+                    line-height: .8em;
+                    margin-top:.1em;
+                    
+                    + .name { 
+                        margin-top:-.1em;
+                    }
+                }
+
                 .enemy-party {
                     display: flex;
                     flex-flow: row nowrap;
@@ -292,6 +301,11 @@
                     height:70vh;
                     transition: filter 1s ease-in-out;
                     position: relative;
+                    + img {
+                        position: absolute;
+                        left: 20%;
+                        top: 1%;
+                    }
                 }
                 &.seen img {
                     filter:brightness(0%) contrast(200%);

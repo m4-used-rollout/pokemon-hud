@@ -36,10 +36,13 @@ namespace RomReader {
         GetSpecies(id: number) {
             return this.pokemon.filter(p => p.id === id).shift() || <Pokemon.Species>{};
         }
+        GetSpeciesByDexNumber(dexNum:number) {
+            return this.pokemon.filter(p=>p.dexNumber == dexNum).shift() || <Pokemon.Species>{};
+        }
         GetMove(id: number) {
             return this.moves.filter(m => m.id === id).shift() || <Pokemon.Move>{};
         }
-        GetMap(id: number, bank:number = null) {
+        GetMap(id: number, bank: number = null) {
             return this.maps.filter(m => id === m.id && (bank === null || bank === m.bank)).shift() || <Pokemon.Map>{};
         }
         GetItem(id: number) {
@@ -47,6 +50,9 @@ namespace RomReader {
         }
         GetAbility(id: number) {
             return this.abilities[id] || '';
+        }
+        get HasAbilities() {
+            return this.abilities.length > 0;
         }
         GetAreaName(id: number) {
             return this.areas[id] || '';
@@ -73,6 +79,9 @@ namespace RomReader {
         }
         GetNature(id: number) {
             return this.natures[id];
+        }
+        get HasNatures() {
+            return this.natures.length > 0;
         }
         GetCharacteristic(stats: Pokemon.Stats, pv: number) {
             //derived from http://bulbapedia.bulbagarden.net/wiki/Characteristic
@@ -108,13 +117,13 @@ namespace RomReader {
             return encounters;
         }
         GetTrainer(id: number, classId: number = null) {
-            return this.trainers.filter(t => t.classId == classId && t.id == id).shift() || this.trainers.filter(t => t.classId == classId).shift() || <Pokemon.Trainer>{};
+            return this.trainers.filter(t => t.id == id && (classId == null || classId == t.classId) ).shift() || this.trainers.filter(t => t.classId == classId).shift() || <Pokemon.Trainer>{};
         }
         GetPokemonSprite(id: number, form = 0, shiny = false) {
-            return ((this.pokemonSprites[id] || [])[form] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${id}.gif`;
+            return ((this.pokemonSprites[id] || [])[form] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${shiny ? "shiny/" : ""}${id}.gif`;
         }
         GetTrainerSprite(id: number) {
-            return this.trainerSprites[id] || "./img/empty-sprite.png";
+            return this.trainerSprites[id] || `./img/trainers/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
         }
         GetFrameBorder(id: number) {
             return this.frameBorders[id % this.frameBorders.length];

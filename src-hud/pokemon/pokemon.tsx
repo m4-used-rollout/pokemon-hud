@@ -27,8 +27,8 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
         if (mon.is_egg)
             classes = "egg" + (eggPercent > 99 ? " shimmy-shake" : "");
         return <li className={classes}>
-            {/*<Sleepy status={mon.sleep_turns} />*/}
-            <div className={`pokemon-image ${cleanString(mon.species.name)}`}>
+            <Sleepy status={mon.sleep_turns} />
+            <div className={`pokemon-image ${cleanString(mon.species.name)} ${mon.species.do_not_flip_sprite ? "no-flip" : ""}`}>
                 <FrameBorder frame={parseInt((this.props.gameState.options || { frame: '0' }).frame)} />
                 {mon.is_egg ? <img src="./img/egg.gif" /> : <PokeSprite pokemonId={mon.species.id} shiny={mon.shiny} form={TPP.Server.RomData.GetForm(mon)} />}
             </div>

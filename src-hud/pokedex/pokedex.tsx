@@ -34,7 +34,7 @@ class Pokedex extends React.Component<{ seen: number[], owned: number[] }, dexSt
             let owned = this.props.owned.indexOf(i) >= 0;
             let newEntry = state.newEntry == i;
             mons.push(<li key={i} className={`${owned ? "owned" : "unowned"} ${newEntry ? "new-entry" : ""}`} data-index={`000${i}`.substring(i.toString().length)}>
-                {seen || owned ? <PokeSprite pokemonId={i} /> : <img src="./img/empty-sprite.png" />}
+                {seen || owned ? <PokeSprite dexNum={i} /> : <img src="./img/empty-sprite.png" />}
             </li>);
         }
         // //show all unown for dev
