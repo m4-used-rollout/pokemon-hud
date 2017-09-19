@@ -4,6 +4,9 @@ bin/
 img/items/
 img/sprites/
 img/badges/
+img/trainers/
 cache/
 release/
 .DS_Store
+*.ini
+!pge.ini
