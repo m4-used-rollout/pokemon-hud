@@ -70,4 +70,6 @@ gulp.task('copy-img', () => gulp.src('./img/**/*').pipe(gulp.dest('bin/img/')));
 
 gulp.task('copy-package', () => gulp.src('./package.json').pipe(gulp.dest('bin/')));
 
-gulp.task('copy-deps', () => gulp.src('./node_modules/react*/dist/*.js').pipe(flatten()).pipe(gulp.dest('bin/lib/')));
+gulp.task('copy-deps', ['copy-node-packages'], () => gulp.src('./node_modules/react*/dist/*.js').pipe(flatten()).pipe(gulp.dest('bin/lib/')));
+
+gulp.task('copy-node-packages', () => gulp.src('./node_modules/ini/**/*').pipe(gulp.dest('bin/node_modules/ini/')));
