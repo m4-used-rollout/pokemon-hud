@@ -11,6 +11,7 @@ namespace TPP.Server.DexNav {
         speciesId: number;
         rate: number;
         owned: boolean;
+        requiredItemId: number;
     }
 
     export interface KnownEncounters {
@@ -68,8 +69,8 @@ namespace TPP.Server.DexNav {
                 }
                 this.EnemyTrainers = runState.enemy_trainers;
                 this.EnemyParty = runState.enemy_party;
-                (this.EnemyTrainers || []).forEach(t=>{
-                    if (t && t.class_name &&t.class_name.toLowerCase() == "rival" && (!t.name || !t.name.trim().length)) {
+                (this.EnemyTrainers || []).forEach(t => {
+                    if (t && t.class_name && t.class_name.toLowerCase() == "rival" && (!t.name || !t.name.trim().length)) {
                         t.name = runState.rival_name;
                     }
                 });
@@ -80,15 +81,25 @@ namespace TPP.Server.DexNav {
 
         private PopulateKnownEncounters(encounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {
             if (!encounters) return;
-            let userItems: TPP.Item[] = Object.keys(runState.items || {}).reduce((allItems, k) => Array.prototype.concat.apply(allItems, runState.items[k]), []);
-            let monIsSeen = (mon: Pokemon.EncounterMon) => (runState.seen_list || []).indexOf(mon.species.id) >= 0;
-            let monIsOwned = (mon: Pokemon.EncounterMon) => (runState.caught_list || []).indexOf(mon.species.id) >= 0;
-            let userHasItem = (item: TPP.Item) => !item || !item.id || userItems.some(i => item.id == i.id);
+
+            // console.log(`Grass: ${(encounters.grass || []).map(e => `${e.species.name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
+            // console.log(`Surfing: ${(encounters.surfing || []).map(e => `${e.species.name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
+            // console.log(`Fishing: ${(encounters.fishing || []).map(e => `${e.species.name} (${e.rate.toFixed(0)}%) [${e.requiredItem.name}]`).join(', ')}`);
+            // console.log(`Hidden: ${(encounters.hidden_grass || []).map(e => `${e.species.name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
+
+            let monIsSeen = (mon: Pokemon.EncounterMon) => (runState.seen_list || []).indexOf(mon.species.dexNumber) >= 0;
+            let monIsOwned = (mon: Pokemon.EncounterMon) => (runState.caught_list || []).indexOf(mon.species.dexNumber) >= 0;
+            let userHasItem = (item: TPP.Item) => !item || !item.id || Object.keys(runState.items || {}).some(k => (runState.items[k] || []).some(i => item.id == i.id));
             this.categories.forEach(k => {
                 this.KnownEncounters[k] = (encounters[k] || [])
                     .filter(s => (monIsSeen(s) || monIsOwned(s)) && userHasItem(s.requiredItem))
-                    .map(s => (<KnownEncounter>{ speciesId: s.species.id, rate: s.rate, owned: monIsOwned(s) }));
+                    .map(s => (<KnownEncounter>{ speciesId: s.species.id, rate: s.rate, owned: monIsOwned(s), requiredItemId: s.requiredItem.id }));
             });
+
+            // console.log(`Known Grass: ${(this.KnownEncounters.grass || []).map(e => `${Server.RomData.GetSpecies(e.speciesId).name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
+            // console.log(`Known Surfing: ${(this.KnownEncounters.surfing || []).map(e => `${Server.RomData.GetSpecies(e.speciesId).name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
+            // console.log(`Known Fishing: ${(this.KnownEncounters.fishing || []).map(e => `${Server.RomData.GetSpecies(e.speciesId).name} (${e.rate.toFixed(0)}%`).join(', ')}`);
+            // console.log(`Known Hidden: ${(this.KnownEncounters.hidden_grass || []).map(e => `${Server.RomData.GetSpecies(e.speciesId).name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
 
             function foldInOwned(mainList: KnownEncounter[], hiddenList: KnownEncounter[]) {
                 hiddenList.forEach(e => e.owned && mainList.filter(m => m.speciesId == e.speciesId).length < 1 && mainList.push(e));
