@@ -45,7 +45,7 @@ module TPP.Server {
             default:
                 return JSON.stringify(state);
             case "location":
-                return locationTemplate.replace(/%AREA%/g, <any>state.area_name).replace(/%MAPBANK%/g, <any>state.map_bank).replace(/%MAPID%/g, <any>state.map_id);
+                return locationTemplate.replace(/%AREA%/g, state.area_name || state.map_name).replace(/%MAPBANK%/g, state.map_bank.toString()).replace(/%MAPID%/g, state.map_id.toString());
             case "input":
                 if (!inputs) {
                     setInterval(()=>inputs = {
