@@ -526,6 +526,22 @@
                 }
             }
 
+            
+            .rtc {
+                margin-top: .25em;
+                text-align: center;
+                font-family: pokered;
+                font-size: 2.5vh;
+                > span {
+                    &:before {
+                        content:' ';
+                    }
+                    &.minutes:before, &.seconds:before {
+                        content:':';
+                    }
+                }
+            }
+
             .bottom-row {
                 position: absolute!important;
                 bottom:0;
@@ -582,17 +598,16 @@
                         content:"Lv";
                     }
 
-                    .options {
-                        display: none;
-                        flex: 1 1 auto;
-                        display:flex;
-                        justify-content: space-around;
-                        text-align: center;
-                        margin:auto;
-                        span {
-                            flex: 1 1 auto;
-                        }
-                    }
+                    // .options {
+                    //     flex: 1 1 auto;
+                    //     display:flex;
+                    //     justify-content: space-around;
+                    //     text-align: center;
+                    //     margin:auto;
+                    //     span {
+                    //         flex: 1 1 auto;
+                    //     }
+                    // }
 
                     .dex-counts {
                         margin-right:0;
