@@ -226,7 +226,7 @@ declare namespace RomReader {
 declare namespace RomReader {
     class Gen3 extends GBAReader {
         constructor(romFileLocation: string, iniFileLocation?: string);
-        FixAllCaps(str: string): string;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         private isFRLG(config);
         private ReadAbilities(romData, config);
@@ -238,7 +238,7 @@ declare namespace RomReader {
         private ReadMapLabels(romData, config);
         private ReadMaps(romData, config);
         private FindMapEncounters(romData, config);
-        private ReadEncounterSet(romData, setAddr, encounterRates, requiredItems?);
+        private ReadEncounterSet(romData, setAddr, encounterRates, requiredItems?, includeGroupRate?);
     }
 }
 declare module TPP.Server {
@@ -260,6 +260,7 @@ declare namespace TPP.Server.DexNav {
         speciesId: number;
         rate: number;
         owned: boolean;
+        requiredItemId: number;
     }
     interface KnownEncounters {
         [key: string]: KnownEncounter[];

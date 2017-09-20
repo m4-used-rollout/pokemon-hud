@@ -162,7 +162,7 @@ namespace RomReader {
                     return false;
                 }
                 return true;
-            }).sort((e1, e2) => e2.rate - e1.rate).sort((e1, e2) => (e2.requiredItem || { id: 0 }).id - (e1.requiredItem || { id: 0 }).id);
+            }).sort((e1, e2) => ((e1.requiredItem || { id: 0 }).id - (e2.requiredItem || { id: 0 }).id) || (e2.rate - e1.rate));
         }
         private surfExp = /^surf$/i;
     }

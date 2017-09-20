@@ -31,9 +31,9 @@ class Encounter extends React.PureComponent<{ encounterType: string, encounter: 
     render() {
         let e = this.props.encounter;
         return <span className={cleanString(this.props.encounterType) + ' ' + (e.owned ? "owned" : "seen")}>
-            {/* <img src={`./img/sprites/${config.spriteFolder}/${e.speciesId}.gif`} /> */}
             <PokeSprite pokemonId={e.speciesId} />
             <Rarity rate={e.rate} />
+            { e.requiredItemId > 0 ? <img className="item" src={`./img/items/${config.spriteFolder}/${e.requiredItemId}.png`} /> : null }
         </span>;
     }
 }

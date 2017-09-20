@@ -39,8 +39,8 @@ namespace RomReader {
             this.FindMapEncounters(romData, config);
         }
 
-        FixAllCaps(str:string) {
-            return str; //Theta Emerald EX already has the caps fixed
+        public CheckIfCanSurf(runState: TPP.RunStatus) {
+            return (runState.badges & 16) == 16; //Balance/Soul Badge
         }
 
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet {
@@ -214,24 +214,27 @@ namespace RomReader {
                 if (mapBank == 0xFF && mapId == 0xFF)
                     return;
                 let map = this.GetMap(mapId, mapBank);
+                let rockSmashExp = /[[TH]M\d+ Rock Smash/i
+                let rockSmashTmId = (this.items.filter(i => rockSmashExp.test(i.name)).shift() || { id: 0 }).id;
                 map.encounters = {
                     all: {
                         grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 4), grassEncounterRates),
                         surfing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 8), surfEncounterRates),
-                        hidden_grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 12), rockSmashEncounterRates),
-                        fishing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 16), fishingEncounterRates, fishingRequiredRods),
+                        hidden_grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 12), rockSmashEncounterRates, rockSmashEncounterRates.map(e => rockSmashTmId), true),
+                        fishing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 16), fishingEncounterRates, fishingRequiredRods, true),
                     }
                 };
             });
         }
 
-        private ReadEncounterSet(romData: Buffer, setAddr: number, encounterRates: number[], requiredItems: number[] = []) {
+        private ReadEncounterSet(romData: Buffer, setAddr: number, encounterRates: number[], requiredItems: number[] = [], includeGroupRate = false) {
             if (setAddr <= 0)
                 return [];
             let setPtr = this.ReadRomPtr(romData, setAddr + 4);
+            let groupRate = romData.readInt32LE(setAddr) / 100;
             return this.CombineDuplicateEncounters(this.ReadStridedData(romData, setPtr, 4, encounterRates.length).map((data, i) => (<Pokemon.EncounterMon>{
                 species: this.GetSpecies(data.readInt16LE(2)),
-                rate: encounterRates[i],
+                rate: encounterRates[i] * (includeGroupRate ? groupRate : 1),
                 requiredItem: this.GetItem(requiredItems[i])
             })));
         }
