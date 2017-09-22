@@ -128,6 +128,9 @@ declare namespace Sprites {
     function Convert16BitColorToRGB(color16: number): string;
     function FloodClear(img: ImageMap, paletteIndex: number, stopPixels?: number[][], startPixels?: number[][], clearDiagonal?: boolean): ImageMap;
 }
+declare namespace Tools.File {
+    const Exists: (filename: string) => boolean;
+}
 declare namespace RomReader {
     abstract class RomReaderBase {
         protected pokemon: Pokemon.Species[];
@@ -174,6 +177,7 @@ declare namespace RomReader {
         GetTrainer(id: number, classId?: number): Pokemon.Trainer;
         GetPokemonSprite(id: number, form?: number, shiny?: boolean): string;
         GetTrainerSprite(id: number): string;
+        IsUnknownTrainerMap(id: number, bank?: number): boolean;
         GetFrameBorder(id: number): string;
         CachePokemonSprite(id: number, data: string, form?: number, shiny?: boolean): void;
         CacheTrainerSprite(id: number, data: string): void;
@@ -228,6 +232,7 @@ declare namespace RomReader {
         constructor(romFileLocation: string, iniFileLocation?: string);
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        IsUnknownTrainerMap(id: number, bank: number): boolean;
         private isFRLG(config);
         private ReadAbilities(romData, config);
         private ReadPokeData(romData, config);
@@ -284,6 +289,7 @@ declare namespace TPP.Server.DexNav {
         WildBattle: OwnedSpecies;
         EnemyTrainers: TPP.EnemyTrainer[];
         EnemyParty: TPP.EnemyParty;
+        IsUnknownArea: boolean;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus);
         private categories;
         private PopulateKnownEncounters(encounters, runState);

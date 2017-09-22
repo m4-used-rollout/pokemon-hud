@@ -47,6 +47,7 @@ namespace TPP.Server.DexNav {
         public WildBattle: OwnedSpecies = null;
         public EnemyTrainers: TPP.EnemyTrainer[] = null;
         public EnemyParty: TPP.EnemyParty = null;
+        public IsUnknownArea = false;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {
             if (!map || !runState) return;
             this.MapName = map.name;
@@ -57,6 +58,7 @@ namespace TPP.Server.DexNav {
             if (config.dexNavUseAreaName) {
                 this.MapName = this.AreaName || this.MapName;
             }
+            this.IsUnknownArea = RomData.IsUnknownTrainerMap(map.id,map.bank);
             this.PopulateKnownEncounters(encounters, runState);
             this.PopulateCompletionTotals(allMapEncounters, runState);
             if (runState.in_battle) {
@@ -73,7 +75,12 @@ namespace TPP.Server.DexNav {
                     if (t && t.class_name && t.class_name.toLowerCase() == "rival" && (!t.name || !t.name.trim().length)) {
                         t.name = runState.rival_name;
                     }
+                    if (this.IsUnknownArea) {
+                        t.name = t.class_name = '';
+                        t.pic_id = -1;
+                    }
                 });
+
             }
         }
 

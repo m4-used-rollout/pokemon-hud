@@ -49,6 +49,18 @@ namespace RomReader {
             return map.encounters.all;
         }
 
+        IsUnknownTrainerMap(id: number, bank: number) {
+            return [
+                [9, 2, 4],      //Slateport Battle Tent
+                [5, 1, 3],      //Fallarbor Battle Tent
+                [6, 0, 2],      //Verdanturf Battle Tent
+                [26, 4, 8],     //Battle Frontier
+                [26, 14, 55],   //Battle Frontier
+                [26, 60, 65],   //Trainer Hill
+                [26, 88]        //Trainer Hill
+            ].some(m => m[0] == bank && ((m.length == 2 && m[1] == id) || m[1] <= id && m[2] >= id));
+        }
+
         private isFRLG(config: PGEINI) {
             return ['BPR', 'BPG'].indexOf(config.Header.substring(0, 3)) >= 0;
         }

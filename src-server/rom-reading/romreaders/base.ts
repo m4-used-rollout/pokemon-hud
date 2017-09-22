@@ -4,6 +4,8 @@
 /// <reference path="../../pokemon/trainer.ts" />
 /// <reference path="../tools/sprites.ts" />
 /// <reference path="../../../ref/runstatus.d.ts" />
+/// <reference path="../tools/fileexists.ts" />
+
 
 namespace RomReader {
     export abstract class RomReaderBase {
@@ -36,8 +38,8 @@ namespace RomReader {
         GetSpecies(id: number) {
             return this.pokemon.filter(p => p.id === id).shift() || <Pokemon.Species>{};
         }
-        GetSpeciesByDexNumber(dexNum:number) {
-            return this.pokemon.filter(p=>p.dexNumber == dexNum).shift() || <Pokemon.Species>{};
+        GetSpeciesByDexNumber(dexNum: number) {
+            return this.pokemon.filter(p => p.dexNumber == dexNum).shift() || <Pokemon.Species>{};
         }
         GetMove(id: number) {
             return this.moves.filter(m => m.id === id).shift() || <Pokemon.Move>{};
@@ -117,13 +119,21 @@ namespace RomReader {
             return encounters;
         }
         GetTrainer(id: number, classId: number = null) {
-            return this.trainers.filter(t => t.id == id && (classId == null || classId == t.classId) ).shift() || this.trainers.filter(t => t.classId == classId).shift() || <Pokemon.Trainer>{};
+            return this.trainers.filter(t => t.id == id && (classId == null || classId == t.classId)).shift() || this.trainers.filter(t => t.classId == classId).shift() || <Pokemon.Trainer>{};
         }
         GetPokemonSprite(id: number, form = 0, shiny = false) {
             return ((this.pokemonSprites[id] || [])[form] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${shiny ? "shiny/" : ""}${id}.gif`;
         }
         GetTrainerSprite(id: number) {
-            return this.trainerSprites[id] || `./img/trainers/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
+            if (this.trainerSprites[id])
+                return this.trainerSprites[id];
+            let path = `./img/trainers/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
+            if (Tools.File.Exists(path))
+                return path;
+            return "./img/trainers/unknown.png";
+        }
+        IsUnknownTrainerMap(id:number, bank?:number) { //Override this on maps like the Battle Frontier where loading the trainer data doesn't work
+            return false;
         }
         GetFrameBorder(id: number) {
             return this.frameBorders[id % this.frameBorders.length];
@@ -138,7 +148,7 @@ namespace RomReader {
             this.frameBorders[id] = data;
         }
         CheckIfCanSurf(runState: TPP.RunStatus) {
-            //check all PC and Party pokemon for anyone who knows Surf
+            //check all PC and Party pokemon for anyone who knows Surf (but this code doesn't seem to work)
             return (runState.pc.boxes || []).map(b => b.box_contents).reduce((arr: TPP.Pokemon[], val: TPP.Pokemon[]) => val, runState.party || [])
                 .some(p => !!p && p.moves.some(m => !!m && this.surfExp.test(m.name)));
         }

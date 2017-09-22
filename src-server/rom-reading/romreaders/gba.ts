@@ -15,8 +15,6 @@ namespace RomReader {
 
         constructor(romFileLocation: string, private iniFileLocation: string) {
             super(romFileLocation, gen3Charmap);
-            this.ballIds = this.natures = this.abilities = [];
-            this.characteristics = null;
         }
 
         protected LoadConfig(romData: Buffer): PGEINI {
