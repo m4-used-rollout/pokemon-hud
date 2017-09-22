@@ -13,7 +13,7 @@ class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], p
                 {trainers.map(trainer => <div className="name">{`${trainer.class_name || ''} ${trainer.name || ''}`.trim()}</div>)}
                 <EnemyParty party={this.state.party} />
             </div>
-            <div className="trainer">
+            <div className={`trainer ${trainers.length > 1 ? "double" : ""}`}>
                 {trainers.map(trainer => <TrainerSprite picId={trainer.pic_id} classId={trainer.class_id} trainerId={trainer.id} />)}
             </div>
         </div>;

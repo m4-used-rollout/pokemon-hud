@@ -235,10 +235,11 @@
                 text-align: center;
                 white-space: nowrap;
                 // max-width: 65vw;
+                z-index: 2;
 
                 .name {
                     line-height: .8em;
-                    margin-top:.1em;
+                    margin-top:.5em;
 
                     + .name { 
                         margin-top:-.1em;
@@ -321,14 +322,20 @@
                     height:70vh;
                     transition: filter 1s ease-in-out;
                     position: relative;
-                    + img {
-                        position: absolute;
-                        left: 20%;
-                        top: 1%;
-                    }
+                    z-index: 1;
                 }
                 &.seen img {
                     filter:brightness(0%) contrast(200%);
+                }
+                &.double img {
+                    left: 25%;
+                    top: 5%;
+                    + img {
+                        position: absolute;
+                        left: -25%;
+                        top: -1%;
+                        z-index: 0;
+                    }
                 }
             }
             .trainer {

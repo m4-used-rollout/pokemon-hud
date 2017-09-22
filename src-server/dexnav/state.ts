@@ -80,6 +80,9 @@ namespace TPP.Server.DexNav {
                         t.pic_id = -1;
                     }
                 });
+                if (this.EnemyTrainers && this.IsUnknownArea && this.EnemyTrainers.length > 1) {
+                    this.EnemyTrainers.length = 1;
+                }
 
             }
         }
