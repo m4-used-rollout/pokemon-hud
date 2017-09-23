@@ -322,7 +322,6 @@
                     height:70vh;
                     transition: filter 1s ease-in-out;
                     position: relative;
-                    z-index: 1;
                 }
                 &.seen img {
                     filter:brightness(0%) contrast(200%);
@@ -334,17 +333,19 @@
                         position: absolute;
                         left: -25%;
                         top: -1%;
-                        z-index: 0;
+                        z-index: 0!important;
                     }
                 }
             }
             .trainer {
                 flex:0 1 80vh;
+                margin-left: -5%;
                 img {
                     height: auto;
                     width:100%;
                     max-width: 80vh;
                     min-width: 50vh;
+                    z-index: 1;
                 }
             }
         }

@@ -33,6 +33,7 @@ namespace TPP.Server.DexNav {
         public TotalEncounters = 0;
         public CompletedCategories = 0;
         public MoreLeftToCatch = true;
+        public ShowDexNav = true;
         public KnownEncounters: KnownEncounters = {
             grass: new Array<KnownEncounter>(),
             hidden_grass: new Array<KnownEncounter>(),
@@ -58,6 +59,7 @@ namespace TPP.Server.DexNav {
             if (config.dexNavUseAreaName) {
                 this.MapName = this.AreaName || this.MapName;
             }
+            this.ShowDexNav = !!(runState.id || runState.secret);
             this.IsUnknownArea = RomData.IsUnknownTrainerMap(map.id,map.bank);
             this.PopulateKnownEncounters(encounters, runState);
             this.PopulateCompletionTotals(allMapEncounters, runState);
