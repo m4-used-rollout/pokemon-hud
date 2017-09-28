@@ -10,7 +10,8 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
         let totalKnownEncounters = Object.keys(map.KnownEncounters || {}).reduce((a, k) => a + map.KnownEncounters[k].length, 0);
         let classes = [
             "dexnav",
-            map.TotalEncounters ? totalKnownEncounters ? map.MoreLeftToCatch ? null : "caught-them-all" : null : null
+            map.TotalEncounters ? totalKnownEncounters ? map.MoreLeftToCatch ? null : "caught-them-all" : null : null,
+            map.TehUrn ? "teh-urn" : null
         ];
         return <div className={classes.filter(c => !!c).join(' ')} data-completed={map.CompletedCategories}>
             <h3>DexNav</h3>

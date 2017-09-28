@@ -285,6 +285,7 @@ declare namespace TPP.Server.DexNav {
         CompletedCategories: number;
         MoreLeftToCatch: boolean;
         ShowDexNav: boolean;
+        TehUrn: boolean;
         KnownEncounters: KnownEncounters;
         readonly HasEncounters: boolean;
         WildBattle: OwnedSpecies;

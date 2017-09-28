@@ -30,4 +30,6 @@ declare interface DexNavConfig {
     dexNavX?: number;
     dexNavY?: number;
     dexNavResetEveryHours?:number;
+    hofMapId?: number;
+    hofMapBank?: number;
 }

@@ -34,6 +34,7 @@ namespace TPP.Server.DexNav {
         public CompletedCategories = 0;
         public MoreLeftToCatch = true;
         public ShowDexNav = true;
+        public TehUrn = false;
         public KnownEncounters: KnownEncounters = {
             grass: new Array<KnownEncounter>(),
             hidden_grass: new Array<KnownEncounter>(),
@@ -58,6 +59,10 @@ namespace TPP.Server.DexNav {
             this.AreaName = map.areaName || runState.area_name;
             if (config.dexNavUseAreaName) {
                 this.MapName = this.AreaName || this.MapName;
+            }
+            this.TehUrn = this.MapID == config.hofMapId && (typeof config.hofMapBank !== "number" || this.MapBank == config.hofMapBank);
+            if (this.TehUrn) {
+                this.MapName = "Hall of Fame";
             }
             this.ShowDexNav = !!(runState.id || runState.secret);
             this.IsUnknownArea = RomData.IsUnknownTrainerMap(map.id,map.bank);
