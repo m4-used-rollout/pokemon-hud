@@ -80,6 +80,7 @@
         background-image: radial-gradient(farthest-side at bottom right,black 0%, rgba(0,0,0,.5) 60%, rgba(0,0,0,0) 100%);
         text-align: right;
         font-size: 2em;
+        padding-bottom: 0;
     }
 
     .dexnav-screen() {
@@ -347,6 +348,19 @@
                     min-width: 50vh;
                     z-index: 1;
                 }
+            }
+        }
+    }
+    &.teh-urn {
+        .encounters.no-encounters {
+            opacity: 0;
+        }
+        .encounters.nothing-to-show {
+            background-color: @screen-on-color;
+            opacity: 1!important;
+            &:before {
+                content:"TEH URN";
+                transform: translateX(-50%)translateY(-50%)scaleX(.8);
             }
         }
     }
