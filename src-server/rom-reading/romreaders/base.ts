@@ -128,9 +128,9 @@ namespace RomReader {
             if (this.trainerSprites[id])
                 return this.trainerSprites[id];
             let path = `./img/trainers/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
-            if (Tools.File.Exists(path))
+            // if (Tools.File.Exists(path))
                 return path;
-            return "./img/trainers/unknown.png";
+            // return "./img/trainers/unknown.png";
         }
         IsUnknownTrainerMap(id:number, bank?:number) { //Override this on maps like the Battle Frontier where loading the trainer data doesn't work
             return false;
