@@ -145,12 +145,12 @@ namespace RomReader {
                 else if (p.species.gender_ratio == 0) {
                     p.gender = "Male";
                 }
-                else if (p.gender) { //Generation 3
+                else {//if (p.gender) { //Generation 3
                     p.gender = (p.personality_value % 256) > p.species.gender_ratio ? "Male" : "Female";
                 }
-                else { //Generation 2
-                    p.gender = ((p.ivs || { attack: 0 }).attack << 4) > p.species.gender_ratio ? "Male" : "Female";
-                }
+                // else { //Generation 2
+                //     p.gender = ((p.ivs || { attack: 0 }).attack << 4) > p.species.gender_ratio ? "Male" : "Female";
+                // }
             }
         }
 
