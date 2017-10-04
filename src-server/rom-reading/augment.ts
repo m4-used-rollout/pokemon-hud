@@ -13,44 +13,60 @@ namespace RomReader {
         }
 
         function augmentItems() {
-            Object.keys(state.items || {}).map(k => state.items[k]).filter(i => i && i.length)
-                .forEach(itemList => itemList.filter(i => !!i).forEach(item => {
-                    let romItem = romData.GetItem(item.id);
-                    item.name = item.name || romItem.name;
-                    item.count = romItem.isKeyItem && item.count == 1 ? null : item.count;
-                    if (!item.count)
-                        delete item.count;
-                }));
+            try {
+                Object.keys(state.items || {}).map(k => state.items[k]).filter(i => i && i.length)
+                    .forEach(itemList => itemList.filter(i => !!i).forEach(item => {
+                        let romItem = romData.GetItem(item.id);
+                        item.name = item.name || romItem.name;
+                        item.count = romItem.isKeyItem && item.count == 1 ? null : item.count;
+                        if (!item.count)
+                            delete item.count;
+                    }));
+            }
+            catch (e) {
+                console.error(e);
+            }
         }
 
         function countBalls() {
-            return Object.keys(state.items || {}).filter(k => k != "pc") //filter out PC
-                .map(k => state.items[k]).filter(i => i && i.length) //map to bag pockets
-                .reduce((total, pocket) => total +
-                    pocket.filter(i => romData.ItemIsBall(i.id)) //filter to ball type items
-                        .reduce((sum, ball) => sum + ball.count, 0), //add up the counts
-                0) || (state.items && state.items.balls && state.items.balls.reduce((sum, ball) => sum + ball.count, 0)); //fall back to just counting ball pocket if available
+            try {
+                return Object.keys(state.items || {}).filter(k => k != "pc") //filter out PC
+                    .map(k => state.items[k]).filter(i => i && i.length) //map to bag pockets
+                    .reduce((total, pocket) => total +
+                        pocket.filter(i => romData.ItemIsBall(i.id)) //filter to ball type items
+                            .reduce((sum, ball) => sum + ball.count, 0), //add up the counts
+                    0) || (state.items && state.items.balls && state.items.balls.reduce((sum, ball) => sum + ball.count, 0)); //fall back to just counting ball pocket if available
+            }
+            catch (e) {
+                console.error(e);
+            }
+            return 0;
         }
 
         function augmentPokemon(p: TPP.Pokemon) {
-            p.name = romData.ConvertText(p.name);
-            if (p.personality_value) {
-                p.personality_value = p.personality_value >>> 0; //make sure pv is an unsigned 32-bit int
+            try {
+                p.name = romData.ConvertText(p.name);
+                if (p.personality_value) {
+                    p.personality_value = p.personality_value >>> 0; //make sure pv is an unsigned 32-bit int
+                }
+                if (p.original_trainer) {
+                    p.original_trainer.name = romData.ConvertText(p.original_trainer.name);
+                }
+                if (p.held_item) {
+                    p.held_item.name = romData.GetItem(p.held_item.id).name;
+                }
+                doubleCheckHPIVStat(p.ivs);
+                augmentPokemonMet(p);
+                augmentPokemonSpeciesAndExp(p);
+                augmentPokemonMoves(p);
+                calculateGender(p);
+                calculateShiny(p);
+                calculatePokemonAbilityNatureCharacteristic(p);
+                CensorEgg(p);
             }
-            if (p.original_trainer) {
-                p.original_trainer.name = romData.ConvertText(p.original_trainer.name);
+            catch (e) {
+                console.error(e);
             }
-            if (p.held_item) {
-                p.held_item.name = romData.GetItem(p.held_item.id).name;
-            }
-            doubleCheckHPIVStat(p.ivs);
-            augmentPokemonMet(p);
-            augmentPokemonSpeciesAndExp(p);
-            augmentPokemonMoves(p);
-            calculateGender(p);
-            calculateShiny(p);
-            calculatePokemonAbilityNatureCharacteristic(p);
-            CensorEgg(p);
         }
 
         function augmentPartyPokemon(p: TPP.PartyPokemon) {
@@ -71,22 +87,27 @@ namespace RomReader {
 
         function augmentPokemonMoves(p: TPP.Pokemon) {
             p.moves.filter(m => !!m).forEach(m => {
-                let romMove = romData.GetMove(m.id);
-                m.name = m.name || romMove.name || "???";
-                m.accuracy = m.accuracy || romMove.accuracy;
-                m.base_power = m.base_power || romMove.basePower;
-                m.type = m.type || romMove.type;
-                if (m.name.toLowerCase() == "hidden power") {
-                    m.type = romData.CalcHiddenPowerType(p.ivs);
-                    m.base_power = romData.CalcHiddenPowerPower(p.ivs);
+                try {
+                    let romMove = romData.GetMove(m.id);
+                    m.name = m.name || romMove.name || "???";
+                    m.accuracy = m.accuracy || romMove.accuracy;
+                    m.base_power = m.base_power || romMove.basePower;
+                    m.type = m.type || romMove.type || "???";
+                    if (m.name && m.name.toLowerCase() == "hidden power") {
+                        m.type = romData.CalcHiddenPowerType(p.ivs);
+                        m.base_power = romData.CalcHiddenPowerPower(p.ivs);
+                    }
+                    else if (m.name && m.name.toLowerCase() == "curse") {
+                        if ((p.species.type1 || '').toLowerCase() == "ghost" || (p.species.type2 || '').toLowerCase() == "ghost") {
+                            m.type = "Ghost";
+                        }
+                        else {
+                            m.type = "Normal";
+                        }
+                    }
                 }
-                else if (m.name.toLowerCase() == "curse") {
-                    if (p.species.type1.toLowerCase() == "ghost" || p.species.type2.toLowerCase() == "ghost") {
-                        m.type = "Ghost";
-                    }
-                    else {
-                        m.type = "Normal";
-                    }
+                catch (e) {
+                    console.error(e);
                 }
             });
         }
@@ -204,32 +225,37 @@ namespace RomReader {
             }
         }
 
-        normalizeDex();
-        augmentItems();
-        (state.daycare || []).filter(p => !!p).forEach(augmentPokemon);
-        (state.party || []).filter(p => !!p).map(augmentPartyPokemon).forEach(augmentPokemon);
-        (state.pc.boxes || []).forEach(b => (b.box_contents || []).filter(p => !!p).forEach(augmentPokemon));
+        try {
+            normalizeDex();
+            augmentItems();
+            (state.daycare || []).filter(p => !!p).forEach(augmentPokemon);
+            (state.party || []).filter(p => !!p).map(augmentPartyPokemon).forEach(augmentPokemon);
+            (state.pc.boxes || []).forEach(b => (b.box_contents || []).filter(p => !!p).forEach(augmentPokemon));
 
-        state.name = romData.ConvertText(state.name);
-        state.ball_count = countBalls();
+            state.name = romData.ConvertText(state.name);
+            state.ball_count = countBalls();
 
-        state.level_cap = state.level_cap || romData.GetCurrentLevelCap(state.badges || 0);
+            state.level_cap = state.level_cap || romData.GetCurrentLevelCap(state.badges || 0);
 
-        if (state.wild_species) {
-            augmentSpecies(state.wild_species);
+            if (state.wild_species) {
+                augmentSpecies(state.wild_species);
+            }
+            if (state.enemy_trainers) {
+                state.enemy_trainers.forEach(augmentEnemyTrainer);
+            }
+            if (state.enemy_party) {
+                state.enemy_party = state.enemy_party.filter(p => !!p);
+                state.enemy_party.forEach(p => augmentSpecies(p.species));
+            }
+            if (state.area_id) {
+                state.area_name = romData.GetAreaName(state.area_id);
+            }
+            if (state.map_id) {
+                state.map_name = romData.GetMap(state.map_id, state.map_bank || 0).name;
+            }
         }
-        if (state.enemy_trainers) {
-            state.enemy_trainers.forEach(augmentEnemyTrainer);
-        }
-        if (state.enemy_party) {
-            state.enemy_party = state.enemy_party.filter(p => !!p);
-            state.enemy_party.forEach(p => augmentSpecies(p.species));
-        }
-        if (state.area_id) {
-            state.area_name = romData.GetAreaName(state.area_id);
-        }
-        if (state.map_id) {
-            state.map_name = romData.GetMap(state.map_id, state.map_bank || 0).name;
+        catch (e) {
+            console.error(e);
         }
     }
 
