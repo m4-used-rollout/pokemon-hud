@@ -87,6 +87,7 @@ namespace TPP.Server.DexNav {
                         t.pic_id = -1;
                     }
                 });
+                this.EnemyTrainers = (this.EnemyTrainers || []).filter(t=>!(t.class_id == 0 && t.pic_id == 0));
                 if (this.EnemyTrainers && this.IsUnknownArea && this.EnemyTrainers.length > 1) {
                     this.EnemyTrainers.length = 1;
                 }
