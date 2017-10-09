@@ -7,7 +7,7 @@ class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], p
     }
     render() {
         let trainers = this.state.trainers;
-        if (!trainers) return null;
+        if (!trainers || !trainers.length) return null;
         return <div className={`encounters enemy-trainer ${this.props.trainers ? "" : "hidden"}`} key={`${trainers[0].class_id}${trainers[0].id}`}>
             <div className="info-left">
                 {trainers.map(trainer => <div className="name">{`${trainer.class_name || ''} ${trainer.name || ''}`.trim()}</div>)}
