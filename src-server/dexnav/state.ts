@@ -9,6 +9,7 @@ namespace TPP.Server.DexNav {
 
     export interface KnownEncounter {
         speciesId: number;
+        dexNum: number;
         rate: number;
         owned: boolean;
         requiredItemId: number;
@@ -65,14 +66,14 @@ namespace TPP.Server.DexNav {
                 this.MapName = "Hall of Fame";
             }
             this.ShowDexNav = !!(runState.id || runState.secret);
-            this.IsUnknownArea = RomData.IsUnknownTrainerMap(map.id,map.bank);
+            this.IsUnknownArea = RomData.IsUnknownTrainerMap(map.id, map.bank);
             this.PopulateKnownEncounters(encounters, runState);
             this.PopulateCompletionTotals(allMapEncounters, runState);
             if (runState.in_battle) {
                 this.WildBattle = <OwnedSpecies>Pokemon.Convert.SpeciesFromRunStatus(runState.wild_species);
                 if (this.WildBattle && this.WildBattle.id) {
                     this.WildBattle.owned = (runState.caught_list || []).some(p => p == this.WildBattle.dexNumber);
-                    this.WildBattle.encounterRate = this.categories.map(k => (this.KnownEncounters[k] || []).filter(e => e.speciesId == this.WildBattle.id))
+                    this.WildBattle.encounterRate = this.categories.map(k => (this.KnownEncounters[k] || []).filter(e => e.dexNum == this.WildBattle.dexNumber))
                         .reduce((all, curr) => <KnownEncounter[]>Array.prototype.concat.apply(all, curr), [])
                         .reduce((total, curr) => ({ rate: total.rate + curr.rate, speciesId: curr.speciesId }), { rate: 0 }).rate;
                 }
@@ -87,7 +88,7 @@ namespace TPP.Server.DexNav {
                         t.pic_id = -1;
                     }
                 });
-                this.EnemyTrainers = (this.EnemyTrainers || []).filter(t=>!(t.class_id == 0 && t.pic_id == 0));
+                this.EnemyTrainers = (this.EnemyTrainers || []).filter(t => !(t.class_id == 0 && t.pic_id == 0));
                 if (this.EnemyTrainers && this.IsUnknownArea && this.EnemyTrainers.length > 1) {
                     this.EnemyTrainers.length = 1;
                 }
@@ -111,7 +112,7 @@ namespace TPP.Server.DexNav {
             this.categories.forEach(k => {
                 this.KnownEncounters[k] = (encounters[k] || [])
                     .filter(s => (monIsSeen(s) || monIsOwned(s)) && userHasItem(s.requiredItem))
-                    .map(s => (<KnownEncounter>{ speciesId: s.species.id, rate: s.rate, owned: monIsOwned(s), requiredItemId: s.requiredItem.id }));
+                    .map(s => (<KnownEncounter>{ speciesId: s.species.id, dexNum: s.species.dexNumber, rate: s.rate, owned: monIsOwned(s), requiredItemId: s.requiredItem.id }));
             });
 
             // console.log(`Known Grass: ${(this.KnownEncounters.grass || []).map(e => `${Server.RomData.GetSpecies(e.speciesId).name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
@@ -139,7 +140,7 @@ namespace TPP.Server.DexNav {
 
         private PopulateCompletionTotals(allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {
             if (!allMapEncounters) return;
-            let monIsUncaught = (mon: Pokemon.EncounterMon) => (runState.caught_list || []).indexOf(mon.species.id) < 0;
+            let monIsUncaught = (mon: Pokemon.EncounterMon) => (runState.caught_list || []).indexOf(mon.species.dexNumber) < 0;
             this.CompletedCategories = this.categories.filter(k => k.indexOf('hidden') < 0 //not a hidden category
                 && allMapEncounters[k] //category exists
                 && allMapEncounters[k].length > 0 //category has encounters

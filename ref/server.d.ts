@@ -263,6 +263,7 @@ declare namespace Pokemon.Convert {
 declare namespace TPP.Server.DexNav {
     interface KnownEncounter {
         speciesId: number;
+        dexNum: number;
         rate: number;
         owned: boolean;
         requiredItemId: number;
