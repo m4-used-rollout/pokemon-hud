@@ -4,7 +4,6 @@ declare namespace TPP {
     export interface RunStatus extends TrainerData {
         party: PartyData;
         pc: CombinedPCData;
-        evolution_is_happening: boolean;
         in_battle: boolean;
         battle_kind?: string;
         wild_species?: PokemonSpecies;
@@ -13,8 +12,7 @@ declare namespace TPP {
     }
 
     //sent from lua
-    export interface TrainerData {
-        badges: number;
+    export interface TrainerData extends OverlayData {
         ball_count: number;
         caught: number;
         caught_list: number[];
@@ -34,11 +32,6 @@ declare namespace TPP {
             pc?: Item[];
         };
         level_cap?: number;
-        map_bank?: number;
-        map_id?: number;
-        map_name?: string;
-        area_id?: number;
-        area_name?: string;
         money: number;
         name: string;
         options: Options;
@@ -52,8 +45,18 @@ declare namespace TPP {
             m: number;
             s: number;
         };
+    }
+
+    export interface OverlayData {
+        map_bank?: number;
+        map_id?: number;
+        map_name?: string;
+        area_id?: number;
+        area_name?: string;
         x: number;
         y: number;
+        evolution_is_happening: boolean;
+        badges: number;
     }
 
     export interface PartyData extends Array<PartyPokemon> { }

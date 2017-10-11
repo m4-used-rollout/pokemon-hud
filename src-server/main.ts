@@ -19,7 +19,18 @@ module TPP.Server {
     var stateChangeHandlers: ((state: TPP.RunStatus) => void)[] = [];
 
     if (config.runStatusEndpoint)
-        stateChangeHandlers.push(s => sendData(config.runStatusEndpoint, JSON.stringify(s)));
+        stateChangeHandlers.push(s => sendData(config.runStatusEndpoint, JSON.stringify(<TPP.OverlayData>{
+            area_id: s.area_id,
+            area_name: s.area_name,
+            badges: s.badges,
+            evolution_is_happening: s.evolution_is_happening,
+            map_bank: s.map_bank,
+            map_id: s.map_id,
+            map_name: s.map_name,
+            x: s.x,
+            y: s.y
+        })));
+    
 
     ipcMain.on('register-renderer', e => {
         let renderer = e.sender;
