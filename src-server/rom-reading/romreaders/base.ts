@@ -31,10 +31,22 @@ namespace RomReader {
             spdef: ["Strong willed", "Somewhat vain", "Strongly defiant", "Hates to lose", "Somewhat stubborn"]
         }
 
-        abstract ConvertText(text: string | Buffer | number[]): string;
         abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
-        abstract GetForm(pokemon: TPP.Pokemon): number;
 
+        ConvertText(text: string | Buffer | number[]): string {
+            if (text instanceof Buffer) {
+                return text.toString("ucs2");
+            }
+            else if (Array.isArray(text)) {
+                return this.ConvertText(Buffer.from(text));
+            }
+            return text;
+        }
+
+        
+        GetForm(pokemon: TPP.Pokemon) {
+            return pokemon.form;
+        }
         GetSpecies(id: number) {
             return this.pokemon.filter(p => p.id === id).shift() || <Pokemon.Species>{};
         }
@@ -131,6 +143,9 @@ namespace RomReader {
             // if (Tools.File.Exists(path))
                 return path;
             // return "./img/trainers/unknown.png";
+        }
+        GetItemSprite(id: number) {
+            return `./img/items/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
         }
         IsUnknownTrainerMap(id:number, bank?:number) { //Override this on maps like the Battle Frontier where loading the trainer data doesn't work
             return false;

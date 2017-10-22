@@ -37,6 +37,8 @@ namespace RomReader {
             this.areas = this.ReadMapLabels(romData, config);
             this.maps = this.ReadMaps(romData, config);
             this.FindMapEncounters(romData, config);
+
+            console.log("[\n" + this.moves.map(p=>JSON.stringify(p)).join(',\n') + "\n]");
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {

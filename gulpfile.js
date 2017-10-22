@@ -18,7 +18,7 @@ gulp.task('build-hud', ['build-backend'], () => hudProject.src().pipe(sourcemaps
 
 gulp.task('build-dexnav', ['build-backend'], () => dexNavProject.src().pipe(sourcemaps.init()).pipe(dexNavProject()).js.pipe(sourcemaps.write()).pipe(gulp.dest("bin/")));
 
-gulp.task('build-frontend', ['build-backend', 'build-hud', 'build-dexnav', 'copy-html', 'copy-img', 'compile-less']);
+gulp.task('build-frontend', ['build-backend', 'build-hud', 'build-dexnav', 'copy-html', 'copy-img', 'copy-data', 'compile-less']);
 
 gulp.task('build-backend', () => {
     let ts = srvProject.src().pipe(sourcemaps.init()).pipe(srvProject());
@@ -61,6 +61,8 @@ gulp.task('compile-less', ['copy-fonts'], () => gulp.src('./styles/*.less').pipe
 gulp.task('copy-config', ['copy-ini'], () => gulp.src('./config.json').pipe(gulp.dest('bin/')));
 
 gulp.task('copy-ini', () => gulp.src('./*.ini').pipe(gulp.dest('bin/')));
+
+gulp.task('copy-data', () => gulp.src('./src-server/data/**/*').pipe(gulp.dest('bin/data/')));
 
 gulp.task('copy-fonts', () => gulp.src('./styles/fonts/*').pipe(gulp.dest('bin/fonts/')));
 

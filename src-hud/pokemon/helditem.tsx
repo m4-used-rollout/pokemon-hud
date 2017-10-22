@@ -1,4 +1,4 @@
-/// <reference path="../shared.ts" />
+/// <reference path="../itemsprite.tsx" />
 
 interface ItemProps {
     id: number;
@@ -18,7 +18,7 @@ class HeldItem extends React.PureComponent<ItemProps, ItemProps> {
     }
     render() {
         return <div className="held-item" data-id={this.props.id} data-name={this.props.name} >
-            <img src={`./img/items/${config.spriteFolder}/${this.state.id}.png`} />
+            <ItemSprite id={this.props.id} />
         </div>;
     }
 }
