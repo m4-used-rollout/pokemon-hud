@@ -54,7 +54,9 @@ declare namespace Pokemon {
 }
 declare namespace Pokemon {
     interface EncounterMon {
-        species: Pokemon.Species;
+        species?: Pokemon.Species;
+        speciesId?: number;
+        form?: number;
         rate: number;
         requiredItem?: Pokemon.Item;
     }
@@ -193,9 +195,15 @@ declare namespace RomReader {
 }
 declare namespace RomReader {
     class Generic extends RomReaderBase {
-        constructor();
+        constructor(dataFolder?: string);
         GetPokemonSprite(id: number, form?: number, shiny?: boolean): string;
         GetItemSprite(id: number): string;
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+    }
+}
+declare namespace RomReader {
+    class Gen7 extends Generic {
+        constructor();
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
     }
 }
@@ -203,7 +211,8 @@ declare module TPP.Server {
     function getConfig(): Config;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
-    const RomData: RomReader.Generic;
+    const RomData: RomReader.Gen7;
+    function rawState(): any;
     function setState(dataJson: string): void;
     const fileExists: (path: string) => any;
 }
@@ -217,6 +226,7 @@ declare namespace TPP.Server.DexNav {
     interface KnownEncounter {
         speciesId: number;
         dexNum: number;
+        form: number;
         rate: number;
         owned: boolean;
         requiredItemId: number;

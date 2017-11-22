@@ -8,15 +8,19 @@ namespace RomReader {
 
     export class Generic extends RomReaderBase {
 
-        constructor() {
+        constructor(dataFolder="generic") {
             super();
             // this.trainers = this.ReadTrainerData(romData, config);
             // this.areas = this.ReadMapLabels(romData, config);
             // this.maps = this.ReadMaps(romData, config);
-            this.abilities = require('./data/generic/abilities.json').map(a => a.name);
-            this.pokemon = require('./data/generic/species.json');
-            this.items = require('./data/generic/species.json');
-            this.moves = require('./data/generic/moves.json');
+            this.abilities = require(`./data/${dataFolder}/abilities.json`).map(a => a.name);
+            this.pokemon = require(`./data/${dataFolder}/species.json`);
+            this.pokemon.forEach(s=>{
+                s.expFunction = expCurves[parseInt(s.growthRate)];
+                s.growthRate = expCurveNames[parseInt(s.growthRate)] || s.growthRate;
+            });
+            this.items = require(`./data/${dataFolder}/items.json`);
+            this.moves = require(`./data/${dataFolder}/moves.json`);
         }
 
         GetPokemonSprite(id: number, form = 0, shiny = false) {

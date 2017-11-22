@@ -2,7 +2,9 @@
 
 namespace Pokemon {
     export interface EncounterMon {
-        species: Pokemon.Species;
+        species?: Pokemon.Species;
+        speciesId?: number;
+        form?: number;
         rate: number;
         requiredItem?: Pokemon.Item;
     }

@@ -1,6 +1,6 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="../ref/config.d.ts" />
-/// <reference path="rom-reading/romreaders/concrete/generic.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g7.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 
@@ -68,9 +68,16 @@ module TPP.Server {
         return json.replace(/\\\\u/g, '\\u');
     }
 
-    export const RomData = new RomReader.Generic();
+    export const RomData = new RomReader.Gen7();
 
     let trainerString = "", partyString = "", pcString = "";
+
+    export function rawState() {
+        let rawState = JSON.parse(trainerString || "{}");
+        rawState.party = JSON.parse(partyString || "[]");
+        rawState.pc = JSON.parse(pcString || "{}");
+        return rawState;
+    }
 
     export function setState(dataJson: string) {
         if (dataJson == trainerString || dataJson == partyString || dataJson == pcString)

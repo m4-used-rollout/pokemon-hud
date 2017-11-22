@@ -1,0 +1,602 @@
+[
+    {
+      "personality_value": 469816687,
+      "name": "Kyukon",
+      "gender": "Female",
+      "species": {
+        "id": 38
+      },
+      "form": 1,
+      "nature": 19,
+      "held_item": {
+        "id": 793
+      },
+      "original_trainer": {
+        "id": 12210,
+        "secret": 15871,
+        "name": "Aissurtievos",
+        "gender": "Male"
+      },
+      "level": 60,
+      "moves": [
+        {
+          "id": 59,
+          "pp": 5,
+          "pp_up": 0
+        },
+        {
+          "id": 58,
+          "pp": 10,
+          "pp_up": 0
+        },
+        {
+          "id": 605,
+          "pp": 10,
+          "pp_up": 0
+        },
+        {
+          "id": 326,
+          "pp": 20,
+          "pp_up": 0
+        }
+      ],
+      "shiny": false,
+      "experience": {
+        "current": 221887
+      },
+      "friendship": 255,
+      "ability": 81,
+      "evs": {
+        "hp": 29,
+        "attack": 116,
+        "defense": 84,
+        "speed": 92,
+        "special_attack": 69,
+        "special_defense": 22
+      },
+      "ivs": {
+        "hp": 19,
+        "attack": 8,
+        "defense": 15,
+        "speed": 20,
+        "special_attack": 13,
+        "special_defense": 6
+      },
+      "condition": {
+        "coolness": 0,
+        "beauty": 0,
+        "cuteness": 0,
+        "smartness": 0,
+        "toughness": 0,
+        "feel": 0
+      },
+      "met": {
+        "game": 30,
+        "date": "2016-11-23",
+        "area_id": 114,
+        "caught_in": 7,
+        "level": 30
+      },
+      "is_egg": false,
+      "is_nicknamed": true,
+      "language": 2,
+      "health": [
+        173,
+        173
+      ],
+      "stats": {
+        "hp": 173,
+        "attack": 107,
+        "defense": 116,
+        "speed": 161,
+        "special_attack": 132,
+        "special_defense": 117
+      },
+      "status": 0,
+      "affection": 255,
+      "fullness": 0,
+      "enjoyment": 0,
+      "encryption_key": 2903735424,
+      "checksum": 54706
+    },
+    {
+      "personality_value": 2587885607,
+      "name": "Terra",
+      "gender": "Male",
+      "species": {
+        "id": 745
+      },
+      "form": 0,
+      "nature": 15,
+      "held_item": {
+        "id": 788
+      },
+      "original_trainer": {
+        "id": 12210,
+        "secret": 15871,
+        "name": "Aissurtievos",
+        "gender": "Male"
+      },
+      "level": 61,
+      "moves": [
+        {
+          "id": 157,
+          "pp": 10,
+          "pp_up": 0
+        },
+        {
+          "id": 709,
+          "pp": 20,
+          "pp_up": 0
+        },
+        {
+          "id": 242,
+          "pp": 15,
+          "pp_up": 0
+        },
+        {
+          "id": 444,
+          "pp": 5,
+          "pp_up": 0
+        }
+      ],
+      "shiny": false,
+      "experience": {
+        "current": 229978
+      },
+      "friendship": 255,
+      "ability": 146,
+      "evs": {
+        "hp": 46,
+        "attack": 125,
+        "defense": 96,
+        "speed": 159,
+        "special_attack": 52,
+        "special_defense": 32
+      },
+      "ivs": {
+        "hp": 3,
+        "attack": 3,
+        "defense": 28,
+        "speed": 6,
+        "special_attack": 10,
+        "special_defense": 19
+      },
+      "condition": {
+        "coolness": 0,
+        "beauty": 0,
+        "cuteness": 0,
+        "smartness": 0,
+        "toughness": 0,
+        "feel": 0
+      },
+      "met": {
+        "game": 30,
+        "date": "2016-11-21",
+        "area_id": 36,
+        "caught_in": 2,
+        "level": 12
+      },
+      "is_egg": false,
+      "is_nicknamed": true,
+      "language": 2,
+      "health": [
+        171,
+        171
+      ],
+      "stats": {
+        "hp": 171,
+        "attack": 149,
+        "defense": 116,
+        "speed": 169,
+        "special_attack": 94,
+        "special_defense": 100
+      },
+      "status": 0,
+      "affection": 255,
+      "fullness": 0,
+      "enjoyment": 0,
+      "encryption_key": 2095181835,
+      "checksum": 9819
+    },
+    {
+      "personality_value": 3846819297,
+      "name": "Xenon",
+      "gender": "Male",
+      "species": {
+        "id": 359
+      },
+      "form": 0,
+      "nature": 19,
+      "held_item": {
+        "id": 275
+      },
+      "original_trainer": {
+        "id": 12210,
+        "secret": 15871,
+        "name": "Aissurtievos",
+        "gender": "Male"
+      },
+      "level": 58,
+      "moves": [
+        {
+          "id": 400,
+          "pp": 15,
+          "pp_up": 0
+        },
+        {
+          "id": 14,
+          "pp": 20,
+          "pp_up": 0
+        },
+        {
+          "id": 197,
+          "pp": 5,
+          "pp_up": 0
+        },
+        {
+          "id": 389,
+          "pp": 5,
+          "pp_up": 0
+        }
+      ],
+      "shiny": false,
+      "experience": {
+        "current": 193602
+      },
+      "friendship": 255,
+      "ability": 105,
+      "evs": {
+        "hp": 21,
+        "attack": 121,
+        "defense": 79,
+        "speed": 89,
+        "special_attack": 64,
+        "special_defense": 21
+      },
+      "ivs": {
+        "hp": 10,
+        "attack": 18,
+        "defense": 26,
+        "speed": 28,
+        "special_attack": 22,
+        "special_defense": 2
+      },
+      "condition": {
+        "coolness": 0,
+        "beauty": 0,
+        "cuteness": 0,
+        "smartness": 0,
+        "toughness": 0,
+        "feel": 0
+      },
+      "met": {
+        "game": 30,
+        "date": "2016-11-23",
+        "area_id": 114,
+        "caught_in": 11,
+        "level": 29
+      },
+      "is_egg": false,
+      "is_nicknamed": true,
+      "language": 2,
+      "health": [
+        152,
+        152
+      ],
+      "stats": {
+        "hp": 152,
+        "attack": 183,
+        "defense": 100,
+        "speed": 121,
+        "special_attack": 125,
+        "special_defense": 70
+      },
+      "status": 0,
+      "affection": 255,
+      "fullness": 0,
+      "enjoyment": 0,
+      "encryption_key": 69296486,
+      "checksum": 16219
+    },
+    {
+      "personality_value": 486764965,
+      "name": "Salantrix",
+      "gender": "Female",
+      "species": {
+        "id": 758
+      },
+      "form": 0,
+      "nature": 6,
+      "held_item": {
+        "id": 777
+      },
+      "original_trainer": {
+        "id": 12210,
+        "secret": 15871,
+        "name": "Aissurtievos",
+        "gender": "Male"
+      },
+      "level": 60,
+      "moves": [
+        {
+          "id": 53,
+          "pp": 15,
+          "pp_up": 0
+        },
+        {
+          "id": 188,
+          "pp": 10,
+          "pp_up": 0
+        },
+        {
+          "id": 474,
+          "pp": 10,
+          "pp_up": 0
+        },
+        {
+          "id": 92,
+          "pp": 10,
+          "pp_up": 0
+        }
+      ],
+      "shiny": false,
+      "experience": {
+        "current": 216191
+      },
+      "friendship": 255,
+      "ability": 212,
+      "evs": {
+        "hp": 35,
+        "attack": 144,
+        "defense": 100,
+        "speed": 119,
+        "special_attack": 72,
+        "special_defense": 40
+      },
+      "ivs": {
+        "hp": 20,
+        "attack": 14,
+        "defense": 6,
+        "speed": 1,
+        "special_attack": 20,
+        "special_defense": 16
+      },
+      "condition": {
+        "coolness": 0,
+        "beauty": 0,
+        "cuteness": 0,
+        "smartness": 0,
+        "toughness": 0,
+        "feel": 0
+      },
+      "met": {
+        "game": 30,
+        "date": "2016-11-22",
+        "area_id": 82,
+        "caught_in": 14,
+        "level": 18
+      },
+      "is_egg": false,
+      "is_nicknamed": true,
+      "language": 2,
+      "health": [
+        168,
+        168
+      ],
+      "stats": {
+        "hp": 168,
+        "attack": 111,
+        "defense": 95,
+        "speed": 163,
+        "special_attack": 161,
+        "special_defense": 92
+      },
+      "status": 0,
+      "affection": 255,
+      "fullness": 0,
+      "enjoyment": 0,
+      "encryption_key": 3774548540,
+      "checksum": 64853
+    },
+    {
+      "personality_value": 2249350231,
+      "name": "Flygon",
+      "gender": "Female",
+      "species": {
+        "id": 330
+      },
+      "form": 0,
+      "nature": 11,
+      "held_item": {
+        "id": 784
+      },
+      "original_trainer": {
+        "id": 12210,
+        "secret": 15871,
+        "name": "Aissurtievos",
+        "gender": "Male"
+      },
+      "level": 59,
+      "moves": [
+        {
+          "id": 407,
+          "pp": 10,
+          "pp_up": 0
+        },
+        {
+          "id": 242,
+          "pp": 15,
+          "pp_up": 0
+        },
+        {
+          "id": 89,
+          "pp": 10,
+          "pp_up": 0
+        },
+        {
+          "id": 337,
+          "pp": 15,
+          "pp_up": 0
+        }
+      ],
+      "shiny": false,
+      "experience": {
+        "current": 200516
+      },
+      "friendship": 255,
+      "ability": 26,
+      "evs": {
+        "hp": 37,
+        "attack": 130,
+        "defense": 91,
+        "speed": 101,
+        "special_attack": 65,
+        "special_defense": 25
+      },
+      "ivs": {
+        "hp": 18,
+        "attack": 29,
+        "defense": 19,
+        "speed": 11,
+        "special_attack": 26,
+        "special_defense": 19
+      },
+      "condition": {
+        "coolness": 0,
+        "beauty": 0,
+        "cuteness": 0,
+        "smartness": 0,
+        "toughness": 0,
+        "feel": 0
+      },
+      "met": {
+        "game": 30,
+        "date": "2016-11-23",
+        "area_id": 124,
+        "caught_in": 15,
+        "level": 29
+      },
+      "is_egg": false,
+      "is_nicknamed": false,
+      "language": 2,
+      "health": [
+        179,
+        179
+      ],
+      "stats": {
+        "hp": 179,
+        "attack": 158,
+        "defense": 110,
+        "speed": 158,
+        "special_attack": 124,
+        "special_defense": 114
+      },
+      "status": 0,
+      "affection": 255,
+      "fullness": 0,
+      "enjoyment": 0,
+      "encryption_key": 4210616306,
+      "checksum": 45986
+    },
+    {
+      "personality_value": 2179269321,
+      "name": "Zephyr",
+      "gender": "Male",
+      "species": {
+        "id": 724
+      },
+      "form": 0,
+      "nature": 2,
+      "held_item": {
+        "id": 798
+      },
+      "original_trainer": {
+        "id": 12210,
+        "secret": 15871,
+        "name": "Aissurtievos",
+        "gender": "Male"
+      },
+      "level": 62,
+      "moves": [
+        {
+          "id": 348,
+          "pp": 15,
+          "pp_up": 0
+        },
+        {
+          "id": 75,
+          "pp": 25,
+          "pp_up": 0
+        },
+        {
+          "id": 662,
+          "pp": 10,
+          "pp_up": 0
+        },
+        {
+          "id": 447,
+          "pp": 20,
+          "pp_up": 0
+        }
+      ],
+      "shiny": false,
+      "experience": {
+        "current": 236239
+      },
+      "friendship": 255,
+      "ability": 65,
+      "evs": {
+        "hp": 44,
+        "attack": 132,
+        "defense": 95,
+        "speed": 154,
+        "special_attack": 49,
+        "special_defense": 36
+      },
+      "ivs": {
+        "hp": 21,
+        "attack": 19,
+        "defense": 28,
+        "speed": 0,
+        "special_attack": 27,
+        "special_defense": 29
+      },
+      "condition": {
+        "coolness": 0,
+        "beauty": 0,
+        "cuteness": 0,
+        "smartness": 0,
+        "toughness": 0,
+        "feel": 0
+      },
+      "met": {
+        "game": 30,
+        "date": "2016-11-21",
+        "area_id": 24,
+        "caught_in": 4,
+        "level": 5
+      },
+      "is_egg": false,
+      "is_nicknamed": true,
+      "language": 2,
+      "health": [
+        188,
+        188
+      ],
+      "stats": {
+        "hp": 188,
+        "attack": 185,
+        "defense": 129,
+        "speed": 103,
+        "special_attack": 153,
+        "special_defense": 152
+      },
+      "status": 0,
+      "affection": 255,
+      "fullness": 0,
+      "enjoyment": 0,
+      "encryption_key": 1858965573,
+      "checksum": 21089
+    }
+  ]

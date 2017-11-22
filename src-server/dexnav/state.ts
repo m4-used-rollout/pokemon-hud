@@ -10,6 +10,7 @@ namespace TPP.Server.DexNav {
     export interface KnownEncounter {
         speciesId: number;
         dexNum: number;
+        form: number;
         rate: number;
         owned: boolean;
         requiredItemId: number;
@@ -112,7 +113,7 @@ namespace TPP.Server.DexNav {
             this.categories.forEach(k => {
                 this.KnownEncounters[k] = (encounters[k] || [])
                     .filter(s => (monIsSeen(s) || monIsOwned(s)) && userHasItem(s.requiredItem))
-                    .map(s => (<KnownEncounter>{ speciesId: s.species.id, dexNum: s.species.dexNumber, rate: s.rate, owned: monIsOwned(s), requiredItemId: s.requiredItem.id }));
+                    .map(s => (<KnownEncounter>{ speciesId: s.species.id, dexNum: s.species.dexNumber, form: s.form, rate: s.rate, owned: monIsOwned(s), requiredItemId: s.requiredItem && s.requiredItem.id }));
             });
 
             // console.log(`Known Grass: ${(this.KnownEncounters.grass || []).map(e => `${Server.RomData.GetSpecies(e.speciesId).name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
