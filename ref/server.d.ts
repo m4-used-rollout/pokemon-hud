@@ -159,6 +159,7 @@ declare namespace RomReader {
             spatk: string[];
             spdef: string[];
         };
+        protected ZeroPad(int: number, digits: number): string;
         abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         ConvertText(text: string | Buffer | number[]): string;
         GetForm(pokemon: TPP.Pokemon): number;
@@ -177,7 +178,7 @@ declare namespace RomReader {
         GetCharacteristic(stats: Pokemon.Stats, pv: number): any;
         GetAllMapEncounters(map: Pokemon.Map): Pokemon.EncounterSet;
         GetTrainer(id: number, classId?: number): Pokemon.Trainer;
-        GetPokemonSprite(id: number, form?: number, shiny?: boolean): string;
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         GetTrainerSprite(id: number): string;
         GetItemSprite(id: number): string;
         IsUnknownTrainerMap(id: number, bank?: number): boolean;
@@ -189,6 +190,7 @@ declare namespace RomReader {
         CheckIfCanFish(runState: TPP.RunStatus): boolean;
         CalcHiddenPowerType(stats: TPP.Stats): string;
         CalcHiddenPowerPower(stats: TPP.Stats): number;
+        CollapseSeenForms(seen: number[]): number[];
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]): Pokemon.EncounterMon[];
         private surfExp;
     }
@@ -196,7 +198,7 @@ declare namespace RomReader {
 declare namespace RomReader {
     class Generic extends RomReaderBase {
         constructor(dataFolder?: string);
-        GetPokemonSprite(id: number, form?: number, shiny?: boolean): string;
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         GetItemSprite(id: number): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
     }
@@ -205,6 +207,7 @@ declare namespace RomReader {
     class Gen7 extends Generic {
         constructor();
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        CollapseSeenForms(seen: number[]): number[];
     }
 }
 declare module TPP.Server {

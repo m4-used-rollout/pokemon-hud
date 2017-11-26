@@ -34,7 +34,7 @@ namespace RomReader {
                     .map(k => state.items[k]).filter(i => i && i.length) //map to bag pockets
                     .reduce((total, pocket) => total +
                         pocket.filter(i => romData.ItemIsBall(i.id)) //filter to ball type items
-                            .reduce((sum, ball) => sum + ball.count, 0), //add up the counts
+                            .reduce((sum, ball) => sum + (ball.count || 0 ), 0), //add up the counts
                     0) || (state.items && state.items.balls && state.items.balls.reduce((sum, ball) => sum + ball.count, 0)); //fall back to just counting ball pocket if available
             }
             catch (e) {

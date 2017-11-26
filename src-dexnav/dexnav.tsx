@@ -11,7 +11,8 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
         let classes = [
             "dexnav",
             map.TotalEncounters ? totalKnownEncounters ? map.MoreLeftToCatch ? null : "caught-them-all" : null : null,
-            map.TehUrn ? "teh-urn" : null
+            map.TehUrn ? "teh-urn" : null,
+            config.hudTheme || "default-theme"
         ];
         return <div className={classes.filter(c => !!c).join(' ')} data-completed={map.CompletedCategories}>
             <h3>DexNav</h3>

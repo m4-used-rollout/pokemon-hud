@@ -1,26 +1,11 @@
-@import '../mixins/all.less';
+@party-member-height: 42vh;
+@party-member-width: 33vw;
 
-.default-theme {
-    @low-health: red;
-    @med-health: goldenrod;
-    @high-health:green;
-
-    @exp-color: deepskyblue;
-    @female-color:deeppink;
-    @male-color: dodgerblue;
-
-    @transition-time: .5s;
-
-    @bar-chrome: #666;
-    @bar-skew: 15deg;
-
-    @party-member-height: 14.5vh;
-
+.n3ds-theme {
     &.pokemon-hud {
         font-family: pokeplatinum;
         color:white;
         font-size: @party-member-height / 5;
-        width:100%;
         overflow: hidden;
         user-select: none;
         pointer-events: none;
@@ -88,16 +73,22 @@
             list-style: none;
             margin:0;
             padding:0;
-            margin-bottom: 5px;
-            height: (@party-member-height * 6);
+            margin-bottom: 0;
+            height: (@party-member-height * 2);
             transition: filter .2s ease-in-out;
+            position:absolute;
+            top:36px;
+            bottom:0;
+            left:0;
+            right:0;
             
             > li {
-                display:flex;
+                display:inline-flex;
                 position: relative;
                 padding:0;
-                margin:0;
+                margin:0 .12vw;
                 height:@party-member-height;
+                width:@party-member-width;
 
                 &.female .name:after {
                     content:'♀';
@@ -129,8 +120,8 @@
                         left:50%;
                         top: 50%;
                         transform:translateX(-50%)translateY(-50%)rotateY(180deg);
-                        height:(@party-member-height * .9);
-                        image-rendering: pixelated;
+                        height:@party-member-height;
+                        image-rendering: auto;
                     }
 
                     &.unown img, .no-flip img {
@@ -318,10 +309,11 @@
                     box-sizing: content-box;
                     overflow: hidden;
                     .outline();
+                    transform-origin: left center;
                     transition: transform @transition-time ease-in-out, opacity @transition-time ease-in-out;
 
                     &[data-id="0"] {
-                        transform:translateX(-110%);
+                        transform:scaleX(0);
                     }
 
                     img {
@@ -361,7 +353,8 @@
                     padding: .25em;
                     border-top-right-radius: 1em;
                     border-bottom-right-radius: 1em;
-                    transform:translateX(-110%);
+                    transform-origin: center left;
+                    transform:scaleX(0);
                     transition: transform @transition-time ease-in-out, opacity @transition-time ease-in-out;
                 }
 
@@ -499,6 +492,7 @@
 
         .trainer-info {
             .badges {
+                display: none;
                 font-size: 10vw;
                 width:100%;
                 text-align: center;
@@ -545,9 +539,11 @@
 
             .bottom-row {
                 position: absolute!important;
-                bottom:0;
+                top:0;
+                bottom: auto;
                 left:0;
                 right:0; 
+                font-size:32px;
                 > div {
                     display: flex;
                     flex-flow:row nowrap;
@@ -599,16 +595,6 @@
                         content:"Lv";
                     }
 
-                    // .options {
-                    //     flex: 1 1 auto;
-                    //     display:flex;
-                    //     justify-content: space-around;
-                    //     text-align: center;
-                    //     margin:auto;
-                    //     span {
-                    //         flex: 1 1 auto;
-                    //     }
-                    // }
 
                     .dex-counts {
                         margin-right:0;
@@ -621,5 +607,62 @@
                 }
             }
         }
+    }
+
+    .pokedex {
+        transform:translateY(100%);
+
+        &:before, &:after {
+            content:"";
+            position: absolute;
+            top:0;
+            left:0;
+        }
+        &:after {
+            content:"";
+            left:auto;
+            right:0;
+        }
+
+        &.new-entry, &.show-all {
+            transform:none;
+        }
+        ul.pokemon-list {
+            white-space: nowrap;
+            float:left;
+
+            li {
+                display: inline-block;
+                padding:1vh 4vw;
+                transform:translateX(100%)translateY(5%);
+
+                img {
+                    height: 80vh;
+                    image-rendering: pixelated;
+                }
+
+                &.new-entry {
+                    animation-name: new-entry-horizontal;
+                }
+            }
+        }
+    }
+}
+
+@keyframes new-entry-horizontal {
+    20% {
+        filter: contrast(0%) brightness(0%);
+        transform: translateX(100%);
+    }
+    30% {
+        filter: brightness(200%)saturate(20%);
+        transform: translateX(100%) scale(1.5) rotate(10deg);
+    }
+    40% {
+        filter:none;
+        transform: translateX(100%);
+    }
+    100% {
+        filter: drop-shadow(0 0 10vh white);
     }
 }

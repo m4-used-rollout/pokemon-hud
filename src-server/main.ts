@@ -111,6 +111,7 @@ module TPP.Server {
                 let party = data.party || state.party || [];
                 let pc = data.pc || state.pc;
                 state = data;
+                state.seen_list = RomData.CollapseSeenForms(state.seen_list);
                 state.pc = pc;
                 state.party = party;
                 if ((state.caught_list || []).length > oldCatches.length) {

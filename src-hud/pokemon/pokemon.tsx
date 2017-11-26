@@ -30,7 +30,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
             <Sleepy status={mon.sleep_turns} />
             <div className={`pokemon-image ${cleanString(mon.species.name)} ${mon.species.do_not_flip_sprite ? "no-flip" : ""}`}>
                 <FrameBorder frame={parseInt((this.props.gameState.options || { frame: '0' }).frame)} />
-                {mon.is_egg ? <img src="./img/egg.gif" /> : <PokeSprite pokemonId={mon.species.id} shiny={mon.shiny} form={TPP.Server.RomData.GetForm(mon)} />}
+                {mon.is_egg ? <img src="./img/egg.gif" /> : <PokeSprite pokemonId={mon.species.id} shiny={mon.shiny} gender={mon.gender} form={TPP.Server.RomData.GetForm(mon)} />}
             </div>
             {mon.is_egg ?
                 <div className="pokemon-info">

@@ -30,6 +30,10 @@ namespace RomReader {
             spatk: ["Highly curious", "Mischievous", "Thoroughly cunning", "Often lost in thought", "Very finicky"],
             spdef: ["Strong willed", "Somewhat vain", "Strongly defiant", "Hates to lose", "Somewhat stubborn"]
         }
+        protected ZeroPad(int:number, digits:number) {
+            const working = new Array<string>(digits).fill('0').join('') + int.toFixed(0);
+            return working.substr(working.length - digits);
+        }
 
         abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
 
@@ -43,7 +47,7 @@ namespace RomReader {
             return text;
         }
 
-        
+
         GetForm(pokemon: TPP.Pokemon) {
             return pokemon.form;
         }
@@ -133,7 +137,7 @@ namespace RomReader {
         GetTrainer(id: number, classId: number = null) {
             return this.trainers.filter(t => t.id == id && (classId == null || classId == t.classId)).shift() || this.trainers.filter(t => t.classId == classId).shift() || <Pokemon.Trainer>{};
         }
-        GetPokemonSprite(id: number, form = 0, shiny = false) {
+        GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
             return ((this.pokemonSprites[id] || [])[form] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${shiny ? "shiny/" : ""}${id}.gif`;
         }
         GetTrainerSprite(id: number) {
@@ -141,13 +145,13 @@ namespace RomReader {
                 return this.trainerSprites[id];
             let path = `./img/trainers/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
             // if (Tools.File.Exists(path))
-                return path;
+            return path;
             // return "./img/trainers/unknown.png";
         }
         GetItemSprite(id: number) {
             return `./img/items/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
         }
-        IsUnknownTrainerMap(id:number, bank?:number) { //Override this on maps like the Battle Frontier where loading the trainer data doesn't work
+        IsUnknownTrainerMap(id: number, bank?: number) { //Override this on maps like the Battle Frontier where loading the trainer data doesn't work
             return false;
         }
         GetFrameBorder(id: number) {
@@ -178,6 +182,9 @@ namespace RomReader {
         }
         CalcHiddenPowerPower(stats: TPP.Stats) {
             return Math.floor((((stats.hp >> 1) % 2) + (((stats.attack >> 1) % 2) << 1) + (((stats.defense >> 1) % 2) << 2) + (((stats.speed >> 1) % 2) << 3) + (((stats.special_attack >> 1) % 2) << 4) + (((stats.special_defense >> 1) % 2) << 5)) * 40 / 63) + 30;
+        }
+        CollapseSeenForms(seen: number[]) {
+            return seen;
         }
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {
             return mons.filter(thisMon => {

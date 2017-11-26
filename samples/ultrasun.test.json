@@ -1,0 +1,5392 @@
+{
+    "name": "Flare",
+    "gender": "Male",
+    "id": 53410,
+    "secret": 7105,
+    "options": {
+        "battle_style": "Switch",
+        "battle_scene": "Off",
+        "text_speed": "Fast",
+        "box_mode": "Manual"
+    },
+    "caught_list": [
+        20,
+        81,
+        82,
+        132,
+        144,
+        145,
+        146,
+        150,
+        244,
+        249,
+        377,
+        378,
+        379,
+        380,
+        382,
+        427,
+        428,
+        462,
+        469,
+        480,
+        482,
+        484,
+        486,
+        488,
+        531,
+        638,
+        639,
+        640,
+        642,
+        644,
+        661,
+        662,
+        663,
+        714,
+        715,
+        717,
+        728,
+        729,
+        730,
+        739,
+        742,
+        743,
+        752,
+        758,
+        772,
+        778,
+        793,
+        795,
+        796,
+        797,
+        800,
+        803,
+        805,
+        184
+    ],
+    "seen_list": [
+        10,
+        11,
+        12,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        31,
+        34,
+        35,
+        36,
+        39,
+        40,
+        41,
+        42,
+        46,
+        47,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        62,
+        64,
+        66,
+        67,
+        68,
+        73,
+        79,
+        81,
+        82,
+        87,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        96,
+        97,
+        101,
+        102,
+        104,
+        108,
+        110,
+        115,
+        118,
+        121,
+        123,
+        125,
+        126,
+        127,
+        128,
+        130,
+        131,
+        132,
+        133,
+        135,
+        137,
+        138,
+        141,
+        144,
+        145,
+        146,
+        150,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        171,
+        172,
+        173,
+        174,
+        177,
+        178,
+        179,
+        180,
+        181,
+        185,
+        195,
+        198,
+        199,
+        204,
+        205,
+        210,
+        212,
+        215,
+        219,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227,
+        228,
+        229,
+        233,
+        235,
+        238,
+        239,
+        240,
+        241,
+        242,
+        244,
+        246,
+        247,
+        248,
+        249,
+        262,
+        271,
+        277,
+        278,
+        283,
+        284,
+        296,
+        297,
+        302,
+        303,
+        308,
+        309,
+        310,
+        319,
+        320,
+        321,
+        323,
+        324,
+        326,
+        327,
+        328,
+        330,
+        334,
+        339,
+        340,
+        342,
+        344,
+        345,
+        346,
+        347,
+        348,
+        350,
+        352,
+        354,
+        359,
+        362,
+        366,
+        367,
+        368,
+        369,
+        370,
+        371,
+        372,
+        374,
+        376,
+        377,
+        378,
+        379,
+        380,
+        382,
+        383,
+        408,
+        410,
+        425,
+        426,
+        427,
+        428,
+        429,
+        430,
+        438,
+        440,
+        443,
+        444,
+        446,
+        448,
+        452,
+        456,
+        461,
+        462,
+        464,
+        469,
+        470,
+        471,
+        476,
+        478,
+        480,
+        482,
+        484,
+        486,
+        488,
+        506,
+        507,
+        508,
+        524,
+        526,
+        531,
+        546,
+        547,
+        548,
+        549,
+        551,
+        552,
+        558,
+        559,
+        560,
+        563,
+        564,
+        566,
+        568,
+        569,
+        570,
+        571,
+        572,
+        581,
+        582,
+        583,
+        584,
+        587,
+        592,
+        593,
+        594,
+        605,
+        606,
+        618,
+        619,
+        620,
+        623,
+        624,
+        625,
+        626,
+        627,
+        628,
+        629,
+        630,
+        635,
+        636,
+        638,
+        639,
+        640,
+        642,
+        643,
+        644,
+        661,
+        662,
+        663,
+        668,
+        670,
+        674,
+        675,
+        676,
+        686,
+        687,
+        689,
+        691,
+        695,
+        697,
+        698,
+        700,
+        701,
+        702,
+        703,
+        704,
+        705,
+        706,
+        707,
+        708,
+        714,
+        715,
+        717,
+        722,
+        725,
+        726,
+        727,
+        728,
+        729,
+        730,
+        731,
+        732,
+        733,
+        734,
+        735,
+        736,
+        737,
+        738,
+        739,
+        740,
+        741,
+        742,
+        743,
+        744,
+        746,
+        747,
+        748,
+        749,
+        750,
+        751,
+        752,
+        753,
+        754,
+        755,
+        756,
+        757,
+        758,
+        759,
+        760,
+        761,
+        762,
+        764,
+        765,
+        766,
+        767,
+        768,
+        769,
+        770,
+        771,
+        772,
+        774,
+        775,
+        776,
+        777,
+        778,
+        779,
+        780,
+        781,
+        782,
+        783,
+        784,
+        793,
+        795,
+        796,
+        797,
+        800,
+        803,
+        805,
+        814,
+        815,
+        824,
+        825,
+        826,
+        828,
+        829,
+        830,
+        831,
+        832,
+        834,
+        835,
+        838,
+        839,
+        842,
+        846,
+        849,
+        919,
+        950,
+        1028,
+        1040,
+        1045,
+        1067,
+        1068,
+        1069,
+        1072,
+        1074,
+        1088,
+        1101,
+        1103,
+        1105,
+        1109,
+        1114,
+        1115,
+        184,
+        669
+    ],
+    "x": 16262.867,
+    "y": 37883.746,
+    "z": 304,
+    "map_id": 29,
+    "money": 333540,
+    "items": {
+        "medicine": [
+            {
+                "id": 591,
+                "count": 1
+            },
+            {
+                "id": 18,
+                "count": 4
+            },
+            {
+                "id": 28,
+                "count": 60
+            },
+            {
+                "id": 38,
+                "count": 1
+            },
+            {
+                "id": 30,
+                "count": 1
+            },
+            {
+                "id": 23,
+                "count": 33
+            },
+            {
+                "id": 565,
+                "count": 1
+            },
+            {
+                "id": 570,
+                "count": 1
+            },
+            {
+                "id": 35,
+                "count": 1
+            },
+            {
+                "id": 45,
+                "count": 2
+            },
+            {
+                "id": 19,
+                "count": 3
+            },
+            {
+                "id": 27,
+                "count": 67
+            },
+            {
+                "id": 29,
+                "count": 11
+            },
+            {
+                "id": 39,
+                "count": 1
+            },
+            {
+                "id": 24,
+                "count": 4
+            },
+            {
+                "id": 54,
+                "count": 1
+            },
+            {
+                "id": 504,
+                "count": 1
+            },
+            {
+                "id": 22,
+                "count": 4
+            },
+            {
+                "id": 40,
+                "count": 1
+            },
+            {
+                "id": 50,
+                "count": 5
+            },
+            {
+                "id": 26,
+                "count": 2
+            },
+            {
+                "id": 32,
+                "count": 2
+            },
+            {
+                "id": 51,
+                "count": 2
+            },
+            {
+                "id": 33,
+                "count": 1
+            },
+            {
+                "id": 36,
+                "count": 1
+            },
+            {
+                "id": 47,
+                "count": 1
+            },
+            {
+                "id": 46,
+                "count": 1
+            },
+            {
+                "id": 41,
+                "count": 2
+            },
+            {
+                "id": 53,
+                "count": 2
+            },
+            {
+                "id": 852,
+                "count": 4
+            },
+            {
+                "id": 25,
+                "count": 1
+            },
+            {
+                "id": 52,
+                "count": 1
+            },
+            {
+                "id": 49,
+                "count": 1
+            },
+            {
+                "id": 31,
+                "count": 0
+            },
+            {
+                "id": 21,
+                "count": 0
+            },
+            {
+                "id": 17,
+                "count": 0
+            }
+        ],
+        "items": [
+            {
+                "id": 4,
+                "count": 6
+            },
+            {
+                "id": 217,
+                "count": 1
+            },
+            {
+                "id": 3,
+                "count": 12
+            },
+            {
+                "id": 245,
+                "count": 2
+            },
+            {
+                "id": 14,
+                "count": 4
+            },
+            {
+                "id": 87,
+                "count": 4
+            },
+            {
+                "id": 8,
+                "count": 14
+            },
+            {
+                "id": 222,
+                "count": 1
+            },
+            {
+                "id": 58,
+                "count": 1
+            },
+            {
+                "id": 244,
+                "count": 1
+            },
+            {
+                "id": 6,
+                "count": 3
+            },
+            {
+                "id": 854,
+                "count": 1
+            },
+            {
+                "id": 78,
+                "count": 4
+            },
+            {
+                "id": 92,
+                "count": 3
+            },
+            {
+                "id": 91,
+                "count": 3
+            },
+            {
+                "id": 214,
+                "count": 1
+            },
+            {
+                "id": 86,
+                "count": 1
+            },
+            {
+                "id": 846,
+                "count": 4
+            },
+            {
+                "id": 7,
+                "count": 13
+            },
+            {
+                "id": 94,
+                "count": 2
+            },
+            {
+                "id": 855,
+                "count": 2
+            },
+            {
+                "id": 77,
+                "count": 3
+            },
+            {
+                "id": 539,
+                "count": 1
+            },
+            {
+                "id": 218,
+                "count": 1
+            },
+            {
+                "id": 15,
+                "count": 17
+            },
+            {
+                "id": 89,
+                "count": 2
+            },
+            {
+                "id": 239,
+                "count": 1
+            },
+            {
+                "id": 84,
+                "count": 1
+            },
+            {
+                "id": 13,
+                "count": 34
+            },
+            {
+                "id": 82,
+                "count": 1
+            },
+            {
+                "id": 83,
+                "count": 1
+            },
+            {
+                "id": 224,
+                "count": 1
+            },
+            {
+                "id": 240,
+                "count": 1
+            },
+            {
+                "id": 11,
+                "count": 6
+            },
+            {
+                "id": 884,
+                "count": 1
+            },
+            {
+                "id": 59,
+                "count": 1
+            },
+            {
+                "id": 497,
+                "count": 1
+            },
+            {
+                "id": 266,
+                "count": 1
+            },
+            {
+                "id": 76,
+                "count": 10
+            },
+            {
+                "id": 493,
+                "count": 1
+            },
+            {
+                "id": 583,
+                "count": 1
+            },
+            {
+                "id": 90,
+                "count": 3
+            },
+            {
+                "id": 492,
+                "count": 1
+            },
+            {
+                "id": 495,
+                "count": 1
+            },
+            {
+                "id": 10,
+                "count": 1
+            },
+            {
+                "id": 494,
+                "count": 1
+            },
+            {
+                "id": 57,
+                "count": 4
+            },
+            {
+                "id": 81,
+                "count": 1
+            },
+            {
+                "id": 55,
+                "count": 2
+            },
+            {
+                "id": 280,
+                "count": 1
+            },
+            {
+                "id": 246,
+                "count": 1
+            },
+            {
+                "id": 268,
+                "count": 1
+            },
+            {
+                "id": 537,
+                "count": 1
+            },
+            {
+                "id": 238,
+                "count": 1
+            },
+            {
+                "id": 582,
+                "count": 1
+            },
+            {
+                "id": 269,
+                "count": 1
+            },
+            {
+                "id": 9,
+                "count": 1
+            },
+            {
+                "id": 62,
+                "count": 2
+            },
+            {
+                "id": 849,
+                "count": 1
+            },
+            {
+                "id": 61,
+                "count": 1
+            },
+            {
+                "id": 1,
+                "count": 1
+            },
+            {
+                "id": 108,
+                "count": 1
+            },
+            {
+                "id": 275,
+                "count": 1
+            },
+            {
+                "id": 93,
+                "count": 1
+            },
+            {
+                "id": 107,
+                "count": 1
+            },
+            {
+                "id": 538,
+                "count": 1
+            },
+            {
+                "id": 851,
+                "count": 2
+            },
+            {
+                "id": 286,
+                "count": 1
+            },
+            {
+                "id": 650,
+                "count": 1
+            },
+            {
+                "id": 904,
+                "count": 1
+            },
+            {
+                "id": 905,
+                "count": 1
+            },
+            {
+                "id": 906,
+                "count": 1
+            },
+            {
+                "id": 907,
+                "count": 1
+            },
+            {
+                "id": 908,
+                "count": 1
+            },
+            {
+                "id": 909,
+                "count": 1
+            },
+            {
+                "id": 910,
+                "count": 1
+            },
+            {
+                "id": 911,
+                "count": 1
+            },
+            {
+                "id": 912,
+                "count": 1
+            },
+            {
+                "id": 913,
+                "count": 1
+            },
+            {
+                "id": 914,
+                "count": 1
+            },
+            {
+                "id": 915,
+                "count": 1
+            },
+            {
+                "id": 916,
+                "count": 1
+            },
+            {
+                "id": 917,
+                "count": 1
+            },
+            {
+                "id": 918,
+                "count": 1
+            },
+            {
+                "id": 919,
+                "count": 1
+            },
+            {
+                "id": 920,
+                "count": 1
+            },
+            {
+                "id": 547,
+                "count": 1
+            },
+            {
+                "id": 546,
+                "count": 1
+            },
+            {
+                "id": 581,
+                "count": 55
+            },
+            {
+                "id": 259,
+                "count": 1
+            },
+            {
+                "id": 225,
+                "count": 1
+            },
+            {
+                "id": 278,
+                "count": 1
+            },
+            {
+                "id": 2,
+                "count": 17
+            },
+            {
+                "id": 79,
+                "count": 0
+            },
+            {
+                "id": 56,
+                "count": 0
+            }
+        ],
+        "tms": [
+            {
+                "id": 328,
+                "count": 1
+            },
+            {
+                "id": 376,
+                "count": 1
+            },
+            {
+                "id": 694,
+                "count": 1
+            },
+            {
+                "id": 358,
+                "count": 1
+            },
+            {
+                "id": 346,
+                "count": 1
+            },
+            {
+                "id": 381,
+                "count": 1
+            },
+            {
+                "id": 368,
+                "count": 1
+            },
+            {
+                "id": 415,
+                "count": 1
+            },
+            {
+                "id": 371,
+                "count": 1
+            },
+            {
+                "id": 359,
+                "count": 1
+            },
+            {
+                "id": 366,
+                "count": 1
+            },
+            {
+                "id": 370,
+                "count": 1
+            },
+            {
+                "id": 385,
+                "count": 1
+            },
+            {
+                "id": 386,
+                "count": 1
+            },
+            {
+                "id": 413,
+                "count": 1
+            },
+            {
+                "id": 394,
+                "count": 1
+            },
+            {
+                "id": 367,
+                "count": 1
+            },
+            {
+                "id": 355,
+                "count": 1
+            },
+            {
+                "id": 356,
+                "count": 1
+            },
+            {
+                "id": 392,
+                "count": 1
+            },
+            {
+                "id": 400,
+                "count": 1
+            },
+            {
+                "id": 403,
+                "count": 1
+            },
+            {
+                "id": 399,
+                "count": 1
+            },
+            {
+                "id": 620,
+                "count": 1
+            },
+            {
+                "id": 401,
+                "count": 1
+            },
+            {
+                "id": 393,
+                "count": 1
+            },
+            {
+                "id": 390,
+                "count": 1
+            },
+            {
+                "id": 409,
+                "count": 1
+            },
+            {
+                "id": 339,
+                "count": 1
+            },
+            {
+                "id": 357,
+                "count": 1
+            },
+            {
+                "id": 406,
+                "count": 1
+            },
+            {
+                "id": 332,
+                "count": 1
+            },
+            {
+                "id": 350,
+                "count": 1
+            },
+            {
+                "id": 391,
+                "count": 1
+            },
+            {
+                "id": 389,
+                "count": 1
+            },
+            {
+                "id": 408,
+                "count": 1
+            },
+            {
+                "id": 330,
+                "count": 1
+            },
+            {
+                "id": 407,
+                "count": 1
+            },
+            {
+                "id": 363,
+                "count": 1
+            },
+            {
+                "id": 333,
+                "count": 1
+            },
+            {
+                "id": 418,
+                "count": 1
+            },
+            {
+                "id": 382,
+                "count": 1
+            },
+            {
+                "id": 618,
+                "count": 1
+            },
+            {
+                "id": 693,
+                "count": 1
+            },
+            {
+                "id": 362,
+                "count": 1
+            },
+            {
+                "id": 373,
+                "count": 1
+            },
+            {
+                "id": 411,
+                "count": 1
+            },
+            {
+                "id": 340,
+                "count": 1
+            }
+        ],
+        "berries": [
+            {
+                "id": 155,
+                "count": 5
+            },
+            {
+                "id": 156,
+                "count": 5
+            },
+            {
+                "id": 158,
+                "count": 2
+            },
+            {
+                "id": 151,
+                "count": 2
+            },
+            {
+                "id": 149,
+                "count": 1
+            },
+            {
+                "id": 157,
+                "count": 1
+            },
+            {
+                "id": 163,
+                "count": 1
+            },
+            {
+                "id": 159,
+                "count": 1
+            },
+            {
+                "id": 161,
+                "count": 1
+            },
+            {
+                "id": 152,
+                "count": 2
+            },
+            {
+                "id": 174,
+                "count": 1
+            },
+            {
+                "id": 173,
+                "count": 2
+            },
+            {
+                "id": 170,
+                "count": 1
+            },
+            {
+                "id": 150,
+                "count": 2
+            },
+            {
+                "id": 154,
+                "count": 3
+            },
+            {
+                "id": 203,
+                "count": 1
+            },
+            {
+                "id": 200,
+                "count": 2
+            },
+            {
+                "id": 198,
+                "count": 1
+            },
+            {
+                "id": 191,
+                "count": 1
+            },
+            {
+                "id": 199,
+                "count": 1
+            },
+            {
+                "id": 185,
+                "count": 1
+            },
+            {
+                "id": 193,
+                "count": 1
+            },
+            {
+                "id": 190,
+                "count": 1
+            },
+            {
+                "id": 194,
+                "count": 2
+            }
+        ],
+        "key": [
+            {
+                "id": 933,
+                "count": 1
+            },
+            {
+                "id": 216,
+                "count": 1
+            },
+            {
+                "id": 705,
+                "count": 1
+            },
+            {
+                "id": 842,
+                "count": 1
+            },
+            {
+                "id": 948,
+                "count": 1
+            },
+            {
+                "id": 841,
+                "count": 1
+            },
+            {
+                "id": 942,
+                "count": 1
+            },
+            {
+                "id": 858,
+                "count": 1
+            },
+            {
+                "id": 941,
+                "count": 1
+            },
+            {
+                "id": 943,
+                "count": 1
+            },
+            {
+                "id": 944,
+                "count": 1
+            },
+            {
+                "id": 628,
+                "count": 1
+            },
+            {
+                "id": 765,
+                "count": 1
+            },
+            {
+                "id": 440,
+                "count": 0
+            },
+            {
+                "id": 939,
+                "count": 0
+            },
+            {
+                "id": 937,
+                "count": 0
+            },
+            {
+                "id": 935,
+                "count": 0
+            },
+            {
+                "id": 845,
+                "count": 0
+            }
+        ],
+        "free_space": [],
+        "z_crystals": [
+            {
+                "id": 807,
+                "count": 1
+            },
+            {
+                "id": 813,
+                "count": 1
+            },
+            {
+                "id": 809,
+                "count": 1
+            },
+            {
+                "id": 808,
+                "count": 1
+            },
+            {
+                "id": 811,
+                "count": 1
+            },
+            {
+                "id": 819,
+                "count": 1
+            },
+            {
+                "id": 825,
+                "count": 1
+            },
+            {
+                "id": 931,
+                "count": 1
+            },
+            {
+                "id": 823,
+                "count": 1
+            },
+            {
+                "id": 810,
+                "count": 1
+            },
+            {
+                "id": 828,
+                "count": 1
+            },
+            {
+                "id": 820,
+                "count": 1
+            },
+            {
+                "id": 818,
+                "count": 1
+            },
+            {
+                "id": 822,
+                "count": 1
+            },
+            {
+                "id": 814,
+                "count": 1
+            },
+            {
+                "id": 821,
+                "count": 1
+            },
+            {
+                "id": 824,
+                "count": 1
+            },
+            {
+                "id": 815,
+                "count": 1
+            },
+            {
+                "id": 816,
+                "count": 1
+            },
+            {
+                "id": 817,
+                "count": 1
+            },
+            {
+                "id": 929,
+                "count": 1
+            },
+            {
+                "id": 812,
+                "count": 1
+            }
+        ],
+        "rotom_powers": [
+            {
+                "id": 959,
+                "count": 2
+            },
+            {
+                "id": 953,
+                "count": 9
+            },
+            {
+                "id": 955,
+                "count": 2
+            },
+            {
+                "id": 954,
+                "count": 8
+            },
+            {
+                "id": 951,
+                "count": 6
+            },
+            {
+                "id": 952,
+                "count": 2
+            },
+            {
+                "id": 956,
+                "count": 2
+            },
+            {
+                "id": 950,
+                "count": 5
+            },
+            {
+                "id": 958,
+                "count": 0
+            }
+        ]
+    },
+    "daycare": [],
+    "party": [
+        {
+            "personality_value": 1043693954,
+            "name": "Azumarill",
+            "gender": "Female",
+            "species": {
+                "id": 184
+            },
+            "form": 0,
+            "nature": 15,
+            "held_item": {
+                "id": 242
+            },
+            "original_trainer": {
+                "id": 53410,
+                "secret": 7105,
+                "name": "Flare",
+                "gender": "Female"
+            },
+            "level": 76,
+            "moves": [
+                {
+                    "id": 161,
+                    "pp": 10,
+                    "pp_up": 0
+                },
+                {
+                    "id": 430,
+                    "pp": 10,
+                    "pp_up": 0
+                },
+                {
+                    "id": 435,
+                    "pp": 15,
+                    "pp_up": 0
+                },
+                {
+                    "id": 86,
+                    "pp": 20,
+                    "pp_up": 0
+                }
+            ],
+            "shiny": false,
+            "experience": {
+                "current": 449572
+            },
+            "friendship": 254,
+            "ability": 42,
+            "evs": {
+                "hp": 0,
+                "attack": 0,
+                "defense": 6,
+                "speed": 252,
+                "special_attack": 252,
+                "special_defense": 0
+            },
+            "ivs": {
+                "hp": 31,
+                "attack": 31,
+                "defense": 31,
+                "speed": 31,
+                "special_attack": 31,
+                "special_defense": 31
+            },
+            "condition": {
+                "coolness": 0,
+                "beauty": 0,
+                "cuteness": 0,
+                "smartness": 0,
+                "toughness": 0,
+                "feel": 0
+            },
+            "met": {
+                "game": 33,
+                "date": "2017-11-8",
+                "area_id": 20,
+                "caught_in": 4,
+                "level": 9
+            },
+            "is_egg": false,
+            "is_nicknamed": false,
+            "language": 2,
+            "health": [
+                215,
+                215
+            ],
+            "stats": {
+                "hp": 215,
+                "attack": 120,
+                "defense": 204,
+                "speed": 167,
+                "special_attack": 301,
+                "special_defense": 165
+            },
+            "status": 0,
+            "affection": 0,
+            "fullness": 0,
+            "enjoyment": 0,
+            "encryption_key": 4153474236,
+            "checksum": 39581
+        },
+        {
+            "personality_value": 1276157801,
+            "name": "Noivern",
+            "gender": "Male",
+            "species": {
+                "id": 715
+            },
+            "form": 0,
+            "nature": 15,
+            "held_item": {
+                "id": 232
+            },
+            "original_trainer": {
+                "id": 53410,
+                "secret": 7105,
+                "name": "Flare",
+                "gender": "Female"
+            },
+            "level": 75,
+            "moves": [
+                {
+                    "id": 403,
+                    "pp": 15,
+                    "pp_up": 0
+                },
+                {
+                    "id": 94,
+                    "pp": 10,
+                    "pp_up": 0
+                },
+                {
+                    "id": 406,
+                    "pp": 10,
+                    "pp_up": 0
+                },
+                {
+                    "id": 53,
+                    "pp": 15,
+                    "pp_up": 0
+                }
+            ],
+            "shiny": false,
+            "experience": {
+                "current": 427173
+            },
+            "friendship": 255,
+            "ability": 151,
+            "evs": {
+                "hp": 0,
+                "attack": 0,
+                "defense": 2,
+                "speed": 252,
+                "special_attack": 252,
+                "special_defense": 4
+            },
+            "ivs": {
+                "hp": 31,
+                "attack": 31,
+                "defense": 31,
+                "speed": 31,
+                "special_attack": 31,
+                "special_defense": 31
+            },
+            "condition": {
+                "coolness": 0,
+                "beauty": 0,
+                "cuteness": 0,
+                "smartness": 0,
+                "toughness": 0,
+                "feel": 0
+            },
+            "met": {
+                "game": 33,
+                "date": "2017-11-8",
+                "area_id": 46,
+                "caught_in": 4,
+                "level": 8
+            },
+            "is_egg": false,
+            "is_nicknamed": false,
+            "language": 2,
+            "health": [
+                235,
+                235
+            ],
+            "stats": {
+                "hp": 235,
+                "attack": 119,
+                "defense": 148,
+                "speed": 260,
+                "special_attack": 243,
+                "special_defense": 149
+            },
+            "status": 0,
+            "affection": 20,
+            "fullness": 0,
+            "enjoyment": 0,
+            "encryption_key": 1658065599,
+            "checksum": 32248
+        },
+        {
+            "personality_value": 3863789789,
+            "name": "Lopunny",
+            "gender": "Male",
+            "species": {
+                "id": 428
+            },
+            "form": 0,
+            "nature": 13,
+            "held_item": {
+                "id": 776
+            },
+            "original_trainer": {
+                "id": 53410,
+                "secret": 7105,
+                "name": "Flare",
+                "gender": "Female"
+            },
+            "level": 73,
+            "moves": [
+                {
+                    "id": 216,
+                    "pp": 20,
+                    "pp_up": 0
+                },
+                {
+                    "id": 150,
+                    "pp": 40,
+                    "pp_up": 0
+                },
+                {
+                    "id": 136,
+                    "pp": 10,
+                    "pp_up": 0
+                },
+                {
+                    "id": 340,
+                    "pp": 5,
+                    "pp_up": 0
+                }
+            ],
+            "shiny": false,
+            "experience": {
+                "current": 401229
+            },
+            "friendship": 255,
+            "ability": 56,
+            "evs": {
+                "hp": 0,
+                "attack": 0,
+                "defense": 2,
+                "speed": 252,
+                "special_attack": 252,
+                "special_defense": 4
+            },
+            "ivs": {
+                "hp": 31,
+                "attack": 31,
+                "defense": 31,
+                "speed": 31,
+                "special_attack": 31,
+                "special_defense": 31
+            },
+            "condition": {
+                "coolness": 0,
+                "beauty": 0,
+                "cuteness": 0,
+                "smartness": 0,
+                "toughness": 0,
+                "feel": 0
+            },
+            "met": {
+                "game": 33,
+                "date": "2017-11-8",
+                "area_id": 8,
+                "caught_in": 4,
+                "level": 3
+            },
+            "is_egg": false,
+            "is_nicknamed": false,
+            "language": 2,
+            "health": [
+                200,
+                200
+            ],
+            "stats": {
+                "hp": 200,
+                "attack": 138,
+                "defense": 150,
+                "speed": 248,
+                "special_attack": 136,
+                "special_defense": 168
+            },
+            "status": 0,
+            "affection": 17,
+            "fullness": 0,
+            "enjoyment": 0,
+            "encryption_key": 197005413,
+            "checksum": 57201
+        },
+        {
+            "personality_value": 1911078533,
+            "name": "Talonflame",
+            "gender": "Male",
+            "species": {
+                "id": 663
+            },
+            "form": 0,
+            "nature": 18,
+            "held_item": {
+                "id": 223
+            },
+            "original_trainer": {
+                "id": 53410,
+                "secret": 7105,
+                "name": "Flare",
+                "gender": "Female"
+            },
+            "level": 73,
+            "moves": [
+                {
+                    "id": 98,
+                    "pp": 30,
+                    "pp_up": 0
+                },
+                {
+                    "id": 413,
+                    "pp": 15,
+                    "pp_up": 0
+                },
+                {
+                    "id": 488,
+                    "pp": 20,
+                    "pp_up": 0
+                },
+                {
+                    "id": 211,
+                    "pp": 25,
+                    "pp_up": 0
+                }
+            ],
+            "shiny": false,
+            "experience": {
+                "current": 401012
+            },
+            "friendship": 255,
+            "ability": 49,
+            "evs": {
+                "hp": 0,
+                "attack": 252,
+                "defense": 6,
+                "speed": 252,
+                "special_attack": 0,
+                "special_defense": 0
+            },
+            "ivs": {
+                "hp": 31,
+                "attack": 31,
+                "defense": 31,
+                "speed": 31,
+                "special_attack": 31,
+                "special_defense": 31
+            },
+            "condition": {
+                "coolness": 0,
+                "beauty": 0,
+                "cuteness": 0,
+                "smartness": 0,
+                "toughness": 0,
+                "feel": 0
+            },
+            "met": {
+                "game": 33,
+                "date": "2017-11-8",
+                "area_id": 82,
+                "caught_in": 4,
+                "level": 18
+            },
+            "is_egg": false,
+            "is_nicknamed": false,
+            "language": 2,
+            "health": [
+                219,
+                219
+            ],
+            "stats": {
+                "hp": 219,
+                "attack": 191,
+                "defense": 132,
+                "speed": 257,
+                "special_attack": 135,
+                "special_defense": 128
+            },
+            "status": 0,
+            "affection": 0,
+            "fullness": 0,
+            "enjoyment": 0,
+            "encryption_key": 2097988359,
+            "checksum": 23168
+        },
+        {
+            "personality_value": 3414687222,
+            "name": "Ribombee",
+            "gender": "Male",
+            "species": {
+                "id": 743
+            },
+            "form": 0,
+            "nature": 10,
+            "held_item": {
+                "id": 297
+            },
+            "original_trainer": {
+                "id": 53410,
+                "secret": 7105,
+                "name": "Flare",
+                "gender": "Female"
+            },
+            "level": 75,
+            "moves": [
+                {
+                    "id": 605,
+                    "pp": 10,
+                    "pp_up": 0
+                },
+                {
+                    "id": 577,
+                    "pp": 10,
+                    "pp_up": 0
+                },
+                {
+                    "id": 94,
+                    "pp": 10,
+                    "pp_up": 0
+                },
+                {
+                    "id": 676,
+                    "pp": 15,
+                    "pp_up": 0
+                }
+            ],
+            "shiny": false,
+            "experience": {
+                "current": 423248
+            },
+            "friendship": 255,
+            "ability": 19,
+            "evs": {
+                "hp": 0,
+                "attack": 0,
+                "defense": 2,
+                "speed": 252,
+                "special_attack": 252,
+                "special_defense": 4
+            },
+            "ivs": {
+                "hp": 31,
+                "attack": 31,
+                "defense": 31,
+                "speed": 31,
+                "special_attack": 31,
+                "special_defense": 31
+            },
+            "condition": {
+                "coolness": 0,
+                "beauty": 0,
+                "cuteness": 0,
+                "smartness": 0,
+                "toughness": 0,
+                "feel": 0
+            },
+            "met": {
+                "game": 33,
+                "date": "2017-11-8",
+                "area_id": 40,
+                "caught_in": 4,
+                "level": 12
+            },
+            "is_egg": false,
+            "is_nicknamed": false,
+            "language": 2,
+            "health": [
+                198,
+                198
+            ],
+            "stats": {
+                "hp": 198,
+                "attack": 99,
+                "defense": 118,
+                "speed": 287,
+                "special_attack": 218,
+                "special_defense": 134
+            },
+            "status": 0,
+            "affection": 0,
+            "fullness": 0,
+            "enjoyment": 0,
+            "encryption_key": 3886628008,
+            "checksum": 16536
+        },
+        {
+            "personality_value": 1694460840,
+            "name": "Primarina",
+            "gender": "Male",
+            "species": {
+                "id": 730
+            },
+            "form": 0,
+            "nature": 15,
+            "held_item": {
+                "id": 778
+            },
+            "original_trainer": {
+                "id": 53410,
+                "secret": 7105,
+                "name": "Flare",
+                "gender": "Female"
+            },
+            "level": 75,
+            "moves": [
+                {
+                    "id": 247,
+                    "pp": 15,
+                    "pp_up": 0
+                },
+                {
+                    "id": 664,
+                    "pp": 10,
+                    "pp_up": 0
+                },
+                {
+                    "id": 453,
+                    "pp": 20,
+                    "pp_up": 0
+                },
+                {
+                    "id": 585,
+                    "pp": 15,
+                    "pp_up": 0
+                }
+            ],
+            "shiny": false,
+            "experience": {
+                "current": 430387
+            },
+            "friendship": 255,
+            "ability": 67,
+            "evs": {
+                "hp": 0,
+                "attack": 0,
+                "defense": 6,
+                "speed": 252,
+                "special_attack": 252,
+                "special_defense": 0
+            },
+            "ivs": {
+                "hp": 31,
+                "attack": 31,
+                "defense": 31,
+                "speed": 31,
+                "special_attack": 31,
+                "special_defense": 31
+            },
+            "condition": {
+                "coolness": 0,
+                "beauty": 0,
+                "cuteness": 0,
+                "smartness": 0,
+                "toughness": 0,
+                "feel": 0
+            },
+            "met": {
+                "game": 33,
+                "date": "2017-11-8",
+                "area_id": 8,
+                "caught_in": 4,
+                "level": 5
+            },
+            "is_egg": false,
+            "is_nicknamed": false,
+            "language": 2,
+            "health": [
+                228,
+                228
+            ],
+            "stats": {
+                "hp": 228,
+                "attack": 125,
+                "defense": 140,
+                "speed": 165,
+                "special_attack": 290,
+                "special_defense": 202
+            },
+            "status": 0,
+            "affection": 11,
+            "fullness": 0,
+            "enjoyment": 0,
+            "encryption_key": 3243990546,
+            "checksum": 25884
+        }
+    ],
+    "pc": {
+        "current_box_number": 1,
+        "boxes": [
+          {
+            "box_number": 1,
+            "box_name": "Box 2",
+            "box_contents": [
+              {
+                "personality_value": 3624529813,
+                "name": "Zapdos",
+                "gender": "",
+                "species": {
+                  "id": 145
+                },
+                "form": 0,
+                "nature": 9,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 246,
+                    "pp": 0,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 435,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 365,
+                    "pp": 13,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 240,
+                    "pp": 0,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 46,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 31,
+                  "defense": 31,
+                  "speed": 17,
+                  "special_attack": 18,
+                  "special_defense": 29
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 0,
+                "encryption_key": 3817773796,
+                "checksum": 50037
+              },
+              {
+                "personality_value": 214897018,
+                "name": "Registeel",
+                "gender": "",
+                "species": {
+                  "id": 379
+                },
+                "form": 0,
+                "nature": 15,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 430,
+                    "pp": 8,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 359,
+                    "pp": 8,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 199,
+                    "pp": 2,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 192,
+                    "pp": 4,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 29,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 31,
+                  "defense": 11,
+                  "speed": 30,
+                  "special_attack": 31,
+                  "special_defense": 22
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-13",
+                  "area_id": 222,
+                  "caught_in": 2,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 1,
+                "encryption_key": 1450496967,
+                "checksum": 15500
+              },
+              {
+                "personality_value": 2867868519,
+                "name": "Kyogre",
+                "gender": "",
+                "species": {
+                  "id": 382
+                },
+                "form": 0,
+                "nature": 7,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 58,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 618,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 347,
+                    "pp": 18,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 330,
+                    "pp": 8,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 2,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 20,
+                  "attack": 31,
+                  "defense": 5,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 17
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-13",
+                  "area_id": 222,
+                  "caught_in": 2,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 2,
+                "encryption_key": 3675556098,
+                "checksum": 25632
+              },
+              {
+                "personality_value": 1118982687,
+                "name": "Thundurus",
+                "gender": "Male",
+                "species": {
+                  "id": 642
+                },
+                "form": 0,
+                "nature": 24,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 435,
+                    "pp": 13,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 242,
+                    "pp": 8,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 268,
+                    "pp": 19,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 417,
+                    "pp": 16,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 90,
+                "ability": 158,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 7,
+                  "attack": 31,
+                  "defense": 2,
+                  "speed": 31,
+                  "special_attack": 14,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-13",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 3,
+                "encryption_key": 457149009,
+                "checksum": 10937
+              },
+              {
+                "personality_value": 1758424048,
+                "name": "Regigigas",
+                "gender": "",
+                "species": {
+                  "id": 486
+                },
+                "form": 0,
+                "nature": 21,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 428,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 279,
+                    "pp": 5,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 146,
+                    "pp": 5,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 109,
+                    "pp": 7,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 112,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 28,
+                  "attack": 31,
+                  "defense": 31,
+                  "speed": 31,
+                  "special_attack": 28,
+                  "special_defense": 1
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-13",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 4,
+                "encryption_key": 3074567793,
+                "checksum": 40022
+              },
+              {
+                "personality_value": 1867143555,
+                "name": "Zekrom",
+                "gender": "",
+                "species": {
+                  "id": 644
+                },
+                "form": 0,
+                "nature": 7,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 163,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 428,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 559,
+                    "pp": 5,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 337,
+                    "pp": 15,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 164,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 10,
+                  "defense": 31,
+                  "speed": 2,
+                  "special_attack": 12,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-13",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 5,
+                "encryption_key": 3526734812,
+                "checksum": 22712
+              },
+              {
+                "personality_value": 2913808743,
+                "name": "Virizion",
+                "gender": "",
+                "species": {
+                  "id": 640
+                },
+                "form": 0,
+                "nature": 24,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 533,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 14,
+                    "pp": 18,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 202,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 348,
+                    "pp": 13,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 154,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 15,
+                  "attack": 31,
+                  "defense": 19,
+                  "speed": 11,
+                  "special_attack": 31,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-13",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 6,
+                "encryption_key": 1320492522,
+                "checksum": 51085
+              },
+              {
+                "personality_value": 3463693437,
+                "name": "Latias",
+                "gender": "Female",
+                "species": {
+                  "id": 380
+                },
+                "form": 0,
+                "nature": 2,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 296,
+                    "pp": 0,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 406,
+                    "pp": 2,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 375,
+                    "pp": 5,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 273,
+                    "pp": 7,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 90,
+                "ability": 26,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 23,
+                  "defense": 16,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 23
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-13",
+                  "area_id": 222,
+                  "caught_in": 2,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 7,
+                "encryption_key": 4153772177,
+                "checksum": 17920
+              }
+            ]
+          },
+          {
+            "box_number": 0,
+            "box_name": "Box 1",
+            "box_contents": [
+              {
+                "personality_value": 509531774,
+                "name": "Noibat",
+                "gender": "Female",
+                "species": {
+                  "id": 714
+                },
+                "form": 0,
+                "nature": 24,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 16,
+                    "pp": 35,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 48,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 33,
+                    "pp": 35,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 71,
+                    "pp": 25,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 1602
+                },
+                "friendship": 78,
+                "ability": 151,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 5,
+                  "special_attack": 2,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 15,
+                  "attack": 26,
+                  "defense": 15,
+                  "speed": 28,
+                  "special_attack": 20,
+                  "special_defense": 25
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-8",
+                  "area_id": 46,
+                  "caught_in": 4,
+                  "level": 10
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 0,
+                "encryption_key": 84809173,
+                "checksum": 65177
+              },
+              {
+                "personality_value": 4140998837,
+                "name": "Crabrawler",
+                "gender": "Male",
+                "species": {
+                  "id": 739
+                },
+                "form": 0,
+                "nature": 11,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 61,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 612,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 43,
+                    "pp": 30,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 228,
+                    "pp": 20,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 12526
+                },
+                "friendship": 215,
+                "ability": 89,
+                "evs": {
+                  "hp": 22,
+                  "attack": 21,
+                  "defense": 18,
+                  "speed": 48,
+                  "special_attack": 21,
+                  "special_defense": 15
+                },
+                "ivs": {
+                  "hp": 23,
+                  "attack": 20,
+                  "defense": 10,
+                  "speed": 6,
+                  "special_attack": 11,
+                  "special_defense": 4
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-8",
+                  "area_id": 12,
+                  "caught_in": 4,
+                  "level": 8
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 1,
+                "encryption_key": 3584968249,
+                "checksum": 55209
+              },
+              {
+                "personality_value": 3692629500,
+                "name": "Ditto",
+                "gender": "",
+                "species": {
+                  "id": 132
+                },
+                "form": 0,
+                "nature": 5,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 144,
+                    "pp": 9,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 24389
+                },
+                "friendship": 70,
+                "ability": 7,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 24,
+                  "attack": 30,
+                  "defense": 31,
+                  "speed": 0,
+                  "special_attack": 30,
+                  "special_defense": 24
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-9",
+                  "area_id": 60,
+                  "caught_in": 3,
+                  "level": 29
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 2,
+                "encryption_key": 2442735143,
+                "checksum": 27229
+              },
+              {
+                "personality_value": 2689664169,
+                "name": "Raticate",
+                "gender": "Male",
+                "species": {
+                  "id": 20
+                },
+                "form": 2,
+                "nature": 4,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 44,
+                    "pp": 25,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 228,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 158,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 372,
+                    "pp": 10,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 8000
+                },
+                "friendship": 70,
+                "ability": 47,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 30,
+                  "defense": 24,
+                  "speed": 31,
+                  "special_attack": 29,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-9",
+                  "area_id": 202,
+                  "caught_in": 4,
+                  "level": 20
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 3,
+                "encryption_key": 1963238777,
+                "checksum": 32611
+              },
+              {
+                "personality_value": 3770837428,
+                "name": "Araquanid",
+                "gender": "Male",
+                "species": {
+                  "id": 752
+                },
+                "form": 1,
+                "nature": 18,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 169,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 450,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 61,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 44,
+                    "pp": 25,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 15625
+                },
+                "friendship": 70,
+                "ability": 199,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 3,
+                  "defense": 31,
+                  "speed": 8,
+                  "special_attack": 31,
+                  "special_defense": 21
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-9",
+                  "area_id": 202,
+                  "caught_in": 4,
+                  "level": 25
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 4,
+                "encryption_key": 3638954345,
+                "checksum": 54256
+              },
+              {
+                "personality_value": 3295245170,
+                "name": "Salazzle",
+                "gender": "Female",
+                "species": {
+                  "id": 758
+                },
+                "form": 1,
+                "nature": 7,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 123,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 3,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 481,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 92,
+                    "pp": 10,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 27000
+                },
+                "friendship": 70,
+                "ability": 212,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 10,
+                  "defense": 18,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 2
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-9",
+                  "area_id": 202,
+                  "caught_in": 4,
+                  "level": 30
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 5,
+                "encryption_key": 1060106108,
+                "checksum": 595
+              },
+              {
+                "personality_value": 3237042855,
+                "name": "Poipole",
+                "gender": "",
+                "species": {
+                  "id": 803
+                },
+                "form": 0,
+                "nature": 13,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 204,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 599,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 417,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 398,
+                    "pp": 20,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 80000
+                },
+                "friendship": 0,
+                "ability": 224,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 31,
+                  "defense": 10,
+                  "speed": 31,
+                  "special_attack": 5,
+                  "special_defense": 24
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-10",
+                  "area_id": 208,
+                  "caught_in": 4,
+                  "level": 40
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 6,
+                "encryption_key": 3452886669,
+                "checksum": 56903
+              },
+              {
+                "personality_value": 3169075486,
+                "name": "Necrozma",
+                "gender": "",
+                "species": {
+                  "id": 800
+                },
+                "form": 0,
+                "nature": 1,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 722,
+                    "pp": 4,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 334,
+                    "pp": 14,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 408,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 400,
+                    "pp": 14,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 343281
+                },
+                "friendship": 0,
+                "ability": 232,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 31,
+                  "defense": 31,
+                  "speed": 5,
+                  "special_attack": 14,
+                  "special_defense": 12
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-10",
+                  "area_id": 146,
+                  "caught_in": 13,
+                  "level": 65
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 7,
+                "encryption_key": 3669387219,
+                "checksum": 5634
+              },
+              {
+                "personality_value": 3030812238,
+                "name": "Type: Null",
+                "gender": "",
+                "species": {
+                  "id": 772
+                },
+                "form": 0,
+                "nature": 11,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 319,
+                    "pp": 40,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 442,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 458,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 403,
+                    "pp": 15,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 4,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 31,
+                  "defense": 14,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 10
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-10",
+                  "area_id": 160,
+                  "caught_in": 4,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 8,
+                "encryption_key": 1875283557,
+                "checksum": 57878
+              },
+              {
+                "personality_value": 3051871223,
+                "name": "Stakataka",
+                "gender": "",
+                "species": {
+                  "id": 805
+                },
+                "form": 0,
+                "nature": 10,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 334,
+                    "pp": 14,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 442,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 350,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 469,
+                    "pp": 10,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 224,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 9,
+                  "attack": 31,
+                  "defense": 28,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 16
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-10",
+                  "area_id": 164,
+                  "caught_in": 26,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 9,
+                "encryption_key": 2751957552,
+                "checksum": 30921
+              },
+              {
+                "personality_value": 2810539238,
+                "name": "Audino",
+                "gender": "Male",
+                "species": {
+                  "id": 531
+                },
+                "form": 0,
+                "nature": 12,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 493,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 38,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 304,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 387,
+                    "pp": 4,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": true,
+                "experience": {
+                  "current": 172800
+                },
+                "friendship": 70,
+                "ability": 144,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 25,
+                  "attack": 31,
+                  "defense": 21,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 22
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-10",
+                  "area_id": 222,
+                  "caught_in": 2,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 10,
+                "encryption_key": 1650077441,
+                "checksum": 25363
+              },
+              {
+                "personality_value": 665089649,
+                "name": "Nihilego",
+                "gender": "",
+                "species": {
+                  "id": 793
+                },
+                "form": 0,
+                "nature": 10,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 408,
+                    "pp": 19,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 491,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 446,
+                    "pp": 19,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 243,
+                    "pp": 19,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 224,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 31,
+                  "defense": 10,
+                  "speed": 31,
+                  "special_attack": 22,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-10",
+                  "area_id": 190,
+                  "caught_in": 26,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 11,
+                "encryption_key": 1465939654,
+                "checksum": 28265
+              },
+              {
+                "personality_value": 2934045958,
+                "name": "Pheromosa",
+                "gender": "",
+                "species": {
+                  "id": 795
+                },
+                "form": 0,
+                "nature": 2,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 167,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 679,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 405,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 382,
+                    "pp": 20,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 224,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 24,
+                  "attack": 31,
+                  "defense": 31,
+                  "speed": 11,
+                  "special_attack": 31,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-10",
+                  "area_id": 214,
+                  "caught_in": 26,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 12,
+                "encryption_key": 577195091,
+                "checksum": 50993
+              },
+              {
+                "personality_value": 1750868896,
+                "name": "Xurkitree",
+                "gender": "",
+                "species": {
+                  "id": 796
+                },
+                "form": 0,
+                "nature": 10,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 95,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 435,
+                    "pp": 14,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 604,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 438,
+                    "pp": 10,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 224,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 26,
+                  "attack": 28,
+                  "defense": 27,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-11",
+                  "area_id": 210,
+                  "caught_in": 26,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 13,
+                "encryption_key": 2963438618,
+                "checksum": 35802
+              },
+              {
+                "personality_value": 90627053,
+                "name": "Regice",
+                "gender": "",
+                "species": {
+                  "id": 378
+                },
+                "form": 0,
+                "nature": 17,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 58,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 359,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 199,
+                    "pp": 4,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 192,
+                    "pp": 2,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 29,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 22,
+                  "attack": 21,
+                  "defense": 31,
+                  "speed": 27,
+                  "special_attack": 31,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-11",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 14,
+                "encryption_key": 1610055373,
+                "checksum": 56720
+              },
+              {
+                "personality_value": 4120569204,
+                "name": "Cobalion",
+                "gender": "",
+                "species": {
+                  "id": 638
+                },
+                "form": 0,
+                "nature": 0,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 533,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 14,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 98,
+                    "pp": 30,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 442,
+                    "pp": 15,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 154,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 31,
+                  "defense": 6,
+                  "speed": 3,
+                  "special_attack": 31,
+                  "special_defense": 22
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-11",
+                  "area_id": 222,
+                  "caught_in": 15,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 15,
+                "encryption_key": 2765691394,
+                "checksum": 33095
+              },
+              {
+                "personality_value": 4057745228,
+                "name": "Regirock",
+                "gender": "",
+                "species": {
+                  "id": 377
+                },
+                "form": 0,
+                "nature": 23,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 444,
+                    "pp": 3,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 359,
+                    "pp": 8,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 199,
+                    "pp": 5,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 192,
+                    "pp": 5,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 29,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 24,
+                  "defense": 31,
+                  "speed": 24,
+                  "special_attack": 31,
+                  "special_defense": 24
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-11",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 16,
+                "encryption_key": 3718533061,
+                "checksum": 43829
+              },
+              {
+                "personality_value": 1347473406,
+                "name": "Terrakion",
+                "gender": "",
+                "species": {
+                  "id": 639
+                },
+                "form": 0,
+                "nature": 20,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 533,
+                    "pp": 14,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 14,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 157,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 444,
+                    "pp": 3,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 154,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 31,
+                  "defense": 31,
+                  "speed": 27,
+                  "special_attack": 16,
+                  "special_defense": 6
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-11",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 17,
+                "encryption_key": 3071502683,
+                "checksum": 65186
+              },
+              {
+                "personality_value": 665288628,
+                "name": "Uxie",
+                "gender": "",
+                "species": {
+                  "id": 480
+                },
+                "form": 0,
+                "nature": 14,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 326,
+                    "pp": 19,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 281,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 133,
+                    "pp": 14,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 129,
+                    "pp": 18,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 140,
+                "ability": 26,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 21,
+                  "attack": 31,
+                  "defense": 31,
+                  "speed": 31,
+                  "special_attack": 24,
+                  "special_defense": 26
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-11",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 18,
+                "encryption_key": 2777060204,
+                "checksum": 44339
+              },
+              {
+                "personality_value": 2926457714,
+                "name": "Celesteela",
+                "gender": "",
+                "species": {
+                  "id": 797
+                },
+                "form": 0,
+                "nature": 21,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 475,
+                    "pp": 12,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 402,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 130,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 334,
+                    "pp": 15,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 224,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 18,
+                  "attack": 23,
+                  "defense": 31,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 30
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-11",
+                  "area_id": 212,
+                  "caught_in": 26,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 19,
+                "encryption_key": 2269265326,
+                "checksum": 62570
+              },
+              {
+                "personality_value": 1645869663,
+                "name": "Mewtwo",
+                "gender": "",
+                "species": {
+                  "id": 150
+                },
+                "form": 0,
+                "nature": 15,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 94,
+                    "pp": 4,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 105,
+                    "pp": 6,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 129,
+                    "pp": 14,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 427,
+                    "pp": 15,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 46,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 4,
+                  "defense": 31,
+                  "speed": 30,
+                  "special_attack": 3,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 20,
+                "encryption_key": 266597957,
+                "checksum": 57311
+              },
+              {
+                "personality_value": 3601254695,
+                "name": "Azelf",
+                "gender": "",
+                "species": {
+                  "id": 482
+                },
+                "form": 0,
+                "nature": 23,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 326,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 417,
+                    "pp": 19,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 253,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 129,
+                    "pp": 20,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 140,
+                "ability": 26,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 22,
+                  "defense": 31,
+                  "speed": 24,
+                  "special_attack": 31,
+                  "special_defense": 5
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 21,
+                "encryption_key": 930143609,
+                "checksum": 2395
+              },
+              {
+                "personality_value": 1228866546,
+                "name": "Moltres",
+                "gender": "",
+                "species": {
+                  "id": 146
+                },
+                "form": 0,
+                "nature": 24,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 246,
+                    "pp": 5,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 53,
+                    "pp": 13,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 403,
+                    "pp": 14,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 241,
+                    "pp": 3,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 46,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 7,
+                  "defense": 31,
+                  "speed": 9,
+                  "special_attack": 31,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 22,
+                "encryption_key": 1417355749,
+                "checksum": 20401
+              },
+              {
+                "personality_value": 4082236956,
+                "name": "Cresselia",
+                "gender": "Female",
+                "species": {
+                  "id": 488
+                },
+                "form": 0,
+                "nature": 7,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 62,
+                    "pp": 18,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 248,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 163,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 236,
+                    "pp": 2,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 100,
+                "ability": 26,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 31,
+                  "defense": 20,
+                  "speed": 31,
+                  "special_attack": 26,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 2,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 23,
+                "encryption_key": 1027894165,
+                "checksum": 49726
+              },
+              {
+                "personality_value": 3620617184,
+                "name": "Lugia",
+                "gender": "",
+                "species": {
+                  "id": 249
+                },
+                "form": 0,
+                "nature": 1,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 285,
+                    "pp": 7,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 177,
+                    "pp": 4,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 326,
+                    "pp": 19,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 246,
+                    "pp": 4,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 46,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 22,
+                  "defense": 31,
+                  "speed": 31,
+                  "special_attack": 13,
+                  "special_defense": 4
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 2,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 24,
+                "encryption_key": 43692067,
+                "checksum": 55524
+              },
+              {
+                "personality_value": 3088807540,
+                "name": "Articuno",
+                "gender": "",
+                "species": {
+                  "id": 144
+                },
+                "form": 0,
+                "nature": 9,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 246,
+                    "pp": 0,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 573,
+                    "pp": 16,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 115,
+                    "pp": 19,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 258,
+                    "pp": 6,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 46,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 25,
+                  "defense": 31,
+                  "speed": 31,
+                  "special_attack": 19,
+                  "special_defense": 7
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 2,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 25,
+                "encryption_key": 3775081244,
+                "checksum": 2767
+              },
+              {
+                "personality_value": 344087339,
+                "name": "Yveltal",
+                "gender": "",
+                "species": {
+                  "id": 717
+                },
+                "form": 0,
+                "nature": 17,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 613,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 399,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 566,
+                    "pp": 9,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 94,
+                    "pp": 10,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 186,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 31,
+                  "attack": 6,
+                  "defense": 31,
+                  "speed": 20,
+                  "special_attack": 31,
+                  "special_defense": 7
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 2,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 26,
+                "encryption_key": 905931639,
+                "checksum": 54098
+              },
+              {
+                "personality_value": 3553630387,
+                "name": "Yanmega",
+                "gender": "Female",
+                "species": {
+                  "id": 469
+                },
+                "form": 0,
+                "nature": 16,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 103,
+                    "pp": 40,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 369,
+                    "pp": 20,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 403,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 405,
+                    "pp": 10,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": true,
+                "experience": {
+                  "current": 216000
+                },
+                "friendship": 70,
+                "ability": 110,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 7,
+                  "attack": 5,
+                  "defense": 31,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 31
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 15,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 27,
+                "encryption_key": 2197629814,
+                "checksum": 10247
+              },
+              {
+                "personality_value": 1370186066,
+                "name": "Palkia",
+                "gender": "",
+                "species": {
+                  "id": 484
+                },
+                "form": 0,
+                "nature": 24,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 396,
+                    "pp": 19,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 401,
+                    "pp": 10,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 460,
+                    "pp": 5,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 56,
+                    "pp": 3,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 0,
+                "ability": 46,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 16,
+                  "attack": 31,
+                  "defense": 31,
+                  "speed": 31,
+                  "special_attack": 7,
+                  "special_defense": 18
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 28,
+                "encryption_key": 2319801215,
+                "checksum": 39004
+              },
+              {
+                "personality_value": 3252421114,
+                "name": "Entei",
+                "gender": "",
+                "species": {
+                  "id": 244
+                },
+                "form": 0,
+                "nature": 10,
+                "held_item": {
+                  "id": 0
+                },
+                "original_trainer": {
+                  "id": 53410,
+                  "secret": 7105,
+                  "name": "Flare",
+                  "gender": "Female"
+                },
+                "moves": [
+                  {
+                    "id": 23,
+                    "pp": 18,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 44,
+                    "pp": 24,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 207,
+                    "pp": 15,
+                    "pp_up": 0
+                  },
+                  {
+                    "id": 436,
+                    "pp": 15,
+                    "pp_up": 0
+                  }
+                ],
+                "shiny": false,
+                "experience": {
+                  "current": 270000
+                },
+                "friendship": 35,
+                "ability": 46,
+                "evs": {
+                  "hp": 0,
+                  "attack": 0,
+                  "defense": 0,
+                  "speed": 0,
+                  "special_attack": 0,
+                  "special_defense": 0
+                },
+                "ivs": {
+                  "hp": 19,
+                  "attack": 31,
+                  "defense": 15,
+                  "speed": 31,
+                  "special_attack": 31,
+                  "special_defense": 11
+                },
+                "condition": {
+                  "coolness": 0,
+                  "beauty": 0,
+                  "cuteness": 0,
+                  "smartness": 0,
+                  "toughness": 0,
+                  "feel": 0
+                },
+                "met": {
+                  "game": 33,
+                  "date": "2017-11-12",
+                  "area_id": 222,
+                  "caught_in": 13,
+                  "level": 60
+                },
+                "is_egg": false,
+                "is_nicknamed": false,
+                "language": 2,
+                "affection": 0,
+                "fullness": 0,
+                "enjoyment": 0,
+                "box_slot": 29,
+                "encryption_key": 1215583122,
+                "checksum": 30196
+              }
+            ]
+          }
+        ]
+      }
+}
