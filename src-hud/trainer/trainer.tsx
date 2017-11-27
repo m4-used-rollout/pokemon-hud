@@ -1,4 +1,4 @@
-/// <reference path="badges.tsx" />
+/// <reference path="z-crystals.tsx" />
 /// <reference path="../utils/fittowidth.tsx" />
 
 class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
@@ -28,7 +28,8 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 <span className={`balls ${t.ball_count < 10 ? t.ball_count < 1 ? 'low' : 'med' : 'good'}`}>{(t.ball_count || 0).toLocaleString()}</span>
                 {/* <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span> */}
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
-                {t.options && displayOpts.length && displayOpts.map(opt => <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
+                {t.options && displayOpts.length && displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
+                <ZCrystals items={t.items}/>
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>
                     <span className="seen">{t.seen || 0}</span>

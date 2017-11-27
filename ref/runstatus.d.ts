@@ -29,6 +29,8 @@ declare namespace TPP {
             medicine?: Item[];
             berries?: Item[];
             tms?: Item[];
+            z_crystals?: Item[];
+            rotom_powers?: Item[];
             pc?: Item[];
         };
         level_cap?: number;
@@ -160,8 +162,7 @@ declare namespace TPP {
         species: PokemonSpecies;
         health: number[];
         active?: boolean;
-    }>
-    { }
+    }> { }
 
     export interface EnemyTrainer extends Trainer {
         class_id?: number;
