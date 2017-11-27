@@ -51,8 +51,8 @@ namespace RomReader {
         GetForm(pokemon: TPP.Pokemon) {
             return pokemon.form;
         }
-        GetSpecies(id: number) {
-            return this.pokemon.filter(p => p.id === id).shift() || <Pokemon.Species>{};
+        GetSpecies(id: number, form = 0) {
+            return this.pokemon.filter(p => p.id === id || (p.baseSpeciesId && p.baseSpeciesId === id && p.formNumber && p.formNumber === form)).pop() || <Pokemon.Species>{};
         }
         GetSpeciesByDexNumber(dexNum: number) {
             return this.pokemon.filter(p => p.dexNumber == dexNum).shift() || <Pokemon.Species>{};

@@ -6,7 +6,7 @@
     "options": {
         "battle_style": "Switch",
         "battle_scene": "Off",
-        "text_speed": "Fast",
+        "text_speed": "Med",
         "box_mode": "Manual"
     },
     "caught_list": [

@@ -49,6 +49,8 @@ declare namespace Pokemon {
         spriteSize?: number;
         growthRate: string;
         expFunction: ExpCurve.CalcExp;
+        baseSpeciesId?: number;
+        formNumber?: number;
         doNotFlipSprite?: boolean;
     }
 }
@@ -163,7 +165,7 @@ declare namespace RomReader {
         abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         ConvertText(text: string | Buffer | number[]): string;
         GetForm(pokemon: TPP.Pokemon): number;
-        GetSpecies(id: number): Pokemon.Species;
+        GetSpecies(id: number, form?: number): Pokemon.Species;
         GetSpeciesByDexNumber(dexNum: number): Pokemon.Species;
         GetMove(id: number): Pokemon.Move;
         GetMap(id: number, bank?: number): Pokemon.Map;

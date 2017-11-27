@@ -20,6 +20,8 @@ namespace Pokemon {
         spriteSize?: number;
         growthRate: string;
         expFunction: ExpCurve.CalcExp;
+        baseSpeciesId?: number;
+        formNumber?: number;
         doNotFlipSprite?: boolean;
     }
 }

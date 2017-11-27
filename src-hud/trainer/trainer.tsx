@@ -24,11 +24,11 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 : null
             }
             <FitToWidth className="bottom-row">
-                <span className="cash">{(t.money || 0).toLocaleString()}</span>
-                <span className="balls">{(t.ball_count || 0).toLocaleString()}</span>
+                <span className={`cash ${t.money < 1000 ? t.money < 200 ? 'low' : 'med' : 'good'}`}>{(t.money || 0).toLocaleString()}</span>
+                <span className={`balls ${t.ball_count < 10 ? t.ball_count < 1 ? 'low' : 'med' : 'good'}`}>{(t.ball_count || 0).toLocaleString()}</span>
                 {/* <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span> */}
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
-                {t.options && displayOpts.length && displayOpts.map(opt => <span key={opt}>{t.options[opt]}</span>)}
+                {t.options && displayOpts.length && displayOpts.map(opt => <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>
                     <span className="seen">{t.seen || 0}</span>

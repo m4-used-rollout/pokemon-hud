@@ -114,7 +114,7 @@ namespace RomReader {
 
         function augmentPokemonSpeciesAndExp(p: TPP.Pokemon) {
             if (!p.species.id) return;
-            let romMon = romData.GetSpecies(p.species.id);
+            let romMon = romData.GetSpecies(p.species.id, p.form);
             augmentSpecies(p.species, romMon);
             if (romMon.expFunction) {
                 if (!p.level) {
