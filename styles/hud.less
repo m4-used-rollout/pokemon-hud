@@ -611,6 +611,33 @@ body {
                     content:"Lv";
                 }
 
+                // .good {
+                //     color:@high-health;
+                // }
+                // .med {
+                //     color:@med-health;
+                // }
+                // .low {
+                //     color:@low-health;
+                //     font-weight: bold;
+                // }
+
+
+                .option {
+                    &[data-val=slow], &[data-val=off], &[data-val=manual] {
+                        color:@low-health;
+                        font-weight: bold;
+                    }
+                    &[data-val=med] {
+                        color:@med-health;
+                        font-weight: bold;
+                    }
+                    &[data-val=fast], &[data-val=on], &[data-val=automatic] {
+                        color:@high-health;
+                        font-weight: bold;
+                    }
+                }
+
                 // .options {
                 //     flex: 1 1 auto;
                 //     display:flex;
