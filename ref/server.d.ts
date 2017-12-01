@@ -193,6 +193,7 @@ declare namespace RomReader {
         CalcHiddenPowerType(stats: TPP.Stats): string;
         CalcHiddenPowerPower(stats: TPP.Stats): number;
         CollapseSeenForms(seen: number[]): number[];
+        MapCaughtBallId(ballId: number): number;
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]): Pokemon.EncounterMon[];
         private surfExp;
     }

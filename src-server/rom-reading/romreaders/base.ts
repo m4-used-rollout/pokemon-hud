@@ -30,7 +30,7 @@ namespace RomReader {
             spatk: ["Highly curious", "Mischievous", "Thoroughly cunning", "Often lost in thought", "Very finicky"],
             spdef: ["Strong willed", "Somewhat vain", "Strongly defiant", "Hates to lose", "Somewhat stubborn"]
         }
-        protected ZeroPad(int:number, digits:number) {
+        protected ZeroPad(int: number, digits: number) {
             const working = new Array<string>(digits).fill('0').join('') + int.toFixed(0);
             return working.substr(working.length - digits);
         }
@@ -185,6 +185,11 @@ namespace RomReader {
         }
         CollapseSeenForms(seen: number[]) {
             return seen;
+        }
+        MapCaughtBallId(ballId: number) {
+            if (ballId > this.ballIds.length)
+                return ballId;
+            return this.ballIds[ballId - 1];
         }
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {
             return mons.filter(thisMon => {
