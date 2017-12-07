@@ -31,7 +31,7 @@ namespace RomReader {
                 if (fs.existsSync(__dirname + '/' + spriteUrl))
                     return spriteUrl;
             }
-            return `./img/generic/pokemon/${shiny ? "shiny/" : ""}${id}${form ? `-${form}` : ''}.png`;
+            return `./img/generic/pokemon/${shiny ? "" : ""}${id}${form ? `-${form}` : ''}.png`; //TODO: better generic sprites
         }
         GetItemSprite(id: number) {
             return `./img/generic/item//item_${id}.png`;
