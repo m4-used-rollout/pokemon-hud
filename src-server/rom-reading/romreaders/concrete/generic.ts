@@ -1,4 +1,6 @@
-/// <reference path="../base.ts" />
+/// <reference path="../base.ts" />import { posix } from "path";
+
+
 
 namespace RomReader {
     const fs = require('fs');
@@ -26,12 +28,21 @@ namespace RomReader {
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
             const spriteFolder = TPP.Server.getConfig().spriteFolder;
+            let possibleSpriteUrls:string[] = [];
             if (!generic && spriteFolder) {
-                const spriteUrl = ((this.pokemonSprites[id] || [])[form] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${spriteFolder}/${shiny ? "shiny/" : ""}${gender == "Female" ? "female/" : ""}${this.ZeroPad(id, 3)}${form ? `-${form}` : ''}.png`;
-                if (fs.existsSync(__dirname + '/' + spriteUrl))
-                    return spriteUrl;
+                possibleSpriteUrls.push(((this.pokemonSprites[id] || [])[form] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${spriteFolder}/${shiny ? "shiny/" : ""}${gender == "Female" ? "female/" : ""}${this.ZeroPad(id, 3)}${form ? `-${form}` : ''}.png`);
             }
-            return `./img/generic/pokemon/${shiny ? "" : ""}${id}${form ? `-${form}` : ''}.png`; //TODO: better generic sprites
+            possibleSpriteUrls.push(`./img/generic/pokemon/${shiny ? "shiny" : ""}${gender == "Female" ? "female/" : ""}${id}${form ? `-${form}` : ''}.png`);
+            possibleSpriteUrls.push(`./img/generic/pokemon/${shiny ? "shiny" : ""}${gender == "Female" ? "female/" : ""}${id}${form ? `-${form}` : '-0'}.png`);
+            possibleSpriteUrls.push(`./img/generic/pokemon/${shiny ? "shiny" : ""}${id}${form ? `-${form}` : ''}.png`);
+            possibleSpriteUrls.push(`./img/generic/pokemon/${shiny ? "shiny" : ""}${id}${form ? `-${form}` : '-0'}.png`);
+            possibleSpriteUrls.push(`./img/generic/pokemon/${shiny ? "shiny" : ""}${id}.png`);
+            possibleSpriteUrls.push(`./img/generic/pokemon/${id}.png`);
+            for (let i = 0; i < possibleSpriteUrls.length; i++) {
+                if (fs.existsSync(__dirname + '/' + possibleSpriteUrls[i]))
+                    return possibleSpriteUrls[i];
+            }
+            return './img/generic/pokemon/0.png'; //whatever
         }
         GetItemSprite(id: number) {
             return `./img/generic/item//item_${id}.png`;
