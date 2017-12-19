@@ -195,7 +195,7 @@ namespace RomReader {
                 }
             }
             if (typeof p.nature !== "string" && romData.HasNatures) {
-                p.nature = romData.GetNature(p.nature ? parseInt(p.nature) : (p.personality_value % 25));
+                p.nature = romData.GetNature(typeof p.nature === "number" ? parseInt(p.nature) : (p.personality_value % 25));
             }
             if (p.ivs) {
                 let characteristic = romData.GetCharacteristic({
