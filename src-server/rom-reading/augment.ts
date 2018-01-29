@@ -166,12 +166,12 @@ namespace RomReader {
                 else if (p.species.gender_ratio == 0) {
                     p.gender = "Male";
                 }
-                else {//if (p.gender) { //Generation 3
-                    p.gender = (p.personality_value % 256) > p.species.gender_ratio ? "Male" : "Female";
-                }
-                // else { //Generation 2
-                //     p.gender = ((p.ivs || { attack: 0 }).attack << 4) > p.species.gender_ratio ? "Male" : "Female";
+                // else {//if (p.gender) { //Generation 3
+                //     p.gender = (p.personality_value % 256) > p.species.gender_ratio ? "Male" : "Female";
                 // }
+                else { //Generation 2
+                    p.gender = ((p.ivs || { attack: 0 }).attack << 4) > p.species.gender_ratio ? "Male" : "Female";
+                }
             }
         }
 
@@ -252,6 +252,9 @@ namespace RomReader {
             }
             if (state.map_id) {
                 state.map_name = romData.GetMap(state.map_id, state.map_bank || 0).name;
+            }
+            if (state.party && state.party.some(p => !!p.fitness)) {
+                state.party_fitness = state.party_fitness || state.party.reduce((sum, mon) => sum + mon.fitness, 0);
             }
         }
         catch (e) {

@@ -35,7 +35,10 @@ namespace RomReader {
             return working.substr(working.length - digits);
         }
 
-        abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        //override this in a concrete class to do time of day encounter filtering
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet { 
+            return this.GetAllMapEncounters(map);
+        }
 
         ConvertText(text: string | Buffer | number[]): string {
             if (text instanceof Buffer) {

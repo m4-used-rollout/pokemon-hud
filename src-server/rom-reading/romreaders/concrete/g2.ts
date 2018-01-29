@@ -162,15 +162,6 @@ namespace RomReader {
             return (runState.badges & 8) == 8; //Fog Badge
         }
 
-        public CalcHiddenPowerType(stats: TPP.Stats) {
-            const types = ['Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark'];
-            return types[4 * (stats.attack % 4) + (stats.defense % 4)];
-        }
-
-        public CalcHiddenPowerPower(stats: TPP.Stats) {
-            return Math.floor((5 * ((stats.special_attack >> 3) + ((stats.speed >> 3) << 1) + ((stats.defense >> 3) << 2) + ((stats.attack >> 3) << 3)) + (stats.special_defense % 4)) / 2) + 31;
-        }
-
         private ReadPyriteLevelCaps(romData: Buffer) {
             return this.ReadStridedData(romData, 0x3fef, 1, 17).map(l => l[0]).filter(l => l > 0);
         }

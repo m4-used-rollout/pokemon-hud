@@ -12,7 +12,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
         let pc: TPP.CombinedPCData = t.pc || { current_box_number: 0, boxes: [] };
         let pcBoxCount = (pc.boxes || []).filter(b => !!b && b.box_contents && b.box_number == pc.current_box_number).map(b => b.box_contents.length).shift() || 0;
         return <div className="trainer-info">
-            <Badges bitfield={t.badges} />
+            <Badges bitfield={t.badges} rematch={t.rematch_available} />
             {t.time ?
                 <div className="rtc">
                     {t.time.d ? <span className="days">{t.time.d}</span> : null}
@@ -27,10 +27,13 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 <span className={`cash ${t.money < 1000 ? t.money < 200 ? 'low' : 'med' : 'good'}`}>{(t.money || 0).toLocaleString()}</span>
                 <span className={`balls ${t.ball_count < 10 ? t.ball_count < 1 ? 'low' : 'med' : 'good'}`}>{(t.ball_count || 0).toLocaleString()}</span>
                 {(t.stickers || t.stickers === 0) && <span className="stickers">{t.stickers}</span>}
-                {/* <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span> */}
+                <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
-                {t.options && displayOpts.length && displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
-                <ZCrystals items={t.items}/>
+                {t.options && displayOpts.length && <div className="options">
+                    {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
+                </div>}
+                {t.items.z_crystals && <ZCrystals items={t.items} />}
+                {t.party_fitness && <span className="fitness">{t.party_fitness.toLocaleString()}</span>}
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>
                     <span className="seen">{t.seen || 0}</span>

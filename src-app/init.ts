@@ -14,6 +14,11 @@ let windowList: Electron.BrowserWindow[] = [];
 if (config.useGPU === false) {
     app.disableHardwareAcceleration();
 }
+if (config.forceNoHighDPIScaling) {
+    //stop High DPI screen scaling behavior
+    app.commandLine.appendSwitch('high-dpi-support', '1');
+    app.commandLine.appendSwitch('force-device-scale-factor', '1');
+}
 
 function createWindow(page: string = 'hud', windowWidth: number = 640, windowHeight: number = 480, x: number = null, y: number = null, frameless: boolean = false, resetEveryHours: number = 0) {
     const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;

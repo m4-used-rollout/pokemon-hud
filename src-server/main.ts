@@ -1,6 +1,6 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="../ref/config.d.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g7.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g1.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 
@@ -9,8 +9,9 @@ module TPP.Server {
     const { ipcMain } = require('electron');
 
     export function getConfig(): Config {
-        delete require.cache[require.resolve('./config.json')];
-        return require('./config.json');
+        const configPath = './config.json';
+        delete require.cache[require.resolve(configPath)];
+        return require(configPath);
     }
 
     let config = getConfig();
@@ -68,7 +69,7 @@ module TPP.Server {
         return json.replace(/\\\\u/g, '\\u');
     }
 
-    export const RomData = new RomReader.Gen7();
+    export const RomData = new RomReader.Gen1(config.romFile);
 
     let trainerString = "", partyString = "", pcString = "";
 

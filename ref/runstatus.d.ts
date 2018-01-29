@@ -42,6 +42,8 @@ declare namespace TPP {
         secret: number;
         stickers?: number;
         rival_name?: string;
+        party_fitness?:number;
+        rematch_available?:number;
         time?: {
             d: string;
             h: number;
@@ -94,6 +96,7 @@ declare namespace TPP {
         national_dex?: number;
         abilities?: string[];
         do_not_flip_sprite?: boolean;
+        base_stats?: Stats;
     }
 
     export interface Pokemon {
@@ -138,6 +141,8 @@ declare namespace TPP {
         }
         ribbons: string[]
         is_egg: boolean;
+        cp?: number;
+        fitness?: number;
     }
 
     export interface BoxedPokemon extends Pokemon {

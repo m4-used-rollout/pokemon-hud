@@ -1,7 +1,10 @@
-@party-member-height: 42vh;
-@party-member-width: 33vw;
+@party-member-height: 120px;
+@party-member-width: 320px;
+@native-pokemon-height: 56px;
+@trainer-info-width: 400px;
+@trainer-info-height: 144px;
 
-.n3ds-theme {
+.dualgb-theme {
     &.pokemon-hud {
         font-family: pokeplatinum;
         color:white;
@@ -16,9 +19,10 @@
         
         .health-info(@color) {
             .pokemon-image {
-                // background-image:linear-gradient(46deg, @color 0%, @color 47.6%, rgba(0,0,0,0) 47.7%);
-                background-image:radial-gradient(ellipse farthest-corner at 100% 0,   rgba(0,0,0,0) 0%,  rgba(0,0,0,0) 62.6%, @color 62.7%, @color 100%);
-                background-size: 112% 100%;
+                background-image:linear-gradient(46deg, @color 0%, @color 48%, rgba(0,0,0,0) 48%);
+                //background-image:radial-gradient(ellipse farthest-corner at 100% 0,   rgba(0,0,0,0) 0%,  rgba(0,0,0,0) 62.6%, @color 62.7%, @color 100%);
+                background-size: 100%;
+                //background-size: 112% 100%;
                 background-position: top right;
                 background-repeat: no-repeat;
             }
@@ -29,7 +33,7 @@
         .bar(@name, @height) {
             position: absolute;
             height:1.25em;
-            right:0;
+            right:.5em;
             left:0;
             font-size: @height;
             background-color:darken(@bar-chrome, 20%);
@@ -81,14 +85,21 @@
             bottom:0;
             left:0;
             right:0;
+            display: flex;
+            flex-flow: row wrap;
             
             > li {
-                display:inline-flex;
+                flex: 0 1 @party-member-width;
+                display: inline-flex;
                 position: relative;
                 padding:0;
-                margin:0 .12vw;
+                margin:0;
                 height:@party-member-height;
                 width:@party-member-width;
+                z-index: 1;
+                &:nth-child(even) {
+                    z-index: 0;
+                }
 
                 &.female .name:after {
                     content:'♀';
@@ -120,8 +131,9 @@
                         left:50%;
                         top: 50%;
                         transform:translateX(-50%)translateY(-50%)rotateY(180deg);
-                        height:@party-member-height;
-                        image-rendering: auto;
+                        height:@native-pokemon-height * 2;
+                        image-rendering: pixelated;
+                        .outline(white);
                     }
 
                     &.unown img, .no-flip img {
@@ -136,11 +148,13 @@
                     background-image: linear-gradient(to left, black 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
 
                     .top-line {
+                        position: relative;
+                        left:-.25em;
+                        width:~"calc(100% + .25em)";
                         display: flex;
                         align-items:center;
                         justify-content: flex-end;
                         font-size:1.2em;
-                        position: relative;
 
                         .name {
                             flex: 0 0 auto;
@@ -159,16 +173,14 @@
                             width:(@party-member-height / 2);
                             margin-left:auto;
                             white-space: nowrap;
+                            font-size: .5em;
                             .outline();
                             img {
-                                height: (@party-member-height / 6);
+                                height: 1em;
                                 margin: .1em;
                                 border-radius: 50%;
                                 position: relative;
                                 top: .1em;
-                                .skinny-screen({
-                                    height: (@party-member-height / 7);
-                                });
                             }
                         }
 
@@ -207,13 +219,39 @@
                         .outline();
                     }
 
+                    .cp, .fitness {
+                        height: 1em;
+                        font-size: .9em;
+                        padding-bottom: .2em;
+                        white-space: nowrap;
+                        &:before {
+                            font-size: .9em;
+                        }
+                    }
+                    .cp {
+                        float: left;
+                        text-align: left;
+                        width: 1em;
+                        &:before {
+                            content:'CP';
+                        }
+                    }
+                    .fitness {
+                        float: right;
+                        text-align: right;
+                        &:before {
+                            content:'Fit';
+                        }
+                    }
+
                     .moves {
+                        clear:both;
                         list-style: none;
-                        width:~"calc(100% + .75em)";
+                        position: relative;
+                        left:-.25em;
+                        width:~"calc(100% + .25em)";
                         padding:0;
                         margin:0;
-                        position: relative;
-                        left:-.75em;
                         display: flex;
                         flex-flow: row wrap;
                         .outline();
@@ -240,12 +278,10 @@
                             .move-name {
                                 margin:auto;
                                 text-align: center;
+                                .crush-text()
                             }
                             span:last-of-type {
                                 margin-left:auto;
-                            }
-                            &.long-name .move-name {
-                                .crush-text()
                             }
                             &.pp-low {
                                 color:@low-health;
@@ -492,12 +528,21 @@
         }
 
         .trainer-info {
+            position: absolute;
+            left:0;
+            bottom:0;
+            height: @trainer-info-height;
+            width: @trainer-info-width;
+
             .badges {
-                display: none;
-                font-size: 10vw;
+                font-size: @trainer-info-width / 8.5;
                 width:100%;
+                display: flex;
+                flex-flow: row nowrap;
                 text-align: center;
+                justify-content: space-between;
                 span {
+                    flex: 0 0 auto;
                     background-size: contain;
                     background-repeat: no-repeat;
                     background-position: center;
@@ -506,9 +551,9 @@
                         vertical-align: middle;
                         transition: filter (@transition-time * 3) ease-in, opacity @transition-time ease-out, transform (@transition-time * 2) ease-out;
                         .outline(@bar-chrome);
-                        width: 12.5vw;
+                        width: 1em;
                         transform-origin: center center;
-                        image-rendering: pixelated;
+                        image-rendering: auto;
 
                         &.unowned {
                             filter: contrast(0%) brightness(50%);
@@ -518,6 +563,9 @@
                             opacity: 0;
                             transform: scale(2);
                         }
+                    }
+                    &.rematch-ready {
+                        animation: pulsing-glow 7.5s infinite ease-out;
                     }
                 }
             }
@@ -545,6 +593,21 @@
                 left:0;
                 right:0; 
                 font-size:32px;
+
+                .options {
+                    position: absolute;
+                    bottom: 100%;
+                    width: 100%;
+                    display: flex;
+                    flex-flow: row nowrap;
+                    justify-content: space-between;
+                    text-align: center;
+                    span {
+                        flex: 1 1 auto;
+                        margin: auto;
+                    }
+                }
+
                 > div {
                     display: flex;
                     flex-flow:row nowrap;
@@ -595,11 +658,22 @@
                     .level-cap:before{
                         content:"Lv";
                     }
+                    .fitness {
+                        margin-right:0;
+                        padding-right:0;
+                        &:before {
+                            position: relative;
+                            bottom: .1em;
+                            content:"Fit";
+                            font-size: .8em;
+                        }
+                    }
 
 
                     .dex-counts {
                         margin-right:0;
                         padding-right:0;
+                        display: none;
 
                         span + span:before {
                             content:'/';
@@ -673,5 +747,14 @@
     }
     100% {
         filter: drop-shadow(0 0 10vh white);
+    }
+}
+
+@-webkit-keyframes pulsing-glow {
+    0%, 100% {
+        -webkit-filter: drop-shadow(0 0 0 white) brightness(none) saturate(none);
+    }
+    50% {
+        -webkit-filter: drop-shadow(0 0 .25em white) drop-shadow(0 0 .125em white) brightness(5) sepia(.75) saturate(2);
     }
 }

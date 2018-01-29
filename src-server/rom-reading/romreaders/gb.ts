@@ -72,18 +72,18 @@ namespace RomReader {
             return bundles;
         }
 
-        protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number) {
-            return this.ReadBundledData(romData, startOffset, this.stringTerminator, numStrings).map(b => this.ConvertText(b));
+        protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number, endOffset = 0) {
+            return this.ReadBundledData(romData, startOffset, this.stringTerminator, numStrings, endOffset).map(b => this.ConvertText(b));
         }
 
-        protected LinearAddrToROMBank(linear: number) {
+        protected LinearAddrToROMBank(linear: number, bankSize = 0x4000) {
             let bank = linear >> 14;
-            let address = (linear % 0x4000) | (bank ? 0x4000 : 0);
+            let address = (linear % bankSize) | (bank ? bankSize : 0);
             return { bank: bank, address: address };
         }
 
-        protected ROMBankAddrToLinear(bank: number, address: number) {
-            return (bank << 14) | (address & 0x3fff);
+        protected ROMBankAddrToLinear(bank: number, address: number, bankSize = 0x4000) {
+            return (bank << 14) | (address % bankSize);
         }
 
         protected SameBankPtrToLinear(baseAddr: number, ptr: number) {
@@ -92,6 +92,42 @@ namespace RomReader {
 
         protected FixAllCaps(str: string) {
             return str.toLowerCase().replace(fixCaps, c => c.toUpperCase()).replace(fixWronglyCapped, c => c.toLowerCase()).replace(fixWronglyLowercased, c => c.toUpperCase());
+        }
+
+        public CalcHiddenPowerType(stats: TPP.Stats) {
+            const types = ['Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark'];
+            return types[4 * (stats.attack % 4) + (stats.defense % 4)];
+        }
+
+        public CalcHiddenPowerPower(stats: TPP.Stats) {
+            return Math.floor((5 * ((stats.special_attack >> 3) + ((stats.speed >> 3) << 1) + ((stats.defense >> 3) << 2) + ((stats.attack >> 3) << 3)) + (stats.special_defense % 4)) / 2) + 31;
+        }
+
+        private symbolEntry = /([0-9A-F]+):([0-9A-F]+) ([^\s]+)/i;
+        protected LoadSymbolFile(filename: string) {
+            const symFile: string = fs.readFileSync(filename, 'utf8');
+            const symTable: { [key: string]: number } = {};
+            symFile.split('\n').forEach(line => {
+                const parsed = this.symbolEntry.exec(line.trim());
+                if (parsed) {
+                    const bank = parseInt(parsed[1], 16);
+                    const address = parseInt(parsed[2], 16);
+                    if (address >= 0x8000) //outside of ROM, ignore bank
+                        symTable[parsed[3]] = address;
+                    else
+                        symTable[parsed[3]] = this.ROMBankAddrToLinear(bank, address, 0x4000)
+                }
+            });
+            //console.dir(symTable);
+            return symTable;
+        }
+
+        protected IsFlagSet(romData: Buffer, flagStartOffset: number, flagIndex: number) {
+            return (romData[flagStartOffset + Math.floor(flagIndex / 8)] & ((flagIndex % 8) + 1)) > 0; //FIX
+        }
+
+        protected ParseBCD(bcd: Buffer) {
+            return bcd.toString('hex').split('').reverse().reduce((sum, char, place) => sum + (parseInt(char, 16) * Math.pow(10, place)), 0);
         }
     }
 }

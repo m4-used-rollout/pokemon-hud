@@ -9,8 +9,10 @@ declare interface Config extends DexNavConfig {
     romFile?: string;
     iniFile?: string;
     useGPU?: boolean;
+    forceNoHighDPIScaling?: boolean;
     extractedRomFolder?: string;
     spriteFolder?: string;
+    trainerSpriteFolder?: string;
     listenPort: number;
     runStatusEndpoint?: string;
     newCatchEndpoint?: string;

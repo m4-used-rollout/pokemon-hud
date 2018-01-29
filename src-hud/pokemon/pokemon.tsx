@@ -53,7 +53,9 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                             <div className="exp" style={{ width: expPercent + '%' }} />
                         </div>
                     </div>
-                    {mon.ability ? <div className="ability"> {mon.ability} </div> : null}
+                    {mon.ability && <div className="ability"> {mon.ability} </div>}
+                    {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
+                    {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
                     <ul className="moves">
                         {mon.moves.map(m => <Move move={m} key={m.id} />)}
                     </ul>

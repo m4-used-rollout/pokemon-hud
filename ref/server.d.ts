@@ -1,11 +1,16 @@
 /// <reference path="../ref/runstatus.d.ts" />
-/// <reference path="../ref/config.d.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
+/// <reference path="../ref/config.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 /// <reference path="../ref/joypad.d.ts" />
 /// <reference path="../ref/ini.d.ts" />
 /// <reference path="../ref/pge.ini.d.ts" />
 /// <reference types="node" />
+declare const gen1Charmap: string[];
+declare const gen1MapNames: string[];
+declare namespace Tools.LZGSC {
+    function Decompress(compressed: Buffer): Buffer;
+}
 declare namespace Pokemon {
     namespace ExpCurve {
         interface CalcExp {
@@ -162,7 +167,7 @@ declare namespace RomReader {
             spdef: string[];
         };
         protected ZeroPad(int: number, digits: number): string;
-        abstract GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         ConvertText(text: string | Buffer | number[]): string;
         GetForm(pokemon: TPP.Pokemon): number;
         GetSpecies(id: number, form?: number): Pokemon.Species;
@@ -199,25 +204,62 @@ declare namespace RomReader {
     }
 }
 declare namespace RomReader {
-    class Generic extends RomReaderBase {
-        constructor(dataFolder?: string);
-        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
-        GetItemSprite(id: number): string;
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+    abstract class GBReader extends RomReaderBase {
+        private romFileLocation;
+        private charmap;
+        protected stringTerminator: number;
+        constructor(romFileLocation: string, charmap: string[]);
+        ConvertText(text: string | Buffer | number[]): string;
+        GetForm(pokemon: TPP.Pokemon): number;
+        protected loadROM(): Buffer;
+        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
+        protected ReadBundledData(romData: Buffer, startOffset: number, terminator: number, numBundles: number, endOffset?: number): Buffer[];
+        protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number, endOffset?: number): string[];
+        protected LinearAddrToROMBank(linear: number, bankSize?: number): {
+            bank: number;
+            address: number;
+        };
+        protected ROMBankAddrToLinear(bank: number, address: number, bankSize?: number): number;
+        protected SameBankPtrToLinear(baseAddr: number, ptr: number): number;
+        protected FixAllCaps(str: string): string;
+        CalcHiddenPowerType(stats: TPP.Stats): string;
+        CalcHiddenPowerPower(stats: TPP.Stats): number;
+        private symbolEntry;
+        protected LoadSymbolFile(filename: string): {
+            [key: string]: number;
+        };
+        protected IsFlagSet(romData: Buffer, flagStartOffset: number, flagIndex: number): boolean;
+        protected ParseBCD(bcd: Buffer): number;
     }
 }
 declare namespace RomReader {
-    class Gen7 extends Generic {
-        constructor();
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
-        CollapseSeenForms(seen: number[]): number[];
+    class Gen1 extends GBReader {
+        private symTable;
+        private fishingRodIds;
+        constructor(romFileLocation: string);
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+        GetTrainerSprite(id: number): string;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        private FindFishingEncounters(romData);
+        private ParseEncounters(encounters, encounterRates);
+        private ReadEncounterTablesAt(romData, addr, encounterRates);
+        private ReadMaps(romData);
+        private ReadAreaNames();
+        private AddTMHMs(romData);
+        private ReadMoveData(romData);
+        private FindBallIds(romData);
+        private FindFishingRods(romData);
+        private ReadItemData(romData);
+        private PokedexToIndex(romData, dexNum);
+        private ReadPokeData(romData);
+        private ProcessPalette(palData);
     }
 }
 declare module TPP.Server {
     function getConfig(): Config;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
-    const RomData: RomReader.Gen7;
+    const RomData: RomReader.Gen1;
     function rawState(): any;
     function setState(dataJson: string): void;
     const fileExists: (path: string) => any;
@@ -327,27 +369,6 @@ declare const gen5FilesOffsets: {
         MapNames: number;
     };
 };
-declare namespace RomReader {
-    abstract class GBReader extends RomReaderBase {
-        private romFileLocation;
-        private charmap;
-        protected stringTerminator: number;
-        constructor(romFileLocation: string, charmap: string[]);
-        ConvertText(text: string | Buffer | number[]): string;
-        GetForm(pokemon: TPP.Pokemon): number;
-        protected loadROM(): Buffer;
-        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
-        protected ReadBundledData(romData: Buffer, startOffset: number, terminator: number, numBundles: number, endOffset?: number): Buffer[];
-        protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number): string[];
-        protected LinearAddrToROMBank(linear: number): {
-            bank: number;
-            address: number;
-        };
-        protected ROMBankAddrToLinear(bank: number, address: number): number;
-        protected SameBankPtrToLinear(baseAddr: number, ptr: number): number;
-        protected FixAllCaps(str: string): string;
-    }
-}
 declare namespace Tools.LZ77 {
     function Decompress(compressed: Buffer, offset?: number): Buffer;
 }
@@ -385,17 +406,12 @@ declare namespace RomReader {
         private readFile(path);
     }
 }
-declare namespace Tools.LZGSC {
-    function Decompress(compressed: Buffer): Buffer;
-}
 declare namespace RomReader {
     class Gen2 extends GBReader {
         private timeOfDay;
         constructor(romFileLocation: string);
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        CalcHiddenPowerType(stats: TPP.Stats): string;
-        CalcHiddenPowerPower(stats: TPP.Stats): number;
         private ReadPyriteLevelCaps(romData);
         private FindFishingEncounters(romData);
         private FindMapEncounters(romData);
@@ -441,6 +457,21 @@ declare namespace RomReader {
         ConvertText(text: string): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         constructor(basePath: string);
+    }
+}
+declare namespace RomReader {
+    class Generic extends RomReaderBase {
+        constructor(dataFolder?: string);
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+        GetItemSprite(id: number): string;
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+    }
+}
+declare namespace RomReader {
+    class Gen7 extends Generic {
+        constructor();
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        CollapseSeenForms(seen: number[]): number[];
     }
 }
 declare namespace Tools.DSDecmp {
