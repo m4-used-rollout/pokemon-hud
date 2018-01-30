@@ -32,7 +32,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 {t.options && displayOpts.length && <div className="options">
                     {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
                 </div>}
-                {t.items.z_crystals && <ZCrystals items={t.items} />}
+                {t.items && t.items.z_crystals && <ZCrystals items={t.items} />}
                 {t.party_fitness && <span className="fitness">{t.party_fitness.toLocaleString()}</span>}
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>
