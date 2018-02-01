@@ -236,10 +236,7 @@ namespace RomReader {
             state.ball_count = countBalls();
 
             state.level_cap = state.level_cap || romData.GetCurrentLevelCap(state.badges || 0);
-
-            if (state.wild_species) {
-                augmentSpecies(state.wild_species);
-            }
+            
             if (state.enemy_trainers) {
                 state.enemy_trainers.forEach(augmentEnemyTrainer);
             }

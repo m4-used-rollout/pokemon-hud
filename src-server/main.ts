@@ -1,5 +1,5 @@
 /// <reference path="../ref/runstatus.d.ts" />
-/// <reference path="../ref/config.d.ts" />
+/// <reference path="argv.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g1.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
@@ -11,7 +11,7 @@ module TPP.Server {
     export function getConfig(): Config {
         const configPath = './config.json';
         delete require.cache[require.resolve(configPath)];
-        return require(configPath);
+        return Args.Parse().Merge(require(configPath));
     }
 
     let config = getConfig();
@@ -31,7 +31,7 @@ module TPP.Server {
             x: s.x,
             y: s.y
         })));
-    
+
 
     ipcMain.on('register-renderer', e => {
         let renderer = e.sender;
@@ -69,7 +69,13 @@ module TPP.Server {
         return json.replace(/\\\\u/g, '\\u');
     }
 
-    export const RomData = new RomReader.Gen1(config.romFile);
+    export let RomData: RomReader.RomReaderBase;
+    try {
+        console.log(`Reading ROM ${require("path").resolve(config.romFile)}`);
+        RomData = new RomReader.Gen1(config.romFile);
+    } catch (e) {
+        console.error(e);
+    }
 
     let trainerString = "", partyString = "", pcString = "";
 

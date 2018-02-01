@@ -21,7 +21,8 @@ declare interface Config extends DexNavConfig {
     windowX?: number;
     windowY?: number;
     frameless?: boolean;
-    resetEveryHours?:number;
+    blockResize?: boolean;
+    resetEveryHours?: number;
 }
 
 declare interface DexNavConfig {
@@ -31,7 +32,8 @@ declare interface DexNavConfig {
     dexNavHeight?: number;
     dexNavX?: number;
     dexNavY?: number;
-    dexNavResetEveryHours?:number;
+    dexNavResetEveryHours?: number;
+    dexNavTheme?: string;
     hofMapId?: number;
     hofMapBank?: number;
 }

@@ -29,13 +29,15 @@ module TPP.Server {
             });
         }
     });
+    const port = config.listenPort || 1337;
     server.on('clientError', (err, socket) => {
         socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
     });
-    server.listen(config.listenPort || 1337);
+    server.listen(port);
     server.on('close', ()=> {
-        server.listen(config.listenPort || 1337);
+        server.listen(port);
     });
+    console.log(`Listening for connections on port ${port}`);
 
     var inputs:JoyPad.BizHawk = null;
 

@@ -6,11 +6,13 @@ class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], p
         super(props, 2);
     }
     render() {
-        let trainers = this.state.trainers;
+        const trainers = this.state.trainers;
         if (!trainers || !trainers.length) return null;
+        const partyFitness = (this.state.party || []).reduce((sum, mon) => sum + mon.fitness, 0);
         return <div className={`encounters enemy-trainer ${this.props.trainers ? "" : "hidden"}`} key={`${trainers[0].class_id}${trainers[0].id}`}>
             <div className="info-left">
                 {trainers.map(trainer => <div className="name">{`${trainer.class_name || ''} ${trainer.name || ''}`.trim()}</div>)}
+                {partyFitness && <div className="fitness">{partyFitness.toLocaleString()}</div>}
                 <EnemyParty party={this.state.party} />
             </div>
             <div className={`trainer ${trainers.length > 1 ? "double" : ""}`}>

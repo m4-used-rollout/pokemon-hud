@@ -12,12 +12,13 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
             "dexnav",
             map.TotalEncounters ? totalKnownEncounters ? map.MoreLeftToCatch ? null : "caught-them-all" : null : null,
             map.TehUrn ? "teh-urn" : null,
-            config.hudTheme || "default-theme"
+            config.hudTheme || "default-theme",
+            config.dexNavTheme
         ];
         return <div className={classes.filter(c => !!c).join(' ')} data-completed={map.CompletedCategories}>
             <h3>DexNav</h3>
             {map.MapName ? <h4>{map.MapName}</h4> : null}
-            <WildBattle wild={map.WildBattle} />
+            <WildBattle wild={map.WildBattle} wildParty={map.EnemyParty} />
             <EnemyTrainer trainers={map.EnemyTrainers} party={map.EnemyParty} />
             <div className={`encounters unknown-zone ${map.TotalEncounters || !map.IsUnknownArea ? 'hidden' : ""}`}>
                 <TrainerSprite picId={-1} />

@@ -1,9 +1,15 @@
-// Blazed Glazed/RandoWhite 2/Ultra Sun
+// Blazed Glazed/RandoWhite 2/Ultra Sun/Red
 @dex-frame-border: #600;
 @dex-frame-color: #c00;
 @dex-frame-bevel: #600;
 @dex-frame-highlight: #900;
 @dex-label-color: white;
+
+//Blue
+@blue-frame-border: #006;
+@blue-frame-color: #00c;
+@blue-frame-bevel: #006;
+@blue-frame-highlight: #009;
 
 // Pyrite
 // @dex-frame-border: #4A2F28;
@@ -22,19 +28,19 @@
 @screen-on-color: darkolivegreen;
 @screen-off-color: #666;
 
-.dexFrame() {
+.dexFrame(@dex-frame-border: @dex-frame-border, @dex-frame-color: @dex-frame-color, @dex-frame-bevel: @dex-frame-bevel) {
     border: 1px outset @dex-frame-border;
     background-color: @dex-frame-color;
     box-shadow: 0 0 2px 2px @dex-frame-bevel inset;
 }
 
-.dexLabel() {
+.dexLabel(@dex-frame-color: @dex-frame-color, @dex-frame-bevel: @dex-frame-bevel, @dex-frame-highlight:@dex-frame-highlight) {
     color: @dex-label-color;
     .outline(@dex-frame-bevel);
-    // text-shadow: 2px 2px 0 @dex-frame-highlight, -2px 2px 0 @dex-frame-highlight, 2px -2px 0 @dex-frame-highlight, -2px -2px 0 @dex-frame-highlight;
+    text-shadow: 2px 2px 0 @dex-frame-highlight, -2px 2px 0 @dex-frame-highlight, 2px -2px 0 @dex-frame-highlight, -2px -2px 0 @dex-frame-highlight;
 }
 
-.dexContent() {
+.dexContent(@dex-frame-border: @dex-frame-border, @dex-frame-color: @dex-frame-color, @dex-frame-bevel: @dex-frame-bevel) {
     border: 1px inset @dex-frame-border;
     box-shadow: 0 0 4px 4px @dex-frame-bevel;
     background-color: @screen-on-color;

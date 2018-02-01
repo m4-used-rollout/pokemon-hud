@@ -546,6 +546,7 @@
                     background-size: contain;
                     background-repeat: no-repeat;
                     background-position: center;
+                    position: relative;
 
                     img {
                         vertical-align: middle;
@@ -564,8 +565,17 @@
                             transform: scale(2);
                         }
                     }
-                    &.rematch-ready {
-                        animation: pulsing-glow 7.5s infinite ease-out;
+                    &.rematch-ready:after {
+                        position:absolute;
+                        left:50%;
+                        top:100%;
+                        height: .5em;
+                        width: .5em;
+                        transform:translateX(-50%);
+                        content:'';
+                        background-image: url('img/arrows/up.png');
+                        background-repeat: no-repeat;
+                        background-size:contain;
                     }
                 }
             }
@@ -685,50 +695,45 @@
     }
 
     .pokedex {
-        transform:translateY(100%);
+        width: @party-member-width;
 
-        &:before, &:after {
-            content:"";
-            background-image:url("img/rotomeye.png");
-            background-size:contain;
-            background-repeat: no-repeat;
-            width:6vw;
-            height:30vh;
-            position: absolute;
-            top:0;
-            left:0;
-            z-index: 10;
+        ul li {
+            ::before{
+                z-index: 2;
+            }
+            img {
+                height: @party-member-height * 2!important;
+                .outline(white);
+                transform:scaleX(-1);
+            }
         }
-        &:after {
-            transform:rotateY(180deg);
+    }
+
+    &.blue .pokedex {
+        .dexFrame(@blue-frame-border, @blue-frame-color, @blue-frame-bevel);
+        &:before, &:after {
+            .dexLabel(@blue-frame-color, @blue-frame-bevel, @blue-frame-highlight);
+        }
+        .pokemon-display {
+            .dexContent(@blue-frame-border, @blue-frame-color, @blue-frame-bevel);
+        }
+    }
+
+    &.other-side {
+        .trainer-info {
             left:auto;
             right:0;
-        }
-
-        &.new-entry, &.show-all {
-            transform:none;
-        }
-        ul.pokemon-list {
-            white-space: nowrap;
-            float:left;
-            font-size:24px;
-
-            li {
-                display: inline-block;
-                padding:1vh 4vw;
-                transform:translateX(100%)translateY(5%);
-
+            .badges {
+                transform:scaleX(-1);
                 img {
-                    max-height: 80vh;
-                    max-width: 80vh;
-                    image-rendering: pixelated;
-                }
-
-                &.new-entry {
-                    animation-name: new-entry-horizontal;
+                    transform:scaleX(-1);
                 }
             }
         }
+        .pokedex {
+            left: auto;
+        }
+
     }
 }
 
@@ -747,14 +752,5 @@
     }
     100% {
         filter: drop-shadow(0 0 10vh white);
-    }
-}
-
-@-webkit-keyframes pulsing-glow {
-    0%, 100% {
-        -webkit-filter: drop-shadow(0 0 0 white) brightness(none) saturate(none);
-    }
-    50% {
-        -webkit-filter: drop-shadow(0 0 .25em white) drop-shadow(0 0 .125em white) brightness(5) sepia(.75) saturate(2);
     }
 }

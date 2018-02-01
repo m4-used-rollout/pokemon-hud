@@ -278,6 +278,19 @@
                     }
                 }
 
+                .cp, .fitness {
+                    display: block;
+                    text-align:center;
+                    &:before {
+                        content:"CP:";
+                        margin-right:.25em;
+                        font-size: .8em;
+                    }
+                }
+                .fitness:before {
+                    content:'Fitness:';
+                }
+
                 .catch-rate {
                     display: flex;
                     flex-flow: row nowrap;
@@ -365,6 +378,38 @@
             }
         }
     }
+
+    &.blue {
+        .dexFrame(@blue-frame-border, @blue-frame-color, @blue-frame-bevel);
+        &:before, .encounters {
+            .dexContent(@blue-frame-border, @blue-frame-color, @blue-frame-bevel);
+        }
+    }
+    &.dualgb-theme {
+        .encounters {
+            .pokemon, .trainer {
+                img {
+                    .outline(white);
+                }
+            }
+            img.item {
+                .outline();
+            }
+            &.enemy-trainer {
+                .name, .cp, .fitness {
+                    text-align: right;
+                }
+                .fitness:before {
+                    content:"Party Fitness:";
+                }
+            }
+        }
+    }
+    &.other-side {
+        .encounters .encounter-group {
+            animation-name: scroll-forever-backwards;
+        }
+    }
 }
 
 .rarity {
@@ -423,6 +468,15 @@
     }
     100% {
         transform: translateX(-150%);
+    }
+}
+
+@keyframes scroll-forever-backwards {
+    0% { 
+        transform: translateX(-150%);
+    }
+    100% {
+        transform: translateX(-50%);
     }
 }
 

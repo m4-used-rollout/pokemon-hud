@@ -6,7 +6,6 @@ declare namespace TPP {
         pc: CombinedPCData;
         in_battle: boolean;
         battle_kind?: string;
-        wild_species?: PokemonSpecies;
         enemy_trainers?: EnemyTrainer[];
         enemy_party?: EnemyParty;
     }
@@ -168,6 +167,8 @@ declare namespace TPP {
         species: PokemonSpecies;
         health: number[];
         active?: boolean;
+        cp?: number;
+        fitness?: number;
     }> { }
 
     export interface EnemyTrainer extends Trainer {

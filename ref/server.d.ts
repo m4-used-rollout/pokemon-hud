@@ -1,11 +1,51 @@
+/// <reference path="../ref/config.d.ts" />
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
-/// <reference path="../ref/config.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 /// <reference path="../ref/joypad.d.ts" />
 /// <reference path="../ref/ini.d.ts" />
 /// <reference path="../ref/pge.ini.d.ts" />
 /// <reference types="node" />
+declare module Args {
+    class CmdConf implements Config {
+        runName: string;
+        badgeCount?: number;
+        mainRegion?: string;
+        totalInDex?: number;
+        romDexToNatDex?: number[];
+        displayOptions?: string[];
+        hudTheme: string;
+        romFile?: string;
+        iniFile?: string;
+        useGPU?: boolean;
+        forceNoHighDPIScaling?: boolean;
+        extractedRomFolder: string;
+        spriteFolder: string;
+        trainerSpriteFolder: string;
+        listenPort: number;
+        runStatusEndpoint: string;
+        newCatchEndpoint: string;
+        screenWidth: number;
+        screenHeight: number;
+        windowX: number;
+        windowY: number;
+        frameless: boolean;
+        blockResize: boolean;
+        resetEveryHours?: number;
+        showDexNav: boolean;
+        dexNavUseAreaName?: boolean;
+        dexNavWidth: number;
+        dexNavHeight: number;
+        dexNavX: number;
+        dexNavY: number;
+        dexNavResetEveryHours: number;
+        dexNavTheme: string;
+        hofMapId: number;
+        hofMapBank: number;
+        Merge(config: Config): this;
+    }
+    function Parse(): CmdConf;
+}
 declare const gen1Charmap: string[];
 declare const gen1MapNames: string[];
 declare namespace Tools.LZGSC {
@@ -259,7 +299,7 @@ declare module TPP.Server {
     function getConfig(): Config;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
-    const RomData: RomReader.Gen1;
+    let RomData: RomReader.RomReaderBase;
     function rawState(): any;
     function setState(dataJson: string): void;
     const fileExists: (path: string) => any;
