@@ -42,9 +42,12 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
         show: false
     });
 
-    win.once('ready-to-show', () => win.show());
+    win.once('ready-to-show', () => { 
+        const title = win.getTitle();
+        title.indexOf(config.runName) < 0 && win.setTitle(`${title} - ${config.runName}`);
+        win.show()
+    });
 
-    win.on("page-title-updated", (e, t) => t.indexOf(config.runName) < 0 && win.setTitle(`${t} - ${config.runName}`));
 
     // and load the index.html of the app.
     win.loadURL(url.format({
