@@ -86,10 +86,10 @@
 
     .dexnav-screen() {
         .dexContent();
-        left: 1em;
-        top: 1em;
-        bottom: 1em;
-        right: 1em;
+        left: 1em!important;
+        top: 1em!important;
+        bottom: 1em!important;
+        right: 1em!important;
     }
 
     &:before {
@@ -197,7 +197,7 @@
             }
         }
         &.nothing-to-show, &.no-encounters {
-            background-color:@screen-off-color;
+            background-color:@screen-off-color!important;
 
             &:before {
                 font-family:pokered;
@@ -406,6 +406,10 @@
         }
     }
     &.other-side {
+        h4 {
+            background-image: radial-gradient(farthest-side at bottom left,black 0%, rgba(0,0,0,.5) 60%, rgba(0,0,0,0) 100%);
+            text-align: left;
+        }
         .encounters .encounter-group {
             animation-name: scroll-forever-backwards;
         }
