@@ -1,0 +1,77 @@
+.appraisal {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 50vw;
+    width: 50vw;
+    transition: all 1s ease-in-out;
+    transform: none;
+    background-image: url('img/appraisal/spark.png');
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    &:before {
+        content: "I'm speechless!";
+        display: table-cell;
+        position: fixed;
+        left:5vw;
+        bottom: 5vw;
+        width: 90vw;
+        height: 3em;
+        padding: .5em;
+        background-color:white;
+        color:black;
+        font-family: Arial, Helvetica, sans-serif;
+        border: 1px solid #333;
+        border-radius: .5em;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    &.Hide{
+        transform: translateX(100%);
+        &:before {
+            display: none;
+        }
+    }
+    &.Hello:before {
+        content: "Hey, " attr(data-trainer) "! You want me to check out your " attr(data-pokemon) "?";
+    }
+    &.Overall {
+        &[data-overall=Great]:before {
+            content: "Overall, your " attr(data-pokemon) " looks like it can really battle with the best of them!"
+        }
+        &[data-overall=Good]:before {
+            content: "Overall, your " attr(data-pokemon) " is really strong!"
+        }
+        &[data-overall=Average]:before {
+            content: "Overall, your " attr(data-pokemon) " is pretty decent!"
+        }
+        &[data-overall=Bad]:before {
+            content: "Overall, your " attr(data-pokemon) " has room for improvement as far as battling goes."
+        }
+    }
+    &.BestStat:before {
+        content: "Its best quality is its " attr(data-best-stat) ".";
+    }
+    &.NextStat:before {
+        content: "Its " attr(data-best-stat) " is great, too!";
+    }
+    &.Stats {
+        &[data-stats=Great]:before {
+            content: "Its stats are the best I've ever seen! No doubt about it!";
+        }
+        &[data-stats=Good]:before {
+            content: "Its stats are really strong! Impressive.";
+        }
+        &[data-stats=Average]:before {
+            content: "It's definitely got some good stats. Definitely!";
+        }
+        &[data-stats=Bad]:before {
+            content: "Its stats are all right, but kinda basic, as far as I can see.";
+        }
+    }
+    &.Goodbye:before {
+        content: "That's what I think! See ya!";
+    }
+}

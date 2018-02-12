@@ -1,6 +1,8 @@
 /// <reference path="party.tsx" />
 /// <reference path="trainer/trainer.tsx" />
 /// <reference path="pokedex/pokedex.tsx" />
+/// <reference path="pokemon/appraisal.tsx" />
+
 
 var data: TPP.RunStatus = null;
 
@@ -16,7 +18,8 @@ function Render(id: string = targetId) {
     ReactDOM.render(<div className={classes.filter(c => !!c).join(' ')}>
         <Party party={data.party} gameState={data} />
         <Trainer trainer={data} />
-        <Pokedex seen={data.seen_list || []} owned={data.caught_list || []} />
+        {/* <Pokedex seen={data.seen_list || []} owned={data.caught_list || []} /> */}
+        <Appraisal stepDuration={5} pokemon={data.last_caught_pokemon} trainerName={data.name} />
     </div>, document.getElementById(id));
 }
 

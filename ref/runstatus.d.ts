@@ -18,6 +18,7 @@ declare namespace TPP {
         coins?: number;
         daycare?: Pokemon[];
         extra?: { [key: string]: any };
+        last_caught_pokemon?: Pokemon;
         id: number;
         items: {
             [key: string]: Item[];
@@ -57,8 +58,8 @@ declare namespace TPP {
         map_name?: string;
         area_id?: number;
         area_name?: string;
-        x: number;
-        y: number;
+        x?: number;
+        y?: number;
         evolution_is_happening: boolean;
         badges: number;
     }

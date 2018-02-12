@@ -236,7 +236,7 @@ namespace RomReader {
             state.ball_count = countBalls();
 
             state.level_cap = state.level_cap || romData.GetCurrentLevelCap(state.badges || 0);
-            
+
             if (state.enemy_trainers) {
                 state.enemy_trainers.forEach(augmentEnemyTrainer);
             }
@@ -252,6 +252,9 @@ namespace RomReader {
             }
             if (state.party && state.party.some(p => !!p.fitness)) {
                 state.party_fitness = state.party_fitness || state.party.reduce((sum, mon) => sum + mon.fitness, 0);
+            }
+            if (state.last_caught_pokemon && state.last_caught_pokemon.species && state.last_caught_pokemon.species.id) {
+                augmentPokemon(state.last_caught_pokemon);
             }
         }
         catch (e) {
