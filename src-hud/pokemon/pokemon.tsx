@@ -23,6 +23,8 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
             mon.sleep_turns ? `slp${mon.sleep_turns}` : null,
             this.props.gameState.level_cap && mon.level == this.props.gameState.level_cap && "level-cap",
             mon.is_evolving && "evolving",
+            mon.original_trainer.id != this.props.gameState.id && "trademon",
+            `ot-${mon.original_trainer.name}`
         ].filter(c => !!c).map(cleanString).join(' ');
         if (mon.is_egg)
             classes = "egg" + (eggPercent > 99 ? " shimmy-shake" : "");

@@ -59,7 +59,7 @@ namespace RomReader {
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
-            return (runState.badges & 32) == 32; //Soul Badge
+            return (runState.badges & 16) == 16; //Soul Badge
         }
 
         private FindFishingEncounters(romData) {

@@ -1,8 +1,11 @@
 @party-member-height: 120px;
 @party-member-width: 320px;
 @native-pokemon-height: 56px;
-@trainer-info-width: 40px;
+@trainer-info-width: 480px;
 @trainer-info-height: 144px;
+
+
+@team-color-darken: 20%;
 
 .dualgb-theme {
     &.pokemon-hud {
@@ -145,7 +148,7 @@
                     flex: 1 1 auto;
                     position: relative;
                     min-width: 0;
-                    background-image: linear-gradient(to left, black 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
+                    background-image: linear-gradient(to left, darken(red, @team-color-darken) 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
 
                     .top-line {
                         position: relative;
@@ -334,6 +337,17 @@
                     
                 }
 
+                &.trademon {
+
+                    .pokemon-info {
+                        background-image: linear-gradient(to left, darken(blue, @team-color-darken) 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
+                    }
+                    
+                    &.ot-trainer .pokemon-info {
+                        background-image: linear-gradient(to left, darken(gray, @team-color-darken) 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%) !important;
+                    }
+
+                }
                 
                 div.held-item {
                     position:absolute;
@@ -716,6 +730,16 @@
         }
         .pokemon-display {
             .dexContent(@blue-frame-border, @blue-frame-color, @blue-frame-bevel);
+        }
+    }
+
+    &.blue ul.party > li {
+        .pokemon-info {
+            background-image: linear-gradient(to left, darken(blue, @team-color-darken) 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
+        }
+
+        &.trademon .pokemon-info {
+            background-image: linear-gradient(to left, darken(red, @team-color-darken) 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
         }
     }
 

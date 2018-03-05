@@ -81,7 +81,7 @@ namespace RomReader {
 
         function doubleCheckHPIVStat(stats: TPP.Stats) {
             if (stats) {
-                stats.hp = typeof stats.hp === "number" ? stats.hp : (((stats.attack % 2) << 3) | ((stats.defense % 2) << 2) | ((stats.speed % 2) << 1) | (stats.special_attack % 2));
+                stats.hp = typeof stats.hp == "number" ? stats.hp : (((stats.attack % 2) << 3) | ((stats.defense % 2) << 2) | ((stats.speed % 2) << 1) | (stats.special_attack % 2));
             }
         }
 
@@ -247,8 +247,8 @@ namespace RomReader {
             if (state.area_id) {
                 state.area_name = romData.GetAreaName(state.area_id);
             }
-            if (state.map_id) {
-                state.map_name = romData.GetMap(state.map_id, state.map_bank || 0).name;
+            if (typeof(state.map_id) === "number") {
+                state.map_name = romData.GetMap(state.map_id, state.map_bank).name;
             }
             if (state.party && state.party.some(p => !!p.fitness)) {
                 state.party_fitness = state.party_fitness || state.party.reduce((sum, mon) => sum + mon.fitness, 0);

@@ -20,7 +20,7 @@
                 "--enable-logging",
                 "--frameless", "false",
                 "--blockResize", "false",
-                "--hudTheme", "\"dualgb-theme blue other-side\""
+                "--hudTheme", "\"dualgb-theme blue other-side\"",
             ],
             "env": {}
         }
