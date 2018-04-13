@@ -17,6 +17,12 @@ module TPP.Server {
 
     const server = http.createServer((request, response) => {
         if (request.method == "GET") {
+            // Set CORS headers
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            response.setHeader('Access-Control-Request-Method', '*');
+            response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+            response.setHeader('Access-Control-Allow-Headers', '*');
+            response.setHeader('Content-Type', 'text/json');
             response.end(endpointResponse(request));
         }
         else if (request.method == "POST") {
@@ -50,6 +56,8 @@ module TPP.Server {
                 return locationTemplate.replace(/%AREA%/g, state.area_name || state.map_name).replace(/%MAPBANK%/g, state.map_bank.toString()).replace(/%MAPID%/g, state.map_id.toString());
             case "raw":
                 return JSON.stringify(rawState());
+            case "romdata":
+                return JSON.stringify(RomData);
             case "input":
                 if (!inputs) {
                     setInterval(()=>inputs = {

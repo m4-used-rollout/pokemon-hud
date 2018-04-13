@@ -8,6 +8,8 @@ namespace RomReader {
     const fs = require("fs");
 
     export abstract class NDSReader extends RomReaderBase {
+        protected dataPath = "data/";
+
         constructor(private basePath: string) {
             super();
             if (!this.basePath.endsWith('/') && !this.basePath.endsWith('\\')) {
@@ -18,14 +20,20 @@ namespace RomReader {
         }
 
         protected readNARC(path: string) {
-            return new NARCArchive(this.readFile('data/' + path));
+            return new NARCArchive(this.readFile(this.dataPath + path));
         }
 
         protected readArm9() {
-            return BLZCoder.Decode(this.readFile('arm9.bin'));
+            const arm9 = this.readFile('arm9.bin');
+            try {
+                return BLZCoder.Decode(arm9);
+            }
+            catch (e){
+                return arm9;
+            }
         }
 
-        private readFile(path: string): Buffer {
+        protected readFile(path: string): Buffer {
             return fs.readFileSync(this.basePath + path);
         }
     }

@@ -27,6 +27,8 @@ declare namespace TPP {
             key?: Item[];
             balls?: Item[];
             medicine?: Item[];
+            mail?: Item[];
+            battle?: Item[];
             berries?: Item[];
             tms?: Item[];
             z_crystals?: Item[];
@@ -42,8 +44,8 @@ declare namespace TPP {
         secret: number;
         stickers?: number;
         rival_name?: string;
-        party_fitness?:number;
-        rematch_available?:number;
+        party_fitness?: number;
+        rematch_available?: number;
         time?: {
             d: string;
             h: number;
@@ -135,8 +137,12 @@ declare namespace TPP {
             map_id?: number;
             area_id?: number;
             area_name: string;
+            area_id_egg?: number;
+            area_name_egg?: string;
             level: number;
             game: string;
+            date?: string;
+            date_egg_received?: string;
             caught_in: string;
         }
         ribbons: string[]

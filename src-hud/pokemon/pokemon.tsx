@@ -63,7 +63,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                     </ul>
                     <div className="health-bar">
                         <div className="health" style={{ width: hpPercent + '%' }} />
-                        <div className="hp" data-current={mon.health[0]} data-max={new Array(3 - mon.health[1].toString().length).fill(' ').join('') + mon.health[1]} />
+                        <div className="hp" data-current={mon.health[0]} data-max={(mon.health[1].toString().length < 3 ? new Array(3 - mon.health[1].toString().length).fill(' ').join('') : "") + mon.health[1]} />
                     </div>
                 </div>}
             <HeldItem id={mon.held_item ? mon.held_item.id : 0} name={mon.held_item ? mon.held_item.name : ""} />

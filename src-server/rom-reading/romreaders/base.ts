@@ -204,6 +204,19 @@ namespace RomReader {
                 return true;
             }).sort((e1, e2) => ((e1.requiredItem || { id: 0 }).id - (e2.requiredItem || { id: 0 }).id) || (e2.rate - e1.rate));
         }
+
+        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false) {
+            let choppedData = new Array<Buffer>();
+            for (let i = 0; (i < length || length <= 0) && (startOffset + (strideBytes * (i + 1))) <= romData.length; i++) {
+                let chunk = romData.slice(startOffset + (strideBytes * i), startOffset + (strideBytes * (i + 1)));
+                if ((length <= 0 || lengthIsMax) && chunk[0] == 0xFF) {
+                    return choppedData;
+                }
+                choppedData.push(chunk);
+            }
+            return choppedData;
+        }
+        
         private surfExp = /^surf$/i;
     }
 }

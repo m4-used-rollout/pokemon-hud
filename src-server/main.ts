@@ -1,6 +1,6 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g1.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g4.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 
@@ -81,8 +81,9 @@ module TPP.Server {
 
     export let RomData: RomReader.RomReaderBase;
     try {
-        console.log(`Reading ROM ${require("path").resolve(config.romFile)}`);
-        RomData = new RomReader.Gen1(config.romFile);
+        const path = require("path").resolve(config.romFile ? config.romFile : config.extractedRomFolder);
+        console.log(`Reading ROM at ${path}`);
+        RomData = new RomReader.Gen4(path);
     } catch (e) {
         console.error(e);
     }

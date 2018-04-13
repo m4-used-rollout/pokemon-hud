@@ -45,18 +45,6 @@ namespace RomReader {
             return fs.readFileSync(this.romFileLocation);
         }
 
-        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false) {
-            let choppedData = new Array<Buffer>();
-            for (let i = 0; (i < length || length <= 0) && (startOffset + (strideBytes * (i + 1))) <= romData.length; i++) {
-                let chunk = romData.slice(startOffset + (strideBytes * i), startOffset + (strideBytes * (i + 1)));
-                if ((length <= 0 || lengthIsMax) && chunk[0] == 0xFF) {
-                    return choppedData;
-                }
-                choppedData.push(chunk);
-            }
-            return choppedData;
-        }
-
         protected ReadBundledData(romData: Buffer, startOffset: number, terminator: number, numBundles: number, endOffset = 0) {
             let bundles = new Array<Buffer>();
             numBundles = numBundles || romData.length;

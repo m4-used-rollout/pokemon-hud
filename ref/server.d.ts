@@ -46,11 +46,27 @@ declare module Args {
     }
     function Parse(): CmdConf;
 }
-declare const gen1Charmap: string[];
-declare const gen1MapNames: string[];
-declare namespace Tools.LZGSC {
-    function Decompress(compressed: Buffer): Buffer;
-}
+declare const gen4FilesOffsets: {
+    TextStrings: string;
+    PokemonGraphics: string;
+    PokemonStats: string;
+    MapTableFile: string;
+    MoveData: string;
+    ItemData: string;
+    ItemGraphics: string;
+    BadgeGraphics: string;
+    EncounterData: string;
+    PokemonFormIndex: string;
+    TextOffsets: {
+        PokemonNames: number;
+        MoveNames: number;
+        AbilityNames: number;
+        ItemNames: number;
+        MapNames: number;
+    };
+    MapTableARM9Offset: number;
+    MapTableNameIndexSize: number;
+};
 declare namespace Pokemon {
     namespace ExpCurve {
         interface CalcExp {
@@ -240,59 +256,69 @@ declare namespace RomReader {
         CollapseSeenForms(seen: number[]): number[];
         MapCaughtBallId(ballId: number): number;
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]): Pokemon.EncounterMon[];
+        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
         private surfExp;
     }
 }
-declare namespace RomReader {
-    abstract class GBReader extends RomReaderBase {
-        private romFileLocation;
-        private charmap;
-        protected stringTerminator: number;
-        constructor(romFileLocation: string, charmap: string[]);
-        ConvertText(text: string | Buffer | number[]): string;
-        GetForm(pokemon: TPP.Pokemon): number;
-        protected loadROM(): Buffer;
-        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
-        protected ReadBundledData(romData: Buffer, startOffset: number, terminator: number, numBundles: number, endOffset?: number): Buffer[];
-        protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number, endOffset?: number): string[];
-        protected LinearAddrToROMBank(linear: number, bankSize?: number): {
-            bank: number;
-            address: number;
-        };
-        protected ROMBankAddrToLinear(bank: number, address: number, bankSize?: number): number;
-        protected SameBankPtrToLinear(baseAddr: number, ptr: number): number;
-        protected FixAllCaps(str: string): string;
-        CalcHiddenPowerType(stats: TPP.Stats): string;
-        CalcHiddenPowerPower(stats: TPP.Stats): number;
-        private symbolEntry;
-        protected LoadSymbolFile(filename: string): {
-            [key: string]: number;
-        };
-        protected IsFlagSet(romData: Buffer, flagStartOffset: number, flagIndex: number): boolean;
-        protected ParseBCD(bcd: Buffer): number;
+declare namespace Tools {
+    class NARChive {
+        filenames: string[];
+        files: Buffer[];
+        hasFilenames: boolean;
+        constructor(data?: Buffer);
+        getBytes(): Buffer;
+        private readNitroFrames(data);
     }
 }
+declare namespace BLZCoder {
+    function Decode(data: Buffer): Buffer;
+}
 declare namespace RomReader {
-    class Gen1 extends GBReader {
-        private symTable;
-        private fishingRodIds;
-        constructor(romFileLocation: string);
+    abstract class NDSReader extends RomReaderBase {
+        private basePath;
+        protected dataPath: string;
+        constructor(basePath: string);
+        protected readNARC(path: string): Tools.NARChive;
+        protected readArm9(): Buffer;
+        protected readFile(path: string): Buffer;
+    }
+}
+declare namespace Tools.PokeText {
+    function GetStrings(data: Buffer): string[];
+    class PokeTextData {
+        private data;
+        ptrlist: PointerEntry[];
+        strlist: string[];
+        compressFlag: boolean;
+        constructor(data: Buffer);
+        readonly Data: Buffer;
+        decrypt(): void;
+        encrypt(): void;
+        private DecyptPtrs(count, key, sdidx);
+        private CreatePtrList(count, sdidx);
+        private DecyptTxt(count, id, idx);
+        private MakeString(count, idx);
+        Key: number;
+    }
+    class PointerEntry {
+        private ptr;
+        private chars;
+        constructor(ptr: number, chars: number);
+        readonly Ptr: number;
+        readonly Chars: number;
+    }
+    const CharMap: {
+        [key: number]: string;
+    };
+}
+declare namespace RomReader {
+    class Gen4 extends NDSReader {
+        private tmHmMoves;
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
-        GetTrainerSprite(id: number): string;
-        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        private FindFishingEncounters(romData);
-        private ParseEncounters(encounters, encounterRates);
-        private ReadEncounterTablesAt(romData, addr, encounterRates);
-        private ReadMaps(romData);
-        private ReadAreaNames();
-        private AddTMHMs(romData);
-        private ReadMoveData(romData);
-        private FindBallIds(romData);
-        private FindFishingRods(romData);
-        private ReadItemData(romData);
-        private PokedexToIndex(romData, dexNum);
-        private ReadPokeData(romData);
-        private ProcessPalette(palData);
+        GetItemSprite(id: number): string;
+        ConvertText(text: string): string;
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        constructor(basePath: string);
     }
 }
 declare module TPP.Server {
@@ -355,6 +381,8 @@ declare namespace TPP.Server.DexNav {
 declare namespace RomReader {
     function AugmentState(romData: RomReaderBase, state: TPP.RunStatus): void;
 }
+declare const gen1Charmap: string[];
+declare const gen1MapNames: string[];
 declare const gen2Offsets: {
     ItemAttributesOffset: number;
     PokemonPalettes: number;
@@ -409,6 +437,34 @@ declare const gen5FilesOffsets: {
         MapNames: number;
     };
 };
+declare namespace RomReader {
+    abstract class GBReader extends RomReaderBase {
+        private romFileLocation;
+        private charmap;
+        protected stringTerminator: number;
+        constructor(romFileLocation: string, charmap: string[]);
+        ConvertText(text: string | Buffer | number[]): string;
+        GetForm(pokemon: TPP.Pokemon): number;
+        protected loadROM(): Buffer;
+        protected ReadBundledData(romData: Buffer, startOffset: number, terminator: number, numBundles: number, endOffset?: number): Buffer[];
+        protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number, endOffset?: number): string[];
+        protected LinearAddrToROMBank(linear: number, bankSize?: number): {
+            bank: number;
+            address: number;
+        };
+        protected ROMBankAddrToLinear(bank: number, address: number, bankSize?: number): number;
+        protected SameBankPtrToLinear(baseAddr: number, ptr: number): number;
+        protected FixAllCaps(str: string): string;
+        CalcHiddenPowerType(stats: TPP.Stats): string;
+        CalcHiddenPowerPower(stats: TPP.Stats): number;
+        private symbolEntry;
+        protected LoadSymbolFile(filename: string): {
+            [key: string]: number;
+        };
+        protected IsFlagSet(romData: Buffer, flagStartOffset: number, flagIndex: number): boolean;
+        protected ParseBCD(bcd: Buffer): number;
+    }
+}
 declare namespace Tools.LZ77 {
     function Decompress(compressed: Buffer, offset?: number): Buffer;
 }
@@ -424,26 +480,30 @@ declare namespace RomReader {
         protected DecompressPointerCollection(romData: Buffer, startAddr: number, numPtrs: number, strideBytes?: number): Buffer[];
     }
 }
-declare namespace Tools {
-    class NARChive {
-        filenames: string[];
-        files: Buffer[];
-        hasFilenames: boolean;
-        constructor(data?: Buffer);
-        getBytes(): Buffer;
-        private readNitroFrames(data);
-    }
-}
-declare namespace BLZCoder {
-    function Decode(data: Buffer): Buffer;
+declare namespace Tools.LZGSC {
+    function Decompress(compressed: Buffer): Buffer;
 }
 declare namespace RomReader {
-    abstract class NDSReader extends RomReaderBase {
-        private basePath;
-        constructor(basePath: string);
-        protected readNARC(path: string): Tools.NARChive;
-        protected readArm9(): Buffer;
-        private readFile(path);
+    class Gen1 extends GBReader {
+        private symTable;
+        private fishingRodIds;
+        constructor(romFileLocation: string);
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+        GetTrainerSprite(id: number): string;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        private FindFishingEncounters(romData);
+        private ParseEncounters(encounters, encounterRates);
+        private ReadEncounterTablesAt(romData, addr, encounterRates);
+        private ReadMaps(romData);
+        private ReadAreaNames();
+        private AddTMHMs(romData);
+        private ReadMoveData(romData);
+        private FindBallIds(romData);
+        private FindFishingRods(romData);
+        private ReadItemData(romData);
+        private PokedexToIndex(romData, dexNum);
+        private ReadPokeData(romData);
+        private ProcessPalette(palData);
     }
 }
 declare namespace RomReader {

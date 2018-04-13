@@ -36,17 +36,17 @@ namespace Tools {
             // File contents
             let fatbframe = frames["FATB"];
             let fimgframe = frames["FIMG"];
-            let fileCount = fatbframe.readInt32LE(0);
+            let fileCount = fatbframe.readUInt32LE(0);
             for (let i = 0; i < fileCount; i++) {
-                let startOffset = fatbframe.readInt32LE(4 + i * 8);
-                let endOffset = fatbframe.readInt32LE(8 + i * 8);
+                let startOffset = fatbframe.readUInt32LE(4 + i * 8);
+                let endOffset = fatbframe.readUInt32LE(8 + i * 8);
                 let thisFile = fimgframe.slice(startOffset, endOffset);
                 this.files.push(thisFile);
             }
 
             // Filenames?
             let fntbframe = frames["FNTB"];
-            let unk1 = fntbframe.readInt32LE(0);
+            let unk1 = fntbframe.readUInt32LE(0);
             if (unk1 == 8) {
                 // Filenames exist
                 this.hasFilenames = true;
@@ -84,24 +84,24 @@ namespace Tools {
             fatbFrame[1] = 'T'.charCodeAt(0);
             fatbFrame[2] = 'A'.charCodeAt(0);
             fatbFrame[3] = 'F'.charCodeAt(0);
-            fatbFrame.writeInt32LE(fatbFrame.length, 4);
+            fatbFrame.writeUInt32LE(fatbFrame.length, 4);
 
             fimgFrame[0] = 'G'.charCodeAt(0);
             fimgFrame[1] = 'M'.charCodeAt(0);
             fimgFrame[2] = 'I'.charCodeAt(0);
             fimgFrame[3] = 'F'.charCodeAt(0);
-            fimgFrame.writeInt32LE(fimgFrame.length, 4);
+            fimgFrame.writeUInt32LE(fimgFrame.length, 4);
             let offset = 0;
 
-            fatbFrame.writeInt32LE(this.files.length, 8);
+            fatbFrame.writeUInt32LE(this.files.length, 8);
             this.files.forEach((file, i) => {
                 let bytesRequiredForFile = (Math.ceil(file.length / 4.0) * 4);
                 file.copy(fimgFrame, offset + 8, 0, file.length);
                 for (let filler = file.length; filler < bytesRequiredForFile; filler++) {
                     fimgFrame[offset + 8 + filler] = 0xFF;
                 }
-                fatbFrame.writeInt32LE(offset, 12 + i * 8);
-                fatbFrame.writeInt32LE(offset + file.length, 16 + i * 8);
+                fatbFrame.writeUInt32LE(offset, 12 + i * 8);
+                fatbFrame.writeUInt32LE(offset + file.length, 16 + i * 8);
                 offset += bytesRequiredForFile;
             })
 
@@ -118,11 +118,11 @@ namespace Tools {
             fntbFrame[1] = 'T'.charCodeAt(0);
             fntbFrame[2] = 'N'.charCodeAt(0);
             fntbFrame[3] = 'F'.charCodeAt(0);
-            fntbFrame.writeInt32LE(fntbFrame.length, 4);
+            fntbFrame.writeUInt32LE(fntbFrame.length, 4);
 
             if (this.hasFilenames) {
-                fntbFrame.writeInt32LE(8, 8);
-                fntbFrame.writeInt32LE(0x10000, 12);
+                fntbFrame.writeUInt32LE(8, 8);
+                fntbFrame.writeUInt32LE(0x10000, 12);
                 let fntbOffset = 16;
                 this.filenames.forEach(filename => {
                     let fntbfilename = Buffer.from(filename, 'ascii');
@@ -132,8 +132,8 @@ namespace Tools {
                 })
             }
             else {
-                fntbFrame.writeInt32LE(4, 8);
-                fntbFrame.writeInt32LE(0x10000, 12);
+                fntbFrame.writeUInt32LE(4, 8);
+                fntbFrame.writeUInt32LE(0x10000, 12);
             }
 
             // Now for the actual Nitro file
@@ -143,11 +143,11 @@ namespace Tools {
             nitroFile[1] = 'A'.charCodeAt(0);
             nitroFile[2] = 'R'.charCodeAt(0);
             nitroFile[3] = 'C'.charCodeAt(0);
-            nitroFile.writeInt16LE(0xFFFE, 4);
-            nitroFile.writeInt16LE(0x0100, 6);
-            nitroFile.writeInt32LE(nitrolength, 8);
-            nitroFile.writeInt16LE(0x10, 12);
-            nitroFile.writeInt16LE(3, 14);
+            nitroFile.writeUInt16LE(0xFFFE, 4);
+            nitroFile.writeUInt16LE(0x0100, 6);
+            nitroFile.writeUInt32LE(nitrolength, 8);
+            nitroFile.writeUInt16LE(0x10, 12);
+            nitroFile.writeUInt16LE(3, 14);
             fatbFrame.copy(nitroFile, 16, 0, fatbFrame.length);
             fntbFrame.copy(nitroFile, 16 + fatbFrame.length, 0, fntbFrame.length);
             fimgFrame.copy(nitroFile, 16 + fatbFrame.length + fntbFrame.length, 0, fimgFrame.length);
@@ -157,7 +157,7 @@ namespace Tools {
         private readNitroFrames(data: Buffer) {
 
             // Read the number of frames
-            let frameCount = data.readInt16LE(0x0E);
+            let frameCount = data.readUInt16LE(0x0E);
 
             // each frame
             let offset = 0x10;
@@ -166,7 +166,7 @@ namespace Tools {
                 let magic = [data[offset + 3], data[offset + 2], data[offset + 1], data[offset]];
                 let magicS = magic.map(c => String.fromCharCode(c)).join('');
 
-                let frame_size = data.readInt32LE(offset + 4);
+                let frame_size = data.readUInt32LE(offset + 4);
                 // Patch for BB/VW and other DS hacks which don't update
                 // the size of their expanded NARCs correctly
                 if (i == frameCount - 1 && offset + frame_size < data.length) {
