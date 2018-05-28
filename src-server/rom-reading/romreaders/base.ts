@@ -36,7 +36,7 @@ namespace RomReader {
         }
 
         //override this in a concrete class to do time of day encounter filtering
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet { 
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet {
             return this.GetAllMapEncounters(map);
         }
 
@@ -195,7 +195,7 @@ namespace RomReader {
             return this.ballIds[ballId - 1];
         }
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {
-            return mons.filter(thisMon => {
+            return mons.filter(m => m && m.species && m.species.name).filter(thisMon => {
                 let firstMon = mons.filter(m => m.species.name == thisMon.species.name && (m.requiredItem || { id: 0 }).id == (thisMon.requiredItem || { id: 0 }).id).shift();
                 if (firstMon != thisMon) {
                     firstMon.rate += thisMon.rate;
@@ -216,7 +216,7 @@ namespace RomReader {
             }
             return choppedData;
         }
-        
+
         private surfExp = /^surf$/i;
     }
 }

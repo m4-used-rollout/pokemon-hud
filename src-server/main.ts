@@ -1,6 +1,7 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g4.ts" />
+/// <reference path="rom-reading/romreaders/concrete/generic.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 
@@ -85,7 +86,9 @@ module TPP.Server {
         console.log(`Reading ROM at ${path}`);
         RomData = new RomReader.Gen4(path);
     } catch (e) {
+        console.log(`Could not read ROM.`);
         console.error(e);
+        RomData = new RomReader.Generic();
     }
 
     let trainerString = "", partyString = "", pcString = "";
@@ -134,7 +137,7 @@ module TPP.Server {
                 state.party = party;
                 if ((state.caught_list || []).length > oldCatches.length) {
                     let newCatches = state.caught_list.filter(c => oldCatches.indexOf(c) < 0);
-                    if (newCatches.length < 3) //these should only happen one at a time, really, but 2 *might* happen at once
+                    if (newCatches.length < 7) //these should only happen one at a time, really, but 2 *might* happen at once
                         newCatches.forEach(newCatch);
                 }
             }

@@ -314,11 +314,20 @@ declare namespace Tools.PokeText {
 declare namespace RomReader {
     class Gen4 extends NDSReader {
         private tmHmMoves;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         GetItemSprite(id: number): string;
         ConvertText(text: string): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         constructor(basePath: string);
+    }
+}
+declare namespace RomReader {
+    class Generic extends RomReaderBase {
+        constructor(dataFolder?: string);
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+        GetItemSprite(id: number): string;
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
     }
 }
 declare module TPP.Server {
@@ -366,6 +375,7 @@ declare namespace TPP.Server.DexNav {
         TehUrn: boolean;
         KnownEncounters: KnownEncounters;
         readonly HasEncounters: boolean;
+        BattleKind: string;
         WildBattle: OwnedSpecies;
         EnemyTrainers: TPP.EnemyTrainer[];
         EnemyParty: TPP.EnemyParty;
@@ -557,14 +567,6 @@ declare namespace RomReader {
         ConvertText(text: string): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         constructor(basePath: string);
-    }
-}
-declare namespace RomReader {
-    class Generic extends RomReaderBase {
-        constructor(dataFolder?: string);
-        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
-        GetItemSprite(id: number): string;
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
     }
 }
 declare namespace RomReader {

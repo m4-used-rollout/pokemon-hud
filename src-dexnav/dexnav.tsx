@@ -19,7 +19,7 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
             <h3>DexNav</h3>
             {map.MapName ? <h4>{map.MapName}</h4> : null}
             <WildBattle wild={map.WildBattle} wildParty={map.EnemyParty} />
-            <EnemyTrainer trainers={map.EnemyTrainers} party={map.EnemyParty} />
+            <EnemyTrainer trainers={map.EnemyTrainers} battleKind={map.BattleKind} party={map.EnemyParty} />
             <div className={`encounters unknown-zone ${map.TotalEncounters || !map.IsUnknownArea ? 'hidden' : ""}`}>
                 <TrainerSprite picId={-1} />
             </div>

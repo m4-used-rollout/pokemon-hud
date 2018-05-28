@@ -1,5 +1,5 @@
 /// <reference path="persistent.ts" />
-/// <reference path="../src-hud/pokesprite.tsx" />
+/// <reference path="../src-hud/itemsprite.tsx" />
 
 interface EncounterProps {
     encounters: { [key: string]: TPP.Server.DexNav.KnownEncounter[] };
@@ -33,7 +33,7 @@ class Encounter extends React.PureComponent<{ encounterType: string, encounter: 
         return <span className={cleanString(this.props.encounterType) + ' ' + (e.owned ? "owned" : "seen")}>
             <PokeSprite pokemonId={e.speciesId} form={e.form} />
             <Rarity rate={e.rate} />
-            { e.requiredItemId > 0 ? <img className="item" src={`./img/items/${config.spriteFolder}/${e.requiredItemId}.png`} /> : null }
+            { e.requiredItemId > 0 ? <ItemSprite className="item" id={e.requiredItemId} /> : null }
         </span>;
     }
 }

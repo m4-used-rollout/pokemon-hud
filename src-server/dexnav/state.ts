@@ -48,6 +48,7 @@ namespace TPP.Server.DexNav {
         public get HasEncounters() {
             return this.TotalEncounters > 0;
         }
+        public BattleKind: string = "None";
         public WildBattle: OwnedSpecies = null;
         public EnemyTrainers: TPP.EnemyTrainer[] = null;
         public EnemyParty: TPP.EnemyParty = null;
@@ -71,6 +72,7 @@ namespace TPP.Server.DexNav {
             this.PopulateKnownEncounters(encounters, runState);
             this.PopulateCompletionTotals(allMapEncounters, runState);
             if (runState.in_battle) {
+                this.BattleKind = runState.battle_kind;
                 this.WildBattle = runState.battle_kind == "Wild" ? <OwnedSpecies>Pokemon.Convert.SpeciesFromRunStatus(runState.enemy_party[0].species) : null;
                 if (this.WildBattle && this.WildBattle.id) {
                     this.WildBattle.owned = (runState.caught_list || []).some(p => p == this.WildBattle.dexNumber);

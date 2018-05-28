@@ -1,13 +1,6 @@
 /// <reference path="pokesprite.tsx" />
-class ItemSprite extends React.PureComponent<{ id:number }, {}> {
+class ItemSprite extends React.PureComponent<{ id:number, className?: string }, {}> {
     render() {
-        let src = TPP.Server.RomData.GetItemSprite(this.props.id);
-        // if (src.charAt(0) == "{") {
-        //     src = RenderImageMap(JSON.parse(src));
-        //     if (src) {
-        //         TPP.Server.RomData.CacheItemSprite(this.props.id, src);
-        //     }
-        // }
-        return <img src={src} />
+        return <img className={this.props.className} src={TPP.Server.RomData.GetItemSprite(this.props.id)} />
     }
 }

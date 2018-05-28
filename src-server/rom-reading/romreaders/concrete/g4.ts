@@ -37,14 +37,18 @@ namespace RomReader {
 
         private tmHmMoves: string[];
 
+        public CheckIfCanSurf(runState: TPP.RunStatus) { //HGSS
+            return (runState.badges & 8) == 8; //Fog Badge
+        }
+
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
             const spriteFolder = TPP.Server.getConfig().spriteFolder;
             let possibleSpriteUrls: string[] = [];
-            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny" : ""}${gender == "Female" ? "female/" : ""}${id}${form ? `-${form}` : ''}.png`);
-            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny" : ""}${gender == "Female" ? "female/" : ""}${id}${form ? `-${form}` : '-0'}.png`);
-            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny" : ""}${id}${form ? `-${form}` : ''}.png`);
-            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny" : ""}${id}${form ? `-${form}` : '-0'}.png`);
-            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny" : ""}${id}.png`);
+            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny/" : ""}${gender == "Female" ? "female/" : ""}${id}${form ? `-${form}` : ''}.png`);
+            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny/" : ""}${gender == "Female" ? "female/" : ""}${id}${form ? `-${form}` : '-0'}.png`);
+            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny/" : ""}${id}${form ? `-${form}` : ''}.png`);
+            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny/" : ""}${id}${form ? `-${form}` : '-0'}.png`);
+            possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${shiny ? "shiny/" : ""}${id}.png`);
             possibleSpriteUrls.push(`./img/sprites/${spriteFolder}/${id}.png`);
             for (let i = 0; i < possibleSpriteUrls.length; i++) {
                 if (fs.existsSync(__dirname + '/' + possibleSpriteUrls[i]))
@@ -54,7 +58,7 @@ namespace RomReader {
         }
 
         GetItemSprite(id: number) {
-            return `./img/generic/item//item_${id}.png`;
+            return `./img/items/blackwhite/${id}.png`;
         }
 
         ConvertText(text: string) {
@@ -136,6 +140,14 @@ namespace RomReader {
                 baseExp: stats[9] & 0xFF,
             }));
 
+            const missingNo: Pokemon.Species = {
+                name: "-----",
+                id: 0,
+                dexNumber: 0,
+                type1: "Normal",
+                type2: "Normal"
+            } as Pokemon.Species;
+            pokemon.unshift(missingNo);
             this.pokemon = pokemon;
 
             let tmHmMoves: number[] = (function GetTMHMMapping(tmDataPrefix = hgssTMDataPrefix) {
@@ -159,25 +171,26 @@ namespace RomReader {
                 isKeyItem: getItemPocket(data) == "Key",
                 //data: data.toString('hex')
             }));
+            itemNames.forEach((n, i) => this.items.some(i => i.name == n) || this.items.push({ id: i, name: n, isKeyItem: true }));
 
             this.tmHmMoves = tmHmMoves.map(n => this.moves[n] ? this.moves[n].name : n.toString());
 
             //Give TMs and HMs their move names TODO: Fix this
             this.items.filter(i => i.name.indexOf("TM") >= 0 || i.name.indexOf("HM") >= 0).forEach((tm, index) => tm.name += " " + (this.moves[tmHmMoves[index]] || { name: "???" }).name);
 
-            const speciesToEncounter = (id: number, rate = 1) => (<Pokemon.EncounterMon>{ rate: rate, speciesId: id, species: this.GetSpecies(id) });
+            const speciesToEncounter = (id: number, rate = 1, requiredItem = null) => (<Pokemon.EncounterMon>{ rate: rate, speciesId: id, species: this.GetSpecies(id) || missingNo, requiredItem: requiredItem && this.GetItem(requiredItem) });
             const rodExp = /.* Rod$/;
 
             //HGSS
             const encounters = encounterNarc.files.map(data => {
                 const rates = data.slice(0, 5).map(i => i);
                 const surfMons = rates[1] ? this.CombineDuplicateEncounters(
-                    this.ReadStridedData(data, 100, 4, 5).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesWater[r]))
+                    this.ReadStridedData(data, 100, 4, 5).map((s, r) => speciesToEncounter(s.readUInt16LE(2), encounterRatesWater[r]))
                 ) : new Array<Pokemon.EncounterMon>();
                 const fishMons = new Array<Pokemon.EncounterMon>().concat(
                     ...this.items.filter(i => rodExp.test(i.name))
                         .map((rod, i) => rates[2 + i] ? this.CombineDuplicateEncounters(
-                            this.ReadStridedData(data, 128 + (4 * 5 * i), 4, 5).map((s, r) => speciesToEncounter(s.readInt16LE(2), encounterRatesWater[r]))
+                            this.ReadStridedData(data, 128 + (4 * 5 * i), 4, 5).map((s, r) => speciesToEncounter(s.readInt16LE(2), encounterRatesWater[r], rod.id))
                         ) : [])
                 );
                 const hiddenMons = this.CombineDuplicateEncounters(new Array<Pokemon.EncounterMon>().concat(

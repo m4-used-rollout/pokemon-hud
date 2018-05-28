@@ -141,7 +141,8 @@ body {
                     left:50%;
                     top: 50%;
                     transform:translateX(-50%)translateY(-50%)rotateY(180deg);
-                    height:(@party-member-height * .9);
+                    //height:(@party-member-height * .9);
+                    height: 160px; //HGSS
                     image-rendering: pixelated;
                 }
 
@@ -225,6 +226,7 @@ body {
                     height:1em;
                     width:100%;
                     text-align: center;
+                    position: relative;
                     .outline();
                 }
 
@@ -318,14 +320,27 @@ body {
                 
             }
 
+            &.ball-capsule .ability:before {
+                content:'';
+                height: 16px;
+                width: 16px;
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                background-image: url('./img/capsule.png');
+                background-size: contain;
+                background-repeat: no-repeat;
+                image-rendering: pixelated;
+            }
+
             
             div.held-item {
                 position:absolute;
                 left:-1px;
                 bottom:-1px;
                 font-size: 32px;
-                height: 1em;
-                width: .6em;
+                height:.8em;
+                width: .8em;
                 text-align: right;
                 box-sizing: content-box;
                 overflow: hidden;
@@ -337,7 +352,7 @@ body {
                 }
 
                 img {
-                    width:.5em;
+                    width:1em;
                     image-rendering: pixelated;
                 }
 

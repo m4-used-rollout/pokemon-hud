@@ -187,12 +187,12 @@ namespace RomReader {
                 if (typeof p.ability === "number") {
                     abilityId = p.ability;
                 }
-                if (p.species.abilities && p.species.abilities.length > abilityId) {
-                    p.ability = p.species.abilities[abilityId];
-                }
-                else {
+                // if p.species.abilities && p.species.abilities.length > abilityId) { //gen 3 only
+                //     p.ability = p.species.abilities[abilityId];
+                // }
+                // else {
                     p.ability = romData.GetAbility(abilityId) || abilityId.toString();
-                }
+                // }
             }
             if (typeof p.nature !== "string" && romData.HasNatures) {
                 p.nature = romData.GetNature(typeof p.nature === "number" ? parseInt(p.nature) : (p.personality_value % 25));
@@ -250,7 +250,7 @@ namespace RomReader {
             if (typeof(state.map_id) === "number") {
                 state.map_name = romData.GetMap(state.map_id, state.map_bank).name;
             }
-            if (state.party && state.party.some(p => !!p.fitness)) {
+            if (state.party && state.party.some(p => !!p && !!p.fitness)) {
                 state.party_fitness = state.party_fitness || state.party.reduce((sum, mon) => sum + mon.fitness, 0);
             }
             if (state.last_caught_pokemon && state.last_caught_pokemon.species && state.last_caught_pokemon.species.id) {

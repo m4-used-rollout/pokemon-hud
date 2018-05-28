@@ -162,6 +162,7 @@ declare namespace TPP {
         stats: Stats;
         pokerus_remaining?: number;
         is_evolving?: boolean;
+        capsule?: number;
     }
 
     export interface Item {

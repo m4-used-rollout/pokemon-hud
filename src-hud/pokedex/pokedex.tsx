@@ -49,7 +49,7 @@ class Pokedex extends React.Component<{ seen: number[], owned: number[] }, dexSt
         //         <TrainerSprite trainerId={0} classId={i} />
         //     </li>);
         // }
-        let style = { transform: state.scrollTo ? `translateX(${state.scrollTo}%)` : null };
+        let style = { transform: state.scrollTo ? `translateY(${state.scrollTo}%)` : null };
         return <div className={`pokedex ${state.newEntry ? "new-entry" : ""}`} data-region={config.mainRegion || "National"}>
             <div className="pokemon-display">
                 <ul className="pokemon-list" style={style}>
