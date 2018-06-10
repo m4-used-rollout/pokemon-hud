@@ -9,6 +9,7 @@ namespace RomReader {
 
     export abstract class GBReader extends RomReaderBase {
         protected stringTerminator = 0x50;
+        protected symTable: { [key: string]: number };
 
         constructor(private romFileLocation: string, private charmap: string[]) {
             super();
@@ -29,6 +30,9 @@ namespace RomReader {
             else
                 charArray = text;
             let end = charArray.indexOf(this.stringTerminator);
+            if (end >= 0)
+                charArray.splice(end);
+            end = charArray.indexOf(0x00);
             if (end >= 0)
                 charArray.splice(end);
             return charArray.map(c => this.charmap[c] || ' ').join('');

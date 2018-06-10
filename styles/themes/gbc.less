@@ -16,7 +16,8 @@
     @bar-chrome: #666;
     @bar-skew: 15deg;
 
-    @party-member-height: 13.5vh;
+    // @party-member-height: 13.5vh;
+    @party-member-height: 128px;
 
     &.pokemon-hud {
         font-family: pokeplatinum;
@@ -139,7 +140,8 @@
                         left:50%;
                         top: 50%;
                         transform:translateX(-50%)translateY(-48%)rotateY(180deg);
-                        height:(@party-member-height * .8);
+                        // height:(@party-member-height * .8);
+                        height: 112px;
                         image-rendering: pixelated;
 
                         &.frame-border {
@@ -678,7 +680,7 @@
                 margin-top: .25em;
                 text-align: center;
                 font-family: pokered;
-                font-size: 2.5vh;
+                font-size: 2.75vh;
                 > span {
                     + span{
                         &:before, &.meridian:before {
@@ -690,6 +692,38 @@
                     }
                 }
             }
+
+            .options {
+                display: none;
+                flex: 1 1 auto;
+                display:flex;
+                // justify-content: space-around;
+                justify-content: space-between;
+                font-family: pokered;
+                font-size: .8em;
+                line-height: 1.65em;
+                text-align: center;
+                margin:auto;
+                &.slim {
+                    .normal-screen({
+                        .crush-text()
+                    });
+                    .skinny-screen({
+                        position: absolute;
+                        left:0;
+                        right:0;
+                        bottom:100%;
+                        height: 1em;
+                        span {
+                            width:30%;
+                        }
+                    });
+                }
+                span {
+                    flex: 1 1 auto;
+                }
+            }
+
 
             .bottom-row {
                 position: absolute!important;
@@ -766,34 +800,6 @@
                             content:"È";
                         }
                     // }
-
-
-                    .options {
-                        display: none;
-                        flex: 1 1 auto;
-                        display:flex;
-                        justify-content: space-around;
-                        text-align: center;
-                        margin:auto;
-                        &.slim {
-                            .normal-screen({
-                                .crush-text()
-                            });
-                            .skinny-screen({
-                                position: absolute;
-                                left:0;
-                                right:0;
-                                bottom:100%;
-                                height: 1em;
-                                span {
-                                    width:30%;
-                                }
-                            });
-                        }
-                        span {
-                            flex: 1 1 auto;
-                        }
-                    }
 
                     .dex-counts {
                         margin-right:0;

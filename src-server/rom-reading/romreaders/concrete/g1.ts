@@ -26,8 +26,6 @@ namespace RomReader {
     }
 
     export class Gen1 extends GBReader {
-
-        private symTable: { [key: string]: number };
         private fishingRodIds = { oldRod: 0, goodRod: 0, superRod: 0 };
 
         constructor(romFileLocation: string) {

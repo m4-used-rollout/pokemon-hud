@@ -1,0 +1,599 @@
+{
+    "badges": 0,
+    "battle_kind": "None",
+    "caught_list": [
+        23,
+        69,
+        161,
+        167,
+        172,
+        206,
+        115
+    ],
+    "coins": 0,
+    "daycare": [],
+    "gender": "Male",
+    "id": 11224,
+    "in_battle": false,
+    "items": {
+        "balls": [],
+        "items": [
+            {
+                "count": 1,
+                "id": 78,
+                "name": "Przcureberry"
+            }
+        ],
+        "key": [],
+        "pc": [],
+        "tms": []
+    },
+    "map_bank": 10,
+    "map_id": 5,
+    "mom_money": 0,
+    "money": 291,
+    "name": "DANI",
+    "options": {
+        "battle_scene": "On",
+        "battle_style": "Set",
+        "frame": 1,
+        "menu_account": "On",
+        "print": "Normal",
+        "sound": "Stereo",
+        "text_speed": "Fast"
+    },
+    "rival_name": "COBALT",
+    "secret": 11224,
+    "seen_list": [
+        1,
+        4,
+        10,
+        11,
+        16,
+        19,
+        21,
+        23,
+        43,
+        69,
+        114,
+        115,
+        127,
+        161,
+        162,
+        163,
+        165,
+        167,
+        172,
+        206
+    ],
+    "time": {
+        "d": "FRI",
+        "h": 2,
+        "m": 8,
+        "s": 59
+    },
+    "x": 11,
+    "y": 12,
+    "pc": {
+        "boxes": [
+            {
+                "box_contents": [],
+                "box_name": "BOX1",
+                "box_number": 1
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX2",
+                "box_number": 2
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX3",
+                "box_number": 3
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+                "box_contents": [],
+                "box_name": "BOX12",
+                "box_number": 12
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX13",
+                "box_number": 13
+            },
+            {
+                "box_contents": [],
+                "box_name": "BOX14",
+                "box_number": 14
+            }
+        ],
+        "current_box_number": 1
+    },
+    "party": [
+        {
+            "evs": {
+                "attack": 1170,
+                "defense": 1068,
+                "hp": 1002,
+                "special_attack": 977,
+                "special_defense": 977,
+                "speed": 1201
+            },
+            "experience": {
+                "current": 1918,
+                "next_level": 2197,
+                "this_level": 1728,
+                "remaining": 279
+            },
+            "friendship": 99,
+            "health": [
+                30,
+                30
+            ],
+            "held_item": {
+                "id": 0,
+                "name": ""
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 1,
+                "defense": 8,
+                "hp": 10,
+                "special_attack": 4,
+                "special_defense": 4,
+                "speed": 1
+            },
+            "level": 12,
+            "moves": [
+                {
+                    "id": 84,
+                    "pp": 30,
+                    "pp_up": 0,
+                    "name": "Thundershock",
+                    "accuracy": 255,
+                    "base_power": 40,
+                    "type": "Electric"
+                },
+                {
+                    "id": 204,
+                    "pp": 20,
+                    "pp_up": 0,
+                    "name": "Charm",
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "type": "Normal"
+                },
+                {
+                    "id": 186,
+                    "pp": 10,
+                    "pp_up": 0,
+                    "name": "Sweet Kiss",
+                    "accuracy": 191,
+                    "base_power": 0,
+                    "type": "Normal"
+                },
+                {
+                    "id": 86,
+                    "pp": 20,
+                    "pp_up": 0,
+                    "name": "Thunder Wave",
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "type": "Electric"
+                }
+            ],
+            "name": "PICHU",
+            "original_trainer": {
+                "id": 11224,
+                "name": "DANI"
+            },
+            "personality_value": 403975128,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "species": {
+                "id": 172,
+                "name": "Pichu",
+                "national_dex": 172,
+                "type1": "Electric",
+                "type2": "Electric",
+                "egg_cycles": 10,
+                "gender_ratio": 127,
+                "growth_rate": "Medium Fast",
+                "catch_rate": 190
+            },
+            "stats": {
+                "attack": 15,
+                "defense": 11,
+                "hp": 30,
+                "special_attack": 15,
+                "special_defense": 15,
+                "speed": 20
+            },
+            "status": 0,
+            "gender": "Female",
+            "shiny": false
+        },
+        {
+            "evs": {
+                "attack": 485,
+                "defense": 489,
+                "hp": 422,
+                "special_attack": 508,
+                "special_defense": 508,
+                "speed": 536
+            },
+            "experience": {
+                "current": 982,
+                "next_level": 1000,
+                "this_level": 729,
+                "remaining": 18
+            },
+            "friendship": 89,
+            "health": [
+                27,
+                27
+            ],
+            "held_item": {
+                "id": 0,
+                "name": ""
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 7,
+                "defense": 8,
+                "hp": 10,
+                "special_attack": 6,
+                "special_defense": 6,
+                "speed": 11
+            },
+            "level": 9,
+            "moves": [
+                {
+                    "id": 33,
+                    "pp": 35,
+                    "pp_up": 0,
+                    "name": "Tackle",
+                    "accuracy": 242,
+                    "base_power": 35,
+                    "type": "Normal"
+                },
+                {
+                    "id": 111,
+                    "pp": 40,
+                    "pp_up": 0,
+                    "name": "Defense Curl",
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "type": "Normal"
+                }
+            ],
+            "name": "×():;[]πµ/",
+            "original_trainer": {
+                "id": 11224,
+                "name": "DANI"
+            },
+            "personality_value": 2025204696,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "species": {
+                "id": 161,
+                "name": "Sentret",
+                "national_dex": 161,
+                "type1": "Normal",
+                "type2": "Normal",
+                "egg_cycles": 15,
+                "gender_ratio": 127,
+                "growth_rate": "Medium Fast",
+                "catch_rate": 255
+            },
+            "stats": {
+                "attack": 14,
+                "defense": 13,
+                "hp": 27,
+                "special_attack": 12,
+                "special_defense": 14,
+                "speed": 11
+            },
+            "status": 0,
+            "gender": "Female",
+            "shiny": false
+        },
+        {
+            "evs": {
+                "attack": 18,
+                "defense": 11,
+                "hp": 10,
+                "special_attack": 8,
+                "special_defense": 8,
+                "speed": 24
+            },
+            "experience": {
+                "current": 88,
+                "next_level": 125,
+                "this_level": 64,
+                "remaining": 37
+            },
+            "friendship": 63,
+            "health": [
+                16,
+                16
+            ],
+            "held_item": {
+                "id": 0,
+                "name": ""
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 6,
+                "defense": 0,
+                "hp": 2,
+                "special_attack": 12,
+                "special_defense": 12,
+                "speed": 9
+            },
+            "level": 4,
+            "moves": [
+                {
+                    "id": 35,
+                    "pp": 20,
+                    "pp_up": 0,
+                    "name": "Wrap",
+                    "accuracy": 216,
+                    "base_power": 15,
+                    "type": "Normal"
+                },
+                {
+                    "id": 43,
+                    "pp": 30,
+                    "pp_up": 0,
+                    "name": "Leer",
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "type": "Normal"
+                }
+            ],
+            "name": "EKANS",
+            "original_trainer": {
+                "id": 11224,
+                "name": "DANI"
+            },
+            "personality_value": 1620847576,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "species": {
+                "id": 23,
+                "name": "Ekans",
+                "national_dex": 23,
+                "type1": "Poison",
+                "type2": "Poison",
+                "egg_cycles": 20,
+                "gender_ratio": 127,
+                "growth_rate": "Medium Fast",
+                "catch_rate": 255
+            },
+            "stats": {
+                "attack": 10,
+                "defense": 8,
+                "hp": 16,
+                "special_attack": 9,
+                "special_defense": 10,
+                "speed": 10
+            },
+            "status": 0,
+            "gender": "Female",
+            "shiny": false
+        },
+        {
+            "evs": {
+                "attack": 190,
+                "defense": 142,
+                "hp": 120,
+                "special_attack": 137,
+                "special_defense": 137,
+                "speed": 210
+            },
+            "experience": {
+                "current": 300,
+                "next_level": 409,
+                "this_level": 274,
+                "remaining": 109
+            },
+            "friendship": 83,
+            "health": [
+                24,
+                24
+            ],
+            "held_item": {
+                "id": 0,
+                "name": ""
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 15,
+                "defense": 2,
+                "hp": 11,
+                "special_attack": 1,
+                "special_defense": 1,
+                "speed": 7
+            },
+            "level": 7,
+            "moves": [
+                {
+                    "id": 40,
+                    "pp": 35,
+                    "pp_up": 0,
+                    "name": "Poison Sting",
+                    "accuracy": 255,
+                    "base_power": 15,
+                    "type": "Poison"
+                },
+                {
+                    "id": 81,
+                    "pp": 40,
+                    "pp_up": 0,
+                    "name": "String Shot",
+                    "accuracy": 242,
+                    "base_power": 0,
+                    "type": "Bug"
+                },
+                {
+                    "id": 184,
+                    "pp": 10,
+                    "pp_up": 0,
+                    "name": "Scary Face",
+                    "accuracy": 229,
+                    "base_power": 0,
+                    "type": "Normal"
+                }
+            ],
+            "name": "LOU",
+            "original_trainer": {
+                "id": 11224,
+                "name": "DANI"
+            },
+            "personality_value": 4067503064,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "species": {
+                "id": 167,
+                "name": "Spinarak",
+                "national_dex": 167,
+                "type1": "Bug",
+                "type2": "Poison",
+                "egg_cycles": 15,
+                "gender_ratio": 127,
+                "growth_rate": "Fast",
+                "catch_rate": 255
+            },
+            "stats": {
+                "attack": 15,
+                "defense": 11,
+                "hp": 24,
+                "special_attack": 10,
+                "special_defense": 10,
+                "speed": 10
+            },
+            "status": 0,
+            "gender": "Male",
+            "shiny": false
+        },
+        {
+            "evs": {
+                "attack": 0,
+                "defense": 0,
+                "hp": 0,
+                "special_attack": 0,
+                "special_defense": 0,
+                "speed": 0
+            },
+            "experience": {
+                "current": 179,
+                "next_level": 236,
+                "this_level": 179,
+                "remaining": 57
+            },
+            "friendship": 69,
+            "health": [
+                22,
+                22
+            ],
+            "held_item": {
+                "id": 0,
+                "name": ""
+            },
+            "is_egg": false,
+            "ivs": {
+                "attack": 0,
+                "defense": 2,
+                "hp": 1,
+                "special_attack": 7,
+                "special_defense": 7,
+                "speed": 10
+            },
+            "level": 6,
+            "moves": [
+                {
+                    "id": 22,
+                    "pp": 10,
+                    "pp_up": 0,
+                    "name": "Vine Whip",
+                    "accuracy": 255,
+                    "base_power": 35,
+                    "type": "Grass"
+                },
+                {
+                    "id": 74,
+                    "pp": 40,
+                    "pp_up": 0,
+                    "name": "Growth",
+                    "accuracy": 255,
+                    "base_power": 0,
+                    "type": "Normal"
+                }
+            ],
+            "name": "NELLY",
+            "original_trainer": {
+                "id": 11224,
+                "name": "DANI"
+            },
+            "personality_value": 44510168,
+            "pokerus": {
+                "cured": false,
+                "days_left": 0,
+                "infected": false,
+                "strain": 0
+            },
+            "species": {
+                "id": 69,
+                "name": "Bellsprout",
+                "national_dex": 69,
+                "type1": "Grass",
+                "type2": "Poison",
+                "egg_cycles": 20,
+                "gender_ratio": 127,
+                "growth_rate": "Medium Slow",
+                "catch_rate": 255
+            },
+            "stats": {
+                "attack": 14,
+                "defense": 9,
+                "hp": 22,
+                "special_attack": 14,
+                "special_defense": 9,
+                "speed": 11
+            },
+            "status": 0,
+            "gender": "Female",
+            "shiny": false
+        }
+    ],
+    "caught": 5,
+    "seen": 19,
+    "ball_count": 0,
+    "level_cap": 100,
+    "map_name": "Orchid City"
+}
