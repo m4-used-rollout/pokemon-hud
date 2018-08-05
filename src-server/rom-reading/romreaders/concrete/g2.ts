@@ -277,13 +277,14 @@ namespace RomReader {
             this.frameBorders = this.ReadFrameBorders(romData);
             this.items = this.ReadItemData(romData);
             this.ballIds = this.items.filter((i: Gen2Item) => i.pocket == "Ball").map(i => i.id);
-            this.moves = this.ReadMoveData(romData);
+            this.moves = this.ReadMoveData(romData)
             this.areas = this.ReadAreaNames(romData);
             this.maps = this.ReadMaps(romData);
             this.FindMapEncounters(romData);
             this.FindFishingEncounters(romData);
             this.GetTMHMNames(romData);
-            this.levelCaps = this.ReadPyriteLevelCaps(romData);
+            this.ReadMoveLearns(romData);
+            //this.levelCaps = this.ReadPyriteLevelCaps(romData);
         }
 
         public GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData) {
@@ -499,6 +500,32 @@ namespace RomReader {
                 eggGroup1: data[0x17] % 16,
                 eggGroup2: data[0x17] >> 4
             }));
+        }
+
+        private ReadMoveLearns(romData: Buffer) {
+            this.moveLearns = {};
+            const bank = this.LinearAddrToROMBank(this.symTable["EvosAttacksPointers"]).bank;
+            this.ReadStridedData(romData, this.symTable["EvosAttacksPointers"], 2, dexCount).forEach((ptr, i) => {
+                let addr = this.ROMBankAddrToLinear(bank, ptr.readUInt16LE(0));
+                const moves = new Array<Pokemon.MoveLearn>();
+                for (addr = addr; romData[addr] != 0; addr++); //skip evolution data
+                for (addr++; romData[addr] != 0; addr += 2) {
+                    const move = this.GetMove(romData[addr + 1]);
+                    if (move && romData[addr]) {
+                        moves.push({
+                            level: romData[addr],
+                            name: move.name,
+                            accuracy: move.accuracy,
+                            basePower: move.basePower,
+                            basePP: move.basePP,
+                            contestData: move.contestData,
+                            id: move.id,
+                            type: move.type
+                        });
+                    }
+                }
+                this.moveLearns[i + 1] = moves;
+            });
         }
 
         private ReadFrameBorders(romData: Buffer) {

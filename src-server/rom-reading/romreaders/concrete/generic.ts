@@ -24,6 +24,7 @@ namespace RomReader {
             });
             this.items = require(`./data/${dataFolder}/items.json`);
             this.moves = require(`./data/${dataFolder}/moves.json`);
+            this.moveLearns = {};
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {

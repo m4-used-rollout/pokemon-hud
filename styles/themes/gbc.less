@@ -358,7 +358,7 @@
                 }
 
                 
-                div.held-item {
+                div.held-item, div.friendship, div.movelearn {
                     position:absolute;
                     left:@party-member-height;
                     bottom:(@party-member-height / 10);
@@ -368,15 +368,40 @@
                     box-sizing: content-box;
                     transition: transform @transition-time ease-in-out;
                     .outline();
+                    vertical-align: middle;
+
+                    &.friendship {
+                        display: none;
+                    }
+
+                    &.movelearn {
+                        left: auto;
+                        right: 0;
+                        font-size: .5em;
+                        padding-bottom: .5em;
+                        .move-name {
+                            display: inline-block;
+                            font-family: pokered;
+                            transform: scaleX(.6);
+                            transform-origin: right center;
+                        }
+                        &.alert {
+                            .health-warning();
+                        }
+                    }
 
                     &[data-id="0"] {
                         display: none;
+
+                        ~ div.friendship {
+                            display: block;
+                        }
                     }
                     
                     &:before {
                         content:'\264B';
                         margin-right: .5em;
-                        margin-left: .25em;
+                        // margin-left: .25em; 
                     }
                     &:after {
                         content:attr(data-name);
@@ -385,10 +410,30 @@
                         text-transform: capitalize;
                     }
 
+                    &.held-item:after {
+                        display: inline-block;
+                        transform: scaleX(.8);
+                        transform-origin: left center;
+                    }
+
+                    &.friendship:before {
+                        content:'❤️';
+                        margin-left: -.1em;
+                    }
+
+                    &.movelearn:before {
+                        content: none;
+                    }
+
+                    &.movelearn:after {
+                        content: "È" attr(data-level);
+                        margin-left: .2em;
+                        font-size: 1em;
+                    }
+
                     img {
                         display: none;
                     }
-
                 }
 
                 &:before {

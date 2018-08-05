@@ -7,6 +7,7 @@ namespace Pokemon {
         form?: number;
         rate: number;
         requiredItem?: Pokemon.Item;
+        categoryIcon ?: string;
     }
     export interface EncounterSet {
         [key: string]: EncounterMon[];

@@ -139,8 +139,8 @@
                 30
             ],
             "held_item": {
-                "id": 0,
-                "name": ""
+                "id": 78,
+                "name": "Przcureberry"
             },
             "is_egg": false,
             "ivs": {
@@ -258,7 +258,7 @@
                 "special_defense": 6,
                 "speed": 11
             },
-            "level": 9,
+            "level": 10,
             "moves": [
                 {
                     "id": 33,

@@ -127,6 +127,7 @@ declare namespace TPP {
         evs?: Stats;
         condition?: ContestStats;
         friendship?: number;
+        next_move?: MoveLearn;
         pokerus?: {
             infected: boolean;
             days_left: number;
@@ -198,6 +199,15 @@ declare namespace TPP {
         pp: number;
         pp_up?: number;
         max_pp?: number;
+        type?: string;
+        accuracy?: number;
+        base_power?: number;
+    }
+
+    export interface MoveLearn {
+        level: number;
+        id: number;
+        name: string;
         type?: string;
         accuracy?: number;
         base_power?: number;

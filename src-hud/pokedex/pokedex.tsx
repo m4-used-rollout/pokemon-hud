@@ -1,7 +1,7 @@
 /// <reference path="../pokesprite.tsx" />
 /// <reference path="../trainersprite.tsx" />
 
-const DEVMODE = false
+const DEVMODE = false;
 
 type dexState = { newEntry: number, scrollTo: number, firstEntry: boolean };
 

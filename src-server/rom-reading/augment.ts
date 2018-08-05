@@ -35,7 +35,7 @@ namespace RomReader {
                     .reduce((total, pocket) => total +
                         pocket.filter(i => romData.ItemIsBall(i.id)) //filter to ball type items
                             .reduce((sum, ball) => sum + (ball.count || 0), 0), //add up the counts
-                    0) || (state.items && state.items.balls && state.items.balls.reduce((sum, ball) => sum + ball.count, 0)); //fall back to just counting ball pocket if available
+                        0) || (state.items && state.items.balls && state.items.balls.reduce((sum, ball) => sum + ball.count, 0)); //fall back to just counting ball pocket if available
             }
             catch (e) {
                 console.error(e);
@@ -124,6 +124,7 @@ namespace RomReader {
                 p.experience.this_level = p.experience.this_level || romMon.expFunction(p.level);
                 p.experience.remaining = p.experience.next_level - p.experience.current;
             }
+            p.next_move = p.next_move || romData.GetNextMoveLearn(p.species.id, p.level, p.moves.map(m => m.id));
         }
 
         function augmentSpecies(s: TPP.PokemonSpecies, romMon: Pokemon.Species = null) {
@@ -191,7 +192,7 @@ namespace RomReader {
                 //     p.ability = p.species.abilities[abilityId];
                 // }
                 // else {
-                    p.ability = romData.GetAbility(abilityId) || abilityId.toString();
+                p.ability = romData.GetAbility(abilityId) || abilityId.toString();
                 // }
             }
             if (typeof p.nature !== "string" && romData.HasNatures) {
@@ -247,7 +248,7 @@ namespace RomReader {
             if (state.area_id) {
                 state.area_name = romData.GetAreaName(state.area_id);
             }
-            if (typeof(state.map_id) === "number") {
+            if (typeof (state.map_id) === "number") {
                 state.map_name = romData.GetMap(state.map_id, state.map_bank).name;
             }
             if (state.party && state.party.some(p => !!p && !!p.fitness)) {
@@ -274,6 +275,7 @@ namespace RomReader {
             delete mon.evs;
             delete mon.condition;
             delete mon.ability;
+            delete mon.next_move;
         }
     }
 

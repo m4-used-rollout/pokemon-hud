@@ -19,6 +19,7 @@ namespace RomReader {
         protected trainers: Pokemon.Trainer[] = [];
         protected areas: string[] = [];
         protected abilities: string[] = [];
+        protected moveLearns: { [key: number]: Pokemon.MoveLearn[] };
         protected levelCaps = [100];  //some romhacks have these
         protected ballIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 492, 493, 494, 495, 496, 497, 498, 499, 500, 576, 851];
         protected natures = ["Hardy", "Lonely", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed", "Impish", "Lax", "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest", "Mild", "Quiet", "Bashful", "Rash", "Calm", "Gentle", "Sassy", "Careful", "Quirky"];
@@ -74,6 +75,13 @@ namespace RomReader {
         }
         get HasAbilities() {
             return this.abilities.length > 0;
+        }
+        GetNextMoveLearn(speciesId: number, level: number, moveSet: number[]) {
+            let speciesLearns = this.moveLearns[speciesId];
+            if (speciesLearns) {
+                return speciesLearns.filter(m => m.level > level && !moveSet.some(ms => m.id == ms)).sort((m1, m2) => m2.level - m1.level).pop();
+            }
+            return null;
         }
         GetAreaName(id: number) {
             return this.areas[id] || '';
@@ -196,7 +204,7 @@ namespace RomReader {
         }
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {
             return mons.filter(m => m && m.species && m.species.name).filter(thisMon => {
-                let firstMon = mons.filter(m => m.species.name == thisMon.species.name && (m.requiredItem || { id: 0 }).id == (thisMon.requiredItem || { id: 0 }).id).shift();
+                let firstMon = mons.filter(m => m.species.name == thisMon.species.name && m.form == thisMon.form && (m.requiredItem || { id: 0 }).id == (thisMon.requiredItem || { id: 0 }).id && m.categoryIcon == thisMon.categoryIcon).shift();
                 if (firstMon != thisMon) {
                     firstMon.rate += thisMon.rate;
                     return false;

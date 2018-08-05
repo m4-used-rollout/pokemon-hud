@@ -15,4 +15,8 @@ namespace Pokemon {
         appeal: string;
         jamming: string;
     }
+
+    export interface MoveLearn extends Move {
+        level: number;
+    }
 }
