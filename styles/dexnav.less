@@ -3,6 +3,9 @@
 @import 'mixins/dexframe.less';
 @import 'animations/gbfade.less';
 
+@female-color:deeppink;
+@male-color: dodgerblue;
+
 .dexnav {
     .dexFrame();
     font-size:10vh;
@@ -142,7 +145,7 @@
                     // z-index: 2;
                 }
 
-                img.item {
+                div.item {
                     position: absolute;
                     display: inline-block;
                     right:auto;
@@ -151,6 +154,9 @@
                     bottom:.5em;
                     width: 2em;
                     height: 2em;
+                    background-size: contain;
+                    image-rendering: pixelated;
+                    background-repeat: no-repeat;
                     filter: drop-shadow(1px -1px 0 black)
                 }
                 
@@ -168,7 +174,7 @@
                         content:'';
                         image-rendering: pixelated;
                         transform: rotateX(60deg);
-                        background-image:url("img/dexnav/surf.png");
+                        background-image:url("img/dexnav/terrain/surf.png");
                         -webkit-mask-image:linear-gradient(to top, black 0%,black 25%,transparent 60%, transparent 100%);
                         z-index: 0;
                     }
@@ -183,7 +189,7 @@
 
                     &:before {
                         transform: rotateX(120deg);
-                        background-image:url("img/dexnav/ocean.png");
+                        background-image:url("img/dexnav/terrain/ocean.png");
                     }
                 }
             }
@@ -240,8 +246,23 @@
                 z-index: 2;
 
                 .name {
-                    line-height: .8em;
-                    margin-top:.5em;
+                    font-size: 1.2em; //use the extra space in 3DS mode
+                    //margin-top:.5em;
+                    //line-height: .8em;
+
+                    &:after {
+                        margin-left: .25em;
+                    }
+
+                    &.female:after {
+                        content:'♀';
+                        color: darken(@female-color, 30%);
+                    }
+
+                    &.male:after {
+                        content:'♂';
+                        color: darken(@male-color, 30%);
+                    }
 
                     + .name { 
                         margin-top:-.1em;
@@ -308,6 +329,15 @@
                         margin-left: auto;
                     }
                 }
+
+                .mon-info {
+                    display: flex;
+                    flex-flow: row;
+                    justify-content: space-around;
+                    > span {
+                        flex: 0 1 auto;
+                    }
+                }
             }
             .types {
                 flex: 1 1 auto;
@@ -315,16 +345,17 @@
                 flex-flow:column nowrap;
                 margin:1vw;
                 img {
-                    border-radius: 50%;
-                    flex: 1 1 auto;
-                    height:15vh;
-                    margin:auto;
                     margin-bottom:10vh;
-                    width:15vh;
                     + img {
                         margin:auto;
                     }
                 }
+            }
+            img.type {
+                border-radius: 50%;
+                flex: 1 1 auto;
+                height:15vh;
+                margin:auto;
             }
             .pokemon, .trainer {
                 animation-duration: 2.5s;
@@ -337,6 +368,7 @@
                     height:70vh;
                     transition: filter 1s ease-in-out;
                     position: relative;
+                    
                 }
                 &.seen img {
                     filter:brightness(0%) contrast(200%);
@@ -356,11 +388,22 @@
                 flex:0 1 80vh;
                 margin-left: -5%;
                 img {
-                    height: auto;
-                    width:100%;
-                    max-width: 80vh;
-                    min-width: 50vh;
+                    // height: auto;
+                    // width:100%;
+                    // max-width: 80vh;
+                    // min-width: 50vh;
                     z-index: 1;
+
+                    // For XY
+                    height: 80vh;
+                    width: auto;
+                    image-rendering: auto;
+                }
+            }
+            &.enemy-trainer {
+                .name {
+                    line-height: .8em;
+                    margin-top: .5em;
                 }
             }
         }
@@ -516,8 +559,22 @@
     //     font-family:pokered;
     //     font-size: 1.5em;
     // }
-    .encounters .encounter-group span img {
-        transform:scale(1.5);
-        image-rendering: auto;
+    .encounters .encounter-group span{
+        top: -.5em;;
+        img {
+            // transform:scale(1.5);
+            // image-rendering: auto;
+            height: 96px!important;
+        }
+    }
+    .enemy-trainer {
+        .enemy-party img {
+            max-width:50vh!important;
+        }
+    }
+    .wild-battle {
+        .pokemon .img {
+            height: 96px!important;
+        }
     }
 }
