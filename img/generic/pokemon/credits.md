@@ -1,4 +1,3 @@
-Sprites from Generation 5 and below are from [veekun.com/dex/downloads](https://veekun.com/dex/downloads).  
-Credits for the Generation 6 and 7 sprites can be found here:  
-* https://www.pokecommunity.com/showthread.php?t=314422  
-* https://www.pokecommunity.com/showthread.php?t=368703  
+Gen 1 - Gen 5: [The DS-style 64x64 Pokémon Sprite Resource](https://www.pokecommunity.com/showthread.php?t=267728)
+Gen 6: [This thread](https://www.pokecommunity.com/showthread.php?t=314422)
+Gen 7: [These contributors](https://www.pokecommunity.com/showthread.php?t=368703)
