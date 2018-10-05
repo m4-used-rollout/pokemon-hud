@@ -37,8 +37,10 @@ namespace RomReader {
             this.areas = this.ReadMapLabels(romData, config);
             this.maps = this.ReadMaps(romData, config);
             this.FindMapEncounters(romData, config);
+            this.moveLearns = {}; //TODO: MoveLearns
+            this.types = typeNames
 
-            console.log("[\n" + this.moves.map(p=>JSON.stringify(p)).join(',\n') + "\n]");
+            // console.log("[\n" + this.moves.map(p => JSON.stringify(p)).join(',\n') + "\n]");
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
@@ -246,11 +248,17 @@ namespace RomReader {
                 return [];
             let setPtr = this.ReadRomPtr(romData, setAddr + 4);
             let groupRate = romData.readInt32LE(setAddr) / 100;
-            return this.CombineDuplicateEncounters(this.ReadStridedData(romData, setPtr, 4, encounterRates.length).map((data, i) => (<Pokemon.EncounterMon>{
-                species: this.GetSpecies(data.readInt16LE(2)),
-                rate: encounterRates[i] * (includeGroupRate ? groupRate : 1),
-                requiredItem: this.GetItem(requiredItems[i])
-            })));
+            try {
+                return this.CombineDuplicateEncounters(this.ReadStridedData(romData, setPtr, 4, encounterRates.length).map((data, i) => (<Pokemon.EncounterMon>{
+                    species: this.GetSpecies(data.readInt16LE(2)),
+                    rate: encounterRates[i] * (includeGroupRate ? groupRate : 1),
+                    requiredItem: this.GetItem(requiredItems[i])
+                })));
+            }
+            catch (e) {
+                console.error(`Could not read encounter set at ${setAddr.toString(16)}->${setPtr.toString(16)}: ${e}`);
+                return [];
+            }
         }
     }
 

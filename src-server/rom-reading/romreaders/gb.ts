@@ -15,6 +15,7 @@ namespace RomReader {
             super();
             this.ballIds = this.abilities = [];
             this.characteristics = null;
+            this.types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bird", "Bug", "Ghost", "Steel", "", "", "", "", "", "", "", "", "", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
         }
 
         ConvertText(text: string | Buffer | number[]) {
@@ -32,9 +33,9 @@ namespace RomReader {
             let end = charArray.indexOf(this.stringTerminator);
             if (end >= 0)
                 charArray.splice(end);
-            end = charArray.indexOf(0x00);
-            if (end >= 0)
-                charArray.splice(end);
+            // end = charArray.indexOf(0x00);   //was for bad romhacky text, but breaks on gen 3
+            // if (end >= 0)
+            //     charArray.splice(end);
             return charArray.map(c => this.charmap[c] || ' ').join('');
         }
 

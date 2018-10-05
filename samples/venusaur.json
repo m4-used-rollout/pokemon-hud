@@ -1,0 +1,105 @@
+{
+    "catchrate": 45,
+    "cp": 2597,
+    "evs": {
+        "attack": 22736,
+        "defense": 22459,
+        "hp": 17800,
+        "special_attack": 18692,
+        "special_defense": 18692,
+        "speed": 26448
+    },
+    "experience": {
+        "current": 399616,
+        "next_level": 411388,
+        "this_level": 394045,
+        "remaining": 11772
+    },
+    "fitness": 549401,
+    "health": [
+        235,
+        235
+    ],
+    "ivs": {
+        "attack": 15,
+        "defense": 4,
+        "hp": 8,
+        "special_attack": 0,
+        "special_defense": 0,
+        "speed": 0
+    },
+    "level": 73,
+    "moves": [
+        {
+            "id": 79,
+            "pp": 15,
+            "pp_up": 0,
+            "name": "Sleep Powder",
+            "accuracy": 191,
+            "base_power": 0,
+            "type": "Grass"
+        },
+        {
+            "id": 76,
+            "pp": 10,
+            "pp_up": 0,
+            "name": "Solarbeam",
+            "accuracy": 255,
+            "base_power": 120,
+            "type": "Grass"
+        },
+        {
+            "id": 15,
+            "pp": 30,
+            "pp_up": 0,
+            "name": "Cut",
+            "accuracy": 242,
+            "base_power": 50,
+            "type": "Normal"
+        },
+        {
+            "id": 22,
+            "pp": 10,
+            "pp_up": 0,
+            "name": "Vine Whip",
+            "accuracy": 255,
+            "base_power": 35,
+            "type": "Grass"
+        }
+    ],
+    "name": "UUUVVX;:UL",
+    "original_trainer": {
+        "id": 25045,
+        "name": "((("
+    },
+    "personality_value": 4093665784,
+    "species": {
+        "base_stats": {
+            "attack": 82,
+            "defense": 83,
+            "hp": 80,
+            "special_attack": 100,
+            "special_defense": 100,
+            "speed": 80
+        },
+        "id": 154,
+        "national_dex": 3,
+        "type1": "Grass",
+        "type2": "Poison",
+        "name": "Venusaur",
+        "gender_ratio": 31,
+        "growth_rate": "Medium Slow",
+        "catch_rate": 45
+    },
+    "stats": {
+        "attack": 173,
+        "defense": 159,
+        "hp": 235,
+        "special_attack": 175,
+        "special_defense": 175,
+        "speed": 151
+    },
+    "status": 0,
+    "gender": "Male",
+    "shiny": false
+}

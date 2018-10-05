@@ -13,6 +13,7 @@ namespace TPP.Server.DexNav {
         form: number;
         rate: number;
         owned: boolean;
+        categoryIcon: string;
         requiredItemId: number;
     }
 
@@ -20,7 +21,11 @@ namespace TPP.Server.DexNav {
         [key: string]: KnownEncounter[];
     }
 
-    export interface OwnedSpecies extends Pokemon.Species {
+    export interface WildPokemon extends Pokemon.Species {
+        gender?: string;
+        shiny?: boolean;
+        form?: number;
+        health?: number[];
         owned: boolean;
         encounterRate?: number;
     }
@@ -49,7 +54,7 @@ namespace TPP.Server.DexNav {
             return this.TotalEncounters > 0;
         }
         public BattleKind: string = "None";
-        public WildBattle: OwnedSpecies = null;
+        public WildBattle: WildPokemon[] = null;
         public EnemyTrainers: TPP.EnemyTrainer[] = null;
         public EnemyParty: TPP.EnemyParty = null;
         public IsUnknownArea = false;
@@ -73,12 +78,22 @@ namespace TPP.Server.DexNav {
             this.PopulateCompletionTotals(allMapEncounters, runState);
             if (runState.in_battle) {
                 this.BattleKind = runState.battle_kind;
-                this.WildBattle = runState.battle_kind == "Wild" ? <OwnedSpecies>Pokemon.Convert.SpeciesFromRunStatus(runState.enemy_party[0].species) : null;
-                if (this.WildBattle && this.WildBattle.id) {
-                    this.WildBattle.owned = (runState.caught_list || []).some(p => p == this.WildBattle.dexNumber);
-                    this.WildBattle.encounterRate = this.categories.map(k => (this.KnownEncounters[k] || []).filter(e => e.dexNum == this.WildBattle.dexNumber))
-                        .reduce((all, curr) => <KnownEncounter[]>Array.prototype.concat.apply(all, curr), [])
-                        .reduce((total, curr) => ({ rate: total.rate + curr.rate, speciesId: curr.speciesId }), { rate: 0 }).rate;
+                if (runState.battle_kind == "Wild") {
+                    // let mon = runState.enemy_party.filter(p=>p.species && p.species.id).sort((p1,p2)=>((p2.health[0] > 0 ? 10 : 0) * (p2.shiny ? 10 : 1)) - ((p1.health[0] > 0 ? 10 : 0) * (p1.shiny ? 10 : 1))).shift();
+                    this.WildBattle = runState.enemy_party.filter(p=>p.species && p.species.id).map(mon=>{
+                        const wild = <WildPokemon>Pokemon.Convert.SpeciesFromRunStatus(mon.species)
+                        wild.form = mon.form;
+                        wild.shiny = mon.shiny;
+                        wild.gender = mon.gender;
+                        wild.health = mon.health;
+                        if (wild && wild.id) {
+                            wild.owned = (runState.caught_list || []).some(p => p == wild.dexNumber);
+                            wild.encounterRate = this.categories.map(k => (this.KnownEncounters[k] || []).filter(e => e.dexNum == wild.dexNumber))
+                                .reduce((all, curr) => <KnownEncounter[]>Array.prototype.concat.apply(all, curr), [])
+                                .reduce((total, curr) => ({ rate: total.rate + curr.rate, speciesId: curr.speciesId }), { rate: 0 }).rate;
+                        }
+                        return wild;
+                    });
                 }
                 this.EnemyTrainers = runState.enemy_trainers;
                 this.EnemyParty = runState.enemy_party;
@@ -115,7 +130,7 @@ namespace TPP.Server.DexNav {
             this.categories.forEach(k => {
                 this.KnownEncounters[k] = (encounters[k] || [])
                     .filter(s => (monIsSeen(s) || monIsOwned(s)) && userHasItem(s.requiredItem))
-                    .map(s => (<KnownEncounter>{ speciesId: s.species.id, dexNum: s.species.dexNumber, form: s.form, rate: s.rate, owned: monIsOwned(s), requiredItemId: s.requiredItem && s.requiredItem.id }));
+                    .map(s => (<KnownEncounter>{ speciesId: s.species.id, dexNum: s.species.dexNumber, form: s.form, rate: s.rate, owned: monIsOwned(s), categoryIcon: s.categoryIcon, requiredItemId: s.requiredItem && s.requiredItem.id }));
             });
 
             // console.log(`Known Grass: ${(this.KnownEncounters.grass || []).map(e => `${Server.RomData.GetSpecies(e.speciesId).name} (${e.rate.toFixed(0)}%)`).join(', ')}`);

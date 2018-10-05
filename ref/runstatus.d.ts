@@ -1,16 +1,19 @@
 declare namespace TPP {
 
     //whole structure
-    export interface RunStatus extends TrainerData {
+    export interface RunStatus extends TrainerData, BattleStatus {
         party: PartyData;
         pc: CombinedPCData;
+    }
+
+    //sent from lua
+    export interface BattleStatus {
         in_battle: boolean;
-        battle_kind?: string;
+        battle_kind?: "Wild" | "Trainer";
         enemy_trainers?: EnemyTrainer[];
         enemy_party?: EnemyParty;
     }
 
-    //sent from lua
     export interface TrainerData extends OverlayData {
         ball_count: number;
         caught: number;
@@ -176,6 +179,9 @@ declare namespace TPP {
         species: PokemonSpecies;
         health: number[];
         active?: boolean;
+        form?: number;
+        shiny?: boolean;
+        gender?: string;
         cp?: number;
         fitness?: number;
     }> { }

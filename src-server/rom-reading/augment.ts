@@ -124,7 +124,16 @@ namespace RomReader {
                 p.experience.this_level = p.experience.this_level || romMon.expFunction(p.level);
                 p.experience.remaining = p.experience.next_level - p.experience.current;
             }
-            p.next_move = p.next_move || romData.GetNextMoveLearn(p.species.id, p.level, p.moves.map(m => m.id));
+            p.next_move = p.next_move || romData.GetNextMoveLearn(p.species.id, p.form, p.level, p.moves.map(m => m.id));
+            
+            //Censor NextMove data
+            if (p.next_move) {
+                delete p.next_move.id;
+                delete p.next_move.accuracy;
+                delete p.next_move.base_power;
+                delete p.next_move.name;
+                delete p.next_move.type;
+            }
         }
 
         function augmentSpecies(s: TPP.PokemonSpecies, romMon: Pokemon.Species = null) {

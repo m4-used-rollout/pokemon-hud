@@ -7,7 +7,7 @@ class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], b
     }
     render() {
         const trainers = this.state.trainers;
-        if (!trainers || !trainers.length) return null;
+        // if (!trainers || !trainers.length) return null;
         if (this.props.battleKind != "Trainer") return null;
         const partyFitness = (this.state.party || []).reduce((sum, mon) => sum + mon.fitness, 0);
         return <div className={`encounters enemy-trainer ${this.props.trainers ? "" : "hidden"}`} key={`${trainers[0] && trainers[0].class_id}${trainers[0] && trainers[0].id}`}>
@@ -30,7 +30,7 @@ class EnemyParty extends React.Component<{ party: TPP.EnemyParty }, {}> {
         return <div className="enemy-party">
             {party.map(p => <span className={p.species.id && p.health[0] ? "" : "fainted"} >
                 {p.species.id ?
-                    <PokeSprite pokemonId={p.species.id} /> :
+                    <PokeSprite pokemonId={p.species.id} form={p.form} gender={p.gender} shiny={p.shiny} /> :
                     <img src="./img/unknown-sprite.png" />
                 }
             </span>)}

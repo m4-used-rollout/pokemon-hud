@@ -363,6 +363,13 @@
                 flex: 0 0 auto;
                 margin-left:auto;
                 position: relative;
+                transition: opacity 1s ease-in-out, filter 1s ease-in-out;
+
+                &.fainted {
+                    opacity: .4;
+                    filter: grayscale(100%);
+                }
+
                 img {
                     image-rendering: pixelated;
                     height:70vh;

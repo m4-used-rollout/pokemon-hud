@@ -23,6 +23,9 @@ namespace RomReader {
         protected levelCaps = [100];  //some romhacks have these
         protected ballIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 492, 493, 494, 495, 496, 497, 498, 499, 500, 576, 851];
         protected natures = ["Hardy", "Lonely", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed", "Impish", "Lax", "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest", "Mild", "Quiet", "Bashful", "Rash", "Calm", "Gentle", "Sassy", "Careful", "Quirky"];
+        protected types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy"];
+        protected expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
+        protected expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
         protected characteristics = {
             hp: ["Loves to eat", "Takes plenty of siestas", "Nods off a lot", "Scatters things often", "Likes to relax"],
             atk: ["Proud of its power", "Likes to thrash about", "A little quick tempered", "Likes to fight", "Quick tempered"],
@@ -31,8 +34,9 @@ namespace RomReader {
             spatk: ["Highly curious", "Mischievous", "Thoroughly cunning", "Often lost in thought", "Very finicky"],
             spdef: ["Strong willed", "Somewhat vain", "Strongly defiant", "Hates to lose", "Somewhat stubborn"]
         }
+        protected formBackMapping: { [key: number]: number };
         protected ZeroPad(int: number, digits: number) {
-            const working = new Array<string>(digits).fill('0').join('') + int.toFixed(0);
+            const working = new Array<string>(digits).fill('0').join('') + (int || 0).toFixed(0);
             return working.substr(working.length - digits);
         }
 
@@ -76,8 +80,12 @@ namespace RomReader {
         get HasAbilities() {
             return this.abilities.length > 0;
         }
-        GetNextMoveLearn(speciesId: number, level: number, moveSet: number[]) {
-            let speciesLearns = this.moveLearns[speciesId];
+        GetNextMoveLearn(speciesId: number, form: number, level: number, moveSet: number[]) {
+            if (!this.moveLearns) {
+                return null;
+            }
+            let sId = this.GetSpecies(speciesId, form).id;
+            let speciesLearns = this.moveLearns[sId];
             if (speciesLearns) {
                 return speciesLearns.filter(m => m.level > level && !moveSet.some(ms => m.id == ms)).sort((m1, m2) => m2.level - m1.level).pop();
             }
@@ -155,9 +163,9 @@ namespace RomReader {
             if (this.trainerSprites[id])
                 return this.trainerSprites[id];
             let path = `./img/trainers/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
-            // if (Tools.File.Exists(path))
-            return path;
-            // return "./img/trainers/unknown.png";
+            if (Tools.File.Exists(path))
+                return path;
+            return "./img/trainers/unknown.png";
         }
         GetItemSprite(id: number) {
             return `./img/items/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
@@ -210,7 +218,7 @@ namespace RomReader {
                     return false;
                 }
                 return true;
-            }).sort((e1, e2) => ((e1.requiredItem || { id: 0 }).id - (e2.requiredItem || { id: 0 }).id) || (e2.rate - e1.rate));
+            });//.sort((e1, e2) => ((e1.requiredItem || { id: 0 }).id - (e2.requiredItem || { id: 0 }).id) || (e2.rate - e1.rate));
         }
 
         protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false) {

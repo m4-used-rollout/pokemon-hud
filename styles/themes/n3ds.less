@@ -1,3 +1,4 @@
+@import '../animations/healthwarning.less';
 @party-member-height: 42vh;
 @party-member-width: 33vw;
 
@@ -121,7 +122,8 @@
                         top: 50%;
                         transform:translateX(-50%)translateY(-50%)rotateY(180deg);
                         height:@party-member-height;
-                        image-rendering: auto;
+                        height:128px;
+                        image-rendering: pixelated;
                     }
 
                     &.unown img, .no-flip img {
@@ -199,21 +201,47 @@
                         }
                     }
 
-                    .ability {
+                    .extra-info{
+                        width: 100%;
                         font-size: .9em;
-                        height:1em;
-                        width:100%;
-                        text-align: center;
-                        .outline();
+                        height:1em!important;
+
+                        > div {
+                            display:flex;
+                            flex-flow: row nowrap;
+                            min-width: 100%;
+                            justify-content: space-around;
+
+                            > * {
+                                width: auto;
+                                flex: 0 1 auto;
+                            }
+                        }
+                        .ability {
+                            text-align: center;
+                            .outline();
+                        }
+                        .movelearn {
+                            &:before {
+                                content:"Next Move: ";
+                            }
+                            &:after {
+                                content: attr(data-level);
+                            }
+                            &.alert {
+                                .health-warning();
+                            }
+                        }
                     }
 
                     .moves {
                         list-style: none;
-                        width:~"calc(100% + .75em)";
+                        //width:~"calc(100% + .75em)";
                         padding:0;
                         margin:0;
                         position: relative;
-                        left:-.75em;
+                        top: -.25em;
+                        // left:-.75em;
                         display: flex;
                         flex-flow: row wrap;
                         .outline();
@@ -609,6 +637,7 @@
 
     .pokedex {
         transform:translateY(100%);
+        display: none;
 
         &:before, &:after {
             content:"";

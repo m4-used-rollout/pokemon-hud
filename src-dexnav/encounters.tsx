@@ -33,7 +33,7 @@ class Encounter extends React.PureComponent<{ encounterType: string, encounter: 
         return <span className={cleanString(this.props.encounterType) + ' ' + (e.owned ? "owned" : "seen")}>
             <PokeSprite pokemonId={e.speciesId} form={e.form} />
             <Rarity rate={e.rate} />
-            { e.requiredItemId > 0 ? <ItemSprite className="item" id={e.requiredItemId} /> : null }
+            {(e.categoryIcon || e.requiredItemId) && <div className="item" style={{backgroundImage:`url("${e.requiredItemId ? TPP.Server.RomData.GetItemSprite(e.requiredItemId) : `img/dexnav/terrain/${e.categoryIcon}.png`}")`}} />}
         </span>;
     }
 }

@@ -56,9 +56,12 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                             <div className="exp" style={{ width: expPercent + '%' }} />
                         </div>
                     </div>
-                    {mon.ability && <div className="ability"> {mon.ability} </div>}
-                    {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
-                    {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
+                    <FitToWidth className="extra-info">
+                        {mon.ability && <div className="ability"> {mon.ability} </div>}
+                        {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
+                        {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
+                        {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"}`} data-level={mon.next_move.level} />}
+                    </FitToWidth>
                     <ul className="moves">
                         {mon.moves.map(m => <Move move={m} key={m.id} />)}
                     </ul>
@@ -68,11 +71,6 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                     </div>
                 </div>}
             <HeldItem id={mon.held_item ? mon.held_item.id : 0} name={mon.held_item ? mon.held_item.name : ""} />
-            <div className="friendship" data-name={mon.friendship.toFixed(0)} />
-            {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"}`} data-level={mon.next_move.level}>
-                <TypeImg type={mon.next_move.type} />
-                <span className="move-name">{ mon.next_move.name }</span>
-            </div>}
         </li>
     }
 }

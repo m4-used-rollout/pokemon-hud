@@ -1,6 +1,6 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g6.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g3.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
@@ -82,28 +82,40 @@ module TPP.Server {
 
     export let RomData: RomReader.RomReaderBase;
     try {
+        let path;
         if (config.romFile ? config.romFile : config.extractedRomFolder) {
-            const path = require("path").resolve(config.romFile ? config.romFile : config.extractedRomFolder);
+            path = require("path").resolve(config.romFile ? config.romFile : config.extractedRomFolder);
             console.log(`Reading ROM at ${path}`);
         }
-        RomData = new RomReader.Gen6();
+        RomData = new RomReader.Gen3(path, config.iniFile && require("path").resolve(config.iniFile));
     } catch (e) {
         console.log(`Could not read ROM.`);
         console.error(e);
         RomData = new RomReader.Generic();
     }
 
-    let trainerString = "", partyString = "", pcString = "";
+    let trainerString = "", partyString = "", pcString = "", battleString = "";
 
     export function rawState() {
         let rawState = JSON.parse(trainerString || "{}");
         rawState.party = JSON.parse(partyString || "[]");
         rawState.pc = JSON.parse(pcString || "{}");
+        let battleData = JSON.parse(battleString || "{}")
+        Object.keys(battleData).forEach(k => rawState[k] = battleData[k]);
         return rawState;
     }
 
+    function mergeBattleState(battleData:BattleStatus = JSON.parse(battleString || "{}")) {
+        if (battleString) {
+            state.in_battle = battleData.in_battle;
+            state.battle_kind = battleData.battle_kind;
+            state.enemy_party = battleData.enemy_party;
+            state.enemy_trainers = battleData.enemy_trainers;
+        }
+    }
+
     export function setState(dataJson: string) {
-        if (dataJson == trainerString || dataJson == partyString || dataJson == pcString)
+        if (dataJson == trainerString || dataJson == partyString || dataJson == pcString || dataJson == battleString)
             return; //same exact data, no update needed.
         try {
             var data = JSON.parse(fixDoubleEscapedUnicode(dataJson));
@@ -142,6 +154,11 @@ module TPP.Server {
                     if (newCatches.length < 2) //these should only happen one at a time, really, but 2 *might* happen at once
                         newCatches.forEach(newCatch);
                 }
+                mergeBattleState(); //if it's being sent separately, don't overwrite it
+            }
+            else if (data.in_battle || data.in_battle === false) { //battle data subset of trainer data
+                battleString = dataJson;
+                mergeBattleState(data as BattleStatus);
             }
             else
                 return; //unrecognized format, dropped
