@@ -111,6 +111,7 @@ declare namespace TPP {
         held_item: Item;
         gender: string;
         shiny: boolean;
+        shiny_value?: number;
         form?: number;
         species: PokemonSpecies;
         experience: {
@@ -121,7 +122,7 @@ declare namespace TPP {
         };
         level: number;
         moves: Move[];
-        language?: number;
+        language?: string;
         ability?: string;
         nature?: string;
         characteristic?: string;

@@ -37,6 +37,8 @@ namespace Pokemon {
         });
 
         export function ExpToLevel(exp: number, expFunc: CalcExp) {
+            if (!expFunc)
+                return 0;
             for (let level = 1; level <= 100; level++)
                 if (expFunc(level) > exp)
                     return level - 1;

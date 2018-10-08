@@ -200,6 +200,9 @@ declare namespace RomReader {
         protected levelCaps: number[];
         protected ballIds: number[];
         protected natures: string[];
+        protected types: string[];
+        protected expCurves: Pokemon.ExpCurve.CalcExp[];
+        protected expCurveNames: string[];
         protected characteristics: {
             hp: string[];
             atk: string[];
@@ -245,6 +248,7 @@ declare namespace RomReader {
         CalcHiddenPowerPower(stats: TPP.Stats): number;
         CollapseSeenForms(seen: number[]): number[];
         MapCaughtBallId(ballId: number): number;
+        ShinyThreshold(): number;
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]): Pokemon.EncounterMon[];
         protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
         private surfExp;
@@ -325,11 +329,55 @@ declare namespace RomReader {
         CollapseSeenForms(seen: number[]): number[];
     }
 }
+declare namespace RamReader {
+    abstract class RamReaderBase {
+        rom: RomReader.RomReaderBase;
+        port: number;
+        hostname: string;
+        constructor(rom: RomReader.RomReaderBase, port: number, hostname?: string);
+        ReadParty: () => Promise<TPP.PartyData>;
+        CallEmulator<T>(path: string, callback?: (data: string) => T): Promise<T>;
+        CachedEmulatorCaller<T>(path: string, callback: (data: string) => T): () => Promise<T>;
+        WrapBytes<T>(callback: (data: Buffer) => T): (hex: string) => T;
+        protected Markings: string[];
+        protected ParseMarkings(marks: number): string;
+        protected abstract Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
+        CalcChecksum(data: Buffer): number;
+        protected Descramble(data: Buffer, key: number): {
+            A: Buffer;
+            B: Buffer;
+            C: Buffer;
+            D: Buffer;
+        };
+        protected DataScrambleOrders: string[];
+        protected ParseStatus(status: number): "SLP" | "PSN" | "BRN" | "FRZ" | "PAR" | "TOX";
+        protected ParsePokerus(pokerus: number): {
+            infected: boolean;
+            days_left: number;
+            strain: number;
+            cured: boolean;
+        };
+        protected ParseGender(gender: number): "Female" | "Male";
+        protected ParseRibbon(ribbonVal: number, ribbonName: string): string;
+        protected RibbonRanks: string[];
+        protected ParseHoennRibbons(ribbonVal: any): string[];
+        protected CalculateShiny(pokemon: TPP.Pokemon): boolean;
+    }
+}
+declare namespace RamReader {
+    class Gen3 extends RamReaderBase {
+        protected Markings: string[];
+        ReadParty: () => Promise<TPP.PartyPokemon[]>;
+        protected ParsePokemon(pkmdata: Buffer): TPP.PartyPokemon;
+        protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
+    }
+}
 declare module TPP.Server {
     function getConfig(): Config;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
     let RomData: RomReader.RomReaderBase;
+    let RamData: RamReader.RamReaderBase;
     function rawState(): any;
     function setState(dataJson: string): void;
     const fileExists: (path: string) => any;

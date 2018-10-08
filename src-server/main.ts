@@ -2,6 +2,7 @@
 /// <reference path="argv.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g3.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
+/// <reference path="ram-reading/g3.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 
@@ -93,6 +94,15 @@ module TPP.Server {
         console.error(e);
         RomData = new RomReader.Generic();
     }
+    export let RamData: RamReader.RamReaderBase = new RamReader.Gen3(RomData, 5337);
+
+    setInterval(() => RamData.ReadParty().then(party => {
+        if (party) {
+            state.party = party;
+            transmitState();
+        }
+    }), 100);
+
 
     let trainerString = "", partyString = "", pcString = "", battleString = "";
 
@@ -105,7 +115,7 @@ module TPP.Server {
         return rawState;
     }
 
-    function mergeBattleState(battleData:BattleStatus = JSON.parse(battleString || "{}")) {
+    function mergeBattleState(battleData: BattleStatus = JSON.parse(battleString || "{}")) {
         if (battleString) {
             state.in_battle = battleData.in_battle;
             state.battle_kind = battleData.battle_kind;

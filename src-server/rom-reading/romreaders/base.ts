@@ -210,6 +210,9 @@ namespace RomReader {
                 return ballId;
             return this.ballIds[ballId - 1];
         }
+        ShinyThreshold() {
+            return 8;
+        }
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {
             return mons.filter(m => m && m.species && m.species.name).filter(thisMon => {
                 let firstMon = mons.filter(m => m.species.name == thisMon.species.name && m.form == thisMon.form && (m.requiredItem || { id: 0 }).id == (thisMon.requiredItem || { id: 0 }).id && m.categoryIcon == thisMon.categoryIcon).shift();
