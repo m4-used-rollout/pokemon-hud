@@ -96,13 +96,7 @@ module TPP.Server {
     }
     export let RamData: RamReader.RamReaderBase = new RamReader.Gen3(RomData, 5337);
 
-    setInterval(() => RamData.ReadParty().then(party => {
-        if (party) {
-            state.party = party;
-            transmitState();
-        }
-    }), 100);
-
+    RamData.Read(state, ()=>transmitState());
 
     let trainerString = "", partyString = "", pcString = "", battleString = "";
 

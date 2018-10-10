@@ -30,4 +30,60 @@ namespace Pokemon.Convert {
             secret: t.secret
         }
     }
+
+    export function StatsToRunStatus(stats: Stats) {
+        return {
+            attack: stats.atk,
+            defense: stats.def,
+            hp: stats.hp,
+            special_attack: stats.spatk,
+            special_defense: stats.spdef,
+            speed: stats.speed
+        } as TPP.Stats;
+    }
+
+    export interface StatSpeciesWithExp extends TPP.PokemonSpecies {
+        expFunction?: ExpCurve.CalcExp; //won't serialize
+    }
+    export function SpeciesToRunStatus(species: Species) {
+        return {
+            abilities: species.abilities,
+            base_stats: StatsToRunStatus(species.baseStats),
+            catch_rate: species.catchRate,
+            do_not_flip_sprite: species.doNotFlipSprite,
+            egg_cycles: species.eggCycles,
+            egg_type1: species.eggGroup1,
+            egg_type2: species.eggGroup2,
+            gender_ratio: species.genderRatio,
+            growth_rate: species.growthRate,
+            id: species.id,
+            name: species.name,
+            national_dex: species.dexNumber,
+            type1: species.type1,
+            type2: species.type2,
+            expFunction: species.expFunction
+        } as StatSpeciesWithExp;
+    }
+
+    export function MoveToRunStatus(move: Move, pp = 0, ppUp = 0, maxPP = 0) {
+        return {
+            accuracy: move.accuracy,
+            base_power: move.basePower,
+            id: move.id,
+            pp: pp,
+            pp_up: ppUp,
+            max_pp: maxPP || (move.basePP + Math.floor(ppUp * move.basePP * 0.2)),
+            name: move.name,
+            type: move.type,
+            contest: move.contestData
+        } as TPP.Move;
+    }
+
+    export function ItemToRunStatus(item: Item, count = 0) {
+        return {
+            count: count,
+            id: item.id,
+            name: item.name
+        } as TPP.Item;
+    }
 }

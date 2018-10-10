@@ -37,8 +37,8 @@ namespace RomReader {
             this.areas = this.ReadMapLabels(romData, config);
             this.maps = this.ReadMaps(romData, config);
             this.FindMapEncounters(romData, config);
-            this.moveLearns = {}; //TODO: MoveLearns
-            this.types = typeNames
+            this.moveLearns = this.ReadMoveLearns(romData, config);
+            this.types = typeNames;
 
             // console.log("[\n" + this.moves.map(p => JSON.stringify(p)).join(',\n') + "\n]");
         }
@@ -146,7 +146,7 @@ namespace RomReader {
             let moveNames = this.ReadStridedData(romData, parseInt(config.AttackNames, 16), 13, parseInt(config.NumberOfAttacks) + 1).map(p => this.FixAllCaps(this.ConvertText(p)));
             let contestData = this.ReadStridedData(romData, parseInt(config.ContestMoveEffectData, 16), 4, parseInt(config.NumberOfAttacks)).map(data => ({
                 effect: contestEffects[data[0]],
-                appeal: new Array(Math.floor(data[1] / 10)).fill('♥').join(''),
+                appeal: new Array(Math.floor(data[1] / 10)).fill('♡').join(''),
                 jamming: new Array(Math.floor(data[2] / 10)).fill('♥').join('')
                 // Padding 1 byte
             }));
@@ -259,6 +259,27 @@ namespace RomReader {
                 console.error(`Could not read encounter set at ${setAddr.toString(16)}->${setPtr.toString(16)}: ${e}`);
                 return [];
             }
+        }
+
+        private ReadMoveLearns(romData:Buffer,config: PGEINI) {
+            const movelearns = {} as {[key:number]:Pokemon.MoveLearn[]};
+            this.ReadPtrBlock(romData, parseInt(config.PokemonAttackTable, 16)).forEach((addr,i)=> {
+                movelearns[i] = this.ReadStridedData(romData, addr, 2).map(data=>{
+                    const raw = data.readUInt16LE(0);
+                    const move = this.GetMove(raw % 0x200);
+                    return {
+                        level: raw >> 9,
+                        id: move.id,
+                        accuracy: move.accuracy,
+                        basePower: move.basePower,
+                        basePP: move.basePP,
+                        contestData: move.contestData,
+                        name: move.name,
+                        type: move.type
+                    } as Pokemon.MoveLearn;
+                });
+            });
+            return movelearns;
         }
     }
 

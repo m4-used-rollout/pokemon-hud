@@ -15,8 +15,12 @@ body {
 }
 
 @low-health: red;
-@med-health: goldenrod;
-@high-health:green;
+// @med-health: goldenrod;
+// @high-health:green;
+
+//@low-health: #FF2910;
+@med-health: #E784BD;
+@high-health: #5AA5D6;
 
 @exp-color: deepskyblue;
 @female-color:deeppink;
@@ -49,6 +53,10 @@ body {
             background-size: 112% 100%;
             background-position: top right;
             background-repeat: no-repeat;
+
+            img {
+                .outline(@color);
+            }
         }
         .health {
             background-color:@color;
@@ -238,6 +246,7 @@ body {
                     height:1em!important;
                     margin: 0;
                     clear: both;
+                    white-space: nowrap;
 
                     > div {
                         display:flex;
@@ -255,8 +264,17 @@ body {
                         .outline();
                     }
                     .movelearn {
+                        padding-left: 20px;
+                        background-image: url('img/generic/item/item_tm.png');
+                        background-size: 16px;
+                        background-repeat: no-repeat;
+                        background-position: left;
+                        image-rendering: pixelated;
+
                         &:before {
-                            content:"Next Move: ";
+                            display: inline-block;
+                            font-size: .8em;
+                            content:"Lv";
                         }
                         &:after {
                             content: attr(data-level);
@@ -264,6 +282,25 @@ body {
                         &.alert {
                             .health-warning();
                         }
+
+                        &.Normal {background-image: url('img/generic/item/item_tm.png'); background-size: 15px;}
+                        &.Fighting {background-image: url('img/generic/item/item_904.png');}
+                        &.Flying {background-image: url('img/generic/item/item_905.png');}
+                        &.Poison {background-image: url('img/generic/item/item_906.png');}
+                        &.Ground {background-image: url('img/generic/item/item_907.png');}
+                        &.Rock {background-image: url('img/generic/item/item_908.png');}
+                        &.Bug {background-image: url('img/generic/item/item_909.png');}
+                        &.Ghost {background-image: url('img/generic/item/item_910.png');}
+                        &.Steel {background-image: url('img/generic/item/item_911.png');}
+                        &.Fire {background-image: url('img/generic/item/item_912.png');}
+                        &.Water {background-image: url('img/generic/item/item_913.png');}
+                        &.Grass {background-image: url('img/generic/item/item_914.png');}
+                        &.Electric {background-image: url('img/generic/item/item_915.png');}
+                        &.Psychic {background-image: url('img/generic/item/item_916.png');}
+                        &.Ice {background-image: url('img/generic/item/item_917.png');}
+                        &.Dragon {background-image: url('img/generic/item/item_918.png');}
+                        &.Dark {background-image: url('img/generic/item/item_919.png');}
+                        &.Fairy {background-image: url('img/generic/item/item_920.png');}
                     }
                 }
 
@@ -272,8 +309,9 @@ body {
                     width:~"calc(100% + .75em)";
                     padding:0;
                     margin:0;
-                    position: relative;
+                    position: absolute;
                     left:-.75em;
+                    bottom: @party-member-height / 8;
                     display: flex;
                     flex-flow: row wrap;
                     .outline();
@@ -338,6 +376,7 @@ body {
                         text-align: center;
                         font-size: 1.8em;
                         height:1em;
+                        .outline();
 
                         &:before {
                             content:attr(data-current);
@@ -375,13 +414,13 @@ body {
                 position:absolute;
                 left:-1px;
                 bottom:-1px;
-                font-size: 32px;
-                height:.8em;
-                width: .8em;
+                font-size: 24px;
+                height: 1em;
+                width: 1em;
                 text-align: right;
                 box-sizing: content-box;
                 overflow: hidden;
-                .outline();
+                //.outline();
                 transition: transform @transition-time ease-in-out, opacity @transition-time ease-in-out;
 
                 &[data-id="0"] {

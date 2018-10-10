@@ -1,5 +1,7 @@
 /// <reference path="../rom-reading/romreaders/base.ts" />
+/// <reference path="../pokemon/convert.ts" />
 /// <reference path="../../ref/runstatus.d.ts" />
+/// <reference path="options.ts" />
 
 
 namespace RamReader {
@@ -7,7 +9,63 @@ namespace RamReader {
     export abstract class RamReaderBase {
         constructor(public rom: RomReader.RomReaderBase, public port: number, public hostname = "localhost") { }
 
-        public ReadParty: () => Promise<TPP.PartyData>;
+        private partyInterval: NodeJS.Timer;
+        private pcInterval: NodeJS.Timer;
+        private trainerInterval: NodeJS.Timer;
+        private battleInterval: NodeJS.Timer;
+
+        public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
+            if (this.partyInterval || this.pcInterval || this.trainerInterval)
+                this.Stop();
+
+            this.partyInterval = setInterval(() => this.ReadParty().then(party => {
+                if (party) {
+                    state.party = party;
+                    transmitState(state);
+                }
+            }).catch(err => console.error(err)), 120);
+            this.pcInterval = setInterval(() => this.ReadPC().then(pc => {
+                if (pc) {
+                    state.pc = pc;
+                    transmitState(state);
+                }
+            }).catch(err => console.error(err)), 510);
+            this.trainerInterval = setInterval(() => this.ReadTrainer().then(trainer => {
+                if (Object.keys(trainer).length) {
+                    Object.assign(state, trainer);
+                    transmitState(state);
+                }
+            }).catch(err => console.error(err)), 250);
+            // this.battleInterval = setInterval(()=>this.ReadBattle().then(battle=> {
+            // }).catch(err=>console.error(err)), 230);
+        }
+
+        public Stop() {
+            clearInterval(this.partyInterval);
+            clearInterval(this.pcInterval);
+            clearInterval(this.trainerInterval);
+            clearInterval(this.battleInterval);
+        }
+
+        public abstract ReadParty: () => Promise<TPP.PartyData>;
+        public abstract ReadPC: () => Promise<TPP.CombinedPCData>;
+        public ReadTrainer: () => Promise<TPP.TrainerData> = () => this.TrainerChunkReaders.reduce<Promise<TPP.TrainerData[]>>(
+            (all, curr) => all.then(results => Promise.all([...results, curr()])), Promise.resolve([{} as TPP.TrainerData])
+        )
+            .then(chunks => Object.assign({}, ...chunks) as TPP.TrainerData)
+            .catch(err => {
+                console.error(err);
+                return {} as TPP.TrainerData;
+            });
+
+        public ReadBattle: () => Promise<TPP.BattleStatus>;
+
+        protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
+
+        protected InBattleReader: () => Promise<boolean>;
+        protected WildPartyReader: () => Promise<TPP.EnemyParty>;
+        protected EnemyPartyReader: () => Promise<TPP.EnemyParty>;
+        protected EnemyTrainerReader: () => Promise<TPP.EnemyTrainer>;
 
         public CallEmulator<T>(path: string, callback?: (data: string) => T) {
             return new Promise<T>((resolve, reject) => {
@@ -29,14 +87,18 @@ namespace RamReader {
             });
         }
 
-        public CachedEmulatorCaller<T>(path: string, callback: (data: string) => T) {
+        public CachedEmulatorCaller<T>(path: string, callback: (data: string) => T, ignoreCharStart = -1, ignoreCharEnd = -1) {
             let lastInput: string = null;
             return () => this.CallEmulator<T>(path, data => {
-                if (lastInput != data) {
+                let stringData = data;
+                if (ignoreCharStart >= 0 && ignoreCharEnd >= ignoreCharStart) {
+                    stringData = (ignoreCharStart ? data.slice(0, ignoreCharStart) : "") + data.slice(ignoreCharEnd);
+                }
+                if (lastInput != stringData) {
                     try {
                         const result = callback(data);
                         if (result) {
-                            lastInput = data;
+                            lastInput = stringData;
                             return result;
                         }
                     }
@@ -68,7 +130,7 @@ namespace RamReader {
         public CalcChecksum(data: Buffer) {
             let sum = 0;
             for (let i = 0; i < data.length; i += 2) {
-                sum += data.readInt16LE(i) % 0x10000;
+                sum = (sum + data.readUInt16LE(i)) % 0x10000;
             }
             return sum;
         }
@@ -103,8 +165,8 @@ namespace RamReader {
             return null;
         }
 
-        protected ParsePokerus(pokerus:number) {
-            const pkrs =  {
+        protected ParsePokerus(pokerus: number) {
+            const pkrs = {
                 infected: pokerus > 0,
                 days_left: pokerus % 16,
                 strain: pokerus >> 4,
@@ -150,9 +212,24 @@ namespace RamReader {
             ].filter(r => !!r);
         }
 
-        protected CalculateShiny(pokemon:TPP.Pokemon) {
+        protected abstract OptionsSpec: OptionsSpec;
+
+        public ParseOptions = (rawOptions: number) => ParseOptions(rawOptions, this.OptionsSpec);
+
+        public GetSetFlags(flagBytes: Buffer, flagCount = flagBytes.length * 8, offset = 0) {
+            const length = Math.floor((flagCount + 7) / 8);
+            const setFlags = new Array<number>();
+            for (let i = 0; i < length; i++)
+                for (let b = 0; b < 8; b++)
+                    if (flagBytes[i + offset] & (1 << b))
+                        setFlags.push(i * 8 + b + 1);
+            return setFlags.filter(f => f <= flagCount);
+        }
+
+        protected CalculateShiny(pokemon: TPP.Pokemon) {
             pokemon.shiny_value = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536)))
             return pokemon.shiny = pokemon.shiny_value < this.rom.ShinyThreshold();
         }
+
     }
 }

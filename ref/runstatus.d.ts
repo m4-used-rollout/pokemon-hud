@@ -15,15 +15,16 @@ declare namespace TPP {
     }
 
     export interface TrainerData extends OverlayData {
-        ball_count: number;
-        caught: number;
-        caught_list: number[];
+        ball_count?: number;
+        caught?: number;
+        caught_list?: number[];
         coins?: number;
         daycare?: Pokemon[];
         extra?: { [key: string]: any };
+        gender?: "Male" | "Female";
         last_caught_pokemon?: Pokemon;
-        id: number;
-        items: {
+        id?: number;
+        items?: {
             [key: string]: Item[];
             items?: Item[];
             free_space?: Item[];
@@ -39,12 +40,12 @@ declare namespace TPP {
             pc?: Item[];
         };
         level_cap?: number;
-        money: number;
-        name: string;
-        options: Options;
-        seen: number;
-        seen_list: number[];
-        secret: number;
+        money?: number;
+        name?: string;
+        options?: Options;
+        seen?: number;
+        seen_list?: number[];
+        secret?: number;
         stickers?: number;
         rival_name?: string;
         party_fitness?: number;
@@ -65,8 +66,8 @@ declare namespace TPP {
         area_name?: string;
         x?: number;
         y?: number;
-        evolution_is_happening: boolean;
-        badges: number;
+        evolution_is_happening?: boolean;
+        badges?: number;
     }
 
     export interface PartyData extends Array<PartyPokemon> { }
@@ -209,6 +210,14 @@ declare namespace TPP {
         type?: string;
         accuracy?: number;
         base_power?: number;
+        contest?: ContestData;
+    }
+
+    export interface ContestData {
+        type: string;
+        effect: string;
+        appeal: string;
+        jamming: string;
     }
 
     export interface MoveLearn {

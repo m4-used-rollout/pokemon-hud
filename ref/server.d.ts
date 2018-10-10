@@ -250,7 +250,7 @@ declare namespace RomReader {
         MapCaughtBallId(ballId: number): number;
         ShinyThreshold(): number;
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]): Pokemon.EncounterMon[];
-        protected ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
+        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
         private surfExp;
     }
 }
@@ -318,6 +318,7 @@ declare namespace RomReader {
         private ReadMaps(romData, config);
         private FindMapEncounters(romData, config);
         private ReadEncounterSet(romData, setAddr, encounterRates, requiredItems?, includeGroupRate?);
+        private ReadMoveLearns(romData, config);
     }
 }
 declare namespace RomReader {
@@ -329,15 +330,51 @@ declare namespace RomReader {
         CollapseSeenForms(seen: number[]): number[];
     }
 }
+declare namespace Pokemon.Convert {
+    function SpeciesFromRunStatus(s: TPP.PokemonSpecies): Species;
+    function EnemyTrainerFromRunStatus(t: TPP.EnemyTrainer): Trainer;
+    function StatsToRunStatus(stats: Stats): TPP.Stats;
+    interface StatSpeciesWithExp extends TPP.PokemonSpecies {
+        expFunction?: ExpCurve.CalcExp;
+    }
+    function SpeciesToRunStatus(species: Species): StatSpeciesWithExp;
+    function MoveToRunStatus(move: Move, pp?: number, ppUp?: number, maxPP?: number): TPP.Move;
+    function ItemToRunStatus(item: Item, count?: number): TPP.Item;
+}
+declare namespace RamReader {
+    interface OptionsFieldSpec {
+        [key: number]: string;
+        bitmask?: number;
+        offset?: number;
+    }
+    interface OptionsSpec {
+        [key: string]: OptionsFieldSpec;
+    }
+    function ParseOptions(rawOptions: number, optionsSpec: OptionsSpec): TPP.Options;
+}
 declare namespace RamReader {
     abstract class RamReaderBase {
         rom: RomReader.RomReaderBase;
         port: number;
         hostname: string;
         constructor(rom: RomReader.RomReaderBase, port: number, hostname?: string);
-        ReadParty: () => Promise<TPP.PartyData>;
+        private partyInterval;
+        private pcInterval;
+        private trainerInterval;
+        private battleInterval;
+        Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): void;
+        Stop(): void;
+        abstract ReadParty: () => Promise<TPP.PartyData>;
+        abstract ReadPC: () => Promise<TPP.CombinedPCData>;
+        ReadTrainer: () => Promise<TPP.TrainerData>;
+        ReadBattle: () => Promise<TPP.BattleStatus>;
+        protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
+        protected InBattleReader: () => Promise<boolean>;
+        protected WildPartyReader: () => Promise<TPP.EnemyParty>;
+        protected EnemyPartyReader: () => Promise<TPP.EnemyParty>;
+        protected EnemyTrainerReader: () => Promise<TPP.EnemyTrainer>;
         CallEmulator<T>(path: string, callback?: (data: string) => T): Promise<T>;
-        CachedEmulatorCaller<T>(path: string, callback: (data: string) => T): () => Promise<T>;
+        CachedEmulatorCaller<T>(path: string, callback: (data: string) => T, ignoreCharStart?: number, ignoreCharEnd?: number): () => Promise<T>;
         WrapBytes<T>(callback: (data: Buffer) => T): (hex: string) => T;
         protected Markings: string[];
         protected ParseMarkings(marks: number): string;
@@ -357,19 +394,59 @@ declare namespace RamReader {
             strain: number;
             cured: boolean;
         };
-        protected ParseGender(gender: number): "Female" | "Male";
+        protected ParseGender(gender: number): "Male" | "Female";
         protected ParseRibbon(ribbonVal: number, ribbonName: string): string;
         protected RibbonRanks: string[];
         protected ParseHoennRibbons(ribbonVal: any): string[];
+        protected abstract OptionsSpec: OptionsSpec;
+        ParseOptions: (rawOptions: number) => TPP.Options;
+        GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
         protected CalculateShiny(pokemon: TPP.Pokemon): boolean;
     }
 }
 declare namespace RamReader {
     class Gen3 extends RamReaderBase {
+        protected TrainerSecurityKey: number;
+        protected readonly TrainerSecurityHalfKey: number;
         protected Markings: string[];
         ReadParty: () => Promise<TPP.PartyPokemon[]>;
-        protected ParsePokemon(pkmdata: Buffer): TPP.PartyPokemon;
+        ReadPC: () => Promise<TPP.CombinedPCData>;
+        protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
+        protected ParseItemCollection(itemData: Buffer, length?: number, key?: number): TPP.Item[];
+        protected ParsePokemon(pkmdata: Buffer, boxSlot?: number): TPP.PartyPokemon & TPP.BoxedPokemon;
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
+        protected OptionsSpec: {
+            sound: {
+                0: string;
+                0x10000: string;
+            };
+            battle_style: {
+                0: string;
+                0x20000: string;
+            };
+            battle_scene: {
+                0: string;
+                0x40000: string;
+            };
+            map_zoom: {
+                0: string;
+                0x80000: string;
+            };
+            text_speed: {
+                0: string;
+                0x100: string;
+                0x200: string;
+            };
+            frame: {
+                bitmask: number;
+                offset: number;
+            };
+            button_mode: {
+                0: string;
+                1: string;
+                2: string;
+            };
+        };
     }
 }
 declare module TPP.Server {
@@ -383,10 +460,6 @@ declare module TPP.Server {
     const fileExists: (path: string) => any;
 }
 declare module TPP.Server {
-}
-declare namespace Pokemon.Convert {
-    function SpeciesFromRunStatus(s: TPP.PokemonSpecies): Species;
-    function EnemyTrainerFromRunStatus(t: TPP.EnemyTrainer): Trainer;
 }
 declare namespace TPP.Server.DexNav {
     interface KnownEncounter {

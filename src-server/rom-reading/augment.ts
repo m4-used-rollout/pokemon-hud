@@ -132,7 +132,6 @@ namespace RomReader {
                 delete p.next_move.accuracy;
                 delete p.next_move.base_power;
                 delete p.next_move.name;
-                delete p.next_move.type;
             }
         }
 
