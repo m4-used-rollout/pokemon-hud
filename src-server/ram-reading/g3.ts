@@ -92,12 +92,12 @@ namespace RamReader {
                 const enemy_trainers = new Array<TPP.EnemyTrainer>();
                 if (battle_kind == "Trainer") {
                     enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
-                    if (battleFlags & 1) { //multi-battle
+                    if (battleFlags & 0x41) { //multi-battle
                         enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
                     }
                 }
                 const enemy_party = this.ParseParty(data.slice(9, 9 + PartyBytes));
-                this.StoreCurrentBattleMons(this.ParseBattleMons(data.slice(9 + PartyBytes)));
+                this.StoreCurrentBattleMons(this.ParseBattleMons(data.slice(9 + PartyBytes), (battleFlags & 0x41) > 0));
                 return { in_battle, battle_kind, enemy_party, enemy_trainers };
             }
             return { in_battle };
@@ -185,9 +185,10 @@ namespace RamReader {
             return party;//.filter(p => !!p);
         }
 
-        protected ParseBattleMons(battleData: Buffer) {
+        protected ParseBattleMons(battleData: Buffer, multBattle: boolean) {
             const battleMons = new Array<TPP.PartyPokemon>();
-            for (let i = 0; i < BattleMonsBytes; i += 0x58) {
+            const battleBytes = BattleMonsBytes / (multBattle ? 1 : 2);
+            for (let i = 0; i < battleBytes; i += 0x58) {
                 battleMons.push(this.ParseBattlePokemon(battleData.slice(i, i + 0x58)));
             }
             return battleMons.filter(b => !!b);

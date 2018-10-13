@@ -43,7 +43,24 @@ module TPP.Server {
                 sendData(config.runStatusEndpoint, data);
             }
         });
-
+    if (config.newCatchEndpoint) {
+        let oldTrainer = {} as TPP.Trainer;
+        let oldCatches = new Array<number>();
+        stateChangeHandlers.push(s => {
+            const sameTrainer = s.id == oldTrainer.id && s.secret == oldTrainer.secret;
+            oldCatches = (sameTrainer ? oldCatches : s.caught_list) || [];
+            if ((state.caught_list || []).length > oldCatches.length) {
+                let newCatches = state.caught_list.filter(c => oldCatches.indexOf(c) < 0);
+                if (newCatches.length < 2) //these should only happen one at a time, really, but 2 *might* happen at once
+                    newCatches.forEach(newCatch);
+            }
+            if (!sameTrainer) {
+                oldTrainer = { id: s.id, secret: s.secret, name: s.name };
+                console.log(`New trainer: ${s.name} ${s.id}-${s.secret}`);
+            }
+            oldCatches = s.caught_list;
+        });
+    }
 
     ipcMain.on('register-renderer', e => {
         let renderer = e.sender;
@@ -96,7 +113,7 @@ module TPP.Server {
     }
     export let RamData: RamReader.RamReaderBase = new RamReader.Gen3(RomData, 5337);
 
-    RamData.Read(state, ()=>transmitState());
+    RamData.Read(state, () => transmitState());
 
     let trainerString = "", partyString = "", pcString = "", battleString = "";
 
@@ -145,19 +162,12 @@ module TPP.Server {
             }
             else if (data.id || data.secret) {
                 trainerString = dataJson;
-                let sameTrainer = data.id == state.id && data.secret == state.secret;
-                let oldCatches = (sameTrainer ? state.caught_list : data.caught_list) || [];
                 let party = data.party || state.party || [];
                 let pc = data.pc || state.pc;
                 state = data;
                 state.seen_list = RomData.CollapseSeenForms(state.seen_list);
                 state.pc = pc;
                 state.party = party;
-                if ((state.caught_list || []).length > oldCatches.length) {
-                    let newCatches = state.caught_list.filter(c => oldCatches.indexOf(c) < 0);
-                    if (newCatches.length < 2) //these should only happen one at a time, really, but 2 *might* happen at once
-                        newCatches.forEach(newCatch);
-                }
                 mergeBattleState(); //if it's being sent separately, don't overwrite it
             }
             else if (data.in_battle || data.in_battle === false) { //battle data subset of trainer data

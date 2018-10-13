@@ -425,7 +425,7 @@ declare namespace RamReader {
         protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
         protected ParseItemCollection(itemData: Buffer, length?: number, key?: number): TPP.Item[];
         protected ParseParty(partyData: Buffer): TPP.PartyPokemon[];
-        protected ParseBattleMons(battleData: Buffer): TPP.PartyPokemon[];
+        protected ParseBattleMons(battleData: Buffer, multBattle: boolean): TPP.PartyPokemon[];
         protected ParsePokemon(pkmdata: Buffer, boxSlot?: number): TPP.PartyPokemon & TPP.BoxedPokemon;
         protected ParseBattlePokemon(pkmdata: Buffer): TPP.PartyPokemon;
         protected ParseVolatileStatus(status: number): string[];
