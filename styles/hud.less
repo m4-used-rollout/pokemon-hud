@@ -54,9 +54,9 @@ body {
             background-position: top right;
             background-repeat: no-repeat;
 
-            img {
-                .outline(@color);
-            }
+            // img {
+            //     .outline(@color);
+            // }
         }
         .health {
             background-color:@color;
@@ -306,12 +306,14 @@ body {
 
                 .moves {
                     list-style: none;
-                    width:~"calc(100% + .75em)";
+                    //width:~"calc(100% + .75em)";
                     padding:0;
                     margin:0;
                     position: absolute;
                     left:-.75em;
-                    bottom: @party-member-height / 8;
+                    //left: 0;
+                    right: 0;
+                    top: 2.4em;
                     display: flex;
                     flex-flow: row wrap;
                     .outline();
@@ -635,7 +637,8 @@ body {
             margin-top: .25em;
             text-align: center;
             font-family: pokered;
-            font-size: 2.5vh;
+            //font-size: 2.5vh;
+            font-size: 3vh;
             > span {
                 &:before {
                     content:' ';

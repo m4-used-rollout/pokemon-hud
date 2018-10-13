@@ -16,8 +16,8 @@ class WildBattle extends PersistentComponent<{ wilds: TPP.Server.DexNav.WildPoke
                         {/* {partyMon && partyMon.cp && `CP ${partyMon.cp.toLocaleString()} `} */}
                         {wild.name}
                     </div>
-                    {/* <div className="catch-rate">{mon.catchRate}</div> */}
-                    <div className="mon-info">
+                    <div className="catch-rate">{wild.catchRate}</div>
+                    {/* <div className="mon-info">
                         <span>Catch Rate: {wild.catchRate}</span>
                         <span>
                             Type{wild.type1 != wild.type2 ? "s" : ""}:&nbsp;
@@ -25,13 +25,15 @@ class WildBattle extends PersistentComponent<{ wilds: TPP.Server.DexNav.WildPoke
                             {wild.type1 != wild.type2 && <span>&nbsp;<TypeImg type={wild.type2} /> {wild.type2}</span>}
                         </span>
                         {wild.shiny && <span>Shiny!</span>}
-                    </div>
+                    </div> */}
                     {/* {partyMon && partyMon.fitness && <div className="fitness">{partyMon.fitness.toLocaleString()}</div>} */}
                 </div>}
-            {/* <div className="types">
-                <TypeImg type={mon.type1} />
-                {mon.type1 != mon.type2 ? <TypeImg type={mon.type2} /> : null}
-            </div> */}
+            {livingWilds.length == 1 &&
+                <div className="types">
+                    <TypeImg type={wild.type1} />
+                    {wild.type1 != wild.type2 ? <TypeImg type={wild.type2} /> : null}
+                </div>
+            }
             {(livingWilds.length == 1 ? livingWilds : this.state.wilds).reverse().map((mon, i) =>
                 <div className={`pokemon ${cleanString(mon.name)} ${mon.owned ? "owned" : "seen"} ${(mon.health || [1])[0] < 1 ? "fainted" : ""}`} key={`${i}:${mon.id}`}>
                     <PokeSprite pokemonId={mon.id} form={mon.form} gender={mon.gender} shiny={mon.shiny} />

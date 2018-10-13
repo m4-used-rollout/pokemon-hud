@@ -158,7 +158,7 @@ declare namespace TPP {
     }
 
     export interface BoxedPokemon extends Pokemon {
-        box_slot: number;
+        box_slot?: number;
     }
 
     export interface PartyPokemon extends Pokemon {
@@ -186,6 +186,8 @@ declare namespace TPP {
         gender?: string;
         cp?: number;
         fitness?: number;
+        personality_value?:number;
+        name?:string;
     }> { }
 
     export interface EnemyTrainer extends Trainer {

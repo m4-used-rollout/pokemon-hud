@@ -20,7 +20,8 @@ namespace RamReader {
 
             this.partyInterval = setInterval(() => this.ReadParty().then(party => {
                 if (party) {
-                    state.party = party;
+                    this.CurrentParty = party;
+                    state.party = party.map(p => p && Object.assign({}, p, (this.CurrentBattleMons || []).filter(b => b.personality_value == p.personality_value && b.name == p.name && b.species.national_dex == p.species.national_dex).pop() || {}));
                     transmitState(state);
                 }
             }).catch(err => console.error(err)), 120);
@@ -36,8 +37,25 @@ namespace RamReader {
                     transmitState(state);
                 }
             }).catch(err => console.error(err)), 250);
-            // this.battleInterval = setInterval(()=>this.ReadBattle().then(battle=> {
-            // }).catch(err=>console.error(err)), 230);
+            this.battleInterval = setInterval(() => this.ReadBattle().then(battle => {
+                if (battle) {
+                    delete state.enemy_party;
+                    delete state.enemy_trainers;
+                    delete state.battle_kind;
+                    Object.assign(state, battle);
+                    if (battle.in_battle) {
+                        battle.enemy_party.forEach(p => p && Object.assign(p, (this.CurrentBattleMons || []).filter(b => b.personality_value == p.personality_value && b.name == p.name).pop() || {}));
+                        state.enemy_party = this.ConcealEnemyParty(battle.enemy_party as TPP.PartyData);
+                        state.party = this.CurrentParty.map(p => p && Object.assign({}, p, (this.CurrentBattleMons || []).filter(b => b.personality_value == p.personality_value && b.name == p.name && b.species.national_dex == p.species.national_dex).pop() || {}));
+                    }
+                    else {
+                        delete this.CurrentBattleMons;
+                        delete this.CurrentBattleSeenPokemon;
+                        state.party = this.CurrentParty;
+                    }
+                    transmitState(state);
+                }
+            }).catch(err => console.error(err)), 230);
         }
 
         public Stop() {
@@ -49,23 +67,57 @@ namespace RamReader {
 
         public abstract ReadParty: () => Promise<TPP.PartyData>;
         public abstract ReadPC: () => Promise<TPP.CombinedPCData>;
-        public ReadTrainer: () => Promise<TPP.TrainerData> = () => this.TrainerChunkReaders.reduce<Promise<TPP.TrainerData[]>>(
-            (all, curr) => all.then(results => Promise.all([...results, curr()])), Promise.resolve([{} as TPP.TrainerData])
-        )
-            .then(chunks => Object.assign({}, ...chunks) as TPP.TrainerData)
-            .catch(err => {
-                console.error(err);
-                return {} as TPP.TrainerData;
-            });
+        public ReadTrainer: () => Promise<TPP.TrainerData> = () =>
+            // this.TrainerChunkReaders.reduce<Promise<TPP.TrainerData[]>>((all, curr) => all.then(results => Promise.all([...results, curr()])), Promise.resolve([{} as TPP.TrainerData])) //execute one after the other
+            Promise.all(this.TrainerChunkReaders.map(f => f())) //execute simultaneously    
+                .then(chunks => Object.assign({}, ...chunks) as TPP.TrainerData)
+                .catch(err => {
+                    console.error(err);
+                    return {} as TPP.TrainerData;
+                });
 
-        public ReadBattle: () => Promise<TPP.BattleStatus>;
+        public abstract ReadBattle: () => Promise<TPP.BattleStatus>;
+
+        protected StoreCurrentBattleMons(mons: TPP.PartyPokemon[]) {
+            this.CurrentBattleMons = mons;
+            this.CurrentBattleSeenPokemon = this.CurrentBattleSeenPokemon || [];
+            mons.forEach(m => {
+                if (!this.HasBeenSeenThisBattle(m))
+                    this.CurrentBattleSeenPokemon.push({ pv: m.personality_value, name: m.name, dexNum: m.species.national_dex });
+            });
+        }
+
+        private HasBeenSeenThisBattle(mon: TPP.PartyPokemon) {
+            if (!mon || !mon.species)
+                return false;
+            return this.CurrentBattleSeenPokemon.some(s => s.pv == mon.personality_value && s.name == mon.name && s.dexNum == mon.species.national_dex);
+        }
+        private IsCurrentlyBattling(mon: TPP.PartyPokemon) {
+            if (!mon || !mon.species)
+                return false;
+            return this.CurrentBattleMons.some(b => b.personality_value == mon.personality_value && b.name == mon.name && b.species.national_dex == mon.species.national_dex);
+        }
+
+        private CurrentParty: TPP.PartyPokemon[];
+        private CurrentBattleMons: TPP.PartyPokemon[];
+        private CurrentBattleSeenPokemon: { pv: number, name: string, dexNum: number }[];
+
+        protected ConcealEnemyParty(party: TPP.PartyData): TPP.EnemyParty {
+            return party.map(p => p && ({
+                species: this.HasBeenSeenThisBattle(p) ? p.species : { id: 0, name: "???", national_dex: 0 },
+                health: p.health,
+                active: this.IsCurrentlyBattling(p),
+                form: p.form,
+                shiny: p.shiny,
+                gender: p.gender,
+                cp: p.cp,
+                fitness: p.fitness,
+                personality_value: p.personality_value,
+                name: this.HasBeenSeenThisBattle(p) ? p.name : "???"
+            }));
+        }
 
         protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
-
-        protected InBattleReader: () => Promise<boolean>;
-        protected WildPartyReader: () => Promise<TPP.EnemyParty>;
-        protected EnemyPartyReader: () => Promise<TPP.EnemyParty>;
-        protected EnemyTrainerReader: () => Promise<TPP.EnemyTrainer>;
 
         public CallEmulator<T>(path: string, callback?: (data: string) => T) {
             return new Promise<T>((resolve, reject) => {
@@ -229,6 +281,16 @@ namespace RamReader {
         protected CalculateShiny(pokemon: TPP.Pokemon) {
             pokemon.shiny_value = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536)))
             return pokemon.shiny = pokemon.shiny_value < this.rom.ShinyThreshold();
+        }
+
+        protected CalculateLevelFromExp(current: number, expFunction: Pokemon.ExpCurve.CalcExp) {
+            return Pokemon.ExpCurve.ExpToLevel(current, expFunction);
+        }
+
+        protected CalculateExpVals(current: number, level: number, expFunction: Pokemon.ExpCurve.CalcExp) {
+            const next_level = expFunction(level + 1);
+            const this_level = expFunction(level);
+            return { current, next_level, this_level, remaining: next_level - current };
         }
 
     }

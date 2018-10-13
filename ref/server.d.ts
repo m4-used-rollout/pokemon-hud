@@ -249,6 +249,7 @@ declare namespace RomReader {
         CollapseSeenForms(seen: number[]): number[];
         MapCaughtBallId(ballId: number): number;
         ShinyThreshold(): number;
+        GetType(typeId: number): string;
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]): Pokemon.EncounterMon[];
         ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean): Buffer[];
         private surfExp;
@@ -333,6 +334,7 @@ declare namespace RomReader {
 declare namespace Pokemon.Convert {
     function SpeciesFromRunStatus(s: TPP.PokemonSpecies): Species;
     function EnemyTrainerFromRunStatus(t: TPP.EnemyTrainer): Trainer;
+    function EnemyTrainerToRunStatus(t: Trainer): TPP.EnemyTrainer;
     function StatsToRunStatus(stats: Stats): TPP.Stats;
     interface StatSpeciesWithExp extends TPP.PokemonSpecies {
         expFunction?: ExpCurve.CalcExp;
@@ -367,12 +369,15 @@ declare namespace RamReader {
         abstract ReadParty: () => Promise<TPP.PartyData>;
         abstract ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadTrainer: () => Promise<TPP.TrainerData>;
-        ReadBattle: () => Promise<TPP.BattleStatus>;
+        abstract ReadBattle: () => Promise<TPP.BattleStatus>;
+        protected StoreCurrentBattleMons(mons: TPP.PartyPokemon[]): void;
+        private HasBeenSeenThisBattle(mon);
+        private IsCurrentlyBattling(mon);
+        private CurrentParty;
+        private CurrentBattleMons;
+        private CurrentBattleSeenPokemon;
+        protected ConcealEnemyParty(party: TPP.PartyData): TPP.EnemyParty;
         protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
-        protected InBattleReader: () => Promise<boolean>;
-        protected WildPartyReader: () => Promise<TPP.EnemyParty>;
-        protected EnemyPartyReader: () => Promise<TPP.EnemyParty>;
-        protected EnemyTrainerReader: () => Promise<TPP.EnemyTrainer>;
         CallEmulator<T>(path: string, callback?: (data: string) => T): Promise<T>;
         CachedEmulatorCaller<T>(path: string, callback: (data: string) => T, ignoreCharStart?: number, ignoreCharEnd?: number): () => Promise<T>;
         WrapBytes<T>(callback: (data: Buffer) => T): (hex: string) => T;
@@ -402,18 +407,29 @@ declare namespace RamReader {
         ParseOptions: (rawOptions: number) => TPP.Options;
         GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
         protected CalculateShiny(pokemon: TPP.Pokemon): boolean;
+        protected CalculateLevelFromExp(current: number, expFunction: Pokemon.ExpCurve.CalcExp): number;
+        protected CalculateExpVals(current: number, level: number, expFunction: Pokemon.ExpCurve.CalcExp): {
+            current: number;
+            next_level: number;
+            this_level: number;
+            remaining: number;
+        };
     }
 }
 declare namespace RamReader {
     class Gen3 extends RamReaderBase {
-        protected TrainerSecurityKey: number;
-        protected readonly TrainerSecurityHalfKey: number;
         protected Markings: string[];
         ReadParty: () => Promise<TPP.PartyPokemon[]>;
         ReadPC: () => Promise<TPP.CombinedPCData>;
+        ReadBattle: () => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
         protected ParseItemCollection(itemData: Buffer, length?: number, key?: number): TPP.Item[];
+        protected ParseParty(partyData: Buffer): TPP.PartyPokemon[];
+        protected ParseBattleMons(battleData: Buffer): TPP.PartyPokemon[];
         protected ParsePokemon(pkmdata: Buffer, boxSlot?: number): TPP.PartyPokemon & TPP.BoxedPokemon;
+        protected ParseBattlePokemon(pkmdata: Buffer): TPP.PartyPokemon;
+        protected ParseVolatileStatus(status: number): string[];
+        protected CalculateGender(genderRatio: number, personalityValue: number): "Male" | "Female";
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
         protected OptionsSpec: {
             sound: {

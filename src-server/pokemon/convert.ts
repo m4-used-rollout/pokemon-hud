@@ -31,6 +31,18 @@ namespace Pokemon.Convert {
         }
     }
 
+    export function EnemyTrainerToRunStatus(t:Trainer) {
+        if (!t) return null;
+        return <TPP.EnemyTrainer> {
+            id: t.id,
+            class_id: t.classId,
+            class_name: t.className,
+            name: t.name,
+            gender: t.gender,
+            pic_id: t.spriteId
+        };
+    }
+
     export function StatsToRunStatus(stats: Stats) {
         return {
             attack: stats.atk,

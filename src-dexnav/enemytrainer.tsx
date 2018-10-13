@@ -1,7 +1,7 @@
 /// <reference path="encounters.tsx" />
 /// <reference path="../src-hud/trainersprite.tsx" />
 
-class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], battleKind:string, party: TPP.EnemyParty }> {
+class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], battleKind: string, party: TPP.EnemyParty }> {
     constructor(props) {
         super(props, 2);
     }
@@ -9,11 +9,11 @@ class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], b
         const trainers = this.state.trainers;
         // if (!trainers || !trainers.length) return null;
         if (this.props.battleKind != "Trainer") return null;
-        const partyFitness = (this.state.party || []).reduce((sum, mon) => sum + mon.fitness, 0);
+        // const partyFitness = (this.state.party || []).reduce((sum, mon) => sum + mon.fitness, 0);
         return <div className={`encounters enemy-trainer ${this.props.trainers ? "" : "hidden"}`} key={`${trainers[0] && trainers[0].class_id}${trainers[0] && trainers[0].id}`}>
             <div className="info-left">
                 {trainers.map(trainer => <div className="name">{`${trainer.class_name || ''} ${trainer.name || ''}`.trim()}</div>)}
-                {partyFitness ? <div className="fitness">{partyFitness.toLocaleString()}</div> : null}
+                {/* {partyFitness ? <div className="fitness">{partyFitness.toLocaleString()}</div> : null} */}
                 <EnemyParty party={this.state.party} />
             </div>
             <div className={`trainer ${trainers.length > 1 ? "double" : ""}`}>
@@ -28,7 +28,7 @@ class EnemyParty extends React.Component<{ party: TPP.EnemyParty }, {}> {
         let party = this.props.party;
         if (!party) return null;
         return <div className="enemy-party">
-            {party.map(p => <span className={p.species.id && p.health[0] ? "" : "fainted"} >
+            {party.filter(p => !!p).map(p => <span className={p.species.id && p.health[0] ? "" : "fainted"} >
                 {p.species.id ?
                     <PokeSprite pokemonId={p.species.id} form={p.form} gender={p.gender} shiny={p.shiny} /> :
                     <img src="./img/unknown-sprite.png" />

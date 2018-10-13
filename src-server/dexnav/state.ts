@@ -80,7 +80,7 @@ namespace TPP.Server.DexNav {
                 this.BattleKind = runState.battle_kind;
                 if (runState.battle_kind == "Wild") {
                     // let mon = runState.enemy_party.filter(p=>p.species && p.species.id).sort((p1,p2)=>((p2.health[0] > 0 ? 10 : 0) * (p2.shiny ? 10 : 1)) - ((p1.health[0] > 0 ? 10 : 0) * (p1.shiny ? 10 : 1))).shift();
-                    this.WildBattle = runState.enemy_party.filter(p=>p.species && p.species.id).map(mon=>{
+                    this.WildBattle = runState.enemy_party.filter(p => p && p.species && p.species.id).map(mon => {
                         const wild = <WildPokemon>Pokemon.Convert.SpeciesFromRunStatus(mon.species)
                         wild.form = mon.form;
                         wild.shiny = mon.shiny;
