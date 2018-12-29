@@ -87,12 +87,12 @@ namespace RomReader {
             return str.toLowerCase().replace(fixCaps, c => c.toUpperCase()).replace(fixWronglyCapped, c => c.toLowerCase()).replace(fixWronglyLowercased, c => c.toUpperCase());
         }
 
-        public CalcHiddenPowerType(stats: TPP.Stats) {
+        public CalculateHiddenPowerType(stats: TPP.Stats) {
             const types = ['Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark'];
             return types[4 * (stats.attack % 4) + (stats.defense % 4)];
         }
 
-        public CalcHiddenPowerPower(stats: TPP.Stats) {
+        public CalculateHiddenPowerPower(stats: TPP.Stats) {
             return Math.floor((5 * ((stats.special_attack >> 3) + ((stats.speed >> 3) << 1) + ((stats.defense >> 3) << 2) + ((stats.attack >> 3) << 3)) + (stats.special_defense % 4)) / 2) + 31;
         }
 
@@ -121,6 +121,14 @@ namespace RomReader {
 
         protected ParseBCD(bcd: Buffer) {
             return bcd.toString('hex').split('').reverse().reduce((sum, char, place) => sum + (parseInt(char, 16) * Math.pow(10, place)), 0);
+        }
+
+        protected FindTerminator(data:Buffer) {
+            for(var i = 0; i < data.length; i++) {
+                if (data[i] == this.stringTerminator)
+                    return i;
+            }
+            return -1;
         }
     }
 }

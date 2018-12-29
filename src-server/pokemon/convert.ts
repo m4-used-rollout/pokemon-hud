@@ -73,7 +73,9 @@ namespace Pokemon.Convert {
             national_dex: species.dexNumber,
             type1: species.type1,
             type2: species.type2,
-            expFunction: species.expFunction
+            expFunction: species.expFunction,
+            held_items: [species.heldItem1, species.heldItem2].filter(i=>!!i).map(i=>ItemToRunStatus(i)),
+            tm_moves: (species.tmMoves || []).filter(m=>!!m).map(m=>MoveToRunStatus(m))
         } as StatSpeciesWithExp;
     }
 
@@ -89,6 +91,18 @@ namespace Pokemon.Convert {
             type: move.type,
             contest: move.contestData
         } as TPP.Move;
+    }
+
+    
+    export function MoveLearnToRunStatus(move: MoveLearn, pp = 0, ppUp = 0, maxPP = 0) {
+        return move && {
+            accuracy: move.accuracy,
+            base_power: move.basePower,
+            id: move.id,
+            name: move.name,
+            type: move.type,
+            level: move.level
+        } as TPP.MoveLearn;
     }
 
     export function ItemToRunStatus(item: Item, count = 0) {

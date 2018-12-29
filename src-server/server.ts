@@ -57,7 +57,9 @@ module TPP.Server {
 
     function endpointResponse(request, response) {
         var state = TPP.Server.getState();
-        switch (((request.url || '').split('/').pop() || '').toLowerCase()) {
+        const urlParts = (<string>request.url || '').split('/');
+        urlParts.shift(); //remove host
+        switch ((urlParts.shift() || '').toLowerCase()) {
             default:
                 setJSONHeaders(response);
                 return JSON.stringify(state);
@@ -72,7 +74,14 @@ module TPP.Server {
                 return JSON.stringify(rawState());
             case "romdata":
                 setJSONHeaders(response);
-                return JSON.stringify(RomData);
+                let outObj = {}
+                if (urlParts.length) {
+                    urlParts.forEach(p=>outObj[p] = RomData[p]);
+                }
+                else {
+                    outObj = RomData;
+                }
+                return JSON.stringify(outObj, null, 2);
             case "input":
                 setJSONHeaders(response);
                 if (!inputs) {

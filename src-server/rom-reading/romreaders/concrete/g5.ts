@@ -8,6 +8,7 @@ namespace RomReader {
 
     const moveCategories = ["Status", "Physical", "Special"];
     const types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
+    const eggGroups = ["???", "Monster", "Water 1", "Bug", "Flying", "Field", "Fairy", "Grass", "Human-Like", "Water 3", "Mineral", "Amorphous", "Water 2", "Ditto", "Dragon", "Undiscovered"];
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
     const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
 
@@ -84,8 +85,8 @@ namespace RomReader {
                 eggCycles: (stats[19] & 0xFF) - 1, //eggs hatch upon hitting 0 in gen 5, not ticking past 0.
                 growthRate: expCurveNames[stats[21] & 0xFF],
                 expFunction: expCurves[stats[21] & 0xFF],
-                eggGroup1: stats[22] & 0xFF,
-                eggGroup2: stats[23] & 0xFF,
+                eggGroup1: eggGroups[stats[22] & 0xFF],
+                eggGroup2: eggGroups[stats[23] & 0xFF],
                 abilities: [abilityNames[stats[24] & 0xFF], abilityNames[stats[25] & 0xFF], abilityNames[stats[26] & 0xFF]],
                 baseExp: stats[32] & 0xFF,
             }));

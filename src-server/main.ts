@@ -1,6 +1,6 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g3.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g2.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
 /// <reference path="ram-reading/g3.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
@@ -98,14 +98,24 @@ module TPP.Server {
         return json.replace(/\\\\u/g, '\\u');
     }
 
+    function findLocalFile(path) {
+        const resolve = require("path").resolve;
+        const root = resolve(path);
+        if (require('fs').existsSync(root)) {
+            return root;
+        }
+        return resolve(`./resources/app/${path}`);
+    }
+
     export let RomData: RomReader.RomReaderBase;
     try {
         let path;
         if (config.romFile ? config.romFile : config.extractedRomFolder) {
-            path = require("path").resolve(config.romFile ? config.romFile : config.extractedRomFolder);
+            path = findLocalFile(config.romFile ? config.romFile : config.extractedRomFolder);
             console.log(`Reading ROM at ${path}`);
         }
-        RomData = new RomReader.Gen3(path, config.iniFile && require("path").resolve(config.iniFile));
+        // RomData = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
+        RomData = new RomReader.Gen2(path);
     } catch (e) {
         console.log(`Could not read ROM.`);
         console.error(e);
@@ -113,7 +123,10 @@ module TPP.Server {
     }
     export let RamData: RamReader.RamReaderBase = new RamReader.Gen3(RomData, 5337);
 
-    RamData.Read(state, () => transmitState());
+    // RamData.Read(state, () => {
+    //     RomReader.AugmentState(RomData, state);
+    //     transmitState()
+    // });
 
     let trainerString = "", partyString = "", pcString = "", battleString = "";
 
@@ -185,12 +198,14 @@ module TPP.Server {
     }
 
     function newCatch(dexNum: number) {
+        let dexNums: number[];
         if (config.romDexToNatDex) {
-            dexNum = config.romDexToNatDex[dexNum] || dexNum;
+            let num = config.romDexToNatDex[dexNum] || dexNum;
+            dexNums = num instanceof Array ? num : [num];
         }
         console.log(`New catch: ${dexNum}`);
         if (config.newCatchEndpoint)
-            sendData(config.newCatchEndpoint, dexNum.toString());
+            dexNums.forEach(dex=>sendData(config.newCatchEndpoint, dex.toString()));
     }
 
     const sendData = (url: string, data: string) => {

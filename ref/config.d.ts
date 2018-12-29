@@ -1,9 +1,9 @@
-declare interface Config extends DexNavConfig {
+declare interface Config extends DexNavConfig, GoalConfig {
     runName: string;
     badgeCount?: number;
     mainRegion?: string;
     totalInDex?: number;
-    romDexToNatDex?: number[];
+    romDexToNatDex?: (number | number[])[];
     displayOptions?: string[];
     hudTheme: string;
     romFile?: string;
@@ -36,4 +36,30 @@ declare interface DexNavConfig {
     dexNavTheme?: string;
     hofMapId?: number;
     hofMapBank?: number;
+}
+
+declare interface GoalConfig {
+    showGoals?: boolean;
+    goals?: (TrickHouseConfig | LogoConfig | HoFEntriesConfig)[];
+    goalWidth?: number;
+    goalHeight?: number;
+    goalX?: number;
+    goalY?: number;
+}
+
+declare interface Goal {
+    goalType: string;
+}
+
+declare interface TrickHouseConfig extends Goal {
+    goalType: "TrickHouse";
+}
+
+declare interface LogoConfig extends Goal {
+    goalType: "Logo";
+}
+
+declare interface HoFEntriesConfig extends Goal {
+    goalType: "HoFEntries";
+    hofEntries: number;
 }

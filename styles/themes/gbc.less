@@ -264,6 +264,75 @@
                         .outline();
                     }
 
+                    .extra-info{
+                        width: 100%;
+                        position:absolute;
+                        left:0;
+                        bottom:(@party-member-height / 10);
+                        font-size: .65em;
+                        padding: .2em;
+                        margin: 0;
+                        clear: both;
+                        white-space: nowrap;
+                        font-family: pokered;
+
+                            display:flex;
+                            flex-flow: row nowrap;
+                            min-width: 100%;
+                            justify-content: flex-end;
+
+                            > * {
+                                width: auto;
+                                flex: 0 1 auto;
+                            }
+
+                        .ability {
+                            text-align: center;
+                            .outline();
+                        }
+                        .movelearn {
+                            padding-left: 20px;
+                            background-image: url('img/generic/item/item_tm.png');
+                            background-size: 16px;
+                            min-height: 16px;
+                            line-height: .5em;
+                            background-repeat: no-repeat;
+                            background-position: left;
+                            image-rendering: pixelated;
+
+                            &:before {
+                                display: inline-block;
+                                content:"È";
+                            }
+                            &:after {
+                                content: attr(data-level);
+                            }
+                            &.alert {
+                                .health-warning();
+                            }
+
+                            &.Normal {background-image: url('img/generic/item/item_tm.png'); background-size: 15px;}
+                            &.Fighting {background-image: url('img/generic/item/item_904.png');}
+                            &.Flying {background-image: url('img/generic/item/item_905.png');}
+                            &.Poison {background-image: url('img/generic/item/item_906.png');}
+                            &.Ground {background-image: url('img/generic/item/item_907.png');}
+                            &.Rock {background-image: url('img/generic/item/item_908.png');}
+                            &.Bug {background-image: url('img/generic/item/item_909.png');}
+                            &.Ghost {background-image: url('img/generic/item/item_910.png');}
+                            &.Steel {background-image: url('img/generic/item/item_911.png');}
+                            &.Fire {background-image: url('img/generic/item/item_912.png');}
+                            &.Water {background-image: url('img/generic/item/item_913.png');}
+                            &.Grass {background-image: url('img/generic/item/item_914.png');}
+                            &.Electric {background-image: url('img/generic/item/item_915.png');}
+                            &.Psychic {background-image: url('img/generic/item/item_916.png');}
+                            &.Ice {background-image: url('img/generic/item/item_917.png');}
+                            &.Dragon {background-image: url('img/generic/item/item_918.png');}
+                            &.Dark {background-image: url('img/generic/item/item_919.png');}
+                            &.Fairy {background-image: url('img/generic/item/item_920.png');}
+                        }
+                    }
+
+
                     .moves {
                         list-style: none;
                         width:100%;
@@ -358,7 +427,7 @@
                 }
 
                 
-                div.held-item, div.friendship, div.movelearn {
+                div.held-item { // , div.friendship, div.movelearn {
                     position:absolute;
                     left:@party-member-height;
                     bottom:(@party-member-height / 10);
@@ -705,7 +774,8 @@
                         vertical-align: middle;
                         transition: filter (@transition-time * 3) ease-in, opacity @transition-time ease-out, transform (@transition-time * 2) ease-out;
                         .outline(@bar-chrome);
-                        width: 10vw;
+                        width: 8vw;
+                        margin: 0 1vw;
                         transform-origin: center center;
                         image-rendering: pixelated;
 
@@ -722,10 +792,10 @@
             }
 
             .rtc {
-                margin-top: .25em;
+                margin-top: .25vh;
                 text-align: center;
                 font-family: pokered;
-                font-size: 2.75vh;
+                font-size: 2.5vh;
                 > span {
                     + span{
                         &:before, &.meridian:before {

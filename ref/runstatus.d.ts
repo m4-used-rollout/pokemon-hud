@@ -58,7 +58,7 @@ declare namespace TPP {
         };
     }
 
-    export interface OverlayData {
+    export interface OverlayData extends Goals {
         map_bank?: number;
         map_id?: number;
         map_name?: string;
@@ -67,7 +67,13 @@ declare namespace TPP {
         x?: number;
         y?: number;
         evolution_is_happening?: boolean;
+    }
+
+    export interface Goals {
         badges?: number;
+        trick_house?: ("Incomplete" | "Found Scroll" | "Complete")[];
+        hall_of_fame_entries?: number;
+        game_stats?: { [key: string]: number };
     }
 
     export interface PartyData extends Array<PartyPokemon> { }
@@ -103,6 +109,8 @@ declare namespace TPP {
         abilities?: string[];
         do_not_flip_sprite?: boolean;
         base_stats?: Stats;
+        held_items?: Item[] | number[] | string[];
+        tm_moves?: Move[] | number[] | string[];
     }
 
     export interface Pokemon {
@@ -169,6 +177,10 @@ declare namespace TPP {
         pokerus_remaining?: number;
         is_evolving?: boolean;
         capsule?: number;
+        buffs?: {
+            accuracy: number;
+            evasion: number;
+        } & TPP.Stats;
     }
 
     export interface Item {
@@ -186,8 +198,12 @@ declare namespace TPP {
         gender?: string;
         cp?: number;
         fitness?: number;
-        personality_value?:number;
-        name?:string;
+        personality_value?: number;
+        name?: string;
+        buffs?: {
+            accuracy: number;
+            evasion: number;
+        } & TPP.Stats;
     }> { }
 
     export interface EnemyTrainer extends Trainer {

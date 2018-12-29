@@ -1,4 +1,5 @@
 /// <reference path="romreaders/base.ts" />
+/// <reference path="../pokemon/convert.ts" />
 /// <reference path="../../ref/runstatus.d.ts" />
 
 namespace RomReader {
@@ -94,8 +95,8 @@ namespace RomReader {
                     m.base_power = m.base_power || romMove.basePower;
                     m.type = m.type || romMove.type || "???";
                     if (m.name && m.name.toLowerCase() == "hidden power") {
-                        m.type = romData.CalcHiddenPowerType(p.ivs);
-                        m.base_power = romData.CalcHiddenPowerPower(p.ivs);
+                        m.type = romData.CalculateHiddenPowerType(p.ivs);
+                        m.base_power = romData.CalculateHiddenPowerPower(p.ivs);
                     }
                     else if (m.name && m.name.toLowerCase() == "curse") {
                         if ((p.species.type1 || '').toLowerCase() == "ghost" || (p.species.type2 || '').toLowerCase() == "ghost") {
@@ -124,7 +125,7 @@ namespace RomReader {
                 p.experience.this_level = p.experience.this_level || romMon.expFunction(p.level);
                 p.experience.remaining = p.experience.next_level - p.experience.current;
             }
-            p.next_move = p.next_move || romData.GetNextMoveLearn(p.species.id, p.form, p.level, p.moves.map(m => m.id));
+            p.next_move = p.next_move || Pokemon.Convert.MoveLearnToRunStatus(romData.GetNextMoveLearn(p.species.id, p.form, p.level, p.moves.map(m => m.id)));
             
             //Censor NextMove data
             if (p.next_move) {

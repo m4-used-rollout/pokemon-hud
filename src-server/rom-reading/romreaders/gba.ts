@@ -50,5 +50,13 @@ namespace RomReader {
             return this.ReadStridedData(romData, startAddr, strideBytes, numPtrs).map(ptr => this.ReadRomPtr(ptr)).filter(addr => addr >= 0).map(addr => Tools.LZ77.Decompress(romData, addr));
         }
 
+        CalculateHiddenPowerType(stats: TPP.Stats) {
+            const types = ['Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark'];
+            return types[Math.floor(((stats.hp % 2) + ((stats.attack % 2) << 1) + ((stats.defense % 2) << 2) + ((stats.speed % 2) << 3) + ((stats.special_attack % 2) << 4) + ((stats.special_defense % 2) << 5)) * 15 / 63)];
+        }
+        CalculateHiddenPowerPower(stats: TPP.Stats) {
+            return Math.floor((((stats.hp >> 1) % 2) + (((stats.attack >> 1) % 2) << 1) + (((stats.defense >> 1) % 2) << 2) + (((stats.speed >> 1) % 2) << 3) + (((stats.special_attack >> 1) % 2) << 4) + (((stats.special_defense >> 1) % 2) << 5)) * 40 / 63) + 30;
+        }
+
     }
 }

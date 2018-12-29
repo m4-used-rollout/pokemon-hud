@@ -56,15 +56,21 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                             <div className="exp" style={{ width: expPercent + '%' }} />
                         </div>
                     </div>
-                    <FitToWidth className="extra-info">
+                    {/* <FitToWidth className="extra-info">
                         {mon.ability && <div className="ability"> {mon.ability} </div>}
                         {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
                         {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
                         {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />}
-                    </FitToWidth>
+                    </FitToWidth> */}
                     <ul className="moves">
                         {mon.moves.map(m => <Move move={m} key={m.id} />)}
                     </ul>
+                    <div className="extra-info">
+                        {/* {mon.ability && <div className="ability"> {mon.ability} </div>}
+                        {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
+                        {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>} */}
+                        {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />}
+                    </div>
                     <div className="health-bar">
                         <div className="health" style={{ width: hpPercent + '%' }} />
                         <div className="hp" data-current={mon.health[0]} data-max={(mon.health[1].toString().length < 3 ? new Array(3 - mon.health[1].toString().length).fill(' ').join('') : "") + mon.health[1]} />

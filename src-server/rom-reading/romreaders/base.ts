@@ -195,11 +195,11 @@ namespace RomReader {
             //DexNav will filter out any fishing encounters that require a specific rod
             //Override this if there's another restriction.
         }
-        CalcHiddenPowerType(stats: TPP.Stats) {
+        CalculateHiddenPowerType(stats: TPP.Stats) {
             const types = ['Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark'];
             return types[Math.floor(((stats.hp % 2) + ((stats.attack % 2) << 1) + ((stats.defense % 2) << 2) + ((stats.speed % 2) << 3) + ((stats.special_attack % 2) << 4) + ((stats.special_defense % 2) << 5)) * 15 / 63)];
         }
-        CalcHiddenPowerPower(stats: TPP.Stats) {
+        CalculateHiddenPowerPower(stats: TPP.Stats) {
             return Math.floor((((stats.hp >> 1) % 2) + (((stats.attack >> 1) % 2) << 1) + (((stats.defense >> 1) % 2) << 2) + (((stats.speed >> 1) % 2) << 3) + (((stats.special_attack >> 1) % 2) << 4) + (((stats.special_defense >> 1) % 2) << 5)) * 40 / 63) + 30;
         }
         CollapseSeenForms(seen: number[]) {
@@ -227,16 +227,26 @@ namespace RomReader {
             });//.sort((e1, e2) => ((e1.requiredItem || { id: 0 }).id - (e2.requiredItem || { id: 0 }).id) || (e2.rate - e1.rate));
         }
 
-        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false) {
+        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false, endValue = 0xFF) {
             let choppedData = new Array<Buffer>();
             for (let i = 0; (i < length || length <= 0) && (startOffset + (strideBytes * (i + 1))) <= romData.length; i++) {
                 let chunk = romData.slice(startOffset + (strideBytes * i), startOffset + (strideBytes * (i + 1)));
-                if ((length <= 0 || lengthIsMax) && chunk[0] == 0xFF) {
+                if ((length <= 0 || lengthIsMax) && chunk[0] == endValue) {
                     return choppedData;
                 }
                 choppedData.push(chunk);
             }
             return choppedData;
+        }
+
+        GetSetFlags(flagBytes: Buffer, flagCount = flagBytes.length * 8, offset = 0) {
+            const length = Math.floor((flagCount + 7) / 8);
+            const setFlags = new Array<number>();
+            for (let i = 0; i < length; i++)
+                for (let b = 0; b < 8; b++)
+                    if (flagBytes[i + offset] & (1 << b))
+                        setFlags.push(i * 8 + b + 1);
+            return setFlags.filter(f => f <= flagCount);
         }
 
         private surfExp = /^surf$/i;

@@ -42,10 +42,15 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
         show: false
     });
 
-    win.once('ready-to-show', () => { 
+    win.once('ready-to-show', () => {
         const title = win.getTitle();
         title.indexOf(config.runName) < 0 && win.setTitle(`${title} - ${config.runName}`);
         win.show()
+    });
+
+    win.webContents.on("crashed", ()=> {
+        win.destroy();
+        createWindow(page, windowWidth,windowHeight,x,y,frameless,resize,resetEveryHours);
     });
 
 
@@ -65,9 +70,9 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
 
     windowList.push(win);
 
-    if (resetEveryHours) {
-        setInterval(() => win.reload(), resetEveryHours * 60 * 60 * 1000);
-    }
+    // if (resetEveryHours) {
+    //     setInterval(() => win.reload(), resetEveryHours * 60 * 60 * 1000);
+    // }
 
     return win;
 }
@@ -79,6 +84,9 @@ app.on('ready', () => {
     createWindow('hud', config.screenWidth, config.screenHeight, config.windowX, config.windowY, config.frameless, !config.blockResize, config.resetEveryHours)
     if (config.showDexNav) {
         createWindow('dexnav', config.dexNavWidth, config.dexNavHeight, config.dexNavX || -1, config.dexNavY || -1, config.frameless, !config.blockResize, config.dexNavResetEveryHours)
+    }
+    if (config.showGoals) {
+        createWindow('goal', config.goalWidth, config.goalHeight, config.goalX || -1, config.goalY || -1, config.frameless, !config.blockResize, config.resetEveryHours)
     }
 });
 

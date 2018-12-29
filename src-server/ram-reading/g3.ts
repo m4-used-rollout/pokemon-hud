@@ -3,16 +3,12 @@
 namespace RamReader {
 
     interface Gen3PartyPokemon extends TPP.PartyPokemon, TPP.BoxedPokemon {
-        encyption_key?: number;
+        encryption_key?: number;
         checksum?: number;
         species: Pokemon.Convert.StatSpeciesWithExp;
     }
 
     interface Gen3BattlePokemon extends Gen3PartyPokemon {
-        buffs?: {
-            accuracy: number;
-            evasion: number;
-        } & TPP.Stats;
         volatile_status?: string[];
     }
 
@@ -57,6 +53,10 @@ namespace RamReader {
     const SaveBlock1Pointer = 0x03005D8C;
     const SaveBlock2Pointer = 0x03005D90;
     const FlagsOffset = 0x1270;
+    const FlagsBytes = 0x12C
+    const VarsOffset = 0x139C;
+    const GameStatsOffset = 0x159C;
+    const GameStatsBytes = 64 * 4;
     const DaycareOffset = 0x3030;
     const InventoryOffset = 0x490;
     const IwramClockAddr = 0x5CF8;
@@ -65,8 +65,11 @@ namespace RamReader {
     const BattleFlagsAddr = 0x02022FEC;
     const EnemyTrainersAddr = 0x02038BCA;
     const EnemyPartyAddr = 0x02024744;
-    const BattleMonsAddr = 0x02024084;
-    const BattleMonsBytes = 0x58 * 4;
+    const gBattlersCount = 0x0202406c;
+    const gBattlerPartyIndexes = 0x0202406e;
+    const gBattlerPositions = 0x02024076;
+    const gBattleMons = 0x02024084;
+    const gBattleMonsBytes = 0x58 * 4;
     const InBattleAddr = "30022c0+439"; //gMain.inBattle (bit 2)
 
 
@@ -84,8 +87,8 @@ namespace RamReader {
             } as TPP.BoxData))
         } as TPP.CombinedPCData)));
 
-        public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${InBattleAddr}/1/${BattleFlagsAddr.toString(16)}/4/${EnemyTrainersAddr.toString(16)}/4/${EnemyPartyAddr.toString(16)}/${PartyBytes.toString(16)}/${BattleMonsAddr.toString(16)}/${BattleMonsBytes.toString(16)}`, this.WrapBytes<TPP.BattleStatus>(data => {
-            const in_battle = (data[0] & 2) > 0;
+        public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${InBattleAddr}/1/${BattleFlagsAddr.toString(16)}/4/${EnemyTrainersAddr.toString(16)}/4/${EnemyPartyAddr.toString(16)}/${PartyBytes.toString(16)}/${gBattleMons.toString(16)}/${gBattleMonsBytes.toString(16)}/${gBattlersCount.toString(16)}/${((gBattlerPositions - gBattlersCount) + 4).toString(16)}`, this.WrapBytes<TPP.BattleStatus>(data => {
+            const in_battle = (data.readUInt8(0) & 2) > 0;
             const battleFlags = data.readUInt32LE(1);
             if (in_battle) {
                 const battle_kind = battleFlags & 8 ? "Trainer" : "Wild";
@@ -97,7 +100,18 @@ namespace RamReader {
                     }
                 }
                 const enemy_party = this.ParseParty(data.slice(9, 9 + PartyBytes));
-                this.StoreCurrentBattleMons(this.ParseBattleMons(data.slice(9 + PartyBytes), (battleFlags & 0x41) > 0));
+                const numBattlers = data.readUInt8(9 + PartyBytes + gBattleMonsBytes);
+                const isBattlerOnEnemyTeam = new Array<boolean>();
+                const battlerPartyIndexes = new Array<number>();
+                for (let i = 0; i < numBattlers; i++) {
+                    battlerPartyIndexes.push(data.readUInt16LE(11 + PartyBytes + gBattleMonsBytes + (i * 2)));
+                    isBattlerOnEnemyTeam.push(!!(data.readUInt8(19 + PartyBytes + gBattleMonsBytes + i) & 1));
+                    // B_POSITION_PLAYER_LEFT        0
+                    // B_POSITION_OPPONENT_LEFT      1
+                    // B_POSITION_PLAYER_RIGHT       2
+                    // B_POSITION_OPPONENT_RIGHT     3
+                }
+                this.StoreCurrentBattleMons(this.ParseBattleMons(data.slice(9 + PartyBytes), numBattlers), battlerPartyIndexes, isBattlerOnEnemyTeam);
                 return { in_battle, battle_kind, enemy_party, enemy_trainers };
             }
             return { in_battle };
@@ -110,7 +124,7 @@ namespace RamReader {
                 const seenList = this.GetSetFlags(data.slice(0x5C), 412);
                 return {
                     name: this.rom.ConvertText(data.slice(0, 8)),
-                    gender: data[8] ? "Female" : "Male",
+                    gender: data.readUInt8(8) ? "Female" : "Male",
                     id: data.readUInt16LE(10),
                     secret: data.readUInt16LE(12),
                     options: this.ParseOptions(data.readUInt32LE(19)), //options is 24 bits, so this grabs the next byte as well (but ignores it)
@@ -125,11 +139,11 @@ namespace RamReader {
             this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}/6/${CurrentAreaAddr.toString(16)}/1`, this.WrapBytes(data => ({
                 x: data.readUInt16LE(0),
                 y: data.readUInt16LE(2),
-                map_bank: data[4],
-                map_id: data[5],
-                area_id: data[6],
-                map_name: this.rom.GetMap(data[5], data[4]).name,
-                area_name: this.rom.GetAreaName(data[6])
+                map_bank: data.readUInt8(4),
+                map_id: data.readUInt8(5),
+                area_id: data.readUInt8(6),
+                map_name: this.rom.GetMap(data.readUInt8(5), data.readUInt8(4)).name,
+                area_name: this.rom.GetAreaName(data.readUInt8(6))
             } as TPP.TrainerData))),
             //Inventory
             this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}+${InventoryOffset.toString(16)}/4F8/*${SaveBlock2Pointer.toString(16)}+AC/4`, this.WrapBytes(data => {
@@ -143,22 +157,30 @@ namespace RamReader {
                         pc: this.ParseItemCollection(data.slice(8), 50), //no key
                         items: this.ParseItemCollection(data.slice(0xD0), 30, halfKey),
                         key: this.ParseItemCollection(data.slice(0x148), 30, halfKey),
-                        ball: ballPocket,
-                        tm: this.ParseItemCollection(data.slice(0x200), 64, halfKey),
-                        berry: this.ParseItemCollection(data.slice(0x300), 46, halfKey)
+                        balls: ballPocket,
+                        tms: this.ParseItemCollection(data.slice(0x200), 64, halfKey),
+                        berries: this.ParseItemCollection(data.slice(0x300), 46, halfKey)
                     },
                     ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
                 } as TPP.TrainerData
             })),
-            //Flags (Currently just badges)
-            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}+${FlagsOffset.toString(16)}/12C`, this.WrapBytes(data => ({
-                badges: (data.readUInt16LE(0x10C) >> 7) % 0x100
-            } as TPP.TrainerData))),
+            //Flags/Vars/Stats
+            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}+${FlagsOffset.toString(16)}/${(GameStatsOffset - FlagsOffset + GameStatsBytes).toString(16)}/*${SaveBlock2Pointer.toString(16)}+AC/4`, this.WrapBytes(data => {
+                const key = data.readUInt32LE(GameStatsOffset - FlagsOffset + GameStatsBytes);
+                const flags = data.slice(0, FlagsBytes);
+                const vars = this.rom.ReadStridedData(data.slice(VarsOffset - FlagsOffset), 0, 2, 256).map(v => v.readUInt16LE(0));
+                const stats = this.rom.ReadStridedData(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => s.readUInt32LE(0) ^ key);
+                return {
+                    badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
+                    trick_house: vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]),
+                    game_stats: this.ParseGameStats(stats)
+                } as TPP.Goals
+            }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step
             //Clock
             this.CachedEmulatorCaller<TPP.TrainerData>(`IWRAM/ReadU16BE/${IwramClockAddr.toString(16)}+2`, this.WrapBytes(data => ({
                 time: {
-                    h: data[0],
-                    m: data[1]
+                    h: data.readUInt8(0),
+                    m: data.readUInt8(1)
                 }
             } as TPP.TrainerData))),
             //Evolution
@@ -166,10 +188,10 @@ namespace RamReader {
                 evolution_is_happening: data.readUInt16LE(0) == 0x179
             } as TPP.TrainerData))),
             //Daycare
-            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}+${DaycareOffset.toString(16)}/118`, this.WrapBytes(data => ({
+            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}+${DaycareOffset.toString(16)}/88/*${SaveBlock1Pointer.toString(16)}+${DaycareOffset.toString(16)}+8C/88`, this.WrapBytes(data => ({
                 daycare: [
                     this.ParsePokemon(data.slice(0, 80)),
-                    this.ParsePokemon(data.slice(140, 140 + 80))
+                    this.ParsePokemon(data.slice(0x88, 0x88 + 80))
                 ].filter(dm => !!dm)
             } as TPP.TrainerData))),
         ] as Array<() => Promise<TPP.TrainerData>>;
@@ -185,20 +207,20 @@ namespace RamReader {
             return party;//.filter(p => !!p);
         }
 
-        protected ParseBattleMons(battleData: Buffer, multBattle: boolean) {
+        protected ParseBattleMons(battleData: Buffer, numBattlers: number) {
             const battleMons = new Array<TPP.PartyPokemon>();
-            const battleBytes = BattleMonsBytes / (multBattle ? 1 : 2);
+            const battleBytes = 0x58 * numBattlers;
             for (let i = 0; i < battleBytes; i += 0x58) {
                 battleMons.push(this.ParseBattlePokemon(battleData.slice(i, i + 0x58)));
             }
-            return battleMons.filter(b => !!b);
+            return battleMons;
         }
 
         protected ParsePokemon(pkmdata: Buffer, boxSlot?: number): TPP.PartyPokemon & TPP.BoxedPokemon {
             const pkmn = {} as Gen3PartyPokemon;
             pkmn.personality_value = pkmdata.readUInt32LE(0);
-            pkmn.encyption_key = pkmn.personality_value ^ pkmdata.readUInt32LE(4);
-            if (!pkmn.encyption_key)
+            pkmn.encryption_key = pkmn.personality_value ^ pkmdata.readUInt32LE(4);
+            if (!pkmdata.readUInt32LE(4) && !pkmn.personality_value)
                 return null;
             pkmn.original_trainer = {
                 name: this.rom.ConvertText(pkmdata.slice(20, 20 + 7)),
@@ -206,10 +228,11 @@ namespace RamReader {
                 secret: pkmdata.readUInt16LE(6)
             }
             pkmn.name = this.rom.ConvertText(pkmdata.slice(8, 8 + 10));
-            pkmn.language = Gen3Language[pkmdata[18]] || pkmdata.readUInt16LE(18).toString();
-            pkmn.marking = this.ParseMarkings(pkmdata[27]);
+            pkmn.language = Gen3Language[pkmdata.readUInt8(18)] || pkmdata.readUInt16LE(18).toString();
+            pkmn.marking = this.ParseMarkings(pkmdata.readUInt8(27));
             pkmn.checksum = pkmdata.readUInt16LE(28);
-            const sections = this.Descramble(this.Decrypt(pkmdata.slice(32, 80), pkmn.encyption_key, pkmn.checksum), pkmn.personality_value);
+            pkmn.shiny = this.CalculateShiny(pkmn);
+            const sections = this.Descramble(this.Decrypt(pkmdata.slice(32, 80), pkmn.encryption_key, pkmn.checksum), pkmn.personality_value);
             if (!sections) {
                 return null;
             }
@@ -218,71 +241,71 @@ namespace RamReader {
             pkmn.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(sections.A.readUInt16LE(0)));
             const itemId = sections.A.readUInt16LE(2);
             pkmn.held_item = itemId ? Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(itemId)) : null;
-            const exp = sections.A.readUInt16LE(4);
-            const ppUps = sections.A[8];
-            pkmn.friendship = sections.A[9];
+            const exp = sections.A.readUInt32LE(4);
+            const ppUps = sections.A.readUInt8(8);
+            pkmn.friendship = sections.A.readUInt8(9);
 
             //Moves
             pkmn.moves = [
-                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(sections.B.readUInt16LE(0)), sections.B[8], ppUps % 4),
-                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(sections.B.readUInt16LE(2)), sections.B[9], (ppUps >> 2) % 4),
-                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(sections.B.readUInt16LE(4)), sections.B[10], (ppUps >> 4) % 4),
-                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(sections.B.readUInt16LE(6)), sections.B[11], (ppUps >> 6) % 4),
+                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(sections.B.readUInt16LE(0)), sections.B.readUInt8(8), ppUps % 4),
+                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(sections.B.readUInt16LE(2)), sections.B.readUInt8(9), (ppUps >>> 2) % 4),
+                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(sections.B.readUInt16LE(4)), sections.B.readUInt8(10), (ppUps >>> 4) % 4),
+                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(sections.B.readUInt16LE(6)), sections.B.readUInt8(11), (ppUps >>> 6) % 4),
             ].filter(m => m && m.id);
 
             //EVs & Condition
             pkmn.evs = {
-                hp: sections.C[0],
-                attack: sections.C[1],
-                defense: sections.C[2],
-                speed: sections.C[3],
-                special_attack: sections.C[4],
-                special_defense: sections.C[5],
+                hp: sections.C.readUInt8(0),
+                attack: sections.C.readUInt8(1),
+                defense: sections.C.readUInt8(2),
+                speed: sections.C.readUInt8(3),
+                special_attack: sections.C.readUInt8(4),
+                special_defense: sections.C.readUInt8(5),
             }
             pkmn.condition = {
-                coolness: sections.C[6],
-                beauty: sections.C[7],
-                cuteness: sections.C[8],
-                smartness: sections.C[9],
-                toughness: sections.C[10],
-                feel: sections.C[11]
+                coolness: sections.C.readUInt8(6),
+                beauty: sections.C.readUInt8(7),
+                cuteness: sections.C.readUInt8(8),
+                smartness: sections.C.readUInt8(9),
+                toughness: sections.C.readUInt8(10),
+                feel: sections.C.readUInt8(11)
             }
 
             //Miscellaneous
-            pkmn.pokerus = this.ParsePokerus(sections.D[0]);
+            pkmn.pokerus = this.ParsePokerus(sections.D.readUInt8(0));
             const met = sections.D.readUInt16LE(2);
-            const metMap = this.rom.GetMap(sections.D[1]);
+            const metMap = this.rom.GetMap(sections.D.readUInt8(1));
             pkmn.met = {
                 map_id: metMap.id,
                 area_id: metMap.areaId,
                 area_name: metMap.areaName,
                 level: met % 128,
-                game: ((met >> 7) % 16).toString(),
-                caught_in: this.rom.GetItem(this.rom.MapCaughtBallId((met >> 11) % 16)).name
+                game: ((met >>> 7) % 16).toString(),
+                caught_in: this.rom.GetItem(this.rom.MapCaughtBallId((met >>> 11) % 16)).name
             }
-            pkmn.original_trainer.gender = this.ParseGender(met >> 15);
+            pkmn.original_trainer.gender = this.ParseGender(met >>> 15);
             const ivs = sections.D.readUInt32LE(4);
             pkmn.ivs = {
                 hp: ivs % 32,
-                attack: (ivs >> 5) % 32,
-                defense: (ivs >> 10) % 32,
-                speed: (ivs >> 15) % 32,
-                special_attack: (ivs >> 20) % 32,
-                special_defense: (ivs >> 25) % 32
+                attack: (ivs >>> 5) % 32,
+                defense: (ivs >>> 10) % 32,
+                speed: (ivs >>> 15) % 32,
+                special_attack: (ivs >>> 20) % 32,
+                special_defense: (ivs >>> 25) % 32
             }
-            pkmn.is_egg = (ivs >> 30) % 2 > 0;
+            pkmn.is_egg = (ivs >>> 30) % 2 > 0;
             pkmn.ability = pkmn.species.abilities[ivs >>> 31] || (ivs >>> 31).toString();
             const ribbons = sections.D.readUInt32LE(8);
             pkmn.ribbons = this.ParseHoennRibbons(ribbons);
-            //pkmn.fateful_encounter = (ribbons >> 27) % 16;
-            //pkmn.obedient = ribbons >> 31;
+            //pkmn.fateful_encounter = (ribbons >>> 27) % 16;
+            //pkmn.obedient = ribbons >>> 31;
 
             if (pkmdata.length > 80) {
                 const status = pkmdata.readUInt32LE(80);
                 pkmn.status = this.ParseStatus(status);
                 pkmn.sleep_turns = status % 8
-                pkmn.level = pkmdata[84];
-                pkmn.pokerus_remaining = pkmdata[85];
+                pkmn.level = pkmdata.readUInt8(84);
+                pkmn.pokerus_remaining = pkmdata.readUInt8(85);
                 pkmn.health = [pkmdata.readUInt16LE(86), pkmdata.readUInt16LE(88)]
                 pkmn.stats = {
                     hp: pkmdata.readUInt16LE(88),
@@ -321,15 +344,15 @@ namespace RamReader {
                 return null;
             const species = this.rom.GetSpecies(speciesId);
             const ivs = pkmdata.readUInt32LE(0x14);
-            const level = pkmdata[0x2A];
+            const level = pkmdata.readUInt8(0x2A);
             const itemId = pkmdata.readUInt16LE(0x2E);
-            const ppUps = pkmdata[0x3B];
+            const ppUps = pkmdata.readUInt8(0x3B);
             const personalityValue = pkmdata.readUInt32LE(0x48);
             let name = this.rom.ConvertText(pkmdata.slice(0x30, 0x3C));
             if (name.toLowerCase() == species.name.toLowerCase())
                 name = species.name;
             return {
-                species: Object.assign(Pokemon.Convert.SpeciesToRunStatus(species), { type1: this.rom.GetType(pkmdata[0x21]), type2: this.rom.GetType(pkmdata[0x22]) }),
+                species: Object.assign(Pokemon.Convert.SpeciesToRunStatus(species), { type1: this.rom.GetType(pkmdata.readUInt8(0x21)), type2: this.rom.GetType(pkmdata.readUInt8(0x22)) }),
                 stats: {
                     hp: pkmdata.readUInt16LE(0x2C),
                     attack: pkmdata.readUInt16LE(0x02),
@@ -339,34 +362,34 @@ namespace RamReader {
                     special_defense: pkmdata.readUInt16LE(0x0A)
                 },
                 moves: [
-                    Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x0C)), pkmdata[0x24], ppUps % 4),
-                    Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x0E)), pkmdata[0x25], (ppUps >> 2) % 4),
-                    Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x10)), pkmdata[0x26], (ppUps >> 4) % 4),
-                    Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x12)), pkmdata[0x27], (ppUps >> 6) % 4),
+                    Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x0C)), pkmdata.readUInt8(0x24), ppUps % 4),
+                    Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x0E)), pkmdata.readUInt8(0x25), (ppUps >> 2) % 4),
+                    Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x10)), pkmdata.readUInt8(0x26), (ppUps >> 4) % 4),
+                    Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x12)), pkmdata.readUInt8(0x27), (ppUps >> 6) % 4),
                 ].filter(m => m && m.id),
                 ivs: {
                     hp: ivs % 32,
-                    attack: (ivs >> 5) % 32,
-                    defense: (ivs >> 10) % 32,
-                    speed: (ivs >> 15) % 32,
-                    special_attack: (ivs >> 20) % 32,
-                    special_defense: (ivs >> 25) % 32
+                    attack: (ivs >>> 5) % 32,
+                    defense: (ivs >>> 10) % 32,
+                    speed: (ivs >>> 15) % 32,
+                    special_attack: (ivs >>> 20) % 32,
+                    special_defense: (ivs >>> 25) % 32
                 },
-                is_egg: (ivs >> 30) % 2 > 0,
+                is_egg: (ivs >>> 30) % 2 > 0,
                 buffs: {
-                    hp: pkmdata[0x18],
-                    attack: pkmdata[0x19],
-                    defense: pkmdata[0x1A],
-                    speed: pkmdata[0x1B],
-                    special_attack: pkmdata[0x1C],
-                    special_defense: pkmdata[0x1D],
-                    accuracy: pkmdata[0x1E],
-                    evasion: pkmdata[0x1F],
+                    hp: pkmdata.readUInt8(0x18),
+                    attack: pkmdata.readUInt8(0x19),
+                    defense: pkmdata.readUInt8(0x1A),
+                    speed: pkmdata.readUInt8(0x1B),
+                    special_attack: pkmdata.readUInt8(0x1C),
+                    special_defense: pkmdata.readUInt8(0x1D),
+                    accuracy: pkmdata.readUInt8(0x1E),
+                    evasion: pkmdata.readUInt8(0x1F),
                 },
-                ability: this.rom.GetAbility(pkmdata[0x20]),
+                ability: this.rom.GetAbility(pkmdata.readUInt8(0x20)),
                 health: [pkmdata.readUInt16LE(0x28), pkmdata.readUInt16LE(0x2C)],
-                level,
-                friendship: pkmdata[0x2B],
+                //level,
+                friendship: pkmdata.readUInt8(0x2B),
                 held_item: itemId ? Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(itemId)) : null,
                 name,
                 original_trainer: {
@@ -374,7 +397,7 @@ namespace RamReader {
                     id: pkmdata.readUInt16LE(0x54),
                     secret: pkmdata.readUInt16LE(0x56)
                 },
-                experience: this.CalculateExpVals(pkmdata.readUInt32LE(0x44), level, species.expFunction),
+                //experience: this.CalculateExpVals(pkmdata.readUInt32LE(0x44), level, species.expFunction), //seems to not always update
                 personality_value: personalityValue,
                 gender: this.CalculateGender(species.genderRatio, personalityValue),
                 status: this.ParseStatus(pkmdata.readUInt32LE(0x4C)),
@@ -399,6 +422,22 @@ namespace RamReader {
             else {
                 return (personalityValue % 256) > genderRatio ? "Male" : "Female";
             }
+        }
+
+        private GameStatsMapping = ["games_saved", "first_hof_play_time", "started_trends", "planted_berries", "traded_bikes",
+            "steps", "got_interviewed", "total_battles", "wild_battles", "trainer_battles", "hof_entries",
+            "pokemon_captures", "fishing_captures", "eggs_hatched", "pokemon_evolved", "pokecenter_used", "rested_at_home",
+            "entered_safari_zone", "trees_cut", "rocks_smashed", "secret_bases_moved", "pokemon_trades",
+            null, "link_battles_won", "link_battles_lost", "link_battles_tied", "splash_used", "struggle_used",
+            "slots_jackpots", "consecutive_roulette_wins", "entered_battle_tower", null, "best_battle_tower_streak",
+            "pokeblocks_made", "pokeblocks_made_with_friends", "link_contests_won", "contests_entered", "contests_won",
+            "shopping_trips", "itemfinder_uses", "got_rained_on", "checked_pokedex", "ribbons_earned", "ledges_jumped",
+            "tvs_watched", "clocks_checked", "lottery_wins", "daycare_uses", "cable_car_rides", "hot_spring_baths_taken", null, null];
+
+        protected ParseGameStats(statArr: number[]) {
+            const stats: { [key: string]: number } = {};
+            statArr.forEach((stat, i) => this.GameStatsMapping[i] && (stats[this.GameStatsMapping[i]] = stat));
+            return stats;
         }
 
         protected Decrypt(data: Buffer, key: number, checksum?: number) {

@@ -21,7 +21,7 @@ namespace RamReader {
             this.partyInterval = setInterval(() => this.ReadParty().then(party => {
                 if (party) {
                     this.CurrentParty = party;
-                    state.party = party.map(p => p && Object.assign({}, p, (this.CurrentBattleMons || []).filter(b => b.personality_value == p.personality_value && b.name == p.name && b.species.national_dex == p.species.national_dex).pop() || {}));
+                    state.party = party.map((p, i) => p && Object.assign({}, p, this.GetBattleMon(i, false, p.personality_value, p.name, true) || {}));
                     transmitState(state);
                 }
             }).catch(err => console.error(err)), 120);
@@ -44,13 +44,13 @@ namespace RamReader {
                     delete state.battle_kind;
                     Object.assign(state, battle);
                     if (battle.in_battle) {
-                        battle.enemy_party.forEach(p => p && Object.assign(p, (this.CurrentBattleMons || []).filter(b => b.personality_value == p.personality_value && b.name == p.name).pop() || {}));
+                        battle.enemy_party.forEach((p, i) => p && Object.assign(p, this.GetBattleMon(i, true, p.personality_value, p.name, true) || {}));
                         state.enemy_party = this.ConcealEnemyParty(battle.enemy_party as TPP.PartyData);
-                        state.party = this.CurrentParty.map(p => p && Object.assign({}, p, (this.CurrentBattleMons || []).filter(b => b.personality_value == p.personality_value && b.name == p.name && b.species.national_dex == p.species.national_dex).pop() || {}));
+                        state.party = this.CurrentParty.map((p, i) => p && Object.assign({}, p, this.GetBattleMon(i, false, p.personality_value, p.name, true) || {}));
                     }
                     else {
-                        delete this.CurrentBattleMons;
-                        delete this.CurrentBattleSeenPokemon;
+                        this.CurrentBattleMons = null;
+                        this.CurrentBattleSeenPokemon = null;
                         state.party = this.CurrentParty;
                     }
                     transmitState(state);
@@ -78,41 +78,67 @@ namespace RamReader {
 
         public abstract ReadBattle: () => Promise<TPP.BattleStatus>;
 
-        protected StoreCurrentBattleMons(mons: TPP.PartyPokemon[]) {
-            this.CurrentBattleMons = mons;
+        protected StoreCurrentBattleMons(mons: TPP.PartyPokemon[], monPartyIndexes: number[], monInEnemyParty: boolean[]) {
+            this.CurrentBattleMons = {
+                battleMons: mons,
+                partyIndexes: monPartyIndexes,
+                isEnemyMon: monInEnemyParty
+            };
             this.CurrentBattleSeenPokemon = this.CurrentBattleSeenPokemon || [];
-            mons.forEach(m => {
-                if (!this.HasBeenSeenThisBattle(m))
-                    this.CurrentBattleSeenPokemon.push({ pv: m.personality_value, name: m.name, dexNum: m.species.national_dex });
+            mons.forEach((m, i) => {
+                if (monInEnemyParty[i] && !this.HasBeenSeenThisBattle(m))
+                    this.CurrentBattleSeenPokemon.push(m.personality_value);
             });
         }
 
         private HasBeenSeenThisBattle(mon: TPP.PartyPokemon) {
             if (!mon || !mon.species)
                 return false;
-            return this.CurrentBattleSeenPokemon.some(s => s.pv == mon.personality_value && s.name == mon.name && s.dexNum == mon.species.national_dex);
+            return (this.CurrentBattleSeenPokemon || []).some(pv => mon.personality_value == pv);
         }
-        private IsCurrentlyBattling(mon: TPP.PartyPokemon) {
-            if (!mon || !mon.species)
-                return false;
-            return this.CurrentBattleMons.some(b => b.personality_value == mon.personality_value && b.name == mon.name && b.species.national_dex == mon.species.national_dex);
+
+        private GetBattleMon(partyIndex: number, isEnemy: boolean, personalityValue?: number, name?: string, nonFainted = false) {
+            if (this.CurrentBattleMons && this.CurrentBattleMons.battleMons.length) {
+                const battlerIndex = this.CurrentBattleMons.partyIndexes.map((p, i) => p == partyIndex && this.CurrentBattleMons.isEnemyMon[i] == isEnemy ? i : null).filter(i => i != null).pop();
+                if (battlerIndex != null) {
+                    const battler = this.CurrentBattleMons.battleMons[battlerIndex];
+                    if (battler &&
+                        (!personalityValue || battler.personality_value == personalityValue) &&
+                        (!name || battler.name == name) &&
+                        (!nonFainted || battler.health[0] > 0)
+                    )
+                        return battler;
+                }
+            }
+            return null;
+        }
+
+        private IsCurrentlyBattling(pokemon: TPP.PartyPokemon, partyIndex: number, isEnemy: boolean) {
+            return (this.GetBattleMon(partyIndex, isEnemy) || { personality_value: null }).personality_value == pokemon.personality_value;
         }
 
         private CurrentParty: TPP.PartyPokemon[];
-        private CurrentBattleMons: TPP.PartyPokemon[];
-        private CurrentBattleSeenPokemon: { pv: number, name: string, dexNum: number }[];
+        private CurrentBattleMons: {
+            battleMons: TPP.PartyPokemon[];
+            partyIndexes: number[];
+            isEnemyMon: boolean[];
+        };
+        private CurrentBattleSeenPokemon: number[];
 
         protected ConcealEnemyParty(party: TPP.PartyData): TPP.EnemyParty {
-            return party.map(p => p && ({
+            return party.map((p, i) => p && ({
                 species: this.HasBeenSeenThisBattle(p) ? p.species : { id: 0, name: "???", national_dex: 0 },
                 health: p.health,
-                active: this.IsCurrentlyBattling(p),
+                active: this.IsCurrentlyBattling(p, i, true),
                 form: p.form,
                 shiny: p.shiny,
+                shiny_value: p.shiny_value,
                 gender: p.gender,
                 cp: p.cp,
                 fitness: p.fitness,
                 personality_value: p.personality_value,
+                buffs: p.buffs,
+                moves: p.moves.filter(m => m.pp < m.max_pp), //only show moves with less than max PP (because they've been used)
                 name: this.HasBeenSeenThisBattle(p) ? p.name : "???"
             }));
         }
@@ -221,7 +247,7 @@ namespace RamReader {
             const pkrs = {
                 infected: pokerus > 0,
                 days_left: pokerus % 16,
-                strain: pokerus >> 4,
+                strain: pokerus >>> 4,
                 cured: false
             }
             pkrs.cured = pkrs.infected && !pkrs.days_left;
@@ -245,22 +271,22 @@ namespace RamReader {
         protected ParseHoennRibbons(ribbonVal) {
             return [
                 this.ParseRibbon(ribbonVal % 8, "Cool"),
-                this.ParseRibbon((ribbonVal >> 3) % 8, "Beauty"),
-                this.ParseRibbon((ribbonVal >> 6) % 8, "Cute"),
-                this.ParseRibbon((ribbonVal >> 9) % 8, "Smart"),
-                this.ParseRibbon((ribbonVal >> 12) % 8, "Tough"),
-                this.ParseRibbon((ribbonVal >> 15) % 2, "Champion"),
-                this.ParseRibbon((ribbonVal >> 16) % 2, "Winning"),
-                this.ParseRibbon((ribbonVal >> 17) % 2, "Victory"),
-                this.ParseRibbon((ribbonVal >> 18) % 2, "Artist"),
-                this.ParseRibbon((ribbonVal >> 19) % 2, "Effort"),
-                this.ParseRibbon((ribbonVal >> 20) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >> 21) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >> 22) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >> 23) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >> 24) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >> 25) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >> 26) % 2, "Gift"),
+                this.ParseRibbon((ribbonVal >>> 3) % 8, "Beauty"),
+                this.ParseRibbon((ribbonVal >>> 6) % 8, "Cute"),
+                this.ParseRibbon((ribbonVal >>> 9) % 8, "Smart"),
+                this.ParseRibbon((ribbonVal >>> 12) % 8, "Tough"),
+                this.ParseRibbon((ribbonVal >>> 15) % 2, "Champion"),
+                this.ParseRibbon((ribbonVal >>> 16) % 2, "Winning"),
+                this.ParseRibbon((ribbonVal >>> 17) % 2, "Victory"),
+                this.ParseRibbon((ribbonVal >>> 18) % 2, "Artist"),
+                this.ParseRibbon((ribbonVal >>> 19) % 2, "Effort"),
+                this.ParseRibbon((ribbonVal >>> 20) % 2, "Gift"),
+                this.ParseRibbon((ribbonVal >>> 21) % 2, "Gift"),
+                this.ParseRibbon((ribbonVal >>> 22) % 2, "Gift"),
+                this.ParseRibbon((ribbonVal >>> 23) % 2, "Gift"),
+                this.ParseRibbon((ribbonVal >>> 24) % 2, "Gift"),
+                this.ParseRibbon((ribbonVal >>> 25) % 2, "Gift"),
+                this.ParseRibbon((ribbonVal >>> 26) % 2, "Gift"),
             ].filter(r => !!r);
         }
 
@@ -269,13 +295,7 @@ namespace RamReader {
         public ParseOptions = (rawOptions: number) => ParseOptions(rawOptions, this.OptionsSpec);
 
         public GetSetFlags(flagBytes: Buffer, flagCount = flagBytes.length * 8, offset = 0) {
-            const length = Math.floor((flagCount + 7) / 8);
-            const setFlags = new Array<number>();
-            for (let i = 0; i < length; i++)
-                for (let b = 0; b < 8; b++)
-                    if (flagBytes[i + offset] & (1 << b))
-                        setFlags.push(i * 8 + b + 1);
-            return setFlags.filter(f => f <= flagCount);
+            return this.rom.GetSetFlags(flagBytes, flagCount, offset);
         }
 
         protected CalculateShiny(pokemon: TPP.Pokemon) {
