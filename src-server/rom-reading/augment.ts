@@ -137,7 +137,7 @@ namespace RomReader {
         }
 
         function augmentSpecies(s: TPP.PokemonSpecies, romMon: Pokemon.Species = null) {
-            if (!s.id) return;
+            if (!s || !s.id) return;
             romMon = romMon || romData.GetSpecies(s.id);
             s.name = s.name || romMon.name;
             s.national_dex = s.national_dex || romMon.dexNumber;
@@ -166,29 +166,11 @@ namespace RomReader {
         }
 
         function calculateGender(p: TPP.Pokemon) {
-            if (p.species.gender_ratio && typeof (p.gender) !== "string") {
-                if (p.species.gender_ratio == 255) {
-                    p.gender = '';
-                }
-                else if (p.species.gender_ratio == 254) {
-                    p.gender = "Female";
-                }
-                else if (p.species.gender_ratio == 0) {
-                    p.gender = "Male";
-                }
-                // else {//if (p.gender) { //Generation 3
-                //     p.gender = (p.personality_value % 256) > p.species.gender_ratio ? "Male" : "Female";
-                // }
-                else { //Generation 2
-                    p.gender = ((p.ivs || { attack: 0 }).attack << 4) > p.species.gender_ratio ? "Male" : "Female";
-                }
-            }
+            romData.CalculateGender(p);
         }
 
         function calculateShiny(p: TPP.Pokemon) {
-            if (typeof p.shiny !== "boolean" && p.original_trainer) {
-                p.shiny = ((p.original_trainer.id ^ p.original_trainer.secret) ^ (Math.floor(p.personality_value / 65536) ^ (p.personality_value % 65536))) < 8;
-            }
+            romData.CalculateShiny(p);
         }
 
         function calculatePokemonAbilityNatureCharacteristic(p: TPP.Pokemon) {

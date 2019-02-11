@@ -74,7 +74,7 @@ class Appraisal extends React.Component<AppraisalProps, AppraisalState> {
         return { step: this.state.step + 1 };
     }
     private tick() {
-        this.setState(this.advance(), () => this.timer = this.state.step != AppraisalStep.Hide && setTimeout(() => this.tick(), this.state.stepDuration * 1000));
+        //this.setState(this.advance(), () => this.timer = this.state.step != AppraisalStep.Hide && setTimeout(() => this.tick(), this.state.stepDuration * 1000));
     }
     render() {
         if (!this.state.trainerName || !this.state.pokemon) {

@@ -1,5 +1,5 @@
 declare interface PGEINI {
-    [key:string]:string;
+    [key: string]: string;
     "Header": string;
     "ROMName": string;
     "ItemData": string;
@@ -94,6 +94,7 @@ declare interface PGEINI {
     "NumberOfMapsInBank33": string;
     "MapLabelData": string;
     "NumberOfMapLabels": string;
+    "MapLabelOffset": string;
     "PokemonFrontSprites": string;
     "PokemonBackSprites": string;
     "PokemonNormalPal": string;
@@ -237,4 +238,46 @@ declare interface PGEINI {
     "PokedexLightestTable": string;
     "PokedexSmallestTable": string;
     "PokedexTypeTable": string;
+
+    //RAM locations
+    "EwramPartyLocation": string;
+    "PartyBytes": string;
+    "PCBlockPointer": string;
+    "PCBytes": string;
+    "SaveBlock1Pointer": string;
+    "SaveBlock2Pointer": string;
+    "FlagsOffset": string;
+    "FlagsBytes": string;
+    "VarsOffset": string;
+    "GameStatsOffset": string;
+    "GameStatsBytes": string;
+    "DaycareOffset": string;
+    "MoneyOffset": string;
+    "EncryptionKeyOffset": string;
+    "ItemPCOffset": string;
+    "ItemPCCount": string;
+    "ItemPocketOffset": string;
+    "ItemPocketCount": string;
+    "ItemKeyOffset": string;
+    "ItemKeyCount": string;
+    "ItemBallOffset": string;
+    "ItemBallCount": string;
+    "ItemTMOffset": string;
+    "ItemTMCount": string;
+    "ItemBerriesOffset": string;
+    "ItemBerriesCount": string;
+    "IwramClockAddr": string;
+    "IwramMusicAddr": string;
+    "EvolutionMusicIds": string;
+    "RivalNameOffset": string;
+    "CurrentAreaAddr": string;
+    "gBattleTypeFlags": string;
+    "gTrainerBattleOpponent_A": string;
+    "gEnemyParty": string;
+    "gBattlersCount": string;
+    "gBattlerPartyIndexes": string;
+    "gBattlerPositions": string;
+    "gBattleMons": string;
+    "gBattleMonsBytes": string;
+    "InBattleAddr": string;
 }

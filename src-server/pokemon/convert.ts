@@ -44,7 +44,7 @@ namespace Pokemon.Convert {
     }
 
     export function StatsToRunStatus(stats: Stats) {
-        return {
+        return stats && {
             attack: stats.atk,
             defense: stats.def,
             hp: stats.hp,

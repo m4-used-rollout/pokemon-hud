@@ -6,17 +6,46 @@
 
 namespace RamReader {
 
-    export abstract class RamReaderBase {
-        constructor(public rom: RomReader.RomReaderBase, public port: number, public hostname = "localhost") { }
+    const http = require('http') as typeof import('http');
+
+    const aissIdOffsets = [
+        /*      0x00  0x01  0x02  0x03  0x04  0x05  0x06  0x07  0x08  0x09  0x0A  0x0B  0x0C  0x0D  0x0E  0x0F*/
+        /*0x00*/0x00, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02,
+        /*0x10*/0x00, 0x01, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x02,
+        /*0x20*/0x00, 0x01, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x02, 0x00, 0x01,
+        /*0x30*/0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x02, 0x00,
+        /*0x40*/0x01, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x00, 0x01, 0x02, 0x00, 0x01, 0x00,
+        /*0x50*/0x01, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x02, 0x00,
+        /*0x60*/0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00,
+        /*0x70*/0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        /*0x80*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00,
+        /*0x90*/0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        /*0xA0*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        /*0xB0*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        /*0xC0*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        /*0xD0*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        /*0xE0*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        /*0xF0*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+
+    export abstract class RamReaderBase<T extends RomReader.RomReaderBase = RomReader.RomReaderBase> {
+        constructor(public rom: T, public port: number, public hostname = "localhost", public hudPort: number) { }
 
         private partyInterval: NodeJS.Timer;
         private pcInterval: NodeJS.Timer;
         private trainerInterval: NodeJS.Timer;
         private battleInterval: NodeJS.Timer;
 
+        private running: boolean = false;
+        private stringDataCache: { [key: string]: string } = {};
+        protected currentState:TPP.RunStatus;
+
         public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
+            this.currentState = state;
             if (this.partyInterval || this.pcInterval || this.trainerInterval)
                 this.Stop();
+
+            this.running = true;
+            this.Init();
 
             this.partyInterval = setInterval(() => this.ReadParty().then(party => {
                 if (party) {
@@ -24,19 +53,19 @@ namespace RamReader {
                     state.party = party.map((p, i) => p && Object.assign({}, p, this.GetBattleMon(i, false, p.personality_value, p.name, true) || {}));
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), 120);
+            }).catch(err => console.error(err)), 320);
             this.pcInterval = setInterval(() => this.ReadPC().then(pc => {
                 if (pc) {
                     state.pc = pc;
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), 510);
+            }).catch(err => console.error(err)), 1510);
             this.trainerInterval = setInterval(() => this.ReadTrainer().then(trainer => {
                 if (Object.keys(trainer).length) {
                     Object.assign(state, trainer);
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), 250);
+            }).catch(err => console.error(err)), 350);
             this.battleInterval = setInterval(() => this.ReadBattle().then(battle => {
                 if (battle) {
                     delete state.enemy_party;
@@ -55,14 +84,20 @@ namespace RamReader {
                     }
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), 230);
+            }).catch(err => console.error(err)), 330);
         }
 
         public Stop() {
+            this.running = false;
             clearInterval(this.partyInterval);
             clearInterval(this.pcInterval);
             clearInterval(this.trainerInterval);
             clearInterval(this.battleInterval);
+            this.stringDataCache = {};
+        }
+
+        public Init() {
+            //Override in children if needed
         }
 
         public abstract ReadParty: () => Promise<TPP.PartyData>;
@@ -84,17 +119,23 @@ namespace RamReader {
                 partyIndexes: monPartyIndexes,
                 isEnemyMon: monInEnemyParty
             };
-            this.CurrentBattleSeenPokemon = this.CurrentBattleSeenPokemon || [];
+
             mons.forEach((m, i) => {
                 if (monInEnemyParty[i] && !this.HasBeenSeenThisBattle(m))
                     this.CurrentBattleSeenPokemon.push(m.personality_value);
             });
         }
 
-        private HasBeenSeenThisBattle(mon: TPP.PartyPokemon) {
+        private HasBeenSeenThisBattle(mon: (TPP.PartyPokemon & { active?: boolean })) {
+            this.CurrentBattleSeenPokemon = this.CurrentBattleSeenPokemon || [];
             if (!mon || !mon.species)
                 return false;
-            return (this.CurrentBattleSeenPokemon || []).some(pv => mon.personality_value == pv);
+            if (mon.active) { //Gen 1 reader manages the active flag itself, so let's go off that
+                if (!this.CurrentBattleSeenPokemon.some(pv => mon.personality_value == pv))
+                    this.CurrentBattleSeenPokemon.push(mon.personality_value);
+                return true;
+            }
+            return this.CurrentBattleSeenPokemon.some(pv => mon.personality_value == pv);
         }
 
         private GetBattleMon(partyIndex: number, isEnemy: boolean, personalityValue?: number, name?: string, nonFainted = false) {
@@ -125,11 +166,11 @@ namespace RamReader {
         };
         private CurrentBattleSeenPokemon: number[];
 
-        protected ConcealEnemyParty(party: TPP.PartyData): TPP.EnemyParty {
+        protected ConcealEnemyParty(party: (TPP.PartyPokemon & { active?: boolean })[]): TPP.EnemyParty {
             return party.map((p, i) => p && ({
                 species: this.HasBeenSeenThisBattle(p) ? p.species : { id: 0, name: "???", national_dex: 0 },
                 health: p.health,
-                active: this.IsCurrentlyBattling(p, i, true),
+                active: p.active || this.IsCurrentlyBattling(p, i, true),
                 form: p.form,
                 shiny: p.shiny,
                 shiny_value: p.shiny_value,
@@ -145,45 +186,52 @@ namespace RamReader {
 
         protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
 
-        public CallEmulator<T>(path: string, callback?: (data: string) => T) {
-            return new Promise<T>((resolve, reject) => {
+        public CallEmulator<T>(path: string[] | string, callback?: (data: string) => T, force = false) {
+            let paths = Array.isArray(path) ? path : [path];
+            return Promise.all(paths.map(path => new Promise<string>((resolve, reject) => {
+                if (!this.running && !force)
+                    reject("Attempted to call emulator from stopped RAM Reader");
                 try {
-                    require('http').get(`http://${this.hostname}:${this.port}/${path}`, response => {
+                    http.get(`http://${this.hostname}:${this.port}/${path}`, response => {
                         let data = '';
                         response.on('data', chunk => data += chunk);
-                        if (callback) {
-                            response.on('end', () => resolve(callback(data)));
-                        }
-                        else {
-                            response.on('end', () => resolve(data as any as T));
-                        }
+                        response.on('end', () => resolve(data));
                     }).on('error', reject);
                 }
                 catch (e) {
                     reject(e);
                 }
+            }))).then(r => {
+                const allData = r.reduce((str, s) => str + s, "");
+                try {
+                    return (callback || ((d) => d as any as T))(allData);
+                }
+                catch (e) {
+                    console.log(paths.map(path => `http://${this.hostname}:${this.port}/${path}`).join(' ') + " => " + allData);
+                    throw e;
+                }
             });
         }
 
-        public CachedEmulatorCaller<T>(path: string, callback: (data: string) => T, ignoreCharStart = -1, ignoreCharEnd = -1) {
-            let lastInput: string = null;
+        public CachedEmulatorCaller<T>(path: string[] | string, callback: (data: string) => T, ignoreCharStart = -1, ignoreCharEnd = -1) {
+            const cacheKey = Array.isArray(path) ? path.join() : path;
             return () => this.CallEmulator<T>(path, data => {
                 let stringData = data;
                 if (ignoreCharStart >= 0 && ignoreCharEnd >= ignoreCharStart) {
                     stringData = (ignoreCharStart ? data.slice(0, ignoreCharStart) : "") + data.slice(ignoreCharEnd);
                 }
-                if (lastInput != stringData) {
-                    try {
-                        const result = callback(data);
-                        if (result) {
-                            lastInput = stringData;
-                            return result;
-                        }
+                if (this.stringDataCache[cacheKey] != stringData) {
+                    // try {
+                    const result = callback(data);
+                    if (result) {
+                        this.stringDataCache[cacheKey] = stringData;
+                        return result;
                     }
-                    catch (e) {
-                        console.error(e);
-                        return null;
-                    }
+                    // }
+                    // catch (e) {
+                    //     console.error(e);
+                    //     return null;
+                    // }
                 }
                 return null;
             });
@@ -203,7 +251,9 @@ namespace RamReader {
             return marking;
         }
 
-        protected abstract Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
+        protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer {
+            return data;
+        }
 
         public CalcChecksum(data: Buffer) {
             let sum = 0;
@@ -313,5 +363,25 @@ namespace RamReader {
             return { current, next_level, this_level, remaining: next_level - current };
         }
 
+        protected StructEmulatorCaller<T>(domain: string, struct: { [key: string]: number }, symbolMapper: (symbol: string) => number, callback: (struct: { [key: string]: Buffer }) => T): () => Promise<T> {
+            const symbols = Object.keys(struct).map(s => ({ symbol: s, address: symbolMapper(s), length: struct[s] }));
+            return this.CachedEmulatorCaller(`${domain}/ReadByteRange/${symbols.map(s => `${s.address.toString(16)}/${s.length.toString(16)}`).join('/')}`, this.WrapBytes(data => {
+                let offset = 0;
+                const outStruct: { [key: string]: Buffer } = {};
+                symbols.forEach(s => {
+                    outStruct[s.symbol] = data.slice(offset, offset + s.length);
+                    offset += s.length;
+                });
+                return callback(outStruct);
+            }));
+        }
+
+        protected SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress = -1, ifValue = 0, bytes = 4) {
+            const callUrl = `${eventName}/OnMemory${event}${ifAddress >= 0 ? "IfValue" : ""}/${address.toString(16)}/${bytes}/${ifAddress >= 0 ? `${ifAddress.toString(16)}/${ifValue.toString(16)}/` : ""}http://localhost:${this.hudPort}/${callEndpoint}`;
+            //console.log(callUrl);
+            return this.CallEmulator(callUrl);
+        }
+
+        protected AissId = (dexNum: number, idByte: number) => ((dexNum - aissIdOffsets[dexNum]) << 8) | idByte;
     }
 }

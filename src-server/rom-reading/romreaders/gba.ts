@@ -58,5 +58,27 @@ namespace RomReader {
             return Math.floor((((stats.hp >> 1) % 2) + (((stats.attack >> 1) % 2) << 1) + (((stats.defense >> 1) % 2) << 2) + (((stats.speed >> 1) % 2) << 3) + (((stats.special_attack >> 1) % 2) << 4) + (((stats.special_defense >> 1) % 2) << 5)) * 40 / 63) + 30;
         }
 
+        CalculateGender(pokemon: TPP.Pokemon) {
+            if (pokemon.species.gender_ratio && typeof (pokemon.gender) !== "string") {
+                if (pokemon.species.gender_ratio == 255) {
+                    pokemon.gender = '';
+                }
+                else if (pokemon.species.gender_ratio == 254) {
+                    pokemon.gender = "Female";
+                }
+                else if (pokemon.species.gender_ratio == 0) {
+                    pokemon.gender = "Male";
+                }
+                else { //Generation 3+
+                    pokemon.gender = (pokemon.personality_value % 256) > pokemon.species.gender_ratio ? "Male" : "Female";
+                }
+            }
+        }
+        CalculateShiny(pokemon: TPP.Pokemon) {
+            if (typeof pokemon.shiny !== "boolean" && pokemon.original_trainer) {
+                pokemon.shiny = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536))) < 8;
+            }
+        }
+
     }
 }

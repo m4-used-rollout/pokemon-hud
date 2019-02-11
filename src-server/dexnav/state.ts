@@ -42,6 +42,7 @@ namespace TPP.Server.DexNav {
         public MoreLeftToCatch = true;
         public ShowDexNav = true;
         public TehUrn = false;
+        public GlitchOut = false;
         public KnownEncounters: KnownEncounters = {
             grass: new Array<KnownEncounter>(),
             hidden_grass: new Array<KnownEncounter>(),

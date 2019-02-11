@@ -165,6 +165,7 @@ namespace RomReader {
             let path = `./img/trainers/${TPP.Server.getConfig().spriteFolder}/${id}.png`;
             if (Tools.File.Exists(path))
                 return path;
+            console.log(`Can't find ${path}`);
             return "./img/trainers/unknown.png";
         }
         GetItemSprite(id: number) {
@@ -247,6 +248,29 @@ namespace RomReader {
                     if (flagBytes[i + offset] & (1 << b))
                         setFlags.push(i * 8 + b + 1);
             return setFlags.filter(f => f <= flagCount);
+        }
+
+        CalculateGender(pokemon: TPP.Pokemon) {
+            if (pokemon.species.gender_ratio && typeof (pokemon.gender) !== "string") {
+                if (pokemon.species.gender_ratio == 255) {
+                    pokemon.gender = '';
+                }
+                else if (pokemon.species.gender_ratio == 254) {
+                    pokemon.gender = "Female";
+                }
+                else if (pokemon.species.gender_ratio == 0) {
+                    pokemon.gender = "Male";
+                }
+                else { //Generation 3+
+                    pokemon.gender = (pokemon.personality_value % 256) > pokemon.species.gender_ratio ? "Male" : "Female";
+                }
+        }
+    }
+
+        CalculateShiny(pokemon: TPP.Pokemon) {
+            if (typeof pokemon.shiny !== "boolean" && pokemon.original_trainer) {
+                pokemon.shiny = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536))) < 8;
+            }
         }
 
         private surfExp = /^surf$/i;

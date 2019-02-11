@@ -1,7 +1,7 @@
 /// <reference path="../ref/config.d.ts" />
 
 module Args {
-    const fs = require('fs');
+    const fs:typeof import('fs') = require('fs');
 
     export class CmdConf implements Config {
         runName: string = null;
@@ -11,7 +11,7 @@ module Args {
         romDexToNatDex?: number[] = null;
         displayOptions?: string[] = null;
         hudTheme: string = null;
-        romFile?: string = null;
+        romFile?: string[] = null;
         iniFile?: string = null;
         useGPU?: boolean = null;
         forceNoHighDPIScaling?: boolean = null;
@@ -38,6 +38,7 @@ module Args {
         dexNavTheme: string = null;
         hofMapId: number = null;
         hofMapBank: number = null;
+        transitionDurationMs: number = null;
 
         Merge(config: Config) {
             Object.keys(config || {}).forEach(k => this[k] = this[k] === null || typeof this[k] === "undefined" ? config[k] : this[k]);

@@ -5,7 +5,7 @@
 /// <reference path="../pokesprite.tsx" />
 /// <reference path="../frameborder.tsx" />
 
-class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TPP.TrainerData; }, {}> {
+class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TPP.RunStatus; }, {}> {
     render() {
         let mon = this.props.pokemon;
         if (!mon)
@@ -16,6 +16,8 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
         let hpPixels = Math.floor(mon.health[0] * 48 / mon.health[1]);
         let classes = [
             //Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) >= 50 ? "health-high" : "health-med",
+            this.props.gameState.transitioning && 'glitch',
+            this.props.gameState.transitioning && `glitch-effect-${Math.ceil(Math.random() * 6)}`,
             hpPixels < 10 ? "health-low" : hpPixels >= 24 ? "health-high" : "health-med",
             mon.gender,
             mon.health[0] == 0 && "fainted",
@@ -56,21 +58,21 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                             <div className="exp" style={{ width: expPercent + '%' }} />
                         </div>
                     </div>
-                    {/* <FitToWidth className="extra-info">
+                    <FitToWidth className="extra-info">
                         {mon.ability && <div className="ability"> {mon.ability} </div>}
                         {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
                         {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
                         {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />}
-                    </FitToWidth> */}
+                    </FitToWidth>
                     <ul className="moves">
                         {mon.moves.map(m => <Move move={m} key={m.id} />)}
                     </ul>
-                    <div className="extra-info">
-                        {/* {mon.ability && <div className="ability"> {mon.ability} </div>}
+                    {/* <div className="extra-info">
+                        {mon.ability && <div className="ability"> {mon.ability} </div>}
                         {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
-                        {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>} */}
+                        {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
                         {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />}
-                    </div>
+                    </div> */}
                     <div className="health-bar">
                         <div className="health" style={{ width: hpPercent + '%' }} />
                         <div className="hp" data-current={mon.health[0]} data-max={(mon.health[1].toString().length < 3 ? new Array(3 - mon.health[1].toString().length).fill(' ').join('') : "") + mon.health[1]} />

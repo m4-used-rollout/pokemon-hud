@@ -22,6 +22,7 @@ namespace TPP.Server.DexNav {
 
     MainProcessRegisterStateHandler(runState => {
         if (!state //No previous state
+            || state.GlitchOut != runState.transitioning
             || runState.map_id != state.MapID || runState.map_bank != state.MapBank || runState.area_id != state.AreaID //Changed map
             || ownedCount != runState.caught || seenCount != runState.seen //Changed Pokedex
             || hour != getHour(runState) //Changed time of day
@@ -30,6 +31,7 @@ namespace TPP.Server.DexNav {
         ) {
             let map = RomData.GetMap(runState.map_id, runState.map_bank);
             state = new State(map, RomData.GetCurrentMapEncounters(map, runState), RomData.GetAllMapEncounters(map), runState);
+            state.GlitchOut = runState.transitioning;
             ownedCount = runState.caught;
             seenCount = runState.seen;
             hour = getHour(runState);

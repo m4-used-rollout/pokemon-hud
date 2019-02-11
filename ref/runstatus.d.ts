@@ -4,6 +4,9 @@ declare namespace TPP {
     export interface RunStatus extends TrainerData, BattleStatus {
         party: PartyData;
         pc: CombinedPCData;
+        game?: string;
+        updates_paused?: boolean;
+        transitioning?: boolean;
     }
 
     //sent from lua

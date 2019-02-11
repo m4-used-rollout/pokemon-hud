@@ -6,7 +6,7 @@ declare interface Config extends DexNavConfig, GoalConfig {
     romDexToNatDex?: (number | number[])[];
     displayOptions?: string[];
     hudTheme: string;
-    romFile?: string;
+    romFile?: string[];
     iniFile?: string;
     useGPU?: boolean;
     forceNoHighDPIScaling?: boolean;
@@ -23,6 +23,7 @@ declare interface Config extends DexNavConfig, GoalConfig {
     frameless?: boolean;
     blockResize?: boolean;
     resetEveryHours?: number;
+    transitionDurationMs?:number;
 }
 
 declare interface DexNavConfig {

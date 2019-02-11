@@ -5,7 +5,7 @@ const DEVMODE = false;
 
 type dexState = { newEntry: number, scrollTo: number, firstEntry: boolean };
 
-class Pokedex extends React.Component<{ seen: number[], owned: number[] }, dexState> {
+class Pokedex extends React.Component<{ seen: number[], owned: number[], noDisplay?:boolean }, dexState> {
     constructor(props) {
         super(props);
         this.state = { newEntry: null, scrollTo: null, firstEntry: true };
@@ -18,6 +18,8 @@ class Pokedex extends React.Component<{ seen: number[], owned: number[] }, dexSt
             });
     }
     render() {
+        if (this.props.noDisplay)
+            return null;
         let state: dexState = { newEntry: this.state.newEntry, scrollTo: this.state.scrollTo, firstEntry: this.state.firstEntry };
         if (this.props.seen.length + this.props.owned.length < 1) {
             return null;

@@ -23,10 +23,12 @@ namespace RomReader {
     }
 
     export class Gen3 extends GBAReader {
+        public config: PGEINI;
+
         constructor(romFileLocation: string, iniFileLocation: string = "pge.ini") {
             super(romFileLocation, iniFileLocation);
-            let romData = this.loadROM();
-            let config = this.LoadConfig(romData);
+            const romData = this.loadROM();
+            const config = this.config = this.LoadConfig(romData);
             this.abilities = this.ReadAbilities(romData, config);
             this.pokemon = this.ReadPokeData(romData, config);
             this.trainers = this.ReadTrainerData(romData, config);
@@ -180,12 +182,12 @@ namespace RomReader {
                 //     affectedByKingsRock: !!(data[8] & 32)
                 // }
                 //3 bytes padding
-                contestData: {
+                contestData: contestMoveData[i] ? {
                     type: contestMoveData[i].contestType,
                     effect: contestMoveData[i].effect,
                     appeal: contestMoveData[i].appeal,
                     jamming: contestMoveData[i].jamming
-                }
+                } : null
             }));
         }
 
@@ -210,14 +212,15 @@ namespace RomReader {
 
         private ReadMaps(romData: Buffer, config: PGEINI) {
             let mapBanksPtr = this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
+            const mapLabelOffset =  parseInt(config.MapLabelOffset || "0", 16);
             return this.ReadPtrBlock(romData, mapBanksPtr)
                 .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
                     .map((mapHeader, m) => (<Pokemon.Map>{
                         bank: b,
                         id: m,
-                        areaId: mapHeader[0x14],
-                        areaName: this.areas[mapHeader[0x14]],
-                        name: this.areas[mapHeader[0x14]],
+                        areaId: mapHeader[0x14] - mapLabelOffset,
+                        areaName: this.areas[mapHeader[0x14] - mapLabelOffset],
+                        name: this.areas[mapHeader[0x14] - mapLabelOffset],
                         encounters: {}
                     }))
                 ).reduce((allMaps, currBank) => Array.prototype.concat.apply(allMaps, currBank), []);
@@ -261,10 +264,10 @@ namespace RomReader {
             }
         }
 
-        private ReadMoveLearns(romData:Buffer,config: PGEINI) {
-            const movelearns = {} as {[key:number]:Pokemon.MoveLearn[]};
-            this.ReadPtrBlock(romData, parseInt(config.PokemonAttackTable, 16)).forEach((addr,i)=> {
-                movelearns[i] = this.ReadStridedData(romData, addr, 2).map(data=>{
+        private ReadMoveLearns(romData: Buffer, config: PGEINI) {
+            const movelearns = {} as { [key: number]: Pokemon.MoveLearn[] };
+            this.ReadPtrBlock(romData, parseInt(config.PokemonAttackTable, 16)).forEach((addr, i) => {
+                movelearns[i] = this.ReadStridedData(romData, addr, 2).map(data => {
                     const raw = data.readUInt16LE(0);
                     const move = this.GetMove(raw % 0x200);
                     return {
@@ -281,6 +284,7 @@ namespace RomReader {
             });
             return movelearns;
         }
+
     }
 
 }

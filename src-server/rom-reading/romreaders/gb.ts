@@ -9,7 +9,7 @@ namespace RomReader {
 
     export abstract class GBReader extends RomReaderBase {
         protected stringTerminator = 0x50;
-        protected symTable: { [key: string]: number };
+        public symTable: { [key: string]: number };
 
         constructor(private romFileLocation: string, private charmap: string[]) {
             super();
@@ -50,6 +50,32 @@ namespace RomReader {
             return fs.readFileSync(this.romFileLocation);
         }
 
+        CalculateGender(pokemon: TPP.Pokemon) {
+            if (pokemon.species.gender_ratio && typeof (pokemon.gender) !== "string") {
+                if (pokemon.species.gender_ratio == 255) {
+                    pokemon.gender = '';
+                }
+                else if (pokemon.species.gender_ratio == 254) {
+                    pokemon.gender = "Female";
+                }
+                else if (pokemon.species.gender_ratio == 0) {
+                    pokemon.gender = "Male";
+                }
+                else { //Generation 2
+                    pokemon.gender = ((pokemon.ivs || { attack: 0 }).attack << 4) > pokemon.species.gender_ratio ? "Male" : "Female";
+                }
+            }
+        }
+
+        CalculateShiny(pokemon: TPP.Pokemon) {
+            if (pokemon.original_trainer) {
+                // In Generation II, being Shiny is determined by a Pokémon's IVs.
+                // If a Pokémon's Speed, Defense, and Special IVs are all 10,
+                // and its Attack IV is 2, 3, 6, 7, 10, 11, 14 or 15, it will be Shiny.
+                pokemon.shiny = pokemon.ivs.speed == 10 && pokemon.ivs.defense == 10 && pokemon.ivs.special_attack == 10 && (pokemon.ivs.attack & 2) == 2;
+            }
+        }
+
         protected ReadBundledData(romData: Buffer, startOffset: number, terminator: number, numBundles: number, endOffset = 0) {
             let bundles = new Array<Buffer>();
             numBundles = numBundles || romData.length;
@@ -69,21 +95,27 @@ namespace RomReader {
             return this.ReadBundledData(romData, startOffset, this.stringTerminator, numStrings, endOffset).map(b => this.ConvertText(b));
         }
 
-        protected LinearAddrToROMBank(linear: number, bankSize = 0x4000) {
-            let bank = linear >> 14;
-            let address = (linear % bankSize) | (bank ? bankSize : 0);
+        public LinearAddressToBanked(linear: number, bankSize = this.BankSizes.ROM, hasHomeBank = true) {
+            let bank = Math.floor(linear / bankSize);
+            let address = linear % bankSize;
+            if (hasHomeBank && bank > 0) {
+                //ROM and WRAM have a home bank (Bank 0)
+                // All switchable banks (Bank 1+) live after the home bank
+                // Add the bank size to the address to account for this
+                address |= bankSize;
+            }
             return { bank: bank, address: address };
         }
 
-        protected ROMBankAddrToLinear(bank: number, address: number, bankSize = 0x4000) {
-            return (bank << 14) | (address % bankSize);
+        public BankAddressToLinear(bank: number, address: number, bankSize = this.BankSizes.ROM) {
+            return (bank * bankSize) | (address % bankSize);
         }
 
-        protected SameBankPtrToLinear(baseAddr: number, ptr: number) {
-            return this.ROMBankAddrToLinear(this.LinearAddrToROMBank(baseAddr).bank, ptr);
+        public SameBankPtrToLinear(baseAddr: number, ptr: number) {
+            return this.BankAddressToLinear(this.LinearAddressToBanked(baseAddr).bank, ptr);
         }
 
-        protected FixAllCaps(str: string) {
+        public FixAllCaps(str: string) {
             return str.toLowerCase().replace(fixCaps, c => c.toUpperCase()).replace(fixWronglyCapped, c => c.toLowerCase()).replace(fixWronglyLowercased, c => c.toUpperCase());
         }
 
@@ -96,6 +128,14 @@ namespace RomReader {
             return Math.floor((5 * ((stats.special_attack >> 3) + ((stats.speed >> 3) << 1) + ((stats.defense >> 3) << 2) + ((stats.attack >> 3) << 3)) + (stats.special_defense % 4)) / 2) + 31;
         }
 
+        public BankSizes = {
+            ROM: 0x4000,
+            VRAM: 0x2000,
+            SRAM: 0x2000,
+            CartRAM: 0x2000, //SRAM
+            WRAM: 0x1000
+        }
+
         private symbolEntry = /([0-9A-F]+):([0-9A-F]+) ([^\s]+)/i;
         protected LoadSymbolFile(filename: string) {
             const symFile: string = fs.readFileSync(filename, 'utf8');
@@ -105,26 +145,38 @@ namespace RomReader {
                 if (parsed) {
                     const bank = parseInt(parsed[1], 16);
                     const address = parseInt(parsed[2], 16);
-                    if (address >= 0x8000) //outside of ROM, ignore bank
-                        symTable[parsed[3]] = address;
-                    else
-                        symTable[parsed[3]] = this.ROMBankAddrToLinear(bank, address, 0x4000)
+                    const symbol = parsed[3];
+                    if (address < 0x8000) // ROM
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.ROM)
+                    else if (address < 0xA000) // VRAM
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.VRAM)
+                    else if (address < 0xC000) // SRAM
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.SRAM)
+                    else if (address < 0xE000) //WRAM
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.WRAM)
+                    else if (address < 0xFE00) // ECHO (nothing should use this, but just in case)
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.WRAM)
+                    else //OAM, I/O, HRAM (no banks)
+                        symTable[symbol] = address
                 }
             });
             //console.dir(symTable);
             return symTable;
         }
 
-        protected IsFlagSet(romData: Buffer, flagStartOffset: number, flagIndex: number) {
+        public GetOamAddress = (symbol: string) => this.symTable[symbol] ? this.symTable[symbol] - 0xFE00 : null;
+        public GetHramAddress = (symbol: string) => this.symTable[symbol] ? this.symTable[symbol] - 0xFF80 : null;
+
+        public IsFlagSet(romData: Buffer, flagStartOffset: number, flagIndex: number) {
             return (romData[flagStartOffset + Math.floor(flagIndex / 8)] & ((flagIndex % 8) + 1)) > 0; //FIX
         }
 
-        protected ParseBCD(bcd: Buffer) {
+        public ParseBCD(bcd: Buffer) {
             return bcd.toString('hex').split('').reverse().reduce((sum, char, place) => sum + (parseInt(char, 16) * Math.pow(10, place)), 0);
         }
 
-        protected FindTerminator(data:Buffer) {
-            for(var i = 0; i < data.length; i++) {
+        public FindTerminator(data: Buffer) {
+            for (var i = 0; i < data.length; i++) {
                 if (data[i] == this.stringTerminator)
                     return i;
             }

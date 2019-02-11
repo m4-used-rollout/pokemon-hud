@@ -1,8 +1,10 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g2.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g3.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g1.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
 /// <reference path="ram-reading/g3.ts" />
+/// <reference path="ram-reading/g1.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 
@@ -98,8 +100,8 @@ module TPP.Server {
         return json.replace(/\\\\u/g, '\\u');
     }
 
-    function findLocalFile(path) {
-        const resolve = require("path").resolve;
+    function findLocalFile(path: string) {
+        const resolve: typeof import("path").resolve = require("path").resolve;
         const root = resolve(path);
         if (require('fs').existsSync(root)) {
             return root;
@@ -107,35 +109,86 @@ module TPP.Server {
         return resolve(`./resources/app/${path}`);
     }
 
-    export let RomData: RomReader.RomReaderBase;
+    export let RomDataG3: RomReader.RomReaderBase;
+    export let RamDataG3: RamReader.RamReaderBase;
+    export let RomDataG1: RomReader.RomReaderBase;
+    export let RamDataG1: RamReader.RamReaderBase;
     try {
-        let path;
-        if (config.romFile ? config.romFile : config.extractedRomFolder) {
-            path = findLocalFile(config.romFile ? config.romFile : config.extractedRomFolder);
-            console.log(`Reading ROM at ${path}`);
-        }
-        // RomData = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
-        RomData = new RomReader.Gen2(path);
+        let path = findLocalFile(config.romFile[0]);
+        console.log(`Reading ROM at ${path}`);
+        let rom3 = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
+        RomDataG3 = rom3;
+        RamDataG3 = new RamReader.Gen3(rom3, 5337, undefined, config.listenPort || 1337);
+
+        path = findLocalFile(config.romFile[1]);
+        console.log(`Reading ROM at ${path}`);
+        let rom1 = new RomReader.Gen1(path);
+        RomDataG1 = rom1;
+        RamDataG1 = new RamReader.Gen1(rom1, 5337, undefined, config.listenPort || 1337);
     } catch (e) {
         console.log(`Could not read ROM.`);
         console.error(e);
-        RomData = new RomReader.Generic();
+        process.exit(1);
     }
-    export let RamData: RamReader.RamReaderBase = new RamReader.Gen3(RomData, 5337);
+    export let RomData = RomDataG1;
+    export let RamData = RamDataG1;
+    // try {
+    //     let path;
+    //     if (config.romFile ? config.romFile : config.extractedRomFolder) {
+    //         path = findLocalFile(config.romFile ? config.romFile : config.extractedRomFolder);
+    //         console.log(`Reading ROM at ${path}`);
+    //     }
+    //     let rom = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
+    //     RomData = rom;
+    //     RamData = new RamReader.Gen3(rom, 5337);
+    //     //RomData = new RomReader.Gen2(path);
+    // } catch (e) {
+    //     console.log(`Could not read ROM.`);
+    //     console.error(e);
+    //     RomData = new RomReader.Generic();
+    // }
 
-    // RamData.Read(state, () => {
-    //     RomReader.AugmentState(RomData, state);
-    //     transmitState()
-    // });
+    let transitionTimeout: NodeJS.Timer;
 
-    let trainerString = "", partyString = "", pcString = "", battleString = "";
+    export function StartRamReading() {
+        if (RamData) {
+            RamData.Read(state, () => {
+                MergeOverrides();
+                RomReader.AugmentState(RomData, state);
+                transmitState();
+            });
+            transitionTimeout = setTimeout(() => {
+                state.transitioning = false;
+                transmitState();
+            }, config.transitionDurationMs || 1000);
+        }
+    }
+    export function StopRamReading() {
+        if (RamData) {
+            RamData.Stop();
+        }
+        RamDataG1.Stop();
+        RamDataG3.Stop();
+        clearTimeout(transitionTimeout);
+        state.transitioning = true;
+    }
+
+    //StartRamReading();
+    const WaitForEmu = () => RamData.CallEmulator("/GetROMName", game => {
+        console.log(`Emulator says we're playing ${game}`);
+        setOverrides({ game });
+    }, true).catch(WaitForEmu);
+    console.log("Waiting for emulator");
+    WaitForEmu();
+
+    let trainerString = "", partyString = "", pcString = "", battleString = "", overrides: { [key: string]: string } = {};
 
     export function rawState() {
-        let rawState = JSON.parse(trainerString || "{}");
+        let rawState: RunStatus = JSON.parse(trainerString || "{}");
         rawState.party = JSON.parse(partyString || "[]");
         rawState.pc = JSON.parse(pcString || "{}");
-        let battleData = JSON.parse(battleString || "{}")
-        Object.keys(battleData).forEach(k => rawState[k] = battleData[k]);
+        rawState = Object.assign(rawState, JSON.parse(battleString || "{}"));
+        MergeOverrides(rawState);
         return rawState;
     }
 
@@ -146,6 +199,59 @@ module TPP.Server {
             state.enemy_party = battleData.enemy_party;
             state.enemy_trainers = battleData.enemy_trainers;
         }
+    }
+
+    function switchGame(game: string) {
+        StopRamReading();
+        if (game.split('.').pop() == "gba") {
+            RomData = RomDataG3;
+            RamData = RamDataG3;
+        }
+        else {
+            RomData = RomDataG1;
+            RamData = RamDataG1;
+        }
+        setTimeout(() => state.updates_paused ? null : StartRamReading(), 1);
+    }
+
+    export function setOverrides(parsed: { [key: string]: any })
+    export function setOverrides(dataJSON: string);
+    export function setOverrides(data: string | { [key: string]: any }) {
+        let parsed: { [key: string]: any };
+        if (typeof (data) == "string")
+            parsed = JSON.parse(fixDoubleEscapedUnicode(data));
+        else
+            parsed = data;
+        const unparsed: { [key: string]: string } = {};
+        Object.keys(parsed).forEach(k => unparsed[k] = parsed[k] && JSON.stringify(parsed[k]));
+        const updateKeys = Object.keys(unparsed).filter(k => unparsed[k] != overrides[k]);
+        if (updateKeys.length > 0) {
+            updateKeys.forEach(k => {
+                if (k == "game")
+                    switchGame(parsed[k]);
+                else if (k == "updates_paused")
+                    parsed[k] ? StopRamReading() : StartRamReading();
+                if (parsed[k] === null)
+                    delete overrides[k];
+                else
+                    overrides[k] = unparsed[k];
+            });
+            MergeOverrides();
+            RomReader.AugmentState(RomData, state);
+            transmitState();
+        }
+    }
+
+    export function MergeOverrides(currState = state) {
+        Object.keys(overrides).forEach(k => {
+            switch (k) {
+                case "items":
+                    const items = JSON.parse(overrides[k]);
+                    return Object.keys(items).forEach(k => currState.items[k] = items[k]);
+                default:
+                    return currState[k] = JSON.parse(overrides[k]);
+            }
+        });
     }
 
     export function setState(dataJson: string) {
@@ -189,6 +295,7 @@ module TPP.Server {
             }
             else
                 return; //unrecognized format, dropped
+            MergeOverrides();
             RomReader.AugmentState(RomData, state);
         }
         catch (e) {
@@ -203,9 +310,11 @@ module TPP.Server {
             let num = config.romDexToNatDex[dexNum] || dexNum;
             dexNums = num instanceof Array ? num : [num];
         }
+        else
+            dexNums = [dexNum];
         console.log(`New catch: ${dexNum}`);
         if (config.newCatchEndpoint)
-            dexNums.forEach(dex=>sendData(config.newCatchEndpoint, dex.toString()));
+            dexNums.forEach(dex => sendData(config.newCatchEndpoint, dex.toString()));
     }
 
     const sendData = (url: string, data: string) => {

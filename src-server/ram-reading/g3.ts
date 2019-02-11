@@ -45,40 +45,12 @@ namespace RamReader {
         Torment = 0x80000000
     }
 
-    //TODO: Get these from .map file
-    const EwramPartyLocation = 0x244EC;
-    const PartyBytes = 600;
-    const PCBlockPointer = 0x3005D94;
-    const PCBytes = 33730;
-    const SaveBlock1Pointer = 0x03005D8C;
-    const SaveBlock2Pointer = 0x03005D90;
-    const FlagsOffset = 0x1270;
-    const FlagsBytes = 0x12C
-    const VarsOffset = 0x139C;
-    const GameStatsOffset = 0x159C;
-    const GameStatsBytes = 64 * 4;
-    const DaycareOffset = 0x3030;
-    const InventoryOffset = 0x490;
-    const IwramClockAddr = 0x5CF8;
-    const IwramMusicAddr = 0x0F48;
-    const CurrentAreaAddr = 0x0203732C;
-    const BattleFlagsAddr = 0x02022FEC;
-    const EnemyTrainersAddr = 0x02038BCA;
-    const EnemyPartyAddr = 0x02024744;
-    const gBattlersCount = 0x0202406c;
-    const gBattlerPartyIndexes = 0x0202406e;
-    const gBattlerPositions = 0x02024076;
-    const gBattleMons = 0x02024084;
-    const gBattleMonsBytes = 0x58 * 4;
-    const InBattleAddr = "30022c0+439"; //gMain.inBattle (bit 2)
-
-
-    export class Gen3 extends RamReaderBase {
+    export class Gen3 extends RamReaderBase<RomReader.Gen3> {
         protected Markings = ['●', '■', '▲', '♥'];
 
-        public ReadParty = this.CachedEmulatorCaller(`EWRAM/ReadByteRange/${EwramPartyLocation.toString(16)}/${PartyBytes.toString(16)}`, this.WrapBytes(data => this.ParseParty(data)));
+        public ReadParty = this.CachedEmulatorCaller(`EWRAM/ReadByteRange/${this.rom.config.EwramPartyLocation}/${this.rom.config.PartyBytes}`, this.WrapBytes(data => this.ParseParty(data)));
 
-        public ReadPC = this.CachedEmulatorCaller(`ReadByteRange/*${PCBlockPointer.toString(16)}/${PCBytes.toString(16)}`, this.WrapBytes(data => ({
+        public ReadPC = this.CachedEmulatorCaller(`ReadByteRange/*${this.rom.config.PCBlockPointer}/${this.rom.config.PCBytes}`, this.WrapBytes(data => ({
             current_box_number: data.readUInt32LE(0),
             boxes: this.rom.ReadStridedData(data.slice(4, 0x8344), 0, 30 * 80, 14).map((box, i) => ({
                 box_number: i + 1,
@@ -87,7 +59,7 @@ namespace RamReader {
             } as TPP.BoxData))
         } as TPP.CombinedPCData)));
 
-        public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${InBattleAddr}/1/${BattleFlagsAddr.toString(16)}/4/${EnemyTrainersAddr.toString(16)}/4/${EnemyPartyAddr.toString(16)}/${PartyBytes.toString(16)}/${gBattleMons.toString(16)}/${gBattleMonsBytes.toString(16)}/${gBattlersCount.toString(16)}/${((gBattlerPositions - gBattlersCount) + 4).toString(16)}`, this.WrapBytes<TPP.BattleStatus>(data => {
+        public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.InBattleAddr}/1/${this.rom.config.gBattleTypeFlags}/4/${this.rom.config.gTrainerBattleOpponent_A}/4/${this.rom.config.gEnemyParty}/${this.rom.config.PartyBytes}/${this.rom.config.gBattleMons}/${this.rom.config.gBattleMonsBytes}/${this.rom.config.gBattlersCount}/${((parseInt(this.rom.config.gBattlerPositions, 16) - parseInt(this.rom.config.gBattlersCount, 16)) + 4).toString(16)}`, this.WrapBytes<TPP.BattleStatus>(data => {
             const in_battle = (data.readUInt8(0) & 2) > 0;
             const battleFlags = data.readUInt32LE(1);
             if (in_battle) {
@@ -99,19 +71,21 @@ namespace RamReader {
                         enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
                     }
                 }
-                const enemy_party = this.ParseParty(data.slice(9, 9 + PartyBytes));
-                const numBattlers = data.readUInt8(9 + PartyBytes + gBattleMonsBytes);
+                const partyBytes = parseInt(this.rom.config.PartyBytes, 16);
+                const gBattleMonsBytes = parseInt(this.rom.config.gBattleMonsBytes, 16);
+                const enemy_party = this.ParseParty(data.slice(9, 9 + partyBytes));
+                const numBattlers = data.readUInt8(9 + partyBytes + gBattleMonsBytes);
                 const isBattlerOnEnemyTeam = new Array<boolean>();
                 const battlerPartyIndexes = new Array<number>();
                 for (let i = 0; i < numBattlers; i++) {
-                    battlerPartyIndexes.push(data.readUInt16LE(11 + PartyBytes + gBattleMonsBytes + (i * 2)));
-                    isBattlerOnEnemyTeam.push(!!(data.readUInt8(19 + PartyBytes + gBattleMonsBytes + i) & 1));
+                    battlerPartyIndexes.push(data.readUInt16LE(11 + partyBytes + gBattleMonsBytes + (i * 2)));
+                    isBattlerOnEnemyTeam.push(!!(data.readUInt8(19 + partyBytes + gBattleMonsBytes + i) & 1));
                     // B_POSITION_PLAYER_LEFT        0
                     // B_POSITION_OPPONENT_LEFT      1
                     // B_POSITION_PLAYER_RIGHT       2
                     // B_POSITION_OPPONENT_RIGHT     3
                 }
-                this.StoreCurrentBattleMons(this.ParseBattleMons(data.slice(9 + PartyBytes), numBattlers), battlerPartyIndexes, isBattlerOnEnemyTeam);
+                this.StoreCurrentBattleMons(this.ParseBattleMons(data.slice(9 + partyBytes), numBattlers), battlerPartyIndexes, isBattlerOnEnemyTeam);
                 return { in_battle, battle_kind, enemy_party, enemy_trainers };
             }
             return { in_battle };
@@ -119,7 +93,7 @@ namespace RamReader {
 
         protected TrainerChunkReaders = [
             //Save Block 2
-            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock2Pointer.toString(16)}/B0`, this.WrapBytes(data => {
+            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${this.rom.config.SaveBlock2Pointer}/${(parseInt(this.rom.config.EncryptionKeyOffset, 16) + 4).toString(16)}`, this.WrapBytes(data => {
                 const caughtList = this.GetSetFlags(data.slice(0x28), 412);
                 const seenList = this.GetSetFlags(data.slice(0x5C), 412);
                 return {
@@ -132,69 +106,89 @@ namespace RamReader {
                     caught_list: caughtList,
                     seen: seenList.length,
                     seen_list: seenList,
-                    security_key: data.readUInt32LE(0xAC),
+                    security_key: data.readUInt32LE(parseInt(this.rom.config.EncryptionKeyOffset, 16)),
                 } as TPP.TrainerData;
             }), 0xE * 2, 0x13 * 2),
             //Location
-            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}/6/${CurrentAreaAddr.toString(16)}/1`, this.WrapBytes(data => ({
+            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${this.rom.config.SaveBlock1Pointer}/6/${this.rom.config.CurrentAreaAddr}/1`, this.WrapBytes(data => ({
                 x: data.readUInt16LE(0),
                 y: data.readUInt16LE(2),
                 map_bank: data.readUInt8(4),
                 map_id: data.readUInt8(5),
                 area_id: data.readUInt8(6),
                 map_name: this.rom.GetMap(data.readUInt8(5), data.readUInt8(4)).name,
-                area_name: this.rom.GetAreaName(data.readUInt8(6))
+                area_name: this.rom.GetAreaName(data.readUInt8(6) - parseInt(this.rom.config.MapLabelOffset || "0", 16))
             } as TPP.TrainerData))),
             //Inventory
-            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}+${InventoryOffset.toString(16)}/4F8/*${SaveBlock2Pointer.toString(16)}+AC/4`, this.WrapBytes(data => {
-                const key = data.readUInt32LE(0x4F8);
-                const halfKey = key % 0x10000;
-                const ballPocket = this.ParseItemCollection(data.slice(0x1C0), 16, halfKey);
-                return {
-                    money: data.readUInt32LE(0) ^ key,
-                    coins: data.readUInt16LE(4) ^ halfKey,
-                    items: {
-                        pc: this.ParseItemCollection(data.slice(8), 50), //no key
-                        items: this.ParseItemCollection(data.slice(0xD0), 30, halfKey),
-                        key: this.ParseItemCollection(data.slice(0x148), 30, halfKey),
-                        balls: ballPocket,
-                        tms: this.ParseItemCollection(data.slice(0x200), 64, halfKey),
-                        berries: this.ParseItemCollection(data.slice(0x300), 46, halfKey)
-                    },
-                    ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
-                } as TPP.TrainerData
-            })),
+            // this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.MoneyOffset}/8/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.ItemPCOffset}/${(this.TotalItemSlots() * 4).toString(16)}/*${this.rom.config.SaveBlock2Pointer}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
+            //     const key = data.readUInt32LE((this.TotalItemSlots() * 4) + 8);
+            //     const halfKey = key % 0x10000;
+            //     const PCCount = parseInt(this.rom.config.ItemPCCount);
+            //     const ItemCount = parseInt(this.rom.config.ItemPocketCount);
+            //     const KeyCount = parseInt(this.rom.config.ItemKeyCount);
+            //     const BallCount = parseInt(this.rom.config.ItemBallCount);
+            //     const TMCount = parseInt(this.rom.config.ItemTMCount);
+            //     const BerriesCount = parseInt(this.rom.config.ItemBerriesCount);
+            //     const ballPocket = this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount) * 4), BallCount, halfKey);
+            //     return {
+            //         money: data.readUInt32LE(0) ^ key,
+            //         coins: data.readUInt16LE(4) ^ halfKey,
+            //         items: {
+            //             pc: this.ParseItemCollection(data.slice(8), PCCount), //no key
+            //             items: this.ParseItemCollection(data.slice((2 + PCCount) * 4), ItemCount, halfKey),
+            //             key: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount) * 4), KeyCount, halfKey),
+            //             balls: ballPocket,
+            //             tms: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount + BallCount) * 4), TMCount, halfKey),
+            //             berries: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount + BallCount + TMCount) * 4), BerriesCount, halfKey)
+            //         },
+            //         ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
+            //     } as TPP.TrainerData
+            // })),
             //Flags/Vars/Stats
-            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}+${FlagsOffset.toString(16)}/${(GameStatsOffset - FlagsOffset + GameStatsBytes).toString(16)}/*${SaveBlock2Pointer.toString(16)}+AC/4`, this.WrapBytes(data => {
-                const key = data.readUInt32LE(GameStatsOffset - FlagsOffset + GameStatsBytes);
-                const flags = data.slice(0, FlagsBytes);
-                const vars = this.rom.ReadStridedData(data.slice(VarsOffset - FlagsOffset), 0, 2, 256).map(v => v.readUInt16LE(0));
-                const stats = this.rom.ReadStridedData(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => s.readUInt32LE(0) ^ key);
-                return {
-                    badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
-                    trick_house: vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]),
-                    game_stats: this.ParseGameStats(stats)
-                } as TPP.Goals
-            }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step
+            // this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.FlagsOffset}/${(parseInt(this.rom.config.GameStatsOffset || "0", 16) - parseInt(this.rom.config.FlagsOffset, 16) + parseInt(this.rom.config.GameStatsBytes || "0", 16)).toString(16)}/*${this.rom.config.SaveBlock2Pointer}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
+            //     const GameStatsOffset = parseInt(this.rom.config.GameStatsOffset || "0", 16);
+            //     const FlagsOffset = parseInt(this.rom.config.FlagsOffset, 16);
+            //     const GameStatsBytes = parseInt(this.rom.config.GameStatsBytes || "0", 16);
+            //     const FlagsBytes = parseInt(this.rom.config.FlagsBytes, 16);
+            //     const VarsOffset = parseInt(this.rom.config.VarsOffset || "0", 16);
+            //     const VarsBytes = parseInt(this.rom.config.VarsBytes || "0", 16);
+            //     const key = data.readUInt32LE(FlagsOffset + FlagsBytes + VarsBytes + GameStatsBytes);
+            //     const flags = data.slice(0, FlagsBytes);
+            //     const vars = this.rom.ReadStridedData(data.slice(VarsOffset - FlagsOffset), 0, 2, 256).map(v => v.readUInt16LE(0));
+            //     const stats = this.rom.ReadStridedData(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => s.readUInt32LE(0) ^ key);
+            //     return {
+            //         badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
+            //         trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
+            //         game_stats: GameStatsBytes > 0 ? this.ParseGameStats(stats) : null
+            //     } as TPP.Goals
+            // }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step
             //Clock
-            this.CachedEmulatorCaller<TPP.TrainerData>(`IWRAM/ReadU16BE/${IwramClockAddr.toString(16)}+2`, this.WrapBytes(data => ({
+            this.rom.config.IwramClockAddr && this.CachedEmulatorCaller<TPP.TrainerData>(`IWRAM/ReadU16BE/${this.rom.config.IwramClockAddr}+2`, this.WrapBytes(data => ({
                 time: {
                     h: data.readUInt8(0),
                     m: data.readUInt8(1)
                 }
             } as TPP.TrainerData))),
+            //Rival Name
+            this.rom.config.RivalNameOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.RivalNameOffset}/8`, this.WrapBytes(data => ({
+                rival_name: this.rom.ConvertText(data)
+            } as TPP.TrainerData))),
             //Evolution
-            this.CachedEmulatorCaller<TPP.TrainerData>(`IWRAM/ReadU16BE/${IwramMusicAddr.toString(16)}`, this.WrapBytes(data => ({
-                evolution_is_happening: data.readUInt16LE(0) == 0x179
+            this.rom.config.IwramMusicAddr && this.rom.config.EvolutionMusicIds && this.CachedEmulatorCaller<TPP.TrainerData>(`IWRAM/ReadU16BE/${this.rom.config.IwramMusicAddr}`, this.WrapBytes(data => ({
+                evolution_is_happening: this.rom.config.EvolutionMusicIds.split(' ').map(i => parseInt(i, 16)).indexOf(data.readUInt16LE(0)) >= 0 && this.currentState.map_name.indexOf("Safari") < 0
             } as TPP.TrainerData))),
             //Daycare
-            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${SaveBlock1Pointer.toString(16)}+${DaycareOffset.toString(16)}/88/*${SaveBlock1Pointer.toString(16)}+${DaycareOffset.toString(16)}+8C/88`, this.WrapBytes(data => ({
+            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.DaycareOffset}/88/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.DaycareOffset}+8C/88`, this.WrapBytes(data => ({
                 daycare: [
                     this.ParsePokemon(data.slice(0, 80)),
                     this.ParsePokemon(data.slice(0x88, 0x88 + 80))
                 ].filter(dm => !!dm)
             } as TPP.TrainerData))),
-        ] as Array<() => Promise<TPP.TrainerData>>;
+        ].filter(t => !!t) as Array<() => Promise<TPP.TrainerData>>;
+
+        protected TotalItemSlots() {
+            return parseInt(this.rom.config.ItemPCCount) + parseInt(this.rom.config.ItemPocketCount) + parseInt(this.rom.config.ItemKeyCount) + parseInt(this.rom.config.ItemBallCount) + parseInt(this.rom.config.ItemTMCount) + parseInt(this.rom.config.ItemBerriesCount);
+        }
 
         protected ParseItemCollection(itemData: Buffer, length = itemData.length / 4, key = 0) {
             return this.rom.ReadStridedData(itemData, 0, 4, length, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data.readUInt16LE(0)), data.readUInt16LE(2) ^ key)).filter(i => i.id);
@@ -202,6 +196,7 @@ namespace RamReader {
 
         protected ParseParty(partyData: Buffer) {
             const party = new Array<TPP.PartyPokemon>();
+            const PartyBytes = parseInt(this.rom.config.PartyBytes, 16);
             for (let i = 0; i < PartyBytes; i += 100)
                 party.push(this.ParsePokemon(partyData.slice(i, i + 100)));
             return party;//.filter(p => !!p);
@@ -335,6 +330,8 @@ namespace RamReader {
             if (boxSlot)
                 pkmn.box_slot = boxSlot;
 
+            //PBR
+            (pkmn as any).aiss_id = this.AissId(pkmn.species.national_dex, pkmn.condition.coolness);
             return pkmn;
         }
 

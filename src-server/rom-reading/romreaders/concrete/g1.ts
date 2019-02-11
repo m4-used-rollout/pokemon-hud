@@ -42,18 +42,21 @@ namespace RomReader {
             this.items = this.ReadItemData(romData);
             this.ballIds = this.FindBallIds(romData);
             this.FindFishingRods(romData);
-            this.moves = this.ReadMoveData(romData);
             this.areas = this.ReadAreaNames();
+            this.moves = this.ReadMoveData(romData);
+            this.moveLearns = this.ReadMoveLearns(romData);
             this.maps = this.ReadMaps(romData);
             this.FindFishingEncounters(romData);
             this.AddTMHMs(romData);
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
-            return `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${this.GetSpecies(id).dexNumber}.png`;
+            //return `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${this.GetSpecies(id).dexNumber}.png`;
+            return `./img/sprites/redblue/${this.GetSpecies(id).dexNumber}.png`;
         }
         GetTrainerSprite(id: number) {
-            return `./img/trainers/${TPP.Server.getConfig().trainerSpriteFolder || TPP.Server.getConfig().spriteFolder}/${id}.png`
+            //return `./img/trainers/${TPP.Server.getConfig().trainerSpriteFolder || TPP.Server.getConfig().spriteFolder}/${id}.png`
+            return `./img/trainers/redblue/${id}.png`
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
@@ -61,7 +64,7 @@ namespace RomReader {
         }
 
         private FindFishingEncounters(romData) {
-            const fishBank = this.LinearAddrToROMBank(this.symTable['SuperRodData']).bank;
+            const fishBank = this.LinearAddressToBanked(this.symTable['SuperRodData']).bank;
             const alwaysFish = new Array<Pokemon.EncounterMon>();
             const oldRodSpecies = romData.readUInt8(this.symTable['ItemUseOldRod'] + 7);
             const goodRodSpecies = [romData.readUInt8(this.symTable['GoodRodMons'] + 1), romData.readUInt8(this.symTable['GoodRodMons'] + 3)];
@@ -78,7 +81,7 @@ namespace RomReader {
                 rate: 25 //50% for this species, 50% to catch anything at all
             }));
             this.ReadStridedData(romData, this.symTable['SuperRodData'], 3).forEach(sr => {
-                const fgAddr = this.ROMBankAddrToLinear(fishBank, sr.readInt16LE(1));
+                const fgAddr = this.BankAddressToLinear(fishBank, sr.readInt16LE(1));
                 this.GetMap(sr.readUInt8(0)).encounters['all'].fishing = this.CombineDuplicateEncounters(alwaysFish
                     .concat(this.ReadStridedData(romData, fgAddr + 1, 2, romData[fgAddr])
                         .map((f, i, arr) => (<Pokemon.EncounterMon>{
@@ -116,11 +119,11 @@ namespace RomReader {
         private ReadMaps(romData: Buffer) {
             const encounterRates = this.ReadStridedData(romData, this.symTable['WildMonEncounterSlotChances'], 2).map(data => data[0]).concat(0xFF)
                 .map((r, i, arr) => Math.round(((r - (i > 0 ? arr[i - 1] : 0)) / 256) * 100));
-            const encounterBank = this.LinearAddrToROMBank(this.symTable['WildDataPointers']).bank;
+            const encounterBank = this.LinearAddressToBanked(this.symTable['WildDataPointers']).bank;
             return this.ReadStridedData(romData, this.symTable['WildDataPointers'], 2).map((ptr, i) => (<Pokemon.Map>{
                 id: i,
                 name: gen1MapNames[i],
-                encounters: { all: this.ReadEncounterTablesAt(romData, this.ROMBankAddrToLinear(encounterBank, ptr.readInt16LE(0)), encounterRates) }
+                encounters: { all: this.ReadEncounterTablesAt(romData, this.BankAddressToLinear(encounterBank, ptr.readInt16LE(0)), encounterRates) }
             }));
         }
 
@@ -154,7 +157,7 @@ namespace RomReader {
         }
 
         private FindBallIds(romData: Buffer) {
-            const useBallAddr = this.LinearAddrToROMBank(this.symTable["ItemUseBall"]).address;
+            const useBallAddr = this.LinearAddressToBanked(this.symTable["ItemUseBall"]).address;
             return this.ReadStridedData(romData.slice(this.symTable["ItemUsePtrTable"], this.symTable["ItemUseBall"]), 0, 2, 255)
                 .map((u, i) => ({ ptr: u.readInt16LE(0), id: i + 1 }))
                 .filter(p => p.ptr == useBallAddr)
@@ -162,7 +165,7 @@ namespace RomReader {
         }
 
         private FindFishingRods(romData: Buffer) {
-            const useFishingRodAddrs = ['ItemUseOldRod', 'ItemUseGoodRod', 'ItemUseSuperRod'].map(a => this.LinearAddrToROMBank(this.symTable[a]).address);
+            const useFishingRodAddrs = ['ItemUseOldRod', 'ItemUseGoodRod', 'ItemUseSuperRod'].map(a => this.LinearAddressToBanked(this.symTable[a]).address);
             this.ReadStridedData(romData.slice(this.symTable["ItemUsePtrTable"], this.symTable["ItemUseBall"]), 0, 2, 255)
                 .map((u, i) => ({ ptr: u.readInt16LE(0), id: i + 1 }))
                 .filter(p => useFishingRodAddrs.indexOf(p.ptr) >= 0)
@@ -176,6 +179,14 @@ namespace RomReader {
                 price: i ? this.ParseBCD(romData.slice(this.symTable['ItemPrices'] + ((i - 1) * 3), this.symTable['ItemPrices'] + (i * 3))) : 0,
                 isKeyItem: i ? this.IsFlagSet(romData, this.symTable['KeyItemBitfield'], i - 1) : false
             }));
+        }
+
+        public BankSizes = {
+            ROM: 0x4000,
+            VRAM: 0x2000,
+            SRAM: 0x2000,
+            CartRAM: 0x2000, //SRAM
+            WRAM: 0x2000
         }
 
         // private ReadTrainerData(romData: Buffer) {
@@ -202,6 +213,8 @@ namespace RomReader {
             for (var c = 0; romData.readUInt8(this.symTable['PokedexOrder'] + c) != dexNum; c++);
             return c;
         }
+
+        private IndexToPokedex = (romData: Buffer, id: number) => romData.readUInt8(this.symTable['PokedexOrder'] + id);
 
         private ReadPokeData(romData: Buffer) {
             const nameBytes = 10;
@@ -238,6 +251,23 @@ namespace RomReader {
                         // 0x1B	Padding	byte
                     });
                 });
+        }
+
+        private ReadMoveLearns(romData: Buffer) {
+            const moveLearns= {} as { [key: number]: Pokemon.MoveLearn[] };
+            const mons = (this.symTable["RhydonEvosMoves"] - this.symTable["EvosMovesPointerTable"]) / 2;
+            const bank = this.LinearAddressToBanked(this.symTable["EvosMovesPointerTable"]).bank;
+            this.ReadStridedData(romData, this.symTable["EvosMovesPointerTable"], 2, mons).forEach((ptr, i) => {
+                let addr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
+                const moves = new Array<Pokemon.MoveLearn>();
+                for (addr = addr; romData[addr] != 0; addr++); //skip evolution data
+                for (addr++; romData[addr] != 0; addr += 2)
+                    if (romData[addr] && romData[addr+1])
+                        moves.push(Object.assign({ level: romData[addr]}, this.GetMove(romData[addr + 1])));
+                moveLearns[i] = moves;
+            });
+            // console.dir(moveLearns);
+            return moveLearns;
         }
 
         // private ReadFrameBorders(romData: Buffer) {

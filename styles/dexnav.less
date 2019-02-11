@@ -107,6 +107,12 @@
         align-items: center;
         transition: opacity 1s ease-in-out;
         
+        &.glitch {
+            background-image:url('img/dexnav/static.png');
+            animation: roll-background 5s steps(50) infinite;
+            background-size: 200%;
+            transition: none;
+        }
 
         &.encounters:not(.hidden) ~ .encounters, &.hidden {
             opacity: 0;
@@ -558,6 +564,15 @@
     }
     100% {
         max-width:100%;
+    }
+}
+
+@keyframes roll-background {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 200% 400%;
     }
 }
 

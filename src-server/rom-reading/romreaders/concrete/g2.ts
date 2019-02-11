@@ -435,7 +435,7 @@ namespace RomReader {
             let switchFish = this.ReadStridedData(romData, this.symTable[config.TimeFishGroups], 4, 255, true).map(fish => ({ day: fish[0], night: fish[2] }));
             this.fishingSummary.timeFishGroups = this.ReadStridedData(romData, this.symTable[config.TimeFishGroups], 4, 22, true).map(fish => ({ day: { species: fish[0], level: fish[1] }, night: { species: fish[2], level: fish[3] } }));
             // switchFish.unshift({ day: 0, night: 0 });
-            const fishBank = this.LinearAddrToROMBank(this.symTable[config.FishingWildsOffset]).bank, fishEncounterGroupsStartAddr = this.ROMBankAddrToLinear(fishBank, romData.readUInt16LE(this.symTable[config.FishingWildsOffset] + 1));
+            const fishBank = this.LinearAddressToBanked(this.symTable[config.FishingWildsOffset]).bank, fishEncounterGroupsStartAddr = this.BankAddressToLinear(fishBank, romData.readUInt16LE(this.symTable[config.FishingWildsOffset] + 1));
             let fishEncounterGroups = this.ReadStridedData(romData.slice(this.symTable[config.FishingWildsOffset], fishEncounterGroupsStartAddr), 0, 7).map((header, i, arr) => {
                 let nibbleRate = header[0] / 255;
                 let fishEncs = Array<{ id: number; rate: number; level: number, rodType: string; }>();
@@ -451,10 +451,10 @@ namespace RomReader {
                     summary.encounters[rodType] = this.ReadStridedData(romData.slice(addr, nextAddr < addr ? addr + 255 : nextAddr), 0, 3, 4)
                         .map(enc => ({ rate: Math.round(enc[0] * 100 / 255), species: enc[1], level: enc[2] }));
                 }
-                let oldRod = this.ROMBankAddrToLinear(fishBank, header.readUInt16LE(1)),
-                    goodRod = this.ROMBankAddrToLinear(fishBank, header.readUInt16LE(3)),
-                    superRod = this.ROMBankAddrToLinear(fishBank, header.readUInt16LE(5)),
-                    next = (arr[i + 1] ? this.ROMBankAddrToLinear(fishBank, arr[i + 1].readUInt16LE(1)) : null);
+                let oldRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(1)),
+                    goodRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(3)),
+                    superRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(5)),
+                    next = (arr[i + 1] ? this.BankAddressToLinear(fishBank, arr[i + 1].readUInt16LE(1)) : null);
                 processFishEncs(oldRod, goodRod, "oldRod");
                 processFishEncs(goodRod, superRod, "goodRod");
                 processFishEncs(superRod, next, "superRod");
@@ -482,10 +482,10 @@ namespace RomReader {
             const endAddr = this.symTable["GetTreeMon"];
             const treeMapAddr = this.symTable["TreeMonMaps"];
             const rockMapAddr = this.symTable["RockMonMaps"];
-            const bank = this.LinearAddrToROMBank(startAddr).bank;
+            const bank = this.LinearAddressToBanked(startAddr).bank;
             this.treeSummary = this.ReadStridedData(romData, startAddr, 2, 9).map(ptr => {
                 const summary = {} as TreeSummary;
-                let addr = this.ROMBankAddrToLinear(bank, ptr.readUInt16LE(0));
+                let addr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
                 summary.common = this.ReadStridedData(romData, addr, 3).map(data => ({ rate: data[0], species: data[1], level: data[2] }));
                 addr += summary.common.length * 3 + 1;
                 if (addr < endAddr)
@@ -642,11 +642,11 @@ namespace RomReader {
             let classNames = this.ReadStringBundle(romData, this.symTable[config.TrainerClassNamesOffset], trainerClasses).map(n => this.FixAllCaps(n));
             classNames.unshift(""); //trainer class 0
             let trainers: Pokemon.Trainer[] = [];
-            let bank = this.LinearAddrToROMBank(this.symTable[config.TrainerGroupsOffset]).bank;
+            let bank = this.LinearAddressToBanked(this.symTable[config.TrainerGroupsOffset]).bank;
             this.ReadStridedData(romData, this.symTable[config.TrainerGroupsOffset], 2, trainerClasses).forEach((ptr, cId, ptrArr) => {
                 cId++;
-                let thisAddr = this.ROMBankAddrToLinear(bank, ptr.readUInt16LE(0));
-                let nextAddr = ptrArr[cId] ? this.ROMBankAddrToLinear(bank, ptrArr[cId].readUInt16LE(0)) : 0;
+                let thisAddr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
+                let nextAddr = ptrArr[cId] ? this.BankAddressToLinear(bank, ptrArr[cId].readUInt16LE(0)) : 0;
                 const trainerGroup = new Array<TrainerSummary>();
                 this.ReadBundledData(romData, thisAddr, 0xFF, nextAddr || 1, nextAddr).forEach((tData, tId) => {
                     const partyStart = this.FindTerminator(tData) + 2;
@@ -720,9 +720,9 @@ namespace RomReader {
 
         private ReadMoveLearns(romData: Buffer) {
             this.moveLearns = {};
-            const bank = this.LinearAddrToROMBank(this.symTable["EvosAttacksPointers"]).bank;
+            const bank = this.LinearAddressToBanked(this.symTable["EvosAttacksPointers"]).bank;
             this.ReadStridedData(romData, this.symTable["EvosAttacksPointers"], 2, dexCount).forEach((ptr, i) => {
-                let addr = this.ROMBankAddrToLinear(bank, ptr.readUInt16LE(0));
+                let addr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
                 const moves = new Array<Pokemon.MoveLearn>();
                 for (addr = addr; romData[addr] != 0; addr++); //skip evolution data
                 for (addr++; romData[addr] != 0; addr += 2) {
@@ -789,7 +789,7 @@ namespace RomReader {
                 if (classId < 1)
                     return ""
                 let ptrAddr = this.symTable[config.TrainerPicPointers] + ((classId - 1) * 3);
-                let spriteAddr = this.ROMBankAddrToLinear(this.TranslatePicBank(romData[ptrAddr]), romData.readInt16LE(ptrAddr + 1));
+                let spriteAddr = this.BankAddressToLinear(this.TranslatePicBank(romData[ptrAddr]), romData.readInt16LE(ptrAddr + 1));
                 let spriteData = Tools.LZGSC.Decompress(romData.slice(spriteAddr));
                 let imgData = Sprites.ParseTilesToImageMap(spriteData, palettes[classId], 7, 7);
                 let clearFix = trainerSpriteClearFix[classId] || {};

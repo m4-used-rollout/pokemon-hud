@@ -8,6 +8,7 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
         if (!map.ShowDexNav)
             return null;
         let totalKnownEncounters = Object.keys(map.KnownEncounters || {}).reduce((a, k) => a + map.KnownEncounters[k].length, 0);
+        const glitchOut = map.GlitchOut;
         let classes = [
             "dexnav",
             map.TotalEncounters ? totalKnownEncounters ? map.MoreLeftToCatch ? null : "caught-them-all" : null : null,
@@ -17,7 +18,8 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
         ];
         return <div className={classes.filter(c => !!c).join(' ')} data-completed={map.CompletedCategories}>
             <h3>DexNav</h3>
-            {map.MapName ? <h4>{map.MapName}</h4> : null}
+            {map.MapName && !glitchOut ? <h4>{map.MapName}</h4> : null}
+            {glitchOut && <div className="encounters glitch" />}
             <WildBattle wilds={map.WildBattle} />
             <EnemyTrainer trainers={map.EnemyTrainers} battleKind={map.BattleKind} party={map.EnemyParty} />
             <div className={`encounters unknown-zone ${map.TotalEncounters || !map.IsUnknownArea ? 'hidden' : ""}`}>
