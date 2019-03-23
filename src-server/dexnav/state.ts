@@ -87,7 +87,7 @@ namespace TPP.Server.DexNav {
                         wild.shiny = mon.shiny;
                         wild.gender = mon.gender;
                         wild.health = mon.health;
-                        if (wild && wild.id) {
+                        if (wild && (wild.id || wild.dexNumber)) {
                             wild.owned = (runState.caught_list || []).some(p => p == wild.dexNumber);
                             wild.encounterRate = this.categories.map(k => (this.KnownEncounters[k] || []).filter(e => e.dexNum == wild.dexNumber))
                                 .reduce((all, curr) => <KnownEncounter[]>Array.prototype.concat.apply(all, curr), [])
@@ -125,7 +125,7 @@ namespace TPP.Server.DexNav {
             // console.log(`Fishing: ${(encounters.fishing || []).map(e => `${e.species.name} (${e.rate.toFixed(0)}%) [${e.requiredItem.name}]`).join(', ')}`);
             // console.log(`Hidden: ${(encounters.hidden_grass || []).map(e => `${e.species.name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
 
-            let monIsSeen = (mon: Pokemon.EncounterMon) => (runState.seen_list || []).indexOf(mon.species.dexNumber) >= 0;
+            let monIsSeen = (mon: Pokemon.EncounterMon) => (runState.seen_list || []).indexOf(mon.species.dexNumber) >= 0 || (runState.enemy_party || []).some(p=>p.species.national_dex == mon.species.dexNumber);
             let monIsOwned = (mon: Pokemon.EncounterMon) => (runState.caught_list || []).indexOf(mon.species.dexNumber) >= 0;
             let userHasItem = (item: TPP.Item) => !item || !item.id || Object.keys(runState.items || {}).some(k => (runState.items[k] || []).some(i => item.id == i.id));
             this.categories.forEach(k => {

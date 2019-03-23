@@ -55,16 +55,28 @@ namespace RomReader {
             return map.encounters.all;
         }
 
+        private CurrentMapIn(id:number, bank:number, mapArr:number[][]) {
+            return mapArr.some(m => m[0] == bank && ((m.length == 2 && m[1] == id) || m[1] <= id && m[2] >= id));
+        }
         IsUnknownTrainerMap(id: number, bank: number) {
-            return [
-                [9, 2, 4],      //Slateport Battle Tent
-                [5, 1, 3],      //Fallarbor Battle Tent
-                [6, 0, 2],      //Verdanturf Battle Tent
-                [26, 4, 8],     //Battle Frontier
-                [26, 14, 55],   //Battle Frontier
-                [26, 60, 65],   //Trainer Hill
-                [26, 88]        //Trainer Hill
-            ].some(m => m[0] == bank && ((m.length == 2 && m[1] == id) || m[1] <= id && m[2] >= id));
+            switch (this.romHeader) {
+                case "BPEE":
+                    return this.CurrentMapIn(id, bank, [
+                        [9, 2, 4],      //Slateport Battle Tent
+                        [5, 1, 3],      //Fallarbor Battle Tent
+                        [6, 0, 2],      //Verdanturf Battle Tent
+                        [26, 4, 8],     //Battle Frontier
+                        [26, 14, 55],   //Battle Frontier
+                        [26, 60, 65],   //Trainer Hill
+                        [26, 88]        //Trainer Hill
+                    ]);
+                case "BPRE":
+                    return this.CurrentMapIn(id, bank, [
+                        [2, 1, 11]   //Trainer Tower
+                    ]);
+                default:
+                    return false;
+            }
         }
 
         private isFRLG(config: PGEINI) {
@@ -212,7 +224,7 @@ namespace RomReader {
 
         private ReadMaps(romData: Buffer, config: PGEINI) {
             let mapBanksPtr = this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
-            const mapLabelOffset =  parseInt(config.MapLabelOffset || "0", 16);
+            const mapLabelOffset = parseInt(config.MapLabelOffset || "0", 16);
             return this.ReadPtrBlock(romData, mapBanksPtr)
                 .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
                     .map((mapHeader, m) => (<Pokemon.Map>{

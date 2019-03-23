@@ -12,16 +12,17 @@ namespace RomReader {
 
     export abstract class GBAReader extends GBReader {
         protected stringTerminator = 0xFF;
+        protected romHeader = "";
 
         constructor(romFileLocation: string, private iniFileLocation: string) {
             super(romFileLocation, gen3Charmap);
         }
 
         protected LoadConfig(romData: Buffer): PGEINI {
-            let romHeader = romData.toString('ascii', 0xAC, 0xB0);
+            this.romHeader = romData.toString('ascii', 0xAC, 0xB0);
             let iniData = ini.parse(fs.readFileSync(this.iniFileLocation, 'utf8'));
-            let romIniData = iniData[romHeader] || {}
-            romIniData.Header = romHeader;
+            let romIniData = iniData[this.romHeader] || {}
+            romIniData.Header = this.romHeader;
             return romIniData;
         }
 

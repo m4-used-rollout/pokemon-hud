@@ -13,7 +13,8 @@ function Render(id: string = targetId) {
     let classes = [
         "pokemon-hud",
         //data.evolution_is_happening && !(data.party || []).some(p=>p && p.is_evolving) ? "evolving" : null,
-        config.hudTheme || "default-theme"
+        config.hudTheme || "default-theme",
+        data.transitioning && "glitch"
     ]
     ReactDOM.render(<div className={classes.filter(c => !!c).join(' ')}>
         <Party party={data.party} gameState={data} />
@@ -48,7 +49,6 @@ document.addEventListener('drop', e => {
         reader.onload = e => {
             TPP.Server.setState((e as any).target.result);
         };
-        console.log();
         reader.readAsText(e.dataTransfer.files[i]);
         // }
     }

@@ -241,11 +241,11 @@ namespace RomReader {
 
             //this.ballIds = this.items.filter((i: Gen4Item) => i.bagPocket == "Balls").map(i => i.id); //too many false positives
 
-            console.log(`Loaded ${this.moves.length} moves with ${moveNames.length} names.`);
-            console.log(`Loaded ${this.pokemon.length} pokemon with ${pokemonNames.length} names.`);
-            console.log(`Loaded ${this.abilities.length} abilites with ${abilityNames.length} names.`);
-            console.log(`Loaded ${this.items.length} items with ${itemNames.length} names.`);
-            console.log(`Loaded ${this.maps.length} maps with ${mapNames.length} names.`);
+            // console.log(`Loaded ${this.moves.length} moves with ${moveNames.length} names.`);
+            // console.log(`Loaded ${this.pokemon.length} pokemon with ${pokemonNames.length} names.`);
+            // console.log(`Loaded ${this.abilities.length} abilites with ${abilityNames.length} names.`);
+            // console.log(`Loaded ${this.items.length} items with ${itemNames.length} names.`);
+            // console.log(`Loaded ${this.maps.length} maps with ${mapNames.length} names.`);
         }
     }
 }

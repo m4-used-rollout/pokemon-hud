@@ -98,9 +98,15 @@ namespace RamReader {
                     enemy_trainers.push(trainer);
                 }
                 //wEnemyParty
-                const enemy_party = this.ParseParty(data.slice(4 + NAME_LENGTH));
-                if (battle_kind == "Wild" && enemy_party && enemy_party[0] && enemy_party[0].species)
+                let enemy_party: TPP.PartyData = [];
+                if (battle_kind == "Wild") {
+                    enemy_party[0] = this.ParseBattlePokemon(data.slice(4 + NAME_LENGTH + this.PartySize() + 2));
                     enemy_party[0].species.catch_rate = actualCatchRate;
+                }
+                else {
+                    enemy_party = this.ParseParty(data.slice(4 + NAME_LENGTH));
+                }
+
                 return { in_battle, battle_kind, enemy_party, enemy_trainers };
             }
             return { in_battle };
@@ -108,18 +114,18 @@ namespace RamReader {
 
         protected ParsePC(data: Buffer): TPP.CombinedPCData {
             // wCurrentBoxNum
-            const currentBox = data[0] + 20; //pbr
+            const currentBox = data[0] + 15; //pbr
             // Active Box
             // sBox1-12
             const pc = this.rom.ReadStridedData(data.slice(1), 0, this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
             const active = pc.shift();
-            pc[currentBox - 1] = active;
+            pc[currentBox - 15] = active; //pbr
             return {
                 current_box_number: currentBox,
                 boxes: pc.map((box, i) => (<TPP.BoxData>{
                     box_contents: box,
                     box_name: `Red Box ${i + 1}`, //PBR
-                    box_number: i + 21 //PBR
+                    box_number: i + 15 //PBR
                 }))
             };
         }

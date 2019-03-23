@@ -3,7 +3,6 @@
 /// <reference path="../../ref/runstatus.d.ts" />
 /// <reference path="options.ts" />
 
-
 namespace RamReader {
 
     const http = require('http') as typeof import('http');
@@ -37,7 +36,7 @@ namespace RamReader {
 
         private running: boolean = false;
         private stringDataCache: { [key: string]: string } = {};
-        protected currentState:TPP.RunStatus;
+        protected currentState: TPP.RunStatus;
 
         public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
             this.currentState = state;
@@ -56,7 +55,10 @@ namespace RamReader {
             }).catch(err => console.error(err)), 320);
             this.pcInterval = setInterval(() => this.ReadPC().then(pc => {
                 if (pc) {
-                    state.pc = pc;
+                    state.pc = state.pc || pc;
+                    state.pc.boxes = state.pc.boxes || [];
+                    state.pc.current_box_number = pc.current_box_number || state.pc.current_box_number;
+                    (pc.boxes || []).forEach(b => state.pc.boxes[b.box_number - 1] = b);
                     transmitState(state);
                 }
             }).catch(err => console.error(err)), 1510);
@@ -127,6 +129,7 @@ namespace RamReader {
         }
 
         private HasBeenSeenThisBattle(mon: (TPP.PartyPokemon & { active?: boolean })) {
+            return true; //I don't care anymore :(
             this.CurrentBattleSeenPokemon = this.CurrentBattleSeenPokemon || [];
             if (!mon || !mon.species)
                 return false;
@@ -214,7 +217,8 @@ namespace RamReader {
         }
 
         public CachedEmulatorCaller<T>(path: string[] | string, callback: (data: string) => T, ignoreCharStart = -1, ignoreCharEnd = -1) {
-            const cacheKey = Array.isArray(path) ? path.join() : path;
+            const cacheKey = Array.isArray(path) ? path.join(' ') : path;
+            //console.log(cacheKey);
             return () => this.CallEmulator<T>(path, data => {
                 let stringData = data;
                 if (ignoreCharStart >= 0 && ignoreCharEnd >= ignoreCharStart) {

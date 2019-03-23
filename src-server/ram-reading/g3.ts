@@ -120,30 +120,30 @@ namespace RamReader {
                 area_name: this.rom.GetAreaName(data.readUInt8(6) - parseInt(this.rom.config.MapLabelOffset || "0", 16))
             } as TPP.TrainerData))),
             //Inventory
-            // this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.MoneyOffset}/8/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.ItemPCOffset}/${(this.TotalItemSlots() * 4).toString(16)}/*${this.rom.config.SaveBlock2Pointer}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
-            //     const key = data.readUInt32LE((this.TotalItemSlots() * 4) + 8);
-            //     const halfKey = key % 0x10000;
-            //     const PCCount = parseInt(this.rom.config.ItemPCCount);
-            //     const ItemCount = parseInt(this.rom.config.ItemPocketCount);
-            //     const KeyCount = parseInt(this.rom.config.ItemKeyCount);
-            //     const BallCount = parseInt(this.rom.config.ItemBallCount);
-            //     const TMCount = parseInt(this.rom.config.ItemTMCount);
-            //     const BerriesCount = parseInt(this.rom.config.ItemBerriesCount);
-            //     const ballPocket = this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount) * 4), BallCount, halfKey);
-            //     return {
-            //         money: data.readUInt32LE(0) ^ key,
-            //         coins: data.readUInt16LE(4) ^ halfKey,
-            //         items: {
-            //             pc: this.ParseItemCollection(data.slice(8), PCCount), //no key
-            //             items: this.ParseItemCollection(data.slice((2 + PCCount) * 4), ItemCount, halfKey),
-            //             key: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount) * 4), KeyCount, halfKey),
-            //             balls: ballPocket,
-            //             tms: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount + BallCount) * 4), TMCount, halfKey),
-            //             berries: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount + BallCount + TMCount) * 4), BerriesCount, halfKey)
-            //         },
-            //         ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
-            //     } as TPP.TrainerData
-            // })),
+            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.MoneyOffset}/8/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.ItemPCOffset}/${(this.TotalItemSlots() * 4).toString(16)}/*${this.rom.config.SaveBlock2Pointer}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
+                const key = data.readUInt32LE((this.TotalItemSlots() * 4) + 8);
+                const halfKey = key % 0x10000;
+                // const PCCount = parseInt(this.rom.config.ItemPCCount);
+                // const ItemCount = parseInt(this.rom.config.ItemPocketCount);
+                // const KeyCount = parseInt(this.rom.config.ItemKeyCount);
+                // const BallCount = parseInt(this.rom.config.ItemBallCount);
+                // const TMCount = parseInt(this.rom.config.ItemTMCount);
+                // const BerriesCount = parseInt(this.rom.config.ItemBerriesCount);
+                // const ballPocket = this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount) * 4), BallCount, halfKey);
+                return {
+                    money: data.readUInt32LE(0) ^ key,
+                    coins: data.readUInt16LE(4) ^ halfKey,
+                    // items: {
+                    //     pc: this.ParseItemCollection(data.slice(8), PCCount), //no key
+                    //     items: this.ParseItemCollection(data.slice((2 + PCCount) * 4), ItemCount, halfKey),
+                    //     key: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount) * 4), KeyCount, halfKey),
+                    //     balls: ballPocket,
+                    //     tms: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount + BallCount) * 4), TMCount, halfKey),
+                    //     berries: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount + BallCount + TMCount) * 4), BerriesCount, halfKey)
+                    // },
+                    // ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
+                } as TPP.TrainerData
+            })),
             //Flags/Vars/Stats
             // this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/*${this.rom.config.SaveBlock1Pointer}+${this.rom.config.FlagsOffset}/${(parseInt(this.rom.config.GameStatsOffset || "0", 16) - parseInt(this.rom.config.FlagsOffset, 16) + parseInt(this.rom.config.GameStatsBytes || "0", 16)).toString(16)}/*${this.rom.config.SaveBlock2Pointer}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
             //     const GameStatsOffset = parseInt(this.rom.config.GameStatsOffset || "0", 16);

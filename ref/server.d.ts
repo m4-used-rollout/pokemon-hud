@@ -315,6 +315,7 @@ declare namespace RomReader {
     abstract class GBAReader extends GBReader {
         private iniFileLocation;
         protected stringTerminator: number;
+        protected romHeader: string;
         constructor(romFileLocation: string, iniFileLocation: string);
         protected LoadConfig(romData: Buffer): PGEINI;
         protected ReadRomPtr(romData: Buffer, addr?: number): number;
@@ -333,6 +334,7 @@ declare namespace RomReader {
         constructor(romFileLocation: string, iniFileLocation?: string);
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        private CurrentMapIn;
         IsUnknownTrainerMap(id: number, bank: number): boolean;
         private isFRLG;
         private ReadAbilities;
@@ -359,6 +361,7 @@ declare namespace RomReader {
         constructor(romFileLocation: string);
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         GetTrainerSprite(id: number): string;
+        GetItemSprite(id: number): string;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         private FindFishingEncounters;
         private ParseEncounters;
@@ -600,12 +603,8 @@ declare module TPP.Server {
     function getConfig(): Config;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
-    let RomDataG3: RomReader.RomReaderBase;
-    let RamDataG3: RamReader.RamReaderBase;
-    let RomDataG1: RomReader.RomReaderBase;
-    let RamDataG1: RamReader.RamReaderBase;
     let RomData: RomReader.RomReaderBase;
-    let RamData: RamReader.RamReaderBase<RomReader.RomReaderBase>;
+    let RamData: RamReader.RamReaderBase;
     function StartRamReading(): void;
     function StopRamReading(): void;
     function rawState(): RunStatus;

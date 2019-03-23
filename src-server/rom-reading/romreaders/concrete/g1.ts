@@ -12,7 +12,7 @@ namespace RomReader {
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
     const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
 
-    const tmCount = 50, hmCount = 5, dexCount = 151;
+    const tmCount = 50, hmCount = 5, dexCount = 152; //PBR
 
     interface ClearFix { [key: number]: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } };
     const pokeSpriteClearFix: ClearFix = {};
@@ -57,6 +57,17 @@ namespace RomReader {
         GetTrainerSprite(id: number) {
             //return `./img/trainers/${TPP.Server.getConfig().trainerSpriteFolder || TPP.Server.getConfig().spriteFolder}/${id}.png`
             return `./img/trainers/redblue/${id}.png`
+        }
+        GetItemSprite(id: number) {
+            switch (id) {
+                case this.fishingRodIds.oldRod:
+                    return `./img/items/firered/262.png`;
+                case this.fishingRodIds.goodRod:
+                    return `./img/items/firered/263.png`;
+                case this.fishingRodIds.superRod:
+                    return `./img/items/firered/264.png`;
+            }
+            return `./img/items/firered/${id}.png`;
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
@@ -254,7 +265,7 @@ namespace RomReader {
         }
 
         private ReadMoveLearns(romData: Buffer) {
-            const moveLearns= {} as { [key: number]: Pokemon.MoveLearn[] };
+            const moveLearns = {} as { [key: number]: Pokemon.MoveLearn[] };
             const mons = (this.symTable["RhydonEvosMoves"] - this.symTable["EvosMovesPointerTable"]) / 2;
             const bank = this.LinearAddressToBanked(this.symTable["EvosMovesPointerTable"]).bank;
             this.ReadStridedData(romData, this.symTable["EvosMovesPointerTable"], 2, mons).forEach((ptr, i) => {
@@ -262,8 +273,8 @@ namespace RomReader {
                 const moves = new Array<Pokemon.MoveLearn>();
                 for (addr = addr; romData[addr] != 0; addr++); //skip evolution data
                 for (addr++; romData[addr] != 0; addr += 2)
-                    if (romData[addr] && romData[addr+1])
-                        moves.push(Object.assign({ level: romData[addr]}, this.GetMove(romData[addr + 1])));
+                    if (romData[addr] && romData[addr + 1])
+                        moves.push(Object.assign({ level: romData[addr] }, this.GetMove(romData[addr + 1])));
                 moveLearns[i] = moves;
             });
             // console.dir(moveLearns);

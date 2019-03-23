@@ -109,44 +109,46 @@ module TPP.Server {
         return resolve(`./resources/app/${path}`);
     }
 
-    export let RomDataG3: RomReader.RomReaderBase;
-    export let RamDataG3: RamReader.RamReaderBase;
-    export let RomDataG1: RomReader.RomReaderBase;
-    export let RamDataG1: RamReader.RamReaderBase;
-    try {
-        let path = findLocalFile(config.romFile[0]);
-        console.log(`Reading ROM at ${path}`);
-        let rom3 = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
-        RomDataG3 = rom3;
-        RamDataG3 = new RamReader.Gen3(rom3, 5337, undefined, config.listenPort || 1337);
-
-        path = findLocalFile(config.romFile[1]);
-        console.log(`Reading ROM at ${path}`);
-        let rom1 = new RomReader.Gen1(path);
-        RomDataG1 = rom1;
-        RamDataG1 = new RamReader.Gen1(rom1, 5337, undefined, config.listenPort || 1337);
-    } catch (e) {
-        console.log(`Could not read ROM.`);
-        console.error(e);
-        process.exit(1);
-    }
-    export let RomData = RomDataG1;
-    export let RamData = RamDataG1;
+    // export let RomDataG3: RomReader.RomReaderBase;
+    // export let RamDataG3: RamReader.RamReaderBase;
+    // export let RomDataG1: RomReader.RomReaderBase;
+    // export let RamDataG1: RamReader.RamReaderBase;
     // try {
-    //     let path;
-    //     if (config.romFile ? config.romFile : config.extractedRomFolder) {
-    //         path = findLocalFile(config.romFile ? config.romFile : config.extractedRomFolder);
-    //         console.log(`Reading ROM at ${path}`);
-    //     }
-    //     let rom = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
-    //     RomData = rom;
-    //     RamData = new RamReader.Gen3(rom, 5337);
-    //     //RomData = new RomReader.Gen2(path);
+    //     let path = findLocalFile(config.romFile[0]);
+    //     console.log(`Reading ROM at ${path}`);
+    //     let rom3 = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
+    //     RomDataG3 = rom3;
+    //     RamDataG3 = new RamReader.Gen3(rom3, 5337, undefined, config.listenPort || 1337);
+
+    //     path = findLocalFile(config.romFile[1]);
+    //     console.log(`Reading ROM at ${path}`);
+    //     let rom1 = new RomReader.Gen1(path);
+    //     RomDataG1 = rom1;
+    //     RamDataG1 = new RamReader.Gen1(rom1, 5337, undefined, config.listenPort || 1337);
     // } catch (e) {
     //     console.log(`Could not read ROM.`);
     //     console.error(e);
-    //     RomData = new RomReader.Generic();
+    //     process.exit(1);
     // }
+    // export let RomData = RomDataG3;
+    // export let RamData = RamDataG3;
+    export let RomData:RomReader.RomReaderBase;
+    export let RamData:RamReader.RamReaderBase;
+    try {
+        let path;
+        const romFile = (Array.isArray(config.romFile) ? config.romFile[0] : config.romFile) || config.extractedRomFolder;
+        if (romFile) {
+            path = findLocalFile(romFile);
+            console.log(`Reading ROM at ${path}`);
+        }
+        let rom = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
+        RomData = rom;
+        RamData = new RamReader.Gen3(rom, 5337, undefined, config.listenPort || 1337);
+    } catch (e) {
+        console.log(`Could not read ROM.`);
+        console.error(e);
+        RomData = new RomReader.Generic();
+    }
 
     let transitionTimeout: NodeJS.Timer;
 
@@ -167,8 +169,8 @@ module TPP.Server {
         if (RamData) {
             RamData.Stop();
         }
-        RamDataG1.Stop();
-        RamDataG3.Stop();
+        // RamDataG1.Stop();
+        // RamDataG3.Stop();
         clearTimeout(transitionTimeout);
         state.transitioning = true;
     }
@@ -203,14 +205,15 @@ module TPP.Server {
 
     function switchGame(game: string) {
         StopRamReading();
-        if (game.split('.').pop() == "gba") {
-            RomData = RomDataG3;
-            RamData = RamDataG3;
-        }
-        else {
-            RomData = RomDataG1;
-            RamData = RamDataG1;
-        }
+        //if (game.split('.').pop() == "gb") {
+        // if ((game || "").toLowerCase().indexOf("fire") >= 0) {
+        //     RomData = RomDataG3;
+        //     RamData = RamDataG3;
+        // }
+        // else {
+        //     RomData = RomDataG1;
+        //     RamData = RamDataG1;
+        // }
         setTimeout(() => state.updates_paused ? null : StartRamReading(), 1);
     }
 
@@ -246,6 +249,7 @@ module TPP.Server {
         Object.keys(overrides).forEach(k => {
             switch (k) {
                 case "items":
+                    currState.items = currState.items || {};
                     const items = JSON.parse(overrides[k]);
                     return Object.keys(items).forEach(k => currState.items[k] = items[k]);
                 default:
