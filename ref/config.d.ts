@@ -1,3 +1,5 @@
+/// <reference path="./runstatus.d.ts" />
+
 declare interface Config extends DexNavConfig, GoalConfig {
     runName: string;
     badgeCount?: number;
@@ -5,6 +7,7 @@ declare interface Config extends DexNavConfig, GoalConfig {
     totalInDex?: number;
     romDexToNatDex?: (number | number[])[];
     displayOptions?: string[];
+    forceOptions: TPP.Options;
     hudTheme: string;
     romFile?: string[];
     iniFile?: string;

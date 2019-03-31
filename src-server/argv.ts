@@ -3,43 +3,9 @@
 module Args {
     const fs:typeof import('fs') = require('fs');
 
-    export class CmdConf implements Config {
-        runName: string = null;
-        badgeCount?: number = null;
-        mainRegion?: string = null;
-        totalInDex?: number = null;
-        romDexToNatDex?: number[] = null;
-        displayOptions?: string[] = null;
-        hudTheme: string = null;
-        romFile?: string[] = null;
-        iniFile?: string = null;
-        useGPU?: boolean = null;
-        forceNoHighDPIScaling?: boolean = null;
-        extractedRomFolder: string = null;
-        spriteFolder: string = null;
-        trainerSpriteFolder: string = null;
-        listenPort: number = null;
-        runStatusEndpoint: string = null;
-        newCatchEndpoint: string = null;
-        screenWidth: number = null;
-        screenHeight: number = null;
-        windowX: number = null;
-        windowY: number = null;
-        frameless: boolean = null;
-        blockResize: boolean = null;
-        resetEveryHours?: number = null;
-        showDexNav: boolean = null;
-        dexNavUseAreaName?: boolean = null;
-        dexNavWidth: number = null;
-        dexNavHeight: number = null;
-        dexNavX: number = null;
-        dexNavY: number = null;
-        dexNavResetEveryHours: number = null;
-        dexNavTheme: string = null;
-        hofMapId: number = null;
-        hofMapBank: number = null;
-        transitionDurationMs: number = null;
+    export interface CmdConf extends Config {}
 
+    export class CmdConf {
         Merge(config: Config) {
             Object.keys(config || {}).forEach(k => this[k] = this[k] === null || typeof this[k] === "undefined" ? config[k] : this[k]);
             return this;

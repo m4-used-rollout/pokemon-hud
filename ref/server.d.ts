@@ -7,42 +7,9 @@
 /// <reference path="../ref/joypad.d.ts" />
 /// <reference types="node" />
 declare module Args {
-    class CmdConf implements Config {
-        runName: string;
-        badgeCount?: number;
-        mainRegion?: string;
-        totalInDex?: number;
-        romDexToNatDex?: number[];
-        displayOptions?: string[];
-        hudTheme: string;
-        romFile?: string[];
-        iniFile?: string;
-        useGPU?: boolean;
-        forceNoHighDPIScaling?: boolean;
-        extractedRomFolder: string;
-        spriteFolder: string;
-        trainerSpriteFolder: string;
-        listenPort: number;
-        runStatusEndpoint: string;
-        newCatchEndpoint: string;
-        screenWidth: number;
-        screenHeight: number;
-        windowX: number;
-        windowY: number;
-        frameless: boolean;
-        blockResize: boolean;
-        resetEveryHours?: number;
-        showDexNav: boolean;
-        dexNavUseAreaName?: boolean;
-        dexNavWidth: number;
-        dexNavHeight: number;
-        dexNavX: number;
-        dexNavY: number;
-        dexNavResetEveryHours: number;
-        dexNavTheme: string;
-        hofMapId: number;
-        hofMapBank: number;
-        transitionDurationMs: number;
+    interface CmdConf extends Config {
+    }
+    class CmdConf {
         Merge(config: Config): this;
     }
     function Parse(): CmdConf;
@@ -419,14 +386,15 @@ declare namespace RamReader {
         [key: string]: OptionsFieldSpec;
     }
     function ParseOptions(rawOptions: number, optionsSpec: OptionsSpec): TPP.Options;
+    function SetOptions(rawOptions: number, desiredOptions: TPP.Options, optionsSpec: OptionsSpec): number;
 }
 declare namespace RamReader {
     abstract class RamReaderBase<T extends RomReader.RomReaderBase = RomReader.RomReaderBase> {
         rom: T;
         port: number;
         hostname: string;
-        hudPort: number;
-        constructor(rom: T, port: number, hostname: string, hudPort: number);
+        protected config: Config;
+        constructor(rom: T, port: number, hostname: string, config: Config);
         private partyInterval;
         private pcInterval;
         private trainerInterval;
@@ -479,6 +447,8 @@ declare namespace RamReader {
         protected ParseHoennRibbons(ribbonVal: any): string[];
         protected abstract OptionsSpec: OptionsSpec;
         ParseOptions: (rawOptions: number) => TPP.Options;
+        SetOptions: (rawOptions: number, desiredOptions: TPP.Options) => number;
+        ShouldForceOptions: (options: TPP.Options) => boolean;
         GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
         protected CalculateShiny(pokemon: TPP.Pokemon): boolean;
         protected CalculateLevelFromExp(current: number, expFunction: Pokemon.ExpCurve.CalcExp): number;

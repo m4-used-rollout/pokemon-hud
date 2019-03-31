@@ -55,7 +55,7 @@ namespace RomReader {
             return map.encounters.all;
         }
 
-        private CurrentMapIn(id:number, bank:number, mapArr:number[][]) {
+        private CurrentMapIn(id: number, bank: number, mapArr: number[][]) {
             return mapArr.some(m => m[0] == bank && ((m.length == 2 && m[1] == id) || m[1] <= id && m[2] >= id));
         }
         IsUnknownTrainerMap(id: number, bank: number) {
@@ -215,9 +215,14 @@ namespace RomReader {
         }
 
         private ReadMapLabels(romData: Buffer, config: PGEINI) {
+            if (romData.readUInt32LE(parseInt(config.MapLabelData, 16)) < 0x8000000)
+                return this.ReadStridedData(romData, parseInt(config.MapLabelData, 16), 8, parseInt(config.NumberOfMapLabels)).map(data => {
+                    const addr = this.ReadRomPtr(data, 4);
+                    return this.FixAllCaps(this.ConvertText(romData.slice(addr, addr + 20))).replace('ë', "Aqua"); //Sapphire
+                });
             return this.ReadStridedData(romData, parseInt(config.MapLabelData, 16), this.isFRLG(config) ? 4 : 8, parseInt(config.NumberOfMapLabels))
                 .map(ptr => {
-                    var addr = this.ReadRomPtr(ptr, 0);
+                    const addr = this.ReadRomPtr(ptr, 0);
                     return this.FixAllCaps(this.ConvertText(romData.slice(addr, addr + 20)));
                 });
         }

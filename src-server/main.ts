@@ -118,13 +118,13 @@ module TPP.Server {
     //     console.log(`Reading ROM at ${path}`);
     //     let rom3 = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
     //     RomDataG3 = rom3;
-    //     RamDataG3 = new RamReader.Gen3(rom3, 5337, undefined, config.listenPort || 1337);
+    //     RamDataG3 = new RamReader.Gen3(rom3, 5337, undefined, config);
 
     //     path = findLocalFile(config.romFile[1]);
     //     console.log(`Reading ROM at ${path}`);
     //     let rom1 = new RomReader.Gen1(path);
     //     RomDataG1 = rom1;
-    //     RamDataG1 = new RamReader.Gen1(rom1, 5337, undefined, config.listenPort || 1337);
+    //     RamDataG1 = new RamReader.Gen1(rom1, 5337, undefined, config);
     // } catch (e) {
     //     console.log(`Could not read ROM.`);
     //     console.error(e);
@@ -143,7 +143,7 @@ module TPP.Server {
         }
         let rom = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
         RomData = rom;
-        RamData = new RamReader.Gen3(rom, 5337, undefined, config.listenPort || 1337);
+        RamData = new RamReader.Gen3(rom, 5337, undefined, config);
     } catch (e) {
         console.log(`Could not read ROM.`);
         console.error(e);
@@ -172,7 +172,7 @@ module TPP.Server {
         // RamDataG1.Stop();
         // RamDataG3.Stop();
         clearTimeout(transitionTimeout);
-        state.transitioning = true;
+        //state.transitioning = true;
     }
 
     //StartRamReading();

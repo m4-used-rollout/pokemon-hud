@@ -240,13 +240,14 @@ declare interface PGEINI {
     "PokedexTypeTable": string;
 
     //RAM locations
-    "EwramPartyLocation": string;
+    "gPlayerParty": string;
     "PartyBytes": string;
-    "PCBlockPointer": string;
+    "PCBlockAddress": string;
     "PCBytes": string;
-    "SaveBlock1Pointer": string;
-    "SaveBlock2Pointer": string;
+    "SaveBlock1Address": string;
+    "SaveBlock2Address": string;
     "FlagsOffset": string;
+    "BadgeFlag": string;
     "FlagsBytes": string;
     "VarsOffset": string;
     "GameStatsOffset": string;

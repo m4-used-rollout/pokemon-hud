@@ -1,6 +1,6 @@
 /// <reference path="../rom-reading/romreaders/base.ts" />
 /// <reference path="../pokemon/convert.ts" />
-/// <reference path="../../ref/runstatus.d.ts" />
+/// <reference path="../../ref/config.d.ts" />
 /// <reference path="options.ts" />
 
 namespace RamReader {
@@ -27,7 +27,7 @@ namespace RamReader {
         /*0xF0*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
 
     export abstract class RamReaderBase<T extends RomReader.RomReaderBase = RomReader.RomReaderBase> {
-        constructor(public rom: T, public port: number, public hostname = "localhost", public hudPort: number) { }
+        constructor(public rom: T, public port: number, public hostname = "localhost", protected config: Config) { }
 
         private partyInterval: NodeJS.Timer;
         private pcInterval: NodeJS.Timer;
@@ -106,7 +106,7 @@ namespace RamReader {
         public abstract ReadPC: () => Promise<TPP.CombinedPCData>;
         public ReadTrainer: () => Promise<TPP.TrainerData> = () =>
             // this.TrainerChunkReaders.reduce<Promise<TPP.TrainerData[]>>((all, curr) => all.then(results => Promise.all([...results, curr()])), Promise.resolve([{} as TPP.TrainerData])) //execute one after the other
-            Promise.all(this.TrainerChunkReaders.map(f => f())) //execute simultaneously    
+            Promise.all(this.TrainerChunkReaders.map(f => f())) //execute simultaneously
                 .then(chunks => Object.assign({}, ...chunks) as TPP.TrainerData)
                 .catch(err => {
                     console.error(err);
@@ -129,7 +129,6 @@ namespace RamReader {
         }
 
         private HasBeenSeenThisBattle(mon: (TPP.PartyPokemon & { active?: boolean })) {
-            return true; //I don't care anymore :(
             this.CurrentBattleSeenPokemon = this.CurrentBattleSeenPokemon || [];
             if (!mon || !mon.species)
                 return false;
@@ -347,6 +346,8 @@ namespace RamReader {
         protected abstract OptionsSpec: OptionsSpec;
 
         public ParseOptions = (rawOptions: number) => ParseOptions(rawOptions, this.OptionsSpec);
+        public SetOptions = (rawOptions: number, desiredOptions: TPP.Options) => SetOptions(rawOptions, desiredOptions, this.OptionsSpec);
+        public ShouldForceOptions = (options: TPP.Options) => Object.keys(this.config.forceOptions || {}).some(k => this.config.forceOptions[k].toLowerCase() != options[k].toLowerCase());
 
         public GetSetFlags(flagBytes: Buffer, flagCount = flagBytes.length * 8, offset = 0) {
             return this.rom.GetSetFlags(flagBytes, flagCount, offset);
@@ -381,7 +382,7 @@ namespace RamReader {
         }
 
         protected SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress = -1, ifValue = 0, bytes = 4) {
-            const callUrl = `${eventName}/OnMemory${event}${ifAddress >= 0 ? "IfValue" : ""}/${address.toString(16)}/${bytes}/${ifAddress >= 0 ? `${ifAddress.toString(16)}/${ifValue.toString(16)}/` : ""}http://localhost:${this.hudPort}/${callEndpoint}`;
+            const callUrl = `${eventName}/OnMemory${event}${ifAddress >= 0 ? "IfValue" : ""}/${address.toString(16)}/${bytes}/${ifAddress >= 0 ? `${ifAddress.toString(16)}/${ifValue.toString(16)}/` : ""}http://localhost:${this.config.listenPort || 1337}/${callEndpoint}`;
             //console.log(callUrl);
             return this.CallEmulator(callUrl);
         }

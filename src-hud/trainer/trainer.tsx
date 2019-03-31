@@ -23,18 +23,18 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 </div>
                 : null
             }
-            {t.options && displayOpts.length && <div className="options">
+            {t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
             </div>}
             <FitToWidth className="bottom-row">
                 <span className={`cash ${t.money < 1000 ? t.money < 200 ? 'low' : 'med' : 'good'}`}>{(t.money || 0).toLocaleString()}</span>
                 <span className={`balls ${t.ball_count < 10 ? t.ball_count < 1 ? 'low' : 'med' : 'good'}`}>{(t.ball_count || 0).toLocaleString()}</span>
                 {(t.stickers || t.stickers === 0) && <span className="stickers">{t.stickers}</span>}
-                {(t.game || "").toLowerCase().indexOf("fire") < 0 && <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>}
+                {/*<span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>*/}
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
-                {/* {t.options && displayOpts.length && <div className="options"> */}
-                    {/* {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)} */}
-                {/* </div>} */}
+                {t.options && displayOpts.length == 1 && <div className="options">
+                    {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
+                </div>}
                 {/* {t.items && t.items.z_crystals && <ZCrystals items={t.items} />} */}
                 {/* <Badges bitfield={t.badges} rematch={t.rematch_available} /> */}
                 {t.party_fitness && <span className="fitness">{t.party_fitness.toLocaleString()}</span>}

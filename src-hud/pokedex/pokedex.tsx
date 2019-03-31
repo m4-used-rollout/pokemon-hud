@@ -3,20 +3,25 @@
 
 const DEVMODE = false;
 
+type dexProps = { seen: number[], owned: number[], noDisplay?: boolean };
 type dexState = { newEntry: number, scrollTo: number, firstEntry: boolean };
 
-class Pokedex extends React.Component<{ seen: number[], owned: number[], noDisplay?:boolean }, dexState> {
+class Pokedex extends React.Component<dexProps, dexState> {
     constructor(props) {
         super(props);
         this.state = { newEntry: null, scrollTo: null, firstEntry: true };
     }
-    componentWillReceiveProps(next) {
+    componentWillReceiveProps(next: dexProps) {
         if (this.props.owned.length < next.owned.length && this.props.owned.length + 2 >= next.owned.length)
             next.owned.forEach(p => {
                 if (this.props.owned.indexOf(p) < 0)
-                    this.setState({ newEntry: p, scrollTo: (p - 1) / config.totalInDex * -100 });
+                    this.setState({ newEntry: p, scrollTo: (p - 1) / this.totalInDex(next.seen) * -100 });
             });
     }
+    private totalInDex(seen: number[]) {
+        return (seen || []).reduce((max, current) => Math.max(max, current), 0);
+    }
+
     render() {
         if (this.props.noDisplay)
             return null;
@@ -33,7 +38,8 @@ class Pokedex extends React.Component<{ seen: number[], owned: number[], noDispl
             setTimeout(() => this.setState({ newEntry: null }), 10000);
         }
         let mons: JSX.Element[] = [];
-        for (let i = 1; i <= config.totalInDex; i++) {
+        const totalInDex = this.totalInDex(this.props.seen);
+        for (let i = 1; i <= totalInDex; i++) {
             let seen = this.props.seen.indexOf(i) >= 0 || DEVMODE;
             let owned = this.props.owned.indexOf(i) >= 0 || DEVMODE;
             let newEntry = state.newEntry == i;
