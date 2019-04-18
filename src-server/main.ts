@@ -1,7 +1,7 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g3.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g1.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g5.ts" />
+// /// <reference path="rom-reading/romreaders/concrete/g1.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
 /// <reference path="ram-reading/g3.ts" />
 /// <reference path="ram-reading/g1.ts" />
@@ -100,27 +100,18 @@ module TPP.Server {
         return json.replace(/\\\\u/g, '\\u');
     }
 
-    function findLocalFile(path: string) {
-        const resolve: typeof import("path").resolve = require("path").resolve;
-        const root = resolve(path);
-        if (require('fs').existsSync(root)) {
-            return root;
-        }
-        return resolve(`./resources/app/${path}`);
-    }
-
     // export let RomDataG3: RomReader.RomReaderBase;
     // export let RamDataG3: RamReader.RamReaderBase;
     // export let RomDataG1: RomReader.RomReaderBase;
     // export let RamDataG1: RamReader.RamReaderBase;
     // try {
-    //     let path = findLocalFile(config.romFile[0]);
+    //     let path = RomReader.RomReaderBase.FindLocalFile(config.romFile[0]);
     //     console.log(`Reading ROM at ${path}`);
-    //     let rom3 = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
+    //     let rom3 = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
     //     RomDataG3 = rom3;
     //     RamDataG3 = new RamReader.Gen3(rom3, 5337, undefined, config);
 
-    //     path = findLocalFile(config.romFile[1]);
+    //     path = RomReader.RomReaderBase.FindLocalFile(config.romFile[1]);
     //     console.log(`Reading ROM at ${path}`);
     //     let rom1 = new RomReader.Gen1(path);
     //     RomDataG1 = rom1;
@@ -132,18 +123,19 @@ module TPP.Server {
     // }
     // export let RomData = RomDataG3;
     // export let RamData = RamDataG3;
-    export let RomData:RomReader.RomReaderBase;
-    export let RamData:RamReader.RamReaderBase;
+    export let RomData: RomReader.RomReaderBase;
+    export let RamData: RamReader.RamReaderBase;
     try {
         let path;
         const romFile = (Array.isArray(config.romFile) ? config.romFile[0] : config.romFile) || config.extractedRomFolder;
         if (romFile) {
-            path = findLocalFile(romFile);
+            path = RomReader.RomReaderBase.FindLocalFile(romFile);
             console.log(`Reading ROM at ${path}`);
         }
-        let rom = new RomReader.Gen3(path, config.iniFile && findLocalFile(config.iniFile));
+        //let rom = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
+        let rom = new RomReader.Gen5(romFile);
         RomData = rom;
-        RamData = new RamReader.Gen3(rom, 5337, undefined, config);
+        //RamData = new RamReader.Gen3(rom, 5337, undefined, config);
     } catch (e) {
         console.log(`Could not read ROM.`);
         console.error(e);
@@ -176,12 +168,14 @@ module TPP.Server {
     }
 
     //StartRamReading();
-    const WaitForEmu = () => RamData.CallEmulator("/GetROMName", game => {
-        console.log(`Emulator says we're playing ${game}`);
-        setOverrides({ game });
-    }, true).catch(WaitForEmu);
-    console.log("Waiting for emulator");
-    WaitForEmu();
+    if (RamData) {
+        const WaitForEmu = () => RamData.CallEmulator("/GetROMName", game => {
+            console.log(`Emulator says we're playing ${game}`);
+            setOverrides({ game });
+        }, true).catch(WaitForEmu);
+        console.log("Waiting for emulator");
+        WaitForEmu();
+    }
 
     let trainerString = "", partyString = "", pcString = "", battleString = "", overrides: { [key: string]: string } = {};
 
@@ -195,12 +189,12 @@ module TPP.Server {
     }
 
     function mergeBattleState(battleData: BattleStatus = JSON.parse(battleString || "{}")) {
-        if (battleString) {
-            state.in_battle = battleData.in_battle;
-            state.battle_kind = battleData.battle_kind;
-            state.enemy_party = battleData.enemy_party;
-            state.enemy_trainers = battleData.enemy_trainers;
-        }
+        // if (battleString) {
+        //     state.in_battle = battleData.in_battle;
+        //     state.battle_kind = battleData.battle_kind;
+        //     state.enemy_party = battleData.enemy_party;
+        //     state.enemy_trainers = battleData.enemy_trainers;
+        // }
     }
 
     function switchGame(game: string) {

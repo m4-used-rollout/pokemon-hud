@@ -55,6 +55,14 @@ namespace RomReader {
             return text;
         }
 
+        static FindLocalFile(path: string) {
+            const resolve: typeof import("path").resolve = require("path").resolve;
+            const root = resolve(path);
+            if (require('fs').existsSync(root)) {
+                return root;
+            }
+            return resolve(`./resources/app/${path}`);
+        }
 
         GetForm(pokemon: TPP.Pokemon) {
             return pokemon.form;
@@ -214,7 +222,7 @@ namespace RomReader {
         ShinyThreshold() {
             return 8;
         }
-        GetType(typeId:number) {
+        GetType(typeId: number) {
             return this.types[typeId] || typeId.toString();
         }
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {
@@ -264,8 +272,8 @@ namespace RomReader {
                 else { //Generation 3+
                     pokemon.gender = (pokemon.personality_value % 256) > pokemon.species.gender_ratio ? "Male" : "Female";
                 }
+            }
         }
-    }
 
         CalculateShiny(pokemon: TPP.Pokemon) {
             if (typeof pokemon.shiny !== "boolean" && pokemon.original_trainer) {

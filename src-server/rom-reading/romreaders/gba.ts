@@ -7,8 +7,8 @@
 
 
 namespace RomReader {
-    const fs = require("fs");
-    const ini = require("ini");
+    const fs = require("fs") as typeof import("fs");
+    const ini = require("ini") as typeof import("ini");
 
     export abstract class GBAReader extends GBReader {
         protected stringTerminator = 0xFF;

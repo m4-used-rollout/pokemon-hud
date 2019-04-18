@@ -10,3 +10,4 @@ release/
 .DS_Store
 *.ini
 !pge.ini
+!**/data/**/*.ini

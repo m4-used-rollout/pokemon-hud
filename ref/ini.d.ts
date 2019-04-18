@@ -1,4 +1,4 @@
-declare module ini {
+declare module "ini" {
     interface EncodeOptions {
         section: string
         whitespace: boolean
