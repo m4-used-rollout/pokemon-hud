@@ -186,6 +186,12 @@ declare namespace TPP {
         } & TPP.Stats;
     }
 
+    export interface ShadowPokemon extends PartyPokemon {
+        shadow_id: number;
+        purification: number;
+        shadow_exp: number;
+    }
+
     export interface Item {
         id: number;
         name: string;

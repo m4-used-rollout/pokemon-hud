@@ -240,6 +240,7 @@ namespace RamReader {
             });
         }
 
+
         public WrapBytes<T>(callback: (data: Buffer) => T) {
             return (hex: string) => callback(Buffer.from(hex, "hex"));
         }

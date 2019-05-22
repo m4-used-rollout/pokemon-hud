@@ -1,10 +1,8 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g5.ts" />
-// /// <reference path="rom-reading/romreaders/concrete/g1.ts" />
+/// <reference path="rom-reading/romreaders/concrete/colxd.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
-/// <reference path="ram-reading/g3.ts" />
-/// <reference path="ram-reading/g1.ts" />
+/// <reference path="ram-reading/colxd.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/electron/index.d.ts" />
 
@@ -133,9 +131,9 @@ module TPP.Server {
             console.log(`Reading ROM at ${path}`);
         }
         //let rom = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
-        let rom = new RomReader.Gen5(romFile);
+        let rom = new RomReader.ColXD(romFile);
         RomData = rom;
-        //RamData = new RamReader.Gen3(rom, 5337, undefined, config);
+        RamData = new RamReader.ColXD(rom, 6000, "localhost", config);
     } catch (e) {
         console.log(`Could not read ROM.`);
         console.error(e);
@@ -167,15 +165,15 @@ module TPP.Server {
         //state.transitioning = true;
     }
 
-    //StartRamReading();
-    if (RamData) {
-        const WaitForEmu = () => RamData.CallEmulator("/GetROMName", game => {
-            console.log(`Emulator says we're playing ${game}`);
-            setOverrides({ game });
-        }, true).catch(WaitForEmu);
-        console.log("Waiting for emulator");
-        WaitForEmu();
-    }
+    StartRamReading();
+    // if (RamData) {
+    //     const WaitForEmu = () => RamData.CallEmulator("/GetROMName", game => {
+    //         console.log(`Emulator says we're playing ${game}`);
+    //         setOverrides({ game });
+    //     }, true).catch(WaitForEmu);
+    //     console.log("Waiting for emulator");
+    //     WaitForEmu();
+    // }
 
     let trainerString = "", partyString = "", pcString = "", battleString = "", overrides: { [key: string]: string } = {};
 
