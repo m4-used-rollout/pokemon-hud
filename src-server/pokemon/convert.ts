@@ -31,9 +31,9 @@ namespace Pokemon.Convert {
         }
     }
 
-    export function EnemyTrainerToRunStatus(t:Trainer) {
+    export function EnemyTrainerToRunStatus(t: Trainer) {
         if (!t) return null;
-        return <TPP.EnemyTrainer> {
+        return <TPP.EnemyTrainer>{
             id: t.id,
             class_id: t.classId,
             class_name: t.className,
@@ -74,8 +74,9 @@ namespace Pokemon.Convert {
             type1: species.type1,
             type2: species.type2,
             expFunction: species.expFunction,
-            held_items: [species.heldItem1, species.heldItem2].filter(i=>!!i).map(i=>ItemToRunStatus(i)),
-            tm_moves: (species.tmMoves || []).filter(m=>!!m).map(m=>MoveToRunStatus(m))
+            held_items: [species.heldItem1, species.heldItem2].filter(i => !!i).map(i => ItemToRunStatus(i)),
+            tm_moves: (species.tmMoves || []).filter(m => !!m).map(m => MoveToRunStatus(m)),
+            evolutions: species.evolutions && species.evolutions.map(e => EvolutionToRunStatus(e))
         } as StatSpeciesWithExp;
     }
 
@@ -93,7 +94,7 @@ namespace Pokemon.Convert {
         } as TPP.Move;
     }
 
-    
+
     export function MoveLearnToRunStatus(move: MoveLearn, pp = 0, ppUp = 0, maxPP = 0) {
         return move && {
             accuracy: move.accuracy,
@@ -111,5 +112,15 @@ namespace Pokemon.Convert {
             id: item.id,
             name: item.name
         } as TPP.Item;
+    }
+
+    export function EvolutionToRunStatus(evo: Evolution) {
+        return {
+            level: evo.level,
+            is_trade: evo.isTrade,
+            required_happiness: evo.happiness,
+            required_item: evo.item && ItemToRunStatus(evo.item),
+            required_time_of_day: evo.timeOfDay
+        } as TPP.Evolution;
     }
 }

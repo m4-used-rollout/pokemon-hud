@@ -3,7 +3,7 @@
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/react/index.d.ts" />
 /// <reference path="../node_modules/@types/react-dom/index.d.ts" />
-/// <reference path="../node_modules/@types/electron/index.d.ts" />
+/// <reference path="../node_modules/electron/electron.d.ts" />
 /// <reference path="../ref/server.d.ts" />
 
 

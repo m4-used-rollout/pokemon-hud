@@ -22,7 +22,9 @@
                 "--frameless", "false",
                 "--blockResize", "false",
             ],
-            "env": {}
+            "env": {
+                "ELECTRON_DISABLE_SECURITY_WARNINGS":"TRUE",
+            }
         }
     ]
 }

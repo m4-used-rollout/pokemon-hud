@@ -173,6 +173,7 @@ namespace RamReader {
                 species: this.HasBeenSeenThisBattle(p) ? p.species : { id: 0, name: "???", national_dex: 0 },
                 health: p.health,
                 active: p.active || this.IsCurrentlyBattling(p, i, true),
+                in_shadow: (p as TPP.ShadowPokemon).is_shadow,
                 form: p.form,
                 shiny: p.shiny,
                 shiny_value: p.shiny_value,

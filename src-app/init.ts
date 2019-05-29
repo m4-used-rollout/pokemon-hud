@@ -1,5 +1,6 @@
-/// <reference path="../node_modules/@types/electron/index.d.ts" />
+
 /// <reference path="../src-server/argv.ts" />
+/// <reference path="../node_modules/electron/electron.d.ts" />
 
 const electron = require('electron')
 const { app, BrowserWindow, globalShortcut } = electron;
@@ -32,7 +33,8 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
         width: windowWidth, height: windowHeight,
         webPreferences: {
             webSecurity: false,
-            backgroundThrottling: false
+            backgroundThrottling: false,
+            nodeIntegration: true
         },
         useContentSize: true,
         frame: !frameless,

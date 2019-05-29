@@ -1,12 +1,11 @@
 /// <reference path="../ref/config.d.ts" />
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
-/// <reference path="../node_modules/@types/electron/index.d.ts" />
+/// <reference path="../node_modules/electron/electron.d.ts" />
 /// <reference path="../ref/joypad.d.ts" />
 /// <reference path="../ref/ini.d.ts" />
 /// <reference path="../ref/pge.ini.d.ts" />
 /// <reference path="../ref/upr.ini.d.ts" />
-/// <reference types="node" />
 declare module Args {
     interface CmdConf extends Config {
     }
@@ -14,6 +13,40 @@ declare module Args {
         Merge(config: Config): this;
     }
     function Parse(): CmdConf;
+}
+declare namespace Events {
+    interface Action {
+        type: string;
+    }
+    interface Timestamp {
+        timestamp: string;
+    }
+    abstract class Tracker<T extends Action = Action> {
+        protected config: Config;
+        constructor(config: Config);
+        abstract Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: T) => void): void;
+        abstract Reducer(action: T & Timestamp): void;
+        abstract Reporter(state: TPP.RunStatus): TPP.RunStatus;
+    }
+    function RegisterTracker(trackerClass: new (config: Config) => Tracker): void;
+    class RunEvents {
+        private config;
+        private currentState;
+        private trackers;
+        private ready;
+        private saveStream;
+        private savePath;
+        constructor(config: Config);
+        Init(): void;
+        readonly EventsFileName: string;
+        private OpenFile;
+        Analyze(newState: TPP.RunStatus): TPP.RunStatus;
+        private DedupeEvents;
+        private Replay;
+        Dispatch(action: Action): void;
+        private SaveAction;
+        private DispatchInternal;
+    }
 }
 declare namespace Pokemon {
     namespace ExpCurve {
@@ -42,6 +75,17 @@ declare namespace Pokemon {
     }
 }
 declare namespace Pokemon {
+    interface Evolution {
+        level?: number;
+        item?: Item;
+        isTrade?: boolean;
+        happiness?: number;
+        mapId?: number;
+        timeOfDay?: "Morn" | "Day" | "Night";
+        speciesId: number;
+    }
+}
+declare namespace Pokemon {
     interface Species {
         id: number;
         name: string;
@@ -66,6 +110,7 @@ declare namespace Pokemon {
         heldItem1?: Item;
         heldItem2?: Item;
         tmMoves?: Move[];
+        evolutions?: Evolution[];
     }
 }
 declare namespace Pokemon {
@@ -171,13 +216,6 @@ declare namespace RomReader {
         protected moveLearns: {
             [key: number]: Pokemon.MoveLearn[];
         };
-        protected evolutions: {
-            [key: number]: {
-                level: number;
-                itemId: number;
-                speciesId: number;
-            }[];
-        };
         protected levelCaps: number[];
         protected ballIds: number[];
         protected natures: string[];
@@ -246,22 +284,41 @@ declare namespace RomReader {
         constructor(basePath: string);
         protected readonly StartDol: Buffer;
         protected readonly CommonRel: Buffer;
+        FixAllCaps(str: string): string;
         ReadStringTable(table: Buffer, address?: number): {
             id: number;
+            addr: string;
             string: string;
         }[];
-        ReadString(data: Buffer, address?: number, length?: number): string;
+        ReadStringOld(data: Buffer, address?: number, length?: number): string;
+        ReadStringSloppy(data: Buffer, address?: number, length?: number): string;
+        ReadString(data: Buffer, address?: number): string;
     }
 }
 declare namespace RomReader {
+    type ShadowData = {
+        catchRate: number;
+        species: number;
+        purificationStart: number;
+    };
     class ColXD extends GCNReader {
+        shadowData: ShadowData[];
+        private strings;
+        private trainerClasses;
         constructor(basePath: string);
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        GetMap(id: number): Pokemon.Map;
+        readonly DefaultMap: Pokemon.Map;
         private ReadPokeData;
         private ReadMoveData;
         private ReadItemData;
         private ReadTMHMMapping;
+        private ReadShadowData;
+        private ReadTrainerData;
+        private ReadTrainerClasses;
+        private ReadMaps;
     }
 }
 declare namespace RomReader {
@@ -285,6 +342,7 @@ declare namespace Pokemon.Convert {
     function MoveToRunStatus(move: Move, pp?: number, ppUp?: number, maxPP?: number): TPP.Move;
     function MoveLearnToRunStatus(move: MoveLearn, pp?: number, ppUp?: number, maxPP?: number): TPP.MoveLearn;
     function ItemToRunStatus(item: Item, count?: number): TPP.Item;
+    function EvolutionToRunStatus(evo: Evolution): TPP.Evolution;
 }
 declare namespace RamReader {
     interface OptionsFieldSpec {
@@ -389,19 +447,44 @@ declare namespace RamReader {
         private Handlers;
         private ResponseHandler;
         private ParsePokemon;
+        private AugmentShadowMon;
         private ParseMove;
-        SendParty: (data: Buffer) => Promise<void>;
-        ReadParty: (data?: Buffer) => Promise<TPP.PartyData>;
+        SendParty: (data: Buffer, monBytes?: number, inBattle?: boolean) => Promise<void>;
+        SendEnemyParty: (data: Buffer) => Promise<void>;
+        SendEnemyTrainer: (data: Buffer) => void;
+        SendTrainer: (data: Buffer) => Promise<void>;
+        SendPokedex: (data: Buffer) => Promise<void>;
+        SendItemPC: (data: Buffer) => Promise<void>;
+        SendPC: (data: Buffer) => Promise<void>;
+        SendMap: (data: Buffer) => void;
+        ReadParty: (data?: Buffer, monBytes?: number) => Promise<TPP.PartyData>;
+        ReadTrainer: (data?: Buffer) => Promise<TPP.TrainerData>;
+        ReadTrainerInventory: (data: Buffer) => Promise<TPP.TrainerData>;
+        ReadBag: (data: Buffer) => {
+            [key: string]: TPP.Item[];
+        };
+        ReadPocket: (data: Buffer) => (TPP.Item & Pokemon.Item & {
+            count: number;
+        })[];
+        ReadPokedex: (data: Buffer) => Promise<{
+            owned: number[];
+            seen: number[];
+        }>;
+        ReadItemPC: (data: Buffer) => Promise<TPP.Item[]>;
         ReadPC: (data?: Buffer) => Promise<TPP.CombinedPCData>;
+        ReadPCBox: (data: Buffer, boxNum: number) => TPP.BoxData;
+        ReadDaycare: (data: Buffer) => Promise<TPP.PartyPokemon>;
         ReadBattle: (data?: Buffer) => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: ((data?: Buffer) => Promise<TPP.TrainerData>)[];
         protected OptionsSpec: OptionsSpec;
+        IsPartyDefeated: (party: TPP.PartyData) => boolean;
     }
 }
 declare module TPP.Server {
     function getConfig(): Config;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
+    const events: Events.RunEvents;
     let RomData: RomReader.RomReaderBase;
     let RamData: RamReader.RamReaderBase;
     function StartRamReading(): void;
@@ -465,6 +548,18 @@ declare namespace TPP.Server.DexNav {
     }
 }
 declare namespace TPP.Server.DexNav {
+}
+declare namespace Events {
+    type BlackoutAction = {
+        type: "Blackout";
+    };
+    const PartyIsFainted: (party: {
+        health: number[];
+    }[]) => boolean;
+}
+declare namespace Events {
+}
+declare namespace Events {
 }
 declare namespace RamReader {
     interface Gen1BoxedMon extends TPP.Pokemon {

@@ -7,6 +7,7 @@ declare namespace TPP {
         game?: string;
         updates_paused?: boolean;
         transitioning?: boolean;
+        events?: Event[];
     }
 
     //sent from lua
@@ -19,6 +20,7 @@ declare namespace TPP {
 
     export interface TrainerData extends OverlayData {
         ball_count?: number;
+        blackouts?: number;
         caught?: number;
         caught_list?: number[];
         coins?: number;
@@ -53,6 +55,7 @@ declare namespace TPP {
         rival_name?: string;
         party_fitness?: number;
         rematch_available?: number;
+        battles_won?: number;
         time?: {
             d: string;
             h: number;
@@ -114,6 +117,17 @@ declare namespace TPP {
         base_stats?: Stats;
         held_items?: Item[] | number[] | string[];
         tm_moves?: Move[] | number[] | string[];
+        evolutions?: Evolution[];
+    }
+
+    export interface Evolution {
+        level?: number;
+        required_item?: Item;
+        is_trade?: boolean;
+        required_happiness?: number;
+        required_map_id?: number;
+        required_map_name?: string;
+        required_time_of_day?: "Morn" | "Day" | "Night";
     }
 
     export interface Pokemon {
@@ -161,6 +175,8 @@ declare namespace TPP {
             date?: string;
             date_egg_received?: string;
             caught_in: string;
+            caught?: string;
+            evolved?: string[];
         }
         ribbons: string[]
         is_egg: boolean;
@@ -187,8 +203,12 @@ declare namespace TPP {
     }
 
     export interface ShadowPokemon extends PartyPokemon {
+        is_shadow?: boolean;
         shadow_id: number;
-        purification: number;
+        purification: {
+            current: number;
+            initial?: number;
+        };
         shadow_exp: number;
     }
 
@@ -208,6 +228,7 @@ declare namespace TPP {
         cp?: number;
         fitness?: number;
         personality_value?: number;
+        in_shadow?: boolean;
         name?: string;
         buffs?: {
             accuracy: number;
@@ -238,6 +259,10 @@ declare namespace TPP {
         accuracy?: number;
         base_power?: number;
         contest?: ContestData;
+    }
+
+    export interface ShadowMove extends Move {
+        is_shadow?: boolean;
     }
 
     export interface ContestData {
@@ -283,5 +308,12 @@ declare namespace TPP {
         sound: string;
         battle_style: string;
         battle_scene: string;
+    }
+
+    export interface Event {
+        group: string;
+        name: string;
+        time: string;
+        attempts?: number;
     }
 }

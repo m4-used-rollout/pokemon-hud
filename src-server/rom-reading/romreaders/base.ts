@@ -20,7 +20,6 @@ namespace RomReader {
         protected areas: string[] = [];
         protected abilities: string[] = [];
         protected moveLearns: { [key: number]: Pokemon.MoveLearn[] };
-        protected evolutions: { [key: number]: { level: number, itemId: number, speciesId: number }[] };
         protected levelCaps = [100];  //some romhacks have these
         protected ballIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 492, 493, 494, 495, 496, 497, 498, 499, 500, 576, 851];
         protected natures = ["Hardy", "Lonely", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed", "Impish", "Lax", "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest", "Mild", "Quiet", "Bashful", "Rash", "Calm", "Gentle", "Sassy", "Careful", "Quirky"];
@@ -69,19 +68,19 @@ namespace RomReader {
             return pokemon.form;
         }
         GetSpecies(id: number, form = 0) {
-            return this.pokemon.filter(p => p.id === id || (p.baseSpeciesId && p.baseSpeciesId === id && p.formNumber && p.formNumber === form)).pop() || <Pokemon.Species>{};
+            return this.pokemon.filter(p => p && (p.id === id || (p.baseSpeciesId && p.baseSpeciesId === id && p.formNumber && p.formNumber === form))).pop() || <Pokemon.Species>{};
         }
         GetSpeciesByDexNumber(dexNum: number) {
-            return this.pokemon.filter(p => p.dexNumber == dexNum).shift() || <Pokemon.Species>{};
+            return this.pokemon.filter(p => p && p.dexNumber == dexNum).shift() || <Pokemon.Species>{};
         }
         GetMove(id: number) {
-            return this.moves.filter(m => m.id === id).shift() || <Pokemon.Move>{};
+            return this.moves.filter(m => m && m.id === id).shift() || <Pokemon.Move>{};
         }
         GetMap(id: number, bank: number = null) {
-            return this.maps.filter(m => id === m.id && (bank === null || bank === m.bank)).shift() || <Pokemon.Map>{};
+            return this.maps.filter(m => m && id === m.id && (bank === null || bank === m.bank)).shift() || <Pokemon.Map>{};
         }
         GetItem(id: number) {
-            return this.items.filter(i => i.id === id).shift() || <Pokemon.Item>{};
+            return this.items.filter(i => i && i.id === id).shift() || <Pokemon.Item>{};
         }
         GetAbility(id: number) {
             return this.abilities[id] || '';
@@ -163,7 +162,7 @@ namespace RomReader {
             return encounters;
         }
         GetTrainer(id: number, classId: number = null) {
-            return this.trainers.filter(t => t.id == id && (classId == null || classId == t.classId)).shift() || this.trainers.filter(t => t.classId == classId).shift() || <Pokemon.Trainer>{};
+            return this.trainers.filter(t => t && t.id == id && (classId == null || classId == t.classId)).shift() || this.trainers.filter(t => t && t.classId == classId).shift() || <Pokemon.Trainer>{};
         }
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
             return ((this.pokemonSprites[id] || [])[form] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${shiny ? "shiny/" : ""}${id}.gif`;

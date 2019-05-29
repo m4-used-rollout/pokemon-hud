@@ -127,9 +127,10 @@ namespace RomReader {
                 p.experience.this_level = p.experience.this_level || romMon.expFunction(p.level);
                 p.experience.remaining = p.experience.next_level - p.experience.current;
             }
-            p.next_move = p.next_move || Pokemon.Convert.MoveLearnToRunStatus(romData.GetNextMoveLearn(p.species.id, p.form, p.level, p.moves.map(m => m.id)));
+            if (!(p as TPP.ShadowPokemon).is_shadow)
+                p.next_move = p.next_move || Pokemon.Convert.MoveLearnToRunStatus(romData.GetNextMoveLearn(p.species.id, p.form, p.level, p.moves.map(m => m.id)));
             
-            //Censor NextMove data
+            //Conceal NextMove data
             if (p.next_move) {
                 delete p.next_move.id;
                 delete p.next_move.accuracy;

@@ -1,14 +1,16 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
+/// <reference path="events/events.ts" />
 /// <reference path="rom-reading/romreaders/concrete/colxd.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
 /// <reference path="ram-reading/colxd.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
-/// <reference path="../node_modules/@types/electron/index.d.ts" />
+/// <reference path="../node_modules/electron/electron.d.ts" />
 
 module TPP.Server {
 
     const { ipcMain } = require('electron');
+    const fs = require('fs') as typeof import('fs');
 
     export function getConfig(): Config {
         const configPath = './config.json';
@@ -18,8 +20,14 @@ module TPP.Server {
 
     let config = getConfig();
 
-    var state: TPP.RunStatus = { party: [], pc: {} } as any;
+    var state: TPP.RunStatus = { party: [], pc: {}, game: config.runName } as any;
     var stateChangeHandlers: ((state: TPP.RunStatus) => void)[] = [];
+
+    const fsSafe = /[^a-z0-9-.]*/ig;
+
+    const saveFileName = (state: RunStatus) => `${state.game}-${state.name}-${state.id}`.replace(fsSafe, '');
+    const saveState = (path: string, state: RunStatus) => fs.promises.writeFile(path, JSON.stringify(state)).catch(err => console.error(`Could not save state backup (${config.stateBackupFolder}): ${err}`))
+    const defaultStateFileName = (state: RunStatus) => `${config.stateBackupFolder}/${saveFileName(state)}.json`;
 
 
     var lastCommunicatedState: string = "";
@@ -57,9 +65,27 @@ module TPP.Server {
             if (!sameTrainer) {
                 oldTrainer = { id: s.id, secret: s.secret, name: s.name };
                 console.log(`New trainer: ${s.name} ${s.id}-${s.secret}`);
+                if (config.stateBackupFolder && fs.existsSync(defaultStateFileName(s))) {
+                    fs.promises.readFile(defaultStateFileName(s)).then(data => setState(Object.assign(JSON.parse(data.toString('utf8')))));
+                }
             }
             oldCatches = s.caught_list;
         });
+    }
+    if (config.stateBackupFolder) {
+        let filePromise = fs.promises.mkdir(config.stateBackupFolder, { recursive: true }).catch(err => console.error(`Could not create state backup folder (${config.stateBackupFolder}): ${err}`));
+        let lastSave = Date.now();
+        stateChangeHandlers.push(state => {
+            if (Date.now() - lastSave > config.stateBackupIntervalMinutes * 1000 * 60) {
+                lastSave = Date.now();
+                filePromise = filePromise.then(() => saveState(defaultStateFileName(state), state));
+                saveState(`${config.stateBackupFolder}/${saveFileName(state)}-${new Date().toISOString()}.json`, state);
+            }
+        });
+        process.on('beforeExit', () => {
+            console.log("Saving state on shutdown...");
+            saveState(defaultStateFileName(state), state);
+        })
     }
 
     ipcMain.on('register-renderer', e => {
@@ -73,6 +99,7 @@ module TPP.Server {
     });
 
     function transmitState() {
+        state = events.Analyze(state);
         for (let i = 0; i < stateChangeHandlers.length; i++) {
             try {
                 if (typeof stateChangeHandlers[i] === "function")
@@ -97,6 +124,8 @@ module TPP.Server {
     function fixDoubleEscapedUnicode(json) {
         return json.replace(/\\\\u/g, '\\u');
     }
+
+    export const events = new Events.RunEvents(config);
 
     // export let RomDataG3: RomReader.RomReaderBase;
     // export let RamDataG3: RamReader.RamReaderBase;

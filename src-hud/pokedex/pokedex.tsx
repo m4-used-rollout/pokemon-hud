@@ -31,14 +31,14 @@ class Pokedex extends React.Component<dexProps, dexState> {
         }
         if (state.firstEntry) {
             //Render Pokedex before adding transitions
-            setTimeout(() => this.setState({ firstEntry: false }), 1);
+            setTimeout(() => this.setState({ firstEntry: false }), 100);
             state.newEntry = state.scrollTo = null;
         }
         else if (state.newEntry && !state.firstEntry) {
             setTimeout(() => this.setState({ newEntry: null }), 10000);
         }
         let mons: JSX.Element[] = [];
-        const totalInDex = this.totalInDex(this.props.seen);
+        const totalInDex = config.totalInDex;//this.totalInDex(this.props.seen);
         for (let i = 1; i <= totalInDex; i++) {
             let seen = this.props.seen.indexOf(i) >= 0 || DEVMODE;
             let owned = this.props.owned.indexOf(i) >= 0 || DEVMODE;

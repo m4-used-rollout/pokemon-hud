@@ -9,26 +9,57 @@ namespace RomReader {
     const contestTypes = ['Cool', 'Beauty', 'Cute', 'Smart', 'Tough'];
     const contestEffects = ['The appeal effect of this move is constant.', 'Prevents the user from being startled.', 'Startles the previous appealer.', 'Startles all previous appealers.', 'Affects appealers other than startling them.', 'Appeal effect may change.', 'The appeal order changes for the next round.'];
 
+    type ShadowData = {
+        catchRate: number;
+        species: number;
+        purificationStart: number;
+    }
+
+    type StringTable = { [key: number]: string };
+
     export class ColXD extends GCNReader {
 
+        public shadowData: ShadowData[];
+
+        private strings: StringTable = {};
+
+        private trainerClasses: Pokemon.Trainer[];
 
         constructor(basePath: string) {
             super(basePath);
             const startDol = this.StartDol;
             const commonRel = this.CommonRel;
-            const strings = this.ReadStringTable(commonRel, 0x59890);
-            const pokemonNames = ["??????????", ...strings.filter(s => s.id > 1000 && s.id < 2000).map(s => s.string)];
-            const moveNames = ["???", ...strings.filter(s => s.id > 2000 && s.id < 3000).map(s => s.string)];
-            this.abilities = ["-", ...strings.filter(s => s.id > 3100 && s.id < 3200).map(s => s.string)];
-            const trainerNames = ["???", ...strings.filter(s => s.id > 4000 && s.id < 5000).map(s => s.string)];
-            const itemNames = ["???", ...strings.filter(s => s.id > 5000 && s.id < 6000).map(s => s.string)];
+            this.ReadStringTable(startDol, 0x2CC810).forEach(s => this.strings[s.id] = s.string);
+            const commonStrings1List = this.ReadStringTable(commonRel, 0x59890);
+            commonStrings1List.forEach(s => this.strings[s.id] = s.string);
+            this.ReadStringTable(commonRel, 0x66000).forEach(s => this.strings[s.id] = s.string);
+            this.ReadStringTable(commonRel, 0x784E0).forEach(s => this.strings[s.id] = s.string);
+
+            this.abilities = ["-", ...commonStrings1List.filter(s => s.id > 3100 && s.id < 3200).map(s => s.string)];
+
+            this.ballIds = [];
 
             this.moveLearns = {};
-            this.evolutions = {};
-            this.moves = this.ReadMoveData(commonRel, moveNames);
-            this.pokemon = this.ReadPokeData(commonRel, pokemonNames);
-            this.items = this.ReadItemData(startDol, itemNames);
+            this.moves = this.ReadMoveData(commonRel, this.strings);
+            this.items = this.ReadItemData(startDol, this.strings);
+            this.pokemon = this.ReadPokeData(commonRel, this.strings);
+            this.trainerClasses = this.ReadTrainerClasses(commonRel, this.strings);
+            this.trainers = this.ReadTrainerData(commonRel, this.strings, this.trainerClasses);
+            this.shadowData = this.ReadShadowData(commonRel);
+            this.maps = this.ReadMaps(commonRel, this.strings);
 
+            // this.maps = [<Pokemon.Map>{
+            //     areaId: 0,
+            //     areaName: "Nowhere",
+            //     encounters: {},
+            //     id: 0,
+            //     name: "???"
+            // }];
+
+        }
+
+        GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
+            return `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${shiny ? "shiny/" : ""}${id}${form ? `-${form}` : ""}.png`;
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
@@ -39,21 +70,25 @@ namespace RomReader {
             return {}; //no encounters in Colosseum
         }
 
-        private ReadPokeData(commonRel: Buffer, names: string[]) {
+        public GetMap(id: number) {
+            const map = super.GetMap(id);
+            if (!map.id)
+                return this.DefaultMap;
+        }
+
+        public get DefaultMap() {
+            return <Pokemon.Map>{
+                id: 0,
+                name: "Orre Region"
+            };
+        }
+
+        private ReadPokeData(commonRel: Buffer, names: StringTable) {
             return this.ReadStridedData(commonRel, 0x12336C, 0x11C, 411).map((data, i) => {
                 this.moveLearns[i + 1] = this.ReadStridedData(data, 0xBA, 4, 20, true, 0)
                     .map(mData => Object.assign({
                         level: mData[0]
                     }, this.moves[mData.readUInt16BE(2)]) as Pokemon.MoveLearn);
-                this.evolutions[i + 1] = this.ReadStridedData(data, 0x9C, 6, 5)
-                    .filter(d => d.readUInt16BE(0) > 0).map(eData => {
-                        const type = eData.readUInt16BE(0);
-                        return {
-                            level: type == 4 || type > 7 ? eData.readUInt16BE(2) : 0,
-                            itemId: type == 6 || type == 7 ? eData.readUInt16BE(2) : 0,
-                            speciesId: eData.readUInt16BE(4)
-                        };
-                    });
                 return <Pokemon.Species>{
                     id: i + 1,
                     growthRate: expCurveNames[data[0]],
@@ -63,7 +98,7 @@ namespace RomReader {
                     baseExp: data[7],
                     dexNumber: data.readUInt16BE(0x10),
                     eggCycles: data[0x17],
-                    name: names[data.readInt32BE(0x18) % 1000],
+                    name: names[data.readInt32BE(0x18)],
                     type1: typeNames[data[0x30]],
                     type2: typeNames[data[0x31]],
                     abilities: [this.abilities[data[0x32]], this.abilities[data[0x33]]],
@@ -76,23 +111,35 @@ namespace RomReader {
                         spatk: data.readUInt16BE(0x8A),
                         spdef: data.readUInt16BE(0x8C),
                         speed: data.readUInt16BE(0x8E),
-                    }
+                    },
+                    evolutions: this.ReadStridedData(data, 0x9C, 6, 5)
+                        .filter(d => d.readUInt16BE(0) > 0).map(eData => {
+                            const type = eData.readUInt16BE(0);
+                            return {
+                                happiness: (type == 1 || type == 2 || type == 3) && 220,
+                                isTrade: type == 5 || type == 6,
+                                timeOfDay: (type == 2 && "Day") || (type == 3 && "Night"),
+                                level: (type == 4 || type > 7) && eData.readUInt16BE(2),
+                                item: (type == 6 || type == 7) && this.GetItem(eData.readUInt16BE(2)),
+                                speciesId: eData.readUInt16BE(4)
+                            } as Pokemon.Evolution;
+                        })
                 };
             });
         }
 
-        private ReadMoveData(commonRel: Buffer, names: string[]) {
+        private ReadMoveData(commonRel: Buffer, names: StringTable) {
             return this.ReadStridedData(commonRel, 0x11E048, 0x38, 357).map((data, i) => (<Pokemon.Move>{
                 id: i + 1,
                 basePP: data[1],
                 type: typeNames[data[2]],
                 accuracy: data[4],
                 basePower: data[0x17],
-                name: names[data.readUInt16BE(0x22) % 1000]
+                name: names[data.readUInt16BE(0x22)]
             }));
         }
 
-        private ReadItemData(startDol: Buffer, names: string[]) {
+        private ReadItemData(startDol: Buffer, names: StringTable) {
             const tmMap = this.ReadTMHMMapping(startDol);
             const tmExp = /^TM([0-9]+)$/i;
             const mapTm = (name: string) => {
@@ -105,13 +152,47 @@ namespace RomReader {
             }
             return this.ReadStridedData(startDol, 0x360CE8, 0x28, 397).map((data, i) => (<Pokemon.Item>{
                 id: i + 1,
-                name: mapTm(names[data.readUInt32BE(0x10) % 1000]),
+                name: mapTm(names[data.readUInt32BE(0x10)]),
                 isKeyItem: data[1] > 0
             }));
         }
 
         private ReadTMHMMapping(startDol: Buffer) {
             return [0, ...this.ReadStridedData(startDol, 0x365018, 0x8, 58).map(data => data.readUInt32BE(4))];
+        }
+
+        private ReadShadowData(commonRel: Buffer) {
+            return this.ReadStridedData(commonRel, 0x145224, 0x38, 97).map(data => (<ShadowData>{
+                catchRate: data[0],
+                species: data.readUInt16BE(2),
+                purificationStart: data[9] * 100
+            }));
+        }
+
+        private ReadTrainerData(commonRel: Buffer, names: StringTable, classes: Pokemon.Trainer[]) {
+            return this.ReadStridedData(commonRel, 0x92ED0, 0x34, 818).map((data, i) => (<Pokemon.Trainer>{
+                id: i,
+                gender: data[0x0] ? "Female" : "Male",
+                classId: data[0x3],
+                name: names[data.readUInt32BE(0x8)] || data.readUInt32BE(0x8),
+                className: (classes[data[0x3]] || { className: null }).className,
+                spriteId: data[0x13],
+                //data: data.toString('hex')
+            } as Pokemon.Trainer)).filter(t => !!t);
+        }
+
+        private ReadTrainerClasses(commonRel: Buffer, names: StringTable) {
+            return this.ReadStridedData(commonRel, 0x90F70, 0xC, 41).map((data, i) => (<Pokemon.Trainer>{
+                classId: i + 1,
+                className: names[data.readUInt32BE(0x4)] || data.readUInt32BE(0x4),
+            }));
+        }
+
+        private ReadMaps(commonRel: Buffer, names: StringTable) {
+            return this.ReadStridedData(commonRel, 0x8D540, 0x4C, 189).map(data => (<Pokemon.Map>{
+                id: data.readUInt32BE(0x4),
+                name: names[data.readUInt32BE(0x24)]
+            }));
         }
     }
 

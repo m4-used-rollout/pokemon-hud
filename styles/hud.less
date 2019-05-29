@@ -26,6 +26,8 @@ body {
 @female-color:deeppink;
 @male-color: dodgerblue;
 
+@shadow-color: purple;
+
 @transition-time: .5s;
 
 @bar-chrome: #666;
@@ -150,7 +152,7 @@ body {
                         position: absolute;
                         left:50%;
                         top: 50%;
-                        transform:translateX(-50%)translateY(-50%)rotateY(180deg);
+                        transform:translateX(-50%)translateY(-50%)rotateY(180deg)scale(2);
                         //height:(@party-member-height * .9);
                         // height: 160px; //HGSS
                         //height: 128px; //Gen 3, Generic
@@ -158,7 +160,7 @@ body {
                     }
 
                     &.unown img, .no-flip img {
-                        transform:translateX(-50%)translateY(-50%); //don't flip
+                        transform:translateX(-50%)translateY(-50%)scale(2); //don't flip
                     }
                 }
 
@@ -480,6 +482,30 @@ body {
                         }
                         &:after {
                             transform: none;
+                        }
+                    }
+                }
+
+                &.shadow {
+                    .pokemon-image {
+                        img {
+                            .outline(@shadow-color);
+                        }
+                    }
+
+                    .pokemon-info {
+                        background-image: linear-gradient(to left, darken(@shadow-color, 10%) 0%, black 80%, rgba(0,0,0,.8) 90%,  rgba(0,0,0,.5) 95%, rgba(0,0,0,0) 100%);
+
+                        .exp-bar {
+                            .outline(black);
+                            &:before {
+                                content: "❤";
+                            }
+                            .exp {
+                                background-color:@shadow-color;
+                                @heart-gauge-segment-width: 11.5vw;
+                                -webkit-mask-image: repeating-linear-gradient(to right, black 0%, black @heart-gauge-segment-width, transparent @heart-gauge-segment-width + .1vw, transparent @heart-gauge-segment-width + 1vw);
+                            }
                         }
                     }
                 }

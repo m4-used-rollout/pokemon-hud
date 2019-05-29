@@ -69,7 +69,7 @@ namespace TPP.Server.DexNav {
             if (config.dexNavUseAreaName) {
                 this.MapName = this.AreaName || this.MapName;
             }
-            this.TehUrn = this.MapID == config.hofMapId && (typeof config.hofMapBank !== "number" || this.MapBank == config.hofMapBank);
+            this.TehUrn = this.MapID && this.MapID == config.hofMapId && (typeof config.hofMapBank !== "number" || this.MapBank == config.hofMapBank);
             if (this.TehUrn) {
                 this.MapName = "Hall of Fame";
             }

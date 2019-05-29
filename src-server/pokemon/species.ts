@@ -1,5 +1,6 @@
 /// <reference path="expcurve.ts" />
 /// <reference path="stats.ts" />
+/// <reference path="evolution.ts" />
 
 namespace Pokemon {
     export interface Species {
@@ -26,5 +27,6 @@ namespace Pokemon {
         heldItem1?: Item;
         heldItem2?: Item;
         tmMoves?: Move[];
+        evolutions?: Evolution[];
     }
 }

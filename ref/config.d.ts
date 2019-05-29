@@ -27,6 +27,9 @@ declare interface Config extends DexNavConfig, GoalConfig {
     blockResize?: boolean;
     resetEveryHours?: number;
     transitionDurationMs?:number;
+    stateBackupFolder?:string;
+    stateBackupIntervalMinutes?: number;
+    eventBackupFolder?:string;
 }
 
 declare interface DexNavConfig {
