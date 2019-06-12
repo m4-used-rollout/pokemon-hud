@@ -33,7 +33,7 @@ class Encounter extends React.PureComponent<{ encounterType: string, encounter: 
         return <span className={cleanString(this.props.encounterType) + ' ' + (e.owned ? "owned" : "seen")}>
             <PokeSprite pokemonId={e.speciesId} form={e.form} />
             <Rarity rate={e.rate} />
-            {(e.categoryIcon || e.requiredItemId) && <div className="item" style={{backgroundImage:`url("${e.requiredItemId ? TPP.Server.RomData.GetItemSprite(e.requiredItemId) : `img/dexnav/terrain/${e.categoryIcon}.png`}")`}} />}
+            {(e.categoryIcon || e.requiredItemId) && <div className="item" style={{ backgroundImage: `url("${e.requiredItemId ? TPP.Server.RomData.GetItemSprite(e.requiredItemId) : `img/dexnav/terrain/${e.categoryIcon}.png`}")` }} />}
         </span>;
     }
 }
@@ -51,6 +51,8 @@ class Rarity extends React.PureComponent<{ rate: number }, {}> {
         return "ultra-rare";
     }
     render() {
+        if (!this.props.rate)
+            return null;
         return <span className={`rarity ${this.rarity(this.props.rate)}`} />;
     }
 }

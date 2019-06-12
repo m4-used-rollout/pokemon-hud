@@ -19,7 +19,7 @@ function Render(id: string = targetId) {
     ReactDOM.render(<div className={classes.filter(c => !!c).join(' ')}>
         <Party party={data.party} gameState={data} />
         <Trainer trainer={data} />
-        <Pokedex seen={data.seen_list || []} owned={data.caught_list || []} noDisplay={data.transitioning} />
+        {/* <Pokedex seen={data.seen_list || []} owned={data.caught_list || []} noDisplay={data.transitioning} /> */}
         {/* <Appraisal stepDuration={5} pokemon={data.last_caught_pokemon} trainerName={data.name} /> */}
     </div>, document.getElementById(id));
 }

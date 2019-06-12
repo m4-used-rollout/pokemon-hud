@@ -66,6 +66,7 @@ namespace RomReader {
                 calculateShiny(p);
                 calculatePokemonAbilityNatureCharacteristic(p);
                 CensorEgg(p);
+                romData.CalculateUnownForm(p);
             }
             catch (e) {
                 console.error(e);
@@ -129,7 +130,7 @@ namespace RomReader {
             }
             if (!(p as TPP.ShadowPokemon).is_shadow)
                 p.next_move = p.next_move || Pokemon.Convert.MoveLearnToRunStatus(romData.GetNextMoveLearn(p.species.id, p.form, p.level, p.moves.map(m => m.id)));
-            
+
             //Conceal NextMove data
             if (p.next_move) {
                 delete p.next_move.id;
@@ -237,7 +238,10 @@ namespace RomReader {
             }
             if (state.enemy_party) {
                 state.enemy_party = state.enemy_party.filter(p => !!p);
-                state.enemy_party.forEach(p => augmentSpecies(p.species));
+                state.enemy_party.forEach(p => {
+                    augmentSpecies(p.species);
+                    romData.CalculateUnownForm(p);
+                });
             }
             if (state.area_id) {
                 state.area_name = romData.GetAreaName(state.area_id);

@@ -1,6 +1,6 @@
 /// <reference path="./runstatus.d.ts" />
 
-declare interface Config extends DexNavConfig, GoalConfig {
+declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig {
     runName: string;
     badgeCount?: number;
     mainRegion?: string;
@@ -19,6 +19,7 @@ declare interface Config extends DexNavConfig, GoalConfig {
     listenPort: number;
     runStatusEndpoint?: string;
     newCatchEndpoint?: string;
+    forceNewCatch?: boolean;
     screenWidth: number;
     screenHeight: number;
     windowX?: number;
@@ -26,10 +27,10 @@ declare interface Config extends DexNavConfig, GoalConfig {
     frameless?: boolean;
     blockResize?: boolean;
     resetEveryHours?: number;
-    transitionDurationMs?:number;
-    stateBackupFolder?:string;
+    transitionDurationMs?: number;
+    stateBackupFolder?: string;
     stateBackupIntervalMinutes?: number;
-    eventBackupFolder?:string;
+    eventBackupFolder?: string;
 }
 
 declare interface DexNavConfig {
@@ -45,9 +46,14 @@ declare interface DexNavConfig {
     hofMapBank?: number;
 }
 
+declare interface EmuCtlConfig {
+    saveStatePath?:string;
+    saveStateIntervalSeconds?:number;
+}
+
 declare interface GoalConfig {
     showGoals?: boolean;
-    goals?: (TrickHouseConfig | LogoConfig | HoFEntriesConfig)[];
+    goals?: (TrickHouseConfig | LogoConfig | HoFEntriesConfig | TrainerHitListConfig)[];
     goalWidth?: number;
     goalHeight?: number;
     goalX?: number;
@@ -56,6 +62,18 @@ declare interface GoalConfig {
 
 declare interface Goal {
     goalType: string;
+}
+
+declare interface TrainerHitListConfig extends Goal {
+    goalType: "Trainers";
+    requiredTrainerIds: number[];
+    requiredTrainerClasses?: number[];
+    optionalTrainerIds?: number[];
+    optionalTrainerClasses?: number[];
+    finalTrainerIds?: number[];
+    finalTrainerClasses?: number[];
+    extraTrackedTrainerIds?: number[];
+    extraTrackedTrainerClasses?: number[];
 }
 
 declare interface TrickHouseConfig extends Goal {

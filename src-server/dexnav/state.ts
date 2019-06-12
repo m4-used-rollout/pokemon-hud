@@ -28,6 +28,13 @@ namespace TPP.Server.DexNav {
         health?: number[];
         owned: boolean;
         encounterRate?: number;
+        is_shadow?: boolean;
+    }
+
+    export interface GoalTrainer extends Pokemon.Trainer {
+        met?: boolean;
+        defeated?: boolean;
+        attempts: number;
     }
 
     export class State {
@@ -59,6 +66,7 @@ namespace TPP.Server.DexNav {
         public EnemyTrainers: TPP.EnemyTrainer[] = null;
         public EnemyParty: TPP.EnemyParty = null;
         public IsUnknownArea = false;
+        public GoalTrainers: GoalTrainer[] = null;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {
             if (!map || !runState) return;
             this.MapName = map.name;
@@ -111,7 +119,67 @@ namespace TPP.Server.DexNav {
                 if (this.EnemyTrainers && this.IsUnknownArea && this.EnemyTrainers.length > 1) {
                     this.EnemyTrainers.length = 1;
                 }
-
+                if (this.EnemyParty
+                    && this.EnemyParty.some(p => ((p || {}) as TPP.ShadowPokemon).is_shadow)
+                    && this.EnemyParty.every(p => p && (((p as TPP.ShadowPokemon).is_shadow && !!(p.health || [][0])) || (!(p as TPP.ShadowPokemon).is_shadow && !(p.health || [])[0])))
+                ) {
+                    this.WildBattle = this.WildBattle || this.EnemyParty
+                        .filter(p => p && p.species && (p as TPP.ShadowPokemon).is_shadow && p.health && p.health[0])
+                        .map(p => Object.assign(
+                            Pokemon.Convert.SpeciesFromRunStatus(p.species),
+                            {
+                                owned: runState.caught_list.indexOf(p.species.national_dex) >= 0,
+                                gender: p.gender,
+                                form: p.form,
+                                shiny: p.shiny,
+                                health: p.health,
+                                is_shadow: (p as TPP.ShadowPokemon).is_shadow
+                            } as TPP.Server.DexNav.WildPokemon, p.species
+                        ));
+                }
+            }
+            const goalTrainers = (config.goals || []).find(g => g.goalType == "Trainers") as TrainerHitListConfig;
+            if (goalTrainers) {
+                this.GoalTrainers = goalTrainers.requiredTrainerIds
+                    .map((id, i) => {
+                        const classId = (goalTrainers.requiredTrainerClasses || [])[i];
+                        const trainerEvent = (runState.events as TPP.TrainerEvent[]).find(e => e.id == id && (!classId || classId == e.class_id));
+                        return Object.assign(
+                            {
+                                met: !!trainerEvent,
+                                defeated: trainerEvent && trainerEvent.group == "Trainers Defeated",
+                                attempts: trainerEvent ? trainerEvent.attempts : 0
+                            } as GoalTrainer,
+                            RomData.GetTrainer(id, classId)
+                        );
+                    });
+                const requiredTrainersDefeated = this.GoalTrainers.every(t => t.defeated);
+                (goalTrainers.optionalTrainerIds || []).forEach((id, i) => {
+                    const classId = (goalTrainers.optionalTrainerClasses || [])[i];
+                    const trainerEvent = (runState.events as TPP.TrainerEvent[]).find(e => e.id == id && (!classId || classId == e.class_id));
+                    if (trainerEvent)
+                        this.GoalTrainers.push(Object.assign(
+                            {
+                                met: true,
+                                defeated: trainerEvent && trainerEvent.group == "Trainers Defeated",
+                                attempts: trainerEvent ? trainerEvent.attempts : 0
+                            } as GoalTrainer,
+                            RomData.GetTrainer(id, classId)
+                        ));
+                });
+                if (requiredTrainersDefeated)
+                    (goalTrainers.finalTrainerIds || []).forEach((id, i) => {
+                        const classId = (goalTrainers.finalTrainerClasses || [])[i];
+                        const trainerEvent = (runState.events as TPP.TrainerEvent[]).find(e => e.id == id && (!classId || classId == e.class_id));
+                        this.GoalTrainers.push(Object.assign(
+                            {
+                                met: !!trainerEvent,
+                                defeated: trainerEvent && trainerEvent.group == "Trainers Defeated",
+                                attempts: trainerEvent ? trainerEvent.attempts : 0
+                            } as GoalTrainer,
+                            RomData.GetTrainer(id, classId)
+                        ));
+                    });
             }
         }
 
@@ -125,7 +193,7 @@ namespace TPP.Server.DexNav {
             // console.log(`Fishing: ${(encounters.fishing || []).map(e => `${e.species.name} (${e.rate.toFixed(0)}%) [${e.requiredItem.name}]`).join(', ')}`);
             // console.log(`Hidden: ${(encounters.hidden_grass || []).map(e => `${e.species.name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
 
-            let monIsSeen = (mon: Pokemon.EncounterMon) => (runState.seen_list || []).indexOf(mon.species.dexNumber) >= 0 || (runState.enemy_party || []).some(p=>p.species.national_dex == mon.species.dexNumber);
+            let monIsSeen = (mon: Pokemon.EncounterMon) => (runState.seen_list || []).indexOf(mon.species.dexNumber) >= 0 || (runState.enemy_party || []).some(p => p.species.national_dex == mon.species.dexNumber);
             let monIsOwned = (mon: Pokemon.EncounterMon) => (runState.caught_list || []).indexOf(mon.species.dexNumber) >= 0;
             let userHasItem = (item: TPP.Item) => !item || !item.id || Object.keys(runState.items || {}).some(k => (runState.items[k] || []).some(i => item.id == i.id));
             this.categories.forEach(k => {

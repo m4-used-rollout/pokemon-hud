@@ -75,7 +75,7 @@ namespace Pokemon.Convert {
             type2: species.type2,
             expFunction: species.expFunction,
             held_items: [species.heldItem1, species.heldItem2].filter(i => !!i).map(i => ItemToRunStatus(i)),
-            tm_moves: (species.tmMoves || []).filter(m => !!m).map(m => MoveToRunStatus(m)),
+            tm_moves: species.tmMoves ? species.tmMoves.filter(m => !!m).map(m => MoveToRunStatus(m)) : species.tmCompat,
             evolutions: species.evolutions && species.evolutions.map(e => EvolutionToRunStatus(e))
         } as StatSpeciesWithExp;
     }

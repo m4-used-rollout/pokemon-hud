@@ -110,6 +110,7 @@ declare namespace Pokemon {
         heldItem1?: Item;
         heldItem2?: Item;
         tmMoves?: Move[];
+        tmCompat?: string[];
         evolutions?: Evolution[];
     }
 }
@@ -275,6 +276,11 @@ declare namespace RomReader {
         GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
         CalculateGender(pokemon: TPP.Pokemon): void;
         CalculateShiny(pokemon: TPP.Pokemon): void;
+        CalculateUnownForm(pokemon: {
+            species?: TPP.PokemonSpecies;
+            form?: number;
+            personality_value?: number;
+        }): void;
         private surfExp;
     }
 }
@@ -439,9 +445,11 @@ declare namespace RamReader {
     class ColXD extends RamReaderBase<RomReader.ColXD> {
         private connection;
         private transmitState;
+        private saveStateInterval;
         Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): void;
         Stop(): void;
         Init(): void;
+        ReadByteRange(address: number, length: number, handler: (data: Buffer) => void): void;
         Subscribe(address: number, length: number, handler: (data: Buffer) => void): void;
         Unsubscribe(address: number): void;
         private Handlers;
@@ -453,13 +461,15 @@ declare namespace RamReader {
         SendEnemyParty: (data: Buffer) => Promise<void>;
         SendEnemyTrainer: (data: Buffer) => void;
         SendTrainer: (data: Buffer) => Promise<void>;
+        SendBag: (data: Buffer) => void;
         SendPokedex: (data: Buffer) => Promise<void>;
         SendItemPC: (data: Buffer) => Promise<void>;
         SendPC: (data: Buffer) => Promise<void>;
         SendMap: (data: Buffer) => void;
+        FsysWatcher: (data: Buffer) => void;
+        SendMusic: (data: Buffer) => void;
         ReadParty: (data?: Buffer, monBytes?: number) => Promise<TPP.PartyData>;
         ReadTrainer: (data?: Buffer) => Promise<TPP.TrainerData>;
-        ReadTrainerInventory: (data: Buffer) => Promise<TPP.TrainerData>;
         ReadBag: (data: Buffer) => {
             [key: string]: TPP.Item[];
         };
@@ -520,6 +530,12 @@ declare namespace TPP.Server.DexNav {
         health?: number[];
         owned: boolean;
         encounterRate?: number;
+        is_shadow?: boolean;
+    }
+    interface GoalTrainer extends Pokemon.Trainer {
+        met?: boolean;
+        defeated?: boolean;
+        attempts: number;
     }
     class State {
         MapName: string;
@@ -541,6 +557,7 @@ declare namespace TPP.Server.DexNav {
         EnemyTrainers: TPP.EnemyTrainer[];
         EnemyParty: TPP.EnemyParty;
         IsUnknownArea: boolean;
+        GoalTrainers: GoalTrainer[];
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus);
         private categories;
         private PopulateKnownEncounters;
@@ -548,6 +565,8 @@ declare namespace TPP.Server.DexNav {
     }
 }
 declare namespace TPP.Server.DexNav {
+}
+declare namespace Events {
 }
 declare namespace Events {
     type BlackoutAction = {
@@ -558,6 +577,23 @@ declare namespace Events {
     }[]) => boolean;
 }
 declare namespace Events {
+}
+declare namespace Events {
+    const AllMons: (state: TPP.RunStatus) => TPP.Pokemon[];
+}
+declare namespace Events {
+    type ChallengedTrainerAction = {
+        type: "Challenged Trainer";
+        id: number;
+        classId?: number;
+        name: string;
+    };
+    type DefeatedTrainerAction = {
+        type: "Defeated Trainer";
+        id: number;
+        classId?: number;
+        name: string;
+    };
 }
 declare namespace Events {
 }

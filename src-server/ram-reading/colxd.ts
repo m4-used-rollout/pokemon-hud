@@ -15,15 +15,23 @@ namespace RamReader {
     const pokedexSize = 0x1774;
     const pcOffset = 0xB88;
     const pcSize = 0x6DEC;
+    const bagSize = 0x300;
     const itemPCSize = 0x3AC;
     const battlePartyPokeBytes = 0x154;
     const enemyTrainerBytes = 0x1A;
 
+    const battleBagAddress = 0x8046E58C;
     const battlePartyAddress = 0x8046E928;
     const enemyTrainerAddress = 0x80473038;
     const enemyPartyAddress = 0x80473B58;
-    const mapAddress = 0x8047AC1A;
     const baseAddrPtr = 0x8047ADB8;
+    const musicIdAddress = 0x8047B0AC;
+
+    const fsysStartAddress = 0x807602E0;
+    const fsysSlots = 16;
+    const fsysStructBytes = 0x40;
+
+    const evoFsysId = 1572;
 
     const Status: { [key: number]: string } = {
         3: "PSN",
@@ -48,6 +56,7 @@ namespace RamReader {
 
         private connection: import('net').Socket;
         private transmitState: (state?: TPP.RunStatus) => void;
+        private saveStateInterval: ReturnType<typeof setInterval>;
 
         public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
             this.currentState = state;
@@ -89,11 +98,29 @@ namespace RamReader {
                     pokedexAddr = BaseSub(pokedexAddr, pokedexOffset, pokedexSize, this.SendPokedex);
                     itemPCAddr = BaseSub(itemPCAddr, pcOffset + pcSize, itemPCSize, this.SendItemPC);
                     pcAddr = BaseSub(pcAddr, pcOffset, pcSize, this.SendPC);
+
+                    if (!this.saveStateInterval && this.config.saveStateIntervalSeconds && this.config.saveStatePath) {
+                        this.saveStateInterval = setInterval(() => {
+                            const savePath = `${this.config.saveStatePath}/${new Date().toISOString().replace(/:/g, '-')}-${this.config.runName}.state`.replace(/\/\//g, "/").replace(/\s/g, '');
+                            console.log(`Saving state to ${savePath}`);
+                            this.connection.write(`SAVE ${savePath};\n`, 'ascii');
+                        },
+                            this.config.saveStateIntervalSeconds * 1000);
+                    }
                 });
+                this.Subscribe(battleBagAddress, bagSize, data => this.SendBag(data));
                 this.Subscribe(battlePartyAddress, battlePartyPokeBytes * 6, data => this.SendParty(data, battlePartyPokeBytes, true));
                 this.Subscribe(enemyPartyAddress, battlePartyPokeBytes * 6, data => this.SendEnemyParty(data));
                 this.Subscribe(enemyTrainerAddress, enemyTrainerBytes, data => this.SendEnemyTrainer(data));
-                //this.Subscribe(mapAddress, 2, data => this.SendMap(data));
+                this.Subscribe(fsysStartAddress, fsysSlots * fsysStructBytes, this.FsysWatcher);
+                this.Subscribe(musicIdAddress, 4, this.SendMusic);
+            });
+        }
+
+        public ReadByteRange(address: number, length: number, handler: (data: Buffer) => void) {
+            this.Subscribe(address, length, (data: Buffer) => {
+                this.Unsubscribe(address);
+                handler(data);
             });
         }
 
@@ -214,6 +241,7 @@ namespace RamReader {
             pokerus_remaining: monData[0xD0],
             shadow_id: monData.readUInt16BE(0xD8),
             purification: { current: monData.readInt32BE(0xDC), initial: -100 },
+            in_hyper_mode: monData[0xE9] != 0,
             shadow_exp: monData.readUInt32BE(0xF0),
             //obedient: monData[0xF8] > 0,
             //data: monData.toString('hex')
@@ -223,7 +251,6 @@ namespace RamReader {
             mon.is_shadow = mon.shadow_id > 0 && mon.purification && mon.purification.current > -100;
             const shadowData = this.rom.shadowData[mon.shadow_id];
             if (mon.is_shadow && shadowData) {
-                mon.nature = "????";
                 mon.purification.initial = shadowData.purificationStart;
                 mon.species.catch_rate = shadowData.catchRate;
 
@@ -237,11 +264,13 @@ namespace RamReader {
                 });
                 mon.moves[0] = shadowRush;
                 const purificationPercentage = Math.max(0, mon.purification.current) / mon.purification.initial * 100;
-                if (purificationPercentage > 80 && mon.moves[1])
+                if (purificationPercentage >= 80 && mon.moves[1])
                     mon.moves[1] = Object.assign({}, nullMove, { id: -1 });
-                if (purificationPercentage > 50 && mon.moves[2])
+                if (purificationPercentage >= 60)
+                    mon.nature = "????";
+                if (purificationPercentage >= 40 && mon.moves[2])
                     mon.moves[2] = Object.assign({}, nullMove, { id: -2 });
-                if (purificationPercentage > 20 && mon.moves[3])
+                if (purificationPercentage >= 20 && mon.moves[3])
                     mon.moves[3] = Object.assign({}, nullMove, { id: -3 });
             }
             return mon;
@@ -257,21 +286,25 @@ namespace RamReader {
 
 
         public SendParty = (data: Buffer, monBytes = 0x138, inBattle = false) => this.ReadParty(data, monBytes).then(party => {
-            this.currentState.in_battle = inBattle;
+            this.currentState.in_battle = this.currentState.in_battle || inBattle;
             if (party && party.length) {
-                this.currentState.party = party;
-                if (this.IsPartyDefeated(party)) {
+                if (party.every(p => p && p.original_trainer && p.original_trainer.name && p.original_trainer.name.toLowerCase() == "eagun")) {
                     this.currentState.in_battle = false;
+                    return; //Almost certainly we're watching Eagun fight and we don't actually own this party
                 }
+                this.currentState.party = party;
+                // if (this.IsPartyDefeated(party)) {
+                //     this.currentState.in_battle = false;
+                // }
                 this.transmitState();
             }
         }).catch(err => console.error(err));
 
         public SendEnemyParty = (data: Buffer) => this.ReadParty(data, battlePartyPokeBytes).then(party => {
             const enemyParty = party as TPP.EnemyParty;
-            if (enemyParty) {
-                if (this.IsPartyDefeated(party))
-                    this.currentState.in_battle = false;
+            if (enemyParty && enemyParty.length > 0) {
+                // if (this.IsPartyDefeated(party))
+                //     this.currentState.in_battle = false;
                 this.currentState.battle_kind = "Trainer";
                 this.currentState.enemy_trainers = this.currentState.enemy_trainers || [this.rom.GetTrainer(1)];
                 enemyParty[0] && (enemyParty[0].active = true);
@@ -286,7 +319,9 @@ namespace RamReader {
             const trainerName = this.rom.ReadString(data.slice(4));
             const trainer = this.rom.GetTrainer(trainerId) || { id: trainerId, name: trainerName } as Pokemon.Trainer;
             //console.log(`Currently fighting trainer ${trainerId} - ${trainerName}`);
-            if (trainer && trainer.id > 0) {
+            if (trainer && trainer.id == 779)
+                return; //Ignore Eagun Skrub fight
+            if (trainer && trainer.id > 0 && trainer.name && !(this.currentState.enemy_trainers || []).find(t => t.id == trainer.id)) {
                 this.currentState.enemy_trainers = trainer ? [Pokemon.Convert.EnemyTrainerToRunStatus(trainer)] : null;
                 this.transmitState();
             }
@@ -298,6 +333,14 @@ namespace RamReader {
                 this.transmitState();
             }
         }).catch(err => console.error(err));
+
+        public SendBag = (data: Buffer) => {
+            const bag = this.ReadBag(data);
+            if (Object.keys(bag).some(k => bag[k].length > 0)) {
+                this.currentState.items = Object.assign(this.currentState.items || {}, bag);
+                this.transmitState();
+            }
+        };
 
         public SendPokedex = (data: Buffer) => this.ReadPokedex(data).then(dex => {
             this.currentState.caught_list = dex.owned;
@@ -331,6 +374,38 @@ namespace RamReader {
             this.transmitState();
         };
 
+        public FsysWatcher = (data: Buffer) => {
+            let changedState = false;
+            this.currentState["fsys"] = this.rom.ReadStridedData(data, 0, fsysStructBytes, fsysSlots)
+                .map(fData => fData.readUInt32BE(0x34))
+                .map((fsysId, i) => {
+                    const map = i == 0 ? this.rom.GetMap(fsysId) : { id: null, name: null };
+                    if (fsysId && fsysId != this.currentState.map_id && map.id == fsysId && map.name) {
+                        //this.currentState.evolution_is_happening = false;
+                        this.currentState.map_id = map.id;
+                        this.currentState.map_name = map.name;
+                        this.currentState.in_battle = fsysId > 1000;
+                    }
+                    // else if (fsysId == evoFsysId) {
+                    //     this.currentState.evolution_is_happening = true;
+                    // }
+                    else
+                        return fsysId;
+                    changedState = true;
+                    return fsysId;
+                });
+            if (changedState)
+                this.transmitState();
+        };
+
+        public SendMusic = (data: Buffer) => {
+            const musicId = data.readUInt32BE(0);
+            if (musicId != this.currentState.music_id) {
+                this.currentState.music_id = musicId;
+                this.transmitState();
+            }
+        }
+
         public ReadParty: (data?: Buffer, monBytes?: number) => Promise<TPP.PartyData> = (data, monBytes) => new Promise(resolve => resolve(
             this.rom.ReadStridedData(data, 0, monBytes, 6).map(this.ParsePokemon).filter(p => !!p)));
 
@@ -342,12 +417,7 @@ namespace RamReader {
             gender: this.ParseGender(data[0xA80]),
             money: data.readUInt32BE(0xA84),
             coins: data.readUInt32BE(0xA88),
-            partner_name: this.rom.ReadString(data.slice(0xAC2)),
-            map_id: 0 //AAAAAAAAA
-        } as TPP.TrainerData));
-
-        public ReadTrainerInventory = (data: Buffer) => new Promise<TPP.TrainerData>(resolve => resolve({
-
+            partner_name: this.rom.ReadString(data.slice(0xAC2))
         } as TPP.TrainerData));
 
         public ReadBag = (data: Buffer) => (<{ [key: string]: TPP.Item[] }>{

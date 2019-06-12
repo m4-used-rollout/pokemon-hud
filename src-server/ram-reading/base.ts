@@ -130,8 +130,11 @@ namespace RamReader {
 
         private HasBeenSeenThisBattle(mon: (TPP.PartyPokemon & { active?: boolean })) {
             this.CurrentBattleSeenPokemon = this.CurrentBattleSeenPokemon || [];
-            if (!mon || !mon.species)
+            if (!mon || !mon.species || !mon.health || !mon.moves)
                 return false;
+            if (mon.health[0] < mon.health[1]) //obviously we've seen it because it's hurt
+                return true;
+            //TODO: Also check for PP below maximum
             if (mon.active) { //Gen 1 reader manages the active flag itself, so let's go off that
                 if (!this.CurrentBattleSeenPokemon.some(pv => mon.personality_value == pv))
                     this.CurrentBattleSeenPokemon.push(mon.personality_value);
@@ -170,10 +173,10 @@ namespace RamReader {
 
         protected ConcealEnemyParty(party: (TPP.PartyPokemon & { active?: boolean })[]): TPP.EnemyParty {
             return party.map((p, i) => p && ({
-                species: this.HasBeenSeenThisBattle(p) ? p.species : { id: 0, name: "???", national_dex: 0 },
+                species: this.HasBeenSeenThisBattle(p) ? Object.assign({}, p.species, { abilities: [], tm_moves: [], }) as TPP.PokemonSpecies : { id: 0, name: "???", national_dex: 0 },
                 health: p.health,
                 active: p.active || this.IsCurrentlyBattling(p, i, true),
-                in_shadow: (p as TPP.ShadowPokemon).is_shadow,
+                is_shadow: this.HasBeenSeenThisBattle(p) && (p as TPP.ShadowPokemon).is_shadow,
                 form: p.form,
                 shiny: p.shiny,
                 shiny_value: p.shiny_value,

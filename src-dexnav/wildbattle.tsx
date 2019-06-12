@@ -35,7 +35,7 @@ class WildBattle extends PersistentComponent<{ wilds: TPP.Server.DexNav.WildPoke
                 </div>
             }
             {(livingWilds.length == 1 ? livingWilds : this.state.wilds).reverse().map((mon, i) =>
-                <div className={`pokemon ${cleanString(mon.name)} ${mon.owned ? "owned" : "seen"} ${(mon.health || [1])[0] < 1 ? "fainted" : ""}`} key={`${i}:${mon.id}`}>
+                <div className={`pokemon ${cleanString(mon.name)} ${mon.owned ? "owned" : "seen"} ${(mon.health || [1])[0] < 1 ? "fainted" : ""} ${mon.is_shadow ? "shadow" : ""}`} key={`${i}:${mon.id}`}>
                     <PokeSprite pokemonId={mon.id} form={mon.form} gender={mon.gender} shiny={mon.shiny} />
                     <Rarity rate={mon.encounterRate} />
                 </div>

@@ -27,6 +27,7 @@ namespace Pokemon {
         heldItem1?: Item;
         heldItem2?: Item;
         tmMoves?: Move[];
+        tmCompat?: string[];
         evolutions?: Evolution[];
     }
 }

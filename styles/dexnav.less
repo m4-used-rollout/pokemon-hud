@@ -5,6 +5,7 @@
 
 @female-color:deeppink;
 @male-color: dodgerblue;
+@shadow-color: purple;
 
 .dexnav {
     .dexFrame();
@@ -241,6 +242,18 @@
                 animation-timing-function: ease-in;
             }
 
+            .sequence-number {
+                font-family: pokered;
+                color: red;
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                font-size: 50vh;
+                opacity: .8;
+                z-index: 2;
+            }
+
             .info-left {
                 flex: 2 1 auto;
                 margin-right:auto;
@@ -299,6 +312,7 @@
                             max-width:40vh;
                             min-width:25vh;
                         }
+
 
                         &.fainted {
                             filter:drop-shadow(0 0 0 black) brightness(0%) contrast(200%);
@@ -411,6 +425,10 @@
                     // For XY
                     height: 80vh;
                     width: auto;
+
+                    //for Col/XD
+                    transform: rotateY(180deg);
+
                     //image-rendering: auto;
                 }
             }
@@ -422,6 +440,73 @@
             }
         }
     }
+
+
+    .goal-trainers {
+        .action-directive {
+            font-family: pokered;
+            font-size: 50vh;
+            line-height: 80vh;
+            text-transform: uppercase;
+            margin-left: 1em;
+            margin-right: .1em;
+            &:after {
+                content: ":";
+            }
+        }
+        .goal-trainer {
+            position:relative;
+            transition: background-color 1s ease-in-out;
+            background-color: transparent;
+
+            img {
+                mix-blend-mode: multiply;
+            }
+
+            &:after {
+                position: absolute; 
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                line-height: 40vh;
+                font-family: pokeplatinum;
+                text-align: center;
+                font-size: 60vh;
+                opacity: .8;
+                color:white;
+                text-shadow:2px 2px 2px black, 2px -2px 2px black, -2px -2px 2px black, -2px 2px 2px black;
+            }
+
+            &.unmet img{
+                filter:contrast(0%) brightness(0%);
+            }
+            &:not(.unmet):after {
+                content: attr(data-attempts);
+            }
+            &.defeated { 
+                background-color: @screen-on-color;
+                img {
+                    filter: grayscale(100%);
+                }
+                &:after {
+                    color: lime;
+                    // background: url('img/block.png');
+                    // background-size: cover;
+                    // background-repeat: no-repeat;
+                    // background-position: center;
+                }
+            }
+
+        }
+    }
+
+    .shadow {
+        filter: drop-shadow(2px 2px 2px @shadow-color) drop-shadow(-2px -2px 2px @shadow-color) drop-shadow(-2px 2px 2px @shadow-color) drop-shadow(2px -2px 2px @shadow-color)!important;
+            //.outline(@shadow-color);        
+            //background:radial-gradient(closest-side, @shadow-color, 20%, transparent 80%);
+    }
+
     &.teh-urn {
         .encounters.no-encounters {
             opacity: 0;

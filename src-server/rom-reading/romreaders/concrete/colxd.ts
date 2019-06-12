@@ -9,6 +9,10 @@ namespace RomReader {
     const contestTypes = ['Cool', 'Beauty', 'Cute', 'Smart', 'Tough'];
     const contestEffects = ['The appeal effect of this move is constant.', 'Prevents the user from being startled.', 'Startles the previous appealer.', 'Startles all previous appealers.', 'Affects appealers other than startling them.', 'Appeal effect may change.', 'The appeal order changes for the next round.'];
 
+    const unlabeledMaps: { [key: number]: string } = {
+        19: "Orre Region"
+    }
+
     type ShadowData = {
         catchRate: number;
         species: number;
@@ -72,8 +76,9 @@ namespace RomReader {
 
         public GetMap(id: number) {
             const map = super.GetMap(id);
-            if (!map.id)
+            if (!map || !map.id)
                 return this.DefaultMap;
+            return map;
         }
 
         public get DefaultMap() {
@@ -88,7 +93,7 @@ namespace RomReader {
                 this.moveLearns[i + 1] = this.ReadStridedData(data, 0xBA, 4, 20, true, 0)
                     .map(mData => Object.assign({
                         level: mData[0]
-                    }, this.moves[mData.readUInt16BE(2)]) as Pokemon.MoveLearn);
+                    }, this.GetMove(mData.readUInt16BE(2))) as Pokemon.MoveLearn);
                 return <Pokemon.Species>{
                     id: i + 1,
                     growthRate: expCurveNames[data[0]],
@@ -102,6 +107,10 @@ namespace RomReader {
                     type1: typeNames[data[0x30]],
                     type2: typeNames[data[0x31]],
                     abilities: [this.abilities[data[0x32]], this.abilities[data[0x33]]],
+                    tmCompat: this.ReadStridedData(data, 0x34, 1, 58)
+                        .map((c, i) => c[0] ? i + 1 : 0)
+                        .filter(i => !!i)
+                        .map(tm => `${tm < 51 ? "T" : "H"}M${tm > 50 || tm < 10 ? "0" : ""}${tm > 50 ? tm - 50 : tm}`),
                     eggGroup1: eggGroups[data[0x6E]],
                     eggGroup2: eggGroups[data[0x6F]],
                     baseStats: {
@@ -151,7 +160,7 @@ namespace RomReader {
                 return name;
             }
             return this.ReadStridedData(startDol, 0x360CE8, 0x28, 397).map((data, i) => (<Pokemon.Item>{
-                id: i + 1,
+                id: i,
                 name: mapTm(names[data.readUInt32BE(0x10)]),
                 isKeyItem: data[1] > 0
             }));
@@ -191,7 +200,7 @@ namespace RomReader {
         private ReadMaps(commonRel: Buffer, names: StringTable) {
             return this.ReadStridedData(commonRel, 0x8D540, 0x4C, 189).map(data => (<Pokemon.Map>{
                 id: data.readUInt32BE(0x4),
-                name: names[data.readUInt32BE(0x24)]
+                name: names[data.readUInt32BE(0x24)] || unlabeledMaps[data.readUInt32BE(0x4)]
             }));
         }
     }

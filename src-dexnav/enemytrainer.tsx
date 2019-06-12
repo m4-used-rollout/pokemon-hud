@@ -19,6 +19,7 @@ class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], b
             <div className={`trainer ${trainers.length > 1 ? "double" : ""}`}>
                 {trainers.map(trainer => <TrainerSprite picId={trainer.pic_id} classId={trainer.class_id} trainerId={trainer.id} />)}
             </div>
+            {trainers.filter(t => !!t.sequence_number).map(t => <div className="sequence-number">{t.sequence_number}</div>)}
         </div>;
     }
 }
@@ -28,7 +29,7 @@ class EnemyParty extends React.Component<{ party: TPP.EnemyParty }, {}> {
         let party = this.props.party;
         if (!party) return null;
         return <div className="enemy-party">
-            {party.filter(p => !!p).map(p => <span className={p.species.id && p.health[0] ? "" : "fainted"} >
+            {party.filter(p => !!p).map(p => <span className={p.species.id && p.health[0] ? p.is_shadow ? "shadow" : "" : "fainted"} >
                 {p.species.id ?
                     <PokeSprite pokemonId={p.species.id} form={p.form} gender={p.gender} shiny={p.shiny} /> :
                     <img src="./img/unknown-sprite.png" />

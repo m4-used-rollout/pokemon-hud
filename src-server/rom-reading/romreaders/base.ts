@@ -281,6 +281,16 @@ namespace RomReader {
             }
         }
 
+        CalculateUnownForm(pokemon: { species?: TPP.PokemonSpecies, form?: number, personality_value?: number }) {
+            if (pokemon.species && pokemon.species.national_dex == 201 && pokemon.personality_value)
+                pokemon.form = pokemon.form ||
+                    ((((pokemon.personality_value >>> 24) & 3) << 6)
+                        | (((pokemon.personality_value >>> 16) & 3) << 4)
+                        | (((pokemon.personality_value >>> 8) & 3) << 2)
+                        | (pokemon.personality_value & 3)
+                    ) % 28;
+        }
+
         private surfExp = /^surf$/i;
     }
 }

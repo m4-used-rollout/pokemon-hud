@@ -7,7 +7,6 @@ declare namespace TPP {
         game?: string;
         updates_paused?: boolean;
         transitioning?: boolean;
-        events?: Event[];
     }
 
     //sent from lua
@@ -20,7 +19,6 @@ declare namespace TPP {
 
     export interface TrainerData extends OverlayData {
         ball_count?: number;
-        blackouts?: number;
         caught?: number;
         caught_list?: number[];
         coins?: number;
@@ -53,9 +51,9 @@ declare namespace TPP {
         secret?: number;
         stickers?: number;
         rival_name?: string;
+        partner_name?: string;
         party_fitness?: number;
         rematch_available?: number;
-        battles_won?: number;
         time?: {
             d: string;
             h: number;
@@ -73,6 +71,7 @@ declare namespace TPP {
         x?: number;
         y?: number;
         evolution_is_happening?: boolean;
+        music_id?: number;
     }
 
     export interface Goals {
@@ -80,6 +79,7 @@ declare namespace TPP {
         trick_house?: ("Incomplete" | "Found Scroll" | "Complete")[];
         hall_of_fame_entries?: number;
         game_stats?: { [key: string]: number };
+        events?: Event[];
     }
 
     export interface PartyData extends Array<PartyPokemon> { }
@@ -209,6 +209,7 @@ declare namespace TPP {
             current: number;
             initial?: number;
         };
+        in_hyper_mode?: boolean;
         shadow_exp: number;
     }
 
@@ -228,7 +229,7 @@ declare namespace TPP {
         cp?: number;
         fitness?: number;
         personality_value?: number;
-        in_shadow?: boolean;
+        is_shadow?: boolean;
         name?: string;
         buffs?: {
             accuracy: number;
@@ -240,6 +241,7 @@ declare namespace TPP {
         class_id?: number;
         class_name?: string;
         pic_id?: number;
+        sequence_number?: number;
     }
 
     export interface Trainer {
@@ -315,5 +317,11 @@ declare namespace TPP {
         name: string;
         time: string;
         attempts?: number;
+    }
+
+    export interface TrainerEvent extends Event {
+        group: "Trainers Defeated" | "Trainers Undefeated";
+        id: number;
+        class_id: number;
     }
 }

@@ -18,7 +18,7 @@ function RenderImageMap(imgData: Sprites.ImageMap) {
     return canvas.toDataURL();
 }
 
-class PokeSprite extends React.PureComponent<{ pokemonId?: number; dexNum?: number, gender?: string, shiny?: boolean; form?: number; generic?: boolean }, {}> {
+class PokeSprite extends React.PureComponent<{ pokemonId?: number; dexNum?: number, gender?: string, shiny?: boolean; form?: number; generic?: boolean, className?:string }, {}> {
     render() {
         let pokemonId = this.props.pokemonId || TPP.Server.RomData.GetSpeciesByDexNumber(this.props.dexNum).id;
         //et pokemonId = this.props.dexNum || TPP.Server.RomData.GetSpecies(this.props.pokemonId).dexNumber;
@@ -29,6 +29,6 @@ class PokeSprite extends React.PureComponent<{ pokemonId?: number; dexNum?: numb
                 TPP.Server.RomData.CachePokemonSprite(pokemonId, src, this.props.form || 0, this.props.shiny);
             }
         }
-        return <img src={src} />
+        return <img className={this.props.className} src={src} />
     }
 }

@@ -62,7 +62,6 @@ namespace Events {
         }
 
         public Init() {
-            console.dir(Trackers);
             this.trackers = Trackers.map(s => new s(this.config));
             this.ready = true;
         }
@@ -91,7 +90,7 @@ namespace Events {
                 this.trackers.forEach(t => t.Analyzer(newState, this.currentState || newState, a => this.Dispatch(a)));
                 this.currentState = JSON.parse(JSON.stringify(newState));
             }
-            newState.events = newState.events || [];
+            newState.events = /*newState.events ||*/ [];
             (this.trackers || []).forEach(t => newState = Object.assign(newState, t.Reporter(newState)));
             newState.events = this.DedupeEvents(newState.events);
             return newState;
