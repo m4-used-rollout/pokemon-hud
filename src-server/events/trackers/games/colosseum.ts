@@ -41,15 +41,22 @@ namespace Events {
             state.game_stats['Seconds Spent Watching News'] = Math.ceil(this.totalNewsSeconds);
             state.game_stats['Mt. Battle Completion Percentage'] = Math.floor(this.defeatedMtBattleTrainers.length / mtBattleAreaLeaderIds.length * 100);
 
+            // Add Mt. Battle Sequence Number
             (state.enemy_trainers || [])
                 .filter(t => t.id >= mtBattleFirstTrainerId && t.id < mtBattleLastTrainerId)
                 .forEach(t => t.sequence_number = t.id - (mtBattleFirstTrainerId - 1));
+
+            // Fix Shady Guy's name
+            (state.enemy_trainers || [])
+                .filter(t => t.id == 472)
+                .forEach(t => t.name = state.name);
             return state;
         }
 
         private IdentifyMusic(id: number) {
             switch (id) {
                 case 0x1C:
+                case 1133:
                     return "News";
                 case 0x3D3:
                 case 0x3D4:

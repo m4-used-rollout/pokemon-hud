@@ -285,11 +285,23 @@ declare namespace RomReader {
     }
 }
 declare namespace RomReader {
+    type ShadowData = {
+        catchRate: number;
+        species: number;
+        purificationStart: number;
+    };
+    type StringTable = {
+        [key: number]: string;
+    };
     abstract class GCNReader extends RomReaderBase {
         private basePath;
-        constructor(basePath: string);
+        private commonIndex;
+        shadowData: ShadowData[];
+        protected strings: StringTable;
+        protected trainerClasses: Pokemon.Trainer[];
+        constructor(basePath: string, commonIndex: CommonRelIndex);
         protected readonly StartDol: Buffer;
-        protected readonly CommonRel: Buffer;
+        protected readonly CommonRel: RelTable;
         FixAllCaps(str: string): string;
         ReadStringTable(table: Buffer, address?: number): {
             id: number;
@@ -299,32 +311,135 @@ declare namespace RomReader {
         ReadStringOld(data: Buffer, address?: number, length?: number): string;
         ReadStringSloppy(data: Buffer, address?: number, length?: number): string;
         ReadString(data: Buffer, address?: number): string;
-    }
-}
-declare namespace RomReader {
-    type ShadowData = {
-        catchRate: number;
-        species: number;
-        purificationStart: number;
-    };
-    class ColXD extends GCNReader {
-        shadowData: ShadowData[];
-        private strings;
-        private trainerClasses;
-        constructor(basePath: string);
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         GetMap(id: number): Pokemon.Map;
         readonly DefaultMap: Pokemon.Map;
-        private ReadPokeData;
-        private ReadMoveData;
-        private ReadItemData;
-        private ReadTMHMMapping;
-        private ReadShadowData;
-        private ReadTrainerData;
-        private ReadTrainerClasses;
-        private ReadMaps;
+        protected unlabeledMaps: {
+            [key: number]: string;
+        };
+        protected ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
+        protected ReadItemData(startDol: Buffer, commonRel: RelTable, names?: StringTable): Pokemon.Item[];
+        protected ReadTMHMMapping(startDol: Buffer): number[];
+        protected ReadMoveData(commonRel: RelTable, names?: StringTable): Pokemon.Move[];
+        protected ReadShadowData(commonRel: RelTable): ShadowData[];
+        protected ReadTrainerData(commonRel: RelTable, names?: StringTable, classes?: Pokemon.Trainer[]): Pokemon.Trainer[];
+        protected ReadTrainerClasses(commonRel: RelTable, names?: StringTable): Pokemon.Trainer[];
+        protected ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
+    }
+    class RelTable {
+        data: Buffer;
+        private static readonly DataStartOffsetPtr;
+        private static readonly CommonRelDataStartOffsetPtr;
+        private static readonly PointerStartOffsetPtr;
+        private static readonly PointerHeaderPointerOffsetPtr;
+        private static readonly PointerStructSize;
+        private pointers;
+        constructor(data: Buffer, isCommonRel?: boolean);
+        GetValueEntry(index: number): number;
+        GetRecordEntry(index: number): Buffer;
+    }
+    interface CommonRelIndex {
+        NumberOfItems?: number;
+        BGM?: number;
+        NumberOfBGMIDs?: number;
+        BattleFields?: number;
+        LegendaryPokemon?: number;
+        NumberOfLegendaryPokemon?: number;
+        PokefaceTextures?: number;
+        PeopleIDs: number;
+        NumberOfPeopleIDs: number;
+        TrainerClasses: number;
+        NumberOfTrainerClasses: number;
+        Doors: number;
+        NumberOfDoors: number;
+        Trainers?: number;
+        NumberOfTrainers?: number;
+        TrainerAIData?: number;
+        NumberOfTrainerAIData?: number;
+        TrainerPokemonData?: number;
+        NumberOfTrainerPokemonData?: number;
+        Battles: number;
+        NumberOfBattles: number;
+        MusicSamples?: number;
+        NumberOfMusicSamples?: number;
+        BattleDebugScenarios?: number;
+        NumberOfBattleDebugScenarios?: number;
+        AIDebugScenarios?: number;
+        NumberOfAIDebugScenarios?: number;
+        StoryDebugOptions?: number;
+        NumberOfStoryDebugOptions?: number;
+        KeyboardCharacters?: number;
+        NumberOfKeyboardCharacters?: number;
+        Keyboard2Characters?: number;
+        NumberOfKeyboard2Characters?: number;
+        Keyboard3Characters?: number;
+        NumberOfKeyboard3Characters?: number;
+        BattleStyles?: number;
+        NumberOfBattleStyles?: number;
+        Rooms: number;
+        NumberOfRooms: number;
+        RoomData?: number;
+        NumberOfRoomData?: number;
+        TreasureBoxData: number;
+        NumberTreasureBoxes: number;
+        CharacterModels: number;
+        NumberOfCharacterModels: number;
+        ShadowData?: number;
+        NumberOfShadowPokemon?: number;
+        PokemonMetLocations?: number;
+        NumberOfMetLocations?: number;
+        InteractionPoints: number;
+        NumberOfInteractionPoints: number;
+        USStringTable: number;
+        StringTableB: number;
+        StringTableC: number;
+        PokemonStats: number;
+        NumberOfPokemon: number;
+        Natures: number;
+        NumberOfNatures: number;
+        Moves: number;
+        NumberOfMoves: number;
+        PokemonData?: number;
+        NumberOfPokemonData?: number;
+        BattleBingo?: number;
+        NumberOfBingoCards?: number;
+        NumberOfPokespots?: number;
+        PokespotRock?: number;
+        PokespotRockEntries?: number;
+        PokespotOasis?: number;
+        PokespotOasisEntries?: number;
+        PokespotCave?: number;
+        PokespotCaveEntries?: number;
+        PokespotAll?: number;
+        PokespotAllEntries?: number;
+        BattleCDs?: number;
+        NumberBattleCDs?: number;
+        NumberOfBattleFields?: number;
+        BattleLayouts?: number;
+        NumberOfBattleLayouts?: number;
+        Flags?: number;
+        NumberOfFlags?: number;
+        RoomBGM?: number;
+        NumberOfRoomBGMs?: number;
+        ValidItems?: number;
+        TotalNumberOfItems?: number;
+        Items?: number;
+        SoundsMetaData?: number;
+        NumberOfSounds?: number;
+        TutorMoves?: number;
+        NumberOfTutorMoves?: number;
+        Types?: number;
+        NumberOfTypes?: number;
+    }
+}
+declare namespace RomReader {
+    class Col extends GCNReader {
+        protected unlabeledMaps: {
+            [key: number]: string;
+        };
+        constructor(basePath: string);
     }
 }
 declare namespace RomReader {
@@ -442,7 +557,7 @@ declare namespace RamReader {
     }
 }
 declare namespace RamReader {
-    class ColXD extends RamReaderBase<RomReader.ColXD> {
+    class ColXD extends RamReaderBase<RomReader.Col> {
         private connection;
         private transmitState;
         private saveStateInterval;
@@ -1022,6 +1137,11 @@ declare namespace RomReader {
         constructor();
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         CollapseSeenForms(seen: number[]): number[];
+    }
+}
+declare namespace RomReader {
+    class XD extends GCNReader {
+        constructor(basePath: string);
     }
 }
 declare namespace Tools.DSDecmp {

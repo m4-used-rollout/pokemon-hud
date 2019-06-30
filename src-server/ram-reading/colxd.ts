@@ -1,5 +1,5 @@
 /// <reference path="./base.ts" />
-/// <reference path="../rom-reading/romreaders/concrete/colxd.ts" />
+/// <reference path="../rom-reading/romreaders/concrete/col.ts" />
 
 namespace RamReader {
 
@@ -52,7 +52,7 @@ namespace RamReader {
         11: "Colosseum/XD"
     };
 
-    export class ColXD extends RamReaderBase<RomReader.ColXD> {
+    export class ColXD extends RamReaderBase<RomReader.Col> {
 
         private connection: import('net').Socket;
         private transmitState: (state?: TPP.RunStatus) => void;
@@ -235,7 +235,7 @@ namespace RamReader {
             ].filter(r => !!r),
             pokerus: this.ParsePokerus(monData[0xCA]),
             is_egg: monData[0xCB] > 0,
-            ability: this.rom.GetSpecies(monData.readUInt16BE(0x0)).abilities[monData[0xCC]],
+            ability: this.rom.GetSpecies(monData.readUInt16BE(0x0)).abilities[monData[0xCC]] || this.rom.GetSpecies(monData.readUInt16BE(0x0)).abilities[0],
             //fateful_encounter: monData[0xCD] > 0,
             marking: this.ParseMarkings(monData[0xCF]),
             pokerus_remaining: monData[0xD0],

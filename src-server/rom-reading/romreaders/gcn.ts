@@ -7,13 +7,62 @@ namespace RomReader {
     const fixWronglyCapped = /(['’][A-Z]|okéMon)/g;
     const fixWronglyLowercased = /(^[T|H]m|\bTv\b)/g;
 
+    const typeNames = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
+    const eggGroups = ["???", "Monster", "Water 1", "Bug", "Flying", "Field", "Fairy", "Grass", "Human-Like", "Water 3", "Mineral", "Amorphous", "Water 2", "Ditto", "Dragon", "Undiscovered"];
+    const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
+    const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
+    const contestTypes = ['Cool', 'Beauty', 'Cute', 'Smart', 'Tough'];
+    const contestEffects = ['The appeal effect of this move is constant.', 'Prevents the user from being startled.', 'Startles the previous appealer.', 'Startles all previous appealers.', 'Affects appealers other than startling them.', 'Appeal effect may change.', 'The appeal order changes for the next round.'];
+
+    export type ShadowData = {
+        catchRate: number;
+        species: number;
+        purificationStart: number;
+    }
+
+    export type StringTable = { [key: number]: string };
+
     export abstract class GCNReader extends RomReaderBase {
 
-        constructor(private basePath: string) {
+        public shadowData: ShadowData[];
+
+        protected strings: StringTable = {};
+        protected trainerClasses: Pokemon.Trainer[];
+
+        constructor(private basePath: string, private commonIndex: CommonRelIndex) {
             super();
             if (!this.basePath.endsWith('/') && !this.basePath.endsWith('\\')) {
                 this.basePath += '/';
             }
+
+            const startDol = this.StartDol;
+            this.ReadStringTable(startDol, 0x2CC810).forEach(s => this.strings[s.id] = s.string);
+            const commonRel = this.CommonRel;
+            const mainStringList = this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.USStringTable)); //0x59890
+            mainStringList.forEach(s => this.strings[s.id] = s.string);
+            this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableB)).forEach(s => this.strings[s.id] = s.string); //0x66000
+            this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableC)).forEach(s => this.strings[s.id] = s.string); //0x784E0
+
+            this.abilities = ["-", ...mainStringList.filter(s => s.id > 3100 && s.id < 3200).map(s => s.string)];
+
+            this.moveLearns = {};
+            this.ballIds = [];
+
+
+            this.items = this.ReadItemData(startDol, commonRel);
+
+            if (this.commonIndex.Moves)
+                this.moves = this.ReadMoveData(commonRel);
+            if (this.commonIndex.PokemonStats)
+                this.pokemon = this.ReadPokeData(commonRel);
+            if (this.commonIndex.TrainerClasses)
+                this.trainerClasses = this.ReadTrainerClasses(commonRel);
+            if (this.commonIndex.Trainers)
+                this.trainers = this.ReadTrainerData(commonRel);
+            if (this.commonIndex.ShadowData)
+                this.shadowData = this.ReadShadowData(commonRel);
+            if (this.commonIndex.Rooms)
+                this.maps = this.ReadRooms(commonRel);
         }
 
         protected get StartDol() {
@@ -21,7 +70,7 @@ namespace RomReader {
         }
 
         protected get CommonRel() {
-            return fs.readFileSync(this.basePath + "common.rel");
+            return new RelTable(fs.readFileSync(this.basePath + "common.rel"), true);
         }
 
         public FixAllCaps(str: string) {
@@ -77,6 +126,155 @@ namespace RomReader {
             }
             return String.fromCharCode(...chars);
         }
+
+        GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
+            return `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${shiny ? "shiny/" : ""}${id}${form ? `-${form}` : ""}.png`;
+        }
+
+        public CheckIfCanSurf(runState: TPP.RunStatus) {
+            return false; //no water in Orre
+        }
+
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet {
+            return {}; //no encounters in Colosseum
+        }
+
+        public GetMap(id: number) {
+            const map = super.GetMap(id);
+            if (!map || !map.id)
+                return this.DefaultMap;
+            return map;
+        }
+
+        public get DefaultMap() {
+            return <Pokemon.Map>{
+                id: 0,
+                name: "Orre Region"
+            };
+        }
+
+        protected unlabeledMaps: { [key: number]: string } = {}
+
+        protected ReadPokeData(commonRel: RelTable, names: StringTable = this.strings) {
+            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.PokemonStats), 0, 0x11C, commonRel.GetValueEntry(this.commonIndex.NumberOfPokemon)).map((data, i) => { //0x12336C
+                this.moveLearns[i] = this.ReadStridedData(data, 0xBA, 4, 20, true, 0)
+                    .map(mData => Object.assign({
+                        level: mData[0]
+                    }, this.GetMove(mData.readUInt16BE(2))) as Pokemon.MoveLearn);
+                return <Pokemon.Species>{
+                    id: i,
+                    growthRate: expCurveNames[data[0]],
+                    expFunction: expCurves[data[0]],
+                    catchRate: data[1],
+                    genderRatio: data[2],
+                    baseExp: data[7],
+                    dexNumber: data.readUInt16BE(0x10),
+                    eggCycles: data[0x17],
+                    name: names[data.readInt32BE(0x18)],
+                    type1: typeNames[data[0x30]],
+                    type2: typeNames[data[0x31]],
+                    abilities: [this.abilities[data[0x32]], this.abilities[data[0x33]]].filter(a => a != '-'),
+                    tmCompat: this.ReadStridedData(data, 0x34, 1, 58)
+                        .map((c, i) => c[0] ? i + 1 : 0)
+                        .filter(i => !!i)
+                        .map(tm => `${tm < 51 ? "T" : "H"}M${tm > 50 || tm < 10 ? "0" : ""}${tm > 50 ? tm - 50 : tm}`),
+                    eggGroup1: eggGroups[data[0x6E]],
+                    eggGroup2: eggGroups[data[0x6F]],
+                    baseStats: {
+                        hp: data.readUInt16BE(0x84),
+                        atk: data.readUInt16BE(0x86),
+                        def: data.readUInt16BE(0x88),
+                        spatk: data.readUInt16BE(0x8A),
+                        spdef: data.readUInt16BE(0x8C),
+                        speed: data.readUInt16BE(0x8E),
+                    },
+                    evolutions: this.ReadStridedData(data, 0x9C, 6, 5)
+                        .filter(d => d.readUInt16BE(0) > 0).map(eData => {
+                            const type = eData.readUInt16BE(0);
+                            return {
+                                happiness: (type == 1 || type == 2 || type == 3) && 220,
+                                isTrade: type == 5 || type == 6,
+                                timeOfDay: (type == 2 && "Day") || (type == 3 && "Night"),
+                                level: (type == 4 || type > 7) && eData.readUInt16BE(2),
+                                item: (type == 6 || type == 7) && this.GetItem(eData.readUInt16BE(2)),
+                                speciesId: eData.readUInt16BE(4)
+                            } as Pokemon.Evolution;
+                        })
+                };
+            });
+        }
+
+        protected ReadItemData(startDol: Buffer, commonRel: RelTable, names: StringTable = this.strings) {
+            const tmMap = this.ReadTMHMMapping(startDol);
+            const tmExp = /^TM([0-9]+)$/i;
+            const mapTm = (name: string) => {
+                const matches = tmExp.exec(name);
+                if (matches) {
+                    const tmNum = parseInt(matches[1]);
+                    return `TM${tmNum < 10 ? "0" : ""}${tmNum} ${this.GetMove(tmMap[tmNum]).name}`;
+                }
+                return name;
+            }
+            return (
+                this.commonIndex.Items 
+                    ? this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Items), 0, 0x28, commonRel.GetValueEntry(this.commonIndex.NumberOfItems))
+                    : this.ReadStridedData(startDol, 0x360CE8, 0x28, 397)
+            ).map((data, i) => (<Pokemon.Item>{
+                id: i,
+                name: mapTm(names[data.readUInt32BE(0x10)]),
+                isKeyItem: data[1] > 0
+            }));
+        }
+
+        protected ReadTMHMMapping(startDol: Buffer) {
+            return [0, ...this.ReadStridedData(startDol, 0x365018, 0x8, 58).map(data => data.readUInt32BE(4))];
+        }
+
+        protected ReadMoveData(commonRel: RelTable, names: StringTable = this.strings) {
+            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Moves), 0, 0x38, commonRel.GetValueEntry(this.commonIndex.NumberOfMoves)).map((data, i) => (<Pokemon.Move>{ //0x11E048
+                id: i,
+                basePP: data[1],
+                type: typeNames[data[2]],
+                accuracy: data[4],
+                basePower: data[0x17],
+                name: names[data.readUInt16BE(0x22)]
+            }));
+        }
+
+        protected ReadShadowData(commonRel: RelTable) {
+            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.ShadowData), 0, 0x38, commonRel.GetValueEntry(this.commonIndex.NumberOfShadowPokemon)).map(data => (<ShadowData>{ //0x145224
+                catchRate: data[0],
+                species: data.readUInt16BE(2),
+                purificationStart: data[9] * 100
+            }));
+        }
+
+        protected ReadTrainerData(commonRel: RelTable, names: StringTable = this.strings, classes: Pokemon.Trainer[] = this.trainerClasses) {
+            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Trainers), 0, 0x34, commonRel.GetValueEntry(this.commonIndex.NumberOfTrainers)).map((data, i) => (<Pokemon.Trainer>{ //0x92ED0
+                id: i,
+                gender: data[0x0] ? "Female" : "Male",
+                classId: data[0x3],
+                name: names[data.readUInt32BE(0x8)] || data.readUInt32BE(0x8),
+                className: (classes[data[0x3]] || { className: null }).className,
+                spriteId: data[0x13],
+                //data: data.toString('hex')
+            } as Pokemon.Trainer)).filter(t => !!t);
+        }
+
+        protected ReadTrainerClasses(commonRel: RelTable, names: StringTable = this.strings) {
+            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.TrainerClasses), 0, 0xC, commonRel.GetValueEntry(this.commonIndex.NumberOfTrainerClasses)).map((data, i) => (<Pokemon.Trainer>{ //0x90F70
+                classId: i + 1,
+                className: names[data.readUInt32BE(0x4)] || data.readUInt32BE(0x4),
+            }));
+        }
+
+        protected ReadRooms(commonRel: RelTable, names: StringTable = this.strings) {
+            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Rooms), 0, 0x4C, commonRel.GetValueEntry(this.commonIndex.NumberOfRooms)).map(data => (<Pokemon.Map>{ //0x8D540
+                id: data.readUInt32BE(0x4),
+                name: names[data.readUInt32BE(0x24)] || this.unlabeledMaps[data.readUInt32BE(0x4)]
+            }));
+        }
+
     }
 
     const codeBytes: { [key: number]: number } = {
@@ -117,5 +315,130 @@ namespace RomReader {
         0x29: "[ITEM]",
         0x2B: "[PLAYER_F]",
         0x2C: "[RUI]",
+    }
+
+    export class RelTable {
+        private static readonly DataStartOffsetPtr = 0x64;
+        private static readonly CommonRelDataStartOffsetPtr = 0x6C;
+        private static readonly PointerStartOffsetPtr = 0x24;
+        private static readonly PointerHeaderPointerOffsetPtr = 0x28;
+        private static readonly PointerStructSize = 0x8;
+
+        private pointers: number[];
+
+        constructor(public data: Buffer, isCommonRel = false) {
+            this.pointers = [];
+            if (data) {
+                const dataStartOffset = data.readUInt32BE(isCommonRel ? RelTable.CommonRelDataStartOffsetPtr : RelTable.DataStartOffsetPtr);
+                const pointerStartOffset = data.readUInt32BE(RelTable.PointerStartOffsetPtr) + 0x8;
+                const pointerHeaderOffset = data.readUInt32BE(RelTable.PointerHeaderPointerOffsetPtr);
+                const pointerEndOffset = data.readUInt32BE(pointerHeaderOffset + 0xC);
+
+                for (let i = pointerStartOffset; i < pointerEndOffset; i += RelTable.PointerStructSize) {
+                    this.pointers.push(data.readUInt32BE(i + 0x4) + dataStartOffset);
+                }
+            }
+        }
+
+        public GetValueEntry(index: number) {
+            return index >= 0 && index < this.pointers.length ? this.data.readUInt32BE(this.pointers[index]) : undefined;
+        }
+        public GetRecordEntry(index: number) {
+            return index >= 0 && index < this.pointers.length ? this.data.slice(this.pointers[index]) : undefined;
+        }
+    }
+
+    export interface CommonRelIndex {
+        NumberOfItems?: number;
+        BGM?: number;
+        NumberOfBGMIDs?: number;
+        BattleFields?: number;
+        LegendaryPokemon?: number;
+        NumberOfLegendaryPokemon?: number;
+        PokefaceTextures?: number;
+        PeopleIDs: number;
+        NumberOfPeopleIDs: number;
+        TrainerClasses: number;
+        NumberOfTrainerClasses: number;
+        Doors: number;
+        NumberOfDoors: number;
+        Trainers?: number;
+        NumberOfTrainers?: number;
+        TrainerAIData?: number;
+        NumberOfTrainerAIData?: number;
+        TrainerPokemonData?: number;
+        NumberOfTrainerPokemonData?: number;
+        Battles: number;
+        NumberOfBattles: number;
+        MusicSamples?: number;
+        NumberOfMusicSamples?: number;
+        BattleDebugScenarios?: number;
+        NumberOfBattleDebugScenarios?: number;
+        AIDebugScenarios?: number;
+        NumberOfAIDebugScenarios?: number;
+        StoryDebugOptions?: number;
+        NumberOfStoryDebugOptions?: number;
+        KeyboardCharacters?: number;
+        NumberOfKeyboardCharacters?: number;
+        Keyboard2Characters?: number;
+        NumberOfKeyboard2Characters?: number;
+        Keyboard3Characters?: number;
+        NumberOfKeyboard3Characters?: number;
+        BattleStyles?: number;
+        NumberOfBattleStyles?: number;
+        Rooms: number;
+        NumberOfRooms: number;
+        RoomData?: number;
+        NumberOfRoomData?: number;
+        TreasureBoxData: number;
+        NumberTreasureBoxes: number;
+        CharacterModels: number;
+        NumberOfCharacterModels: number;
+        ShadowData?: number;
+        NumberOfShadowPokemon?: number;
+        PokemonMetLocations?: number;
+        NumberOfMetLocations?: number;
+        InteractionPoints: number;
+        NumberOfInteractionPoints: number;
+        USStringTable: number;
+        StringTableB: number;
+        StringTableC: number;
+        PokemonStats: number;
+        NumberOfPokemon: number;
+        Natures: number;
+        NumberOfNatures: number;
+        Moves: number;
+        NumberOfMoves: number;
+        PokemonData?: number;
+        NumberOfPokemonData?: number;
+        BattleBingo?: number;
+        NumberOfBingoCards?: number;
+        NumberOfPokespots?: number
+        PokespotRock?: number
+        PokespotRockEntries?: number
+        PokespotOasis?: number
+        PokespotOasisEntries?: number
+        PokespotCave?: number
+        PokespotCaveEntries?: number
+        PokespotAll?: number
+        PokespotAllEntries?: number
+        BattleCDs?: number
+        NumberBattleCDs?: number
+        NumberOfBattleFields?: number;
+        BattleLayouts?: number;
+        NumberOfBattleLayouts?: number;
+        Flags?: number;
+        NumberOfFlags?: number;
+        RoomBGM?: number;
+        NumberOfRoomBGMs?: number;
+        ValidItems?: number;
+        TotalNumberOfItems?: number;
+        Items?: number;
+        SoundsMetaData?: number;
+        NumberOfSounds?: number;
+        TutorMoves?: number;
+        NumberOfTutorMoves?: number;
+        Types?: number;
+        NumberOfTypes?: number;
     }
 }
