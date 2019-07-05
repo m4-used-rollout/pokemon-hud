@@ -7,17 +7,17 @@ namespace RomReader {
     const fixWronglyCapped = /(['’][A-Z]|okéMon)/g;
     const fixWronglyLowercased = /(^[T|H]m|\bTv\b)/g;
 
-    const typeNames = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
-    const eggGroups = ["???", "Monster", "Water 1", "Bug", "Flying", "Field", "Fairy", "Grass", "Human-Like", "Water 3", "Mineral", "Amorphous", "Water 2", "Ditto", "Dragon", "Undiscovered"];
-    const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
-    const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
-    const contestTypes = ['Cool', 'Beauty', 'Cute', 'Smart', 'Tough'];
-    const contestEffects = ['The appeal effect of this move is constant.', 'Prevents the user from being startled.', 'Startles the previous appealer.', 'Startles all previous appealers.', 'Affects appealers other than startling them.', 'Appeal effect may change.', 'The appeal order changes for the next round.'];
-
     export type ShadowData = {
+        id: number;
         catchRate: number;
         species: number;
         purificationStart: number;
+        aggression?: number;
+        fleeChance?: number;
+        alwaysFlee?: number;
+        storyId?: number;
+        shadowLevel?: number;
+        shadowMoves?: Pokemon.Move[];
     }
 
     export type StringTable = { [key: number]: string };
@@ -29,19 +29,30 @@ namespace RomReader {
         protected strings: StringTable = {};
         protected trainerClasses: Pokemon.Trainer[];
 
-        constructor(private basePath: string, private commonIndex: CommonRelIndex) {
+        protected typeNames = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fairy", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
+        protected eggGroups = ["???", "Monster", "Water 1", "Bug", "Flying", "Field", "Fairy", "Grass", "Human-Like", "Water 3", "Mineral", "Amorphous", "Water 2", "Ditto", "Dragon", "Undiscovered"];
+        protected expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
+        protected expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
+        protected contestTypes = ['Cool', 'Beauty', 'Cute', 'Smart', 'Tough'];
+        protected contestEffects = ['The appeal effect of this move is constant.', 'Prevents the user from being startled.', 'Startles the previous appealer.', 'Startles all previous appealers.', 'Affects appealers other than startling them.', 'Appeal effect may change.', 'The appeal order changes for the next round.'];
+
+
+        constructor(protected basePath: string, protected commonIndex: CommonRelIndex, protected isXd = false) {
             super();
             if (!this.basePath.endsWith('/') && !this.basePath.endsWith('\\')) {
                 this.basePath += '/';
             }
 
             const startDol = this.StartDol;
-            this.ReadStringTable(startDol, 0x2CC810).forEach(s => this.strings[s.id] = s.string);
+            if (!this.isXd)
+                this.ReadStringTable(startDol, 0x2CC810).forEach(s => this.strings[s.id] = s.string);
             const commonRel = this.CommonRel;
-            const mainStringList = this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.USStringTable)); //0x59890
+            const mainStringList = this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.USStringTable).slice(this.isXd ? 0x68 : 0)); //col 0x59890
             mainStringList.forEach(s => this.strings[s.id] = s.string);
-            this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableB)).forEach(s => this.strings[s.id] = s.string); //0x66000
-            this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableC)).forEach(s => this.strings[s.id] = s.string); //0x784E0
+            if (!this.isXd) {
+                this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableB)).forEach(s => this.strings[s.id] = s.string); //col 0x66000
+                this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableC)).forEach(s => this.strings[s.id] = s.string); //col 0x784E0
+            }
 
             this.abilities = ["-", ...mainStringList.filter(s => s.id > 3100 && s.id < 3200).map(s => s.string)];
 
@@ -115,8 +126,8 @@ namespace RomReader {
                 if (char == 0)
                     return String.fromCharCode(...chars);
                 if (char == 0xFFFF) {
-                    char = data[i + 1];
-                    i += codeBytes[char] || 1;
+                    char = data[i + 2];
+                    i += (codeBytes[char] || 1);
                     let codeResult = controlCodeMap[char];
                     if (codeResult)
                         chars.push(...codeResult.split('').map(c => c.charCodeAt(0)));
@@ -136,7 +147,7 @@ namespace RomReader {
         }
 
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet {
-            return {}; //no encounters in Colosseum
+            return map.encounters ? map.encounters.all : {};
         }
 
         public GetMap(id: number) {
@@ -155,54 +166,7 @@ namespace RomReader {
 
         protected unlabeledMaps: { [key: number]: string } = {}
 
-        protected ReadPokeData(commonRel: RelTable, names: StringTable = this.strings) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.PokemonStats), 0, 0x11C, commonRel.GetValueEntry(this.commonIndex.NumberOfPokemon)).map((data, i) => { //0x12336C
-                this.moveLearns[i] = this.ReadStridedData(data, 0xBA, 4, 20, true, 0)
-                    .map(mData => Object.assign({
-                        level: mData[0]
-                    }, this.GetMove(mData.readUInt16BE(2))) as Pokemon.MoveLearn);
-                return <Pokemon.Species>{
-                    id: i,
-                    growthRate: expCurveNames[data[0]],
-                    expFunction: expCurves[data[0]],
-                    catchRate: data[1],
-                    genderRatio: data[2],
-                    baseExp: data[7],
-                    dexNumber: data.readUInt16BE(0x10),
-                    eggCycles: data[0x17],
-                    name: names[data.readInt32BE(0x18)],
-                    type1: typeNames[data[0x30]],
-                    type2: typeNames[data[0x31]],
-                    abilities: [this.abilities[data[0x32]], this.abilities[data[0x33]]].filter(a => a != '-'),
-                    tmCompat: this.ReadStridedData(data, 0x34, 1, 58)
-                        .map((c, i) => c[0] ? i + 1 : 0)
-                        .filter(i => !!i)
-                        .map(tm => `${tm < 51 ? "T" : "H"}M${tm > 50 || tm < 10 ? "0" : ""}${tm > 50 ? tm - 50 : tm}`),
-                    eggGroup1: eggGroups[data[0x6E]],
-                    eggGroup2: eggGroups[data[0x6F]],
-                    baseStats: {
-                        hp: data.readUInt16BE(0x84),
-                        atk: data.readUInt16BE(0x86),
-                        def: data.readUInt16BE(0x88),
-                        spatk: data.readUInt16BE(0x8A),
-                        spdef: data.readUInt16BE(0x8C),
-                        speed: data.readUInt16BE(0x8E),
-                    },
-                    evolutions: this.ReadStridedData(data, 0x9C, 6, 5)
-                        .filter(d => d.readUInt16BE(0) > 0).map(eData => {
-                            const type = eData.readUInt16BE(0);
-                            return {
-                                happiness: (type == 1 || type == 2 || type == 3) && 220,
-                                isTrade: type == 5 || type == 6,
-                                timeOfDay: (type == 2 && "Day") || (type == 3 && "Night"),
-                                level: (type == 4 || type > 7) && eData.readUInt16BE(2),
-                                item: (type == 6 || type == 7) && this.GetItem(eData.readUInt16BE(2)),
-                                speciesId: eData.readUInt16BE(4)
-                            } as Pokemon.Evolution;
-                        })
-                };
-            });
-        }
+        protected abstract ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
 
         protected ReadItemData(startDol: Buffer, commonRel: RelTable, names: StringTable = this.strings) {
             const tmMap = this.ReadTMHMMapping(startDol);
@@ -216,7 +180,7 @@ namespace RomReader {
                 return name;
             }
             return (
-                this.commonIndex.Items 
+                this.commonIndex.Items
                     ? this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Items), 0, 0x28, commonRel.GetValueEntry(this.commonIndex.NumberOfItems))
                     : this.ReadStridedData(startDol, 0x360CE8, 0x28, 397)
             ).map((data, i) => (<Pokemon.Item>{
@@ -234,15 +198,16 @@ namespace RomReader {
             return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Moves), 0, 0x38, commonRel.GetValueEntry(this.commonIndex.NumberOfMoves)).map((data, i) => (<Pokemon.Move>{ //0x11E048
                 id: i,
                 basePP: data[1],
-                type: typeNames[data[2]],
+                type: this.typeNames[data[2]],
                 accuracy: data[4],
-                basePower: data[0x17],
-                name: names[data.readUInt16BE(0x22)]
+                basePower: data[this.isXd ? 0x19 : 0x17],
+                name: names[data.readUInt32BE(0x20)]
             }));
         }
 
         protected ReadShadowData(commonRel: RelTable) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.ShadowData), 0, 0x38, commonRel.GetValueEntry(this.commonIndex.NumberOfShadowPokemon)).map(data => (<ShadowData>{ //0x145224
+            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.ShadowData), 0, 0x38, commonRel.GetValueEntry(this.commonIndex.NumberOfShadowPokemon)).map((data, i) => (<ShadowData>{ //0x145224
+                id: i,
                 catchRate: data[0],
                 species: data.readUInt16BE(2),
                 purificationStart: data[9] * 100
@@ -263,17 +228,12 @@ namespace RomReader {
 
         protected ReadTrainerClasses(commonRel: RelTable, names: StringTable = this.strings) {
             return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.TrainerClasses), 0, 0xC, commonRel.GetValueEntry(this.commonIndex.NumberOfTrainerClasses)).map((data, i) => (<Pokemon.Trainer>{ //0x90F70
-                classId: i + 1,
+                classId: i,
                 className: names[data.readUInt32BE(0x4)] || data.readUInt32BE(0x4),
             }));
         }
 
-        protected ReadRooms(commonRel: RelTable, names: StringTable = this.strings) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Rooms), 0, 0x4C, commonRel.GetValueEntry(this.commonIndex.NumberOfRooms)).map(data => (<Pokemon.Map>{ //0x8D540
-                id: data.readUInt32BE(0x4),
-                name: names[data.readUInt32BE(0x24)] || this.unlabeledMaps[data.readUInt32BE(0x4)]
-            }));
-        }
+        protected abstract ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
 
     }
 
@@ -401,8 +361,8 @@ namespace RomReader {
         InteractionPoints: number;
         NumberOfInteractionPoints: number;
         USStringTable: number;
-        StringTableB: number;
-        StringTableC: number;
+        StringTableB?: number;
+        StringTableC?: number;
         PokemonStats: number;
         NumberOfPokemon: number;
         Natures: number;

@@ -286,20 +286,34 @@ declare namespace RomReader {
 }
 declare namespace RomReader {
     type ShadowData = {
+        id: number;
         catchRate: number;
         species: number;
         purificationStart: number;
+        aggression?: number;
+        fleeChance?: number;
+        alwaysFlee?: number;
+        storyId?: number;
+        shadowLevel?: number;
+        shadowMoves?: Pokemon.Move[];
     };
     type StringTable = {
         [key: number]: string;
     };
     abstract class GCNReader extends RomReaderBase {
-        private basePath;
-        private commonIndex;
+        protected basePath: string;
+        protected commonIndex: CommonRelIndex;
+        protected isXd: boolean;
         shadowData: ShadowData[];
         protected strings: StringTable;
         protected trainerClasses: Pokemon.Trainer[];
-        constructor(basePath: string, commonIndex: CommonRelIndex);
+        protected typeNames: string[];
+        protected eggGroups: string[];
+        protected expCurves: Pokemon.ExpCurve.CalcExp[];
+        protected expCurveNames: string[];
+        protected contestTypes: string[];
+        protected contestEffects: string[];
+        constructor(basePath: string, commonIndex: CommonRelIndex, isXd?: boolean);
         protected readonly StartDol: Buffer;
         protected readonly CommonRel: RelTable;
         FixAllCaps(str: string): string;
@@ -319,14 +333,14 @@ declare namespace RomReader {
         protected unlabeledMaps: {
             [key: number]: string;
         };
-        protected ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
+        protected abstract ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
         protected ReadItemData(startDol: Buffer, commonRel: RelTable, names?: StringTable): Pokemon.Item[];
         protected ReadTMHMMapping(startDol: Buffer): number[];
         protected ReadMoveData(commonRel: RelTable, names?: StringTable): Pokemon.Move[];
         protected ReadShadowData(commonRel: RelTable): ShadowData[];
         protected ReadTrainerData(commonRel: RelTable, names?: StringTable, classes?: Pokemon.Trainer[]): Pokemon.Trainer[];
         protected ReadTrainerClasses(commonRel: RelTable, names?: StringTable): Pokemon.Trainer[];
-        protected ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
+        protected abstract ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
     }
     class RelTable {
         data: Buffer;
@@ -393,8 +407,8 @@ declare namespace RomReader {
         InteractionPoints: number;
         NumberOfInteractionPoints: number;
         USStringTable: number;
-        StringTableB: number;
-        StringTableC: number;
+        StringTableB?: number;
+        StringTableC?: number;
         PokemonStats: number;
         NumberOfPokemon: number;
         Natures: number;
@@ -435,11 +449,123 @@ declare namespace RomReader {
     }
 }
 declare namespace RomReader {
-    class Col extends GCNReader {
-        protected unlabeledMaps: {
-            [key: number]: string;
+    interface XDTrainer extends Pokemon.Trainer {
+        trainerString: string;
+        partySummary: string[];
+        deckId: number;
+    }
+    interface XDTrainerPokemon {
+        speciesId: number;
+        level: number;
+        friendship: number;
+        heldItemId: number;
+        ivs: Pokemon.Stats;
+        evs: Pokemon.Stats;
+        moveIds: number[];
+        pv: number;
+    }
+    interface XDShadowData extends ShadowData {
+        baseMon: XDTrainerPokemon;
+    }
+    enum BattleStyle {
+        None = 0,
+        Single = 1,
+        Double = 2,
+        Other = 3
+    }
+    enum BattleType {
+        None = 0,
+        StoryAdminColo = 1,
+        Story = 2,
+        ColosseumPrelim = 3,
+        Sample = 4,
+        ColosseumFinal = 5,
+        ColosseumOrrePrelim = 6,
+        ColosseumOrreFinal = 7,
+        MtBattle = 8,
+        MtBattleFinal = 9,
+        BattleMode = 10,
+        LinkBattle = 11,
+        WildBattle = 12,
+        BattleBingo = 13,
+        BattleCD = 14,
+        BattleTraining = 15,
+        MirorBPokespot = 16,
+        BattleModeMtBattleColo = 17
+    }
+    interface XDBattle {
+        id: number;
+        battleType: BattleType;
+        battleTypeStr: string;
+        trainersPerSide: number;
+        battleStyle: BattleStyle;
+        partySize: number;
+        bgm: number;
+        isStoryBattle: boolean;
+        colosseumRound: number;
+        participants: {
+            deckId: number;
+            trainerId: number;
+            trainer: XDTrainer;
+        }[];
+    }
+    interface XDEncounterMon extends Pokemon.EncounterMon {
+        minLevel: number;
+        maxLevel: number;
+        stepsPerSnack: number;
+    }
+    interface XDEncounterSet {
+        [key: string]: XDEncounterMon[];
+        all: XDEncounterMon[];
+    }
+    interface XDEncounters extends Pokemon.Encounters {
+        all: XDEncounterSet;
+    }
+    class XD extends GCNReader {
+        protected trainers: XDTrainer[];
+        protected battles: XDBattle[];
+        shadowData: XDShadowData[];
+        protected encounters: {
+            rock: XDEncounters;
+            oasis: XDEncounters;
+            cave: XDEncounters;
+            all: XDEncounters;
         };
         constructor(basePath: string);
+        GetTrainerByBattle(id: number, battleId: number): XDTrainer;
+        protected LoadDeckFile(deckName: string): Deck;
+        protected ReadDeckTrainers(deck: Deck, deckId: number): XDTrainer[];
+        protected ReadAbilities(startDol: Buffer): string[];
+        protected ReadBattles(commonRel: RelTable, deckTrainers: Pokemon.Trainer[][]): XDBattle[];
+        protected ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
+        protected ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
+        protected ReadShadowDataXD(shadowDeck: Deck, storyDeck: Deck): XDShadowData[];
+        protected LookUpTrainerPokemon(pkmDeck: Deck, id: number): XDTrainerPokemon;
+        protected ReadEncounters(data: Buffer, entries?: number): XDEncounters;
+    }
+    class Deck {
+        private sections;
+        readonly TrainerData: {
+            entries: number;
+            data: Buffer;
+        };
+        readonly TrainerPokemonData: {
+            entries: number;
+            data: Buffer;
+        };
+        readonly TrainerAIData: {
+            entries: number;
+            data: Buffer;
+        };
+        readonly TrainerStringData: {
+            entries: number;
+            data: Buffer;
+        };
+        readonly ShadowPokemonData: {
+            entries: number;
+            data: Buffer;
+        };
+        constructor(data: Buffer);
     }
 }
 declare namespace RomReader {
@@ -554,6 +680,16 @@ declare namespace RamReader {
         }) => T): () => Promise<T>;
         protected SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress?: number, ifValue?: number, bytes?: number): Promise<{}>;
         protected AissId: (dexNum: number, idByte: number) => number;
+    }
+}
+declare namespace RomReader {
+    class Col extends GCNReader {
+        protected unlabeledMaps: {
+            [key: number]: string;
+        };
+        constructor(basePath: string);
+        protected ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
+        protected ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
     }
 }
 declare namespace RamReader {
@@ -1137,11 +1273,6 @@ declare namespace RomReader {
         constructor();
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         CollapseSeenForms(seen: number[]): number[];
-    }
-}
-declare namespace RomReader {
-    class XD extends GCNReader {
-        constructor(basePath: string);
     }
 }
 declare namespace Tools.DSDecmp {
