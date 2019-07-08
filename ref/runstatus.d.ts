@@ -15,6 +15,8 @@ declare namespace TPP {
         battle_kind?: "Wild" | "Trainer";
         enemy_trainers?: EnemyTrainer[];
         enemy_party?: EnemyParty;
+        party_is_rental?: boolean;
+        battle_id?:number;
     }
 
     export interface TrainerData extends OverlayData {

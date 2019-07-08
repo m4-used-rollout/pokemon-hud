@@ -24,14 +24,14 @@ namespace RomReader {
         baseMon: XDTrainerPokemon
     }
 
-    export enum BattleStyle {
+    export enum XDBattleStyle {
         None = 0,
         Single,
         Double,
         Other
     }
 
-    export enum BattleType {
+    export enum XDBattleType {
         None = 0,
         StoryAdminColo,
         Story,
@@ -54,10 +54,10 @@ namespace RomReader {
 
     export interface XDBattle {
         id: number;
-        battleType: BattleType;
+        battleType: XDBattleType;
         battleTypeStr: string;
         trainersPerSide: number;
-        battleStyle: BattleStyle;
+        battleStyle: XDBattleStyle;
         partySize: number;
         bgm: number;
         isStoryBattle: boolean;
@@ -118,8 +118,13 @@ namespace RomReader {
 
         }
 
-        public GetTrainerByBattle(id: number, battleId: number): XDTrainer {
-            return ((this.battles.find(b => b.id == battleId) || { participants: [] as XDBattle['participants'] }).participants.find(p => p.trainerId == id) || { trainer: undefined as XDTrainer }).trainer;
+        public GetTrainerByBattle(id: number, slot: number, battleId: number): XDTrainer {
+            const { participants } = ((this.battles.find(b => b.id == battleId) || { participants: [] as XDBattle['participants'] }));
+            return (participants.find(p => p.trainerId == id) || { trainer: this.trainers.find(t => t.id == id && t.deckId == participants[slot].deckId) }).trainer;
+        }
+
+        public GetBattle(id:number) {
+            return this.battles.find(b=>b.id == id);
         }
 
         protected LoadDeckFile(deckName: string) {
@@ -151,6 +156,7 @@ namespace RomReader {
                     name: this.strings[data.readUInt16BE(0x6)],
                     classId: data.readUInt8(0x5),
                     className: (this.trainerClasses.find(c => c.classId == data.readUInt8(0x5)) || { className: data.readUInt8(0x5).toString() }).className,
+                    spriteId: data[0x11],
                     partySummary
                 } as XDTrainer;
             });
@@ -170,7 +176,7 @@ namespace RomReader {
             return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Battles), 0, 0x3C, commonRel.GetValueEntry(this.commonIndex.NumberOfBattles)).map((data, i) => (<XDBattle>{
                 id: i,
                 battleType: data[0],
-                battleTypeStr: BattleType[data[0]],
+                battleTypeStr: XDBattleType[data[0]],
                 trainersPerSide: data[1],
                 battleStyle: data[2],
                 partySize: data[3],
@@ -253,7 +259,7 @@ namespace RomReader {
                     shadowLevel: data[2], // the pokemon's level after it's caught. Regular level can be increased so AI shadows are stronger
                     storyId, // dpkm index of pokemon data in deck story
                     purificationStart: data.readUInt16BE(0x08), // the starting value of the heart gauge
-                    shadowMoves: this.ReadStridedData(shadowDeck.ShadowPokemonData.data, 0xC, 2, 4).map(m => Object.assign({}, this.GetMove(m.readUInt16BE(0)))),
+                    shadowMoves: this.ReadStridedData(data, 0xC, 2, 4).map(m => Object.assign({}, this.GetMove(m.readUInt16BE(0)))).filter(m=>m && m.id),
                     aggression: data[0x14], // determines how often it enters reverse mode
                     alwaysFlee: data[0x15], // the shadow pokemon is sent to miror b. even if you lose the battle
                     baseMon,

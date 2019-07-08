@@ -85,5 +85,5 @@ namespace Events {
         }
 
     }
-    RegisterTracker(ColosseumTracker);
+    //RegisterTracker(ColosseumTracker);
 }

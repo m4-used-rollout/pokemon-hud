@@ -1,62 +1,43 @@
 /// <reference path="./base.ts" />
-/// <reference path="../rom-reading/romreaders/concrete/col.ts" />
+/// <reference path="../rom-reading/romreaders/gcn.ts" />
 
 namespace RamReader {
 
     const net = require('net') as typeof import('net');
 
+    // const partyOffset = 0xA0;
+    // const partySize = 0x750;
+    // const partyPokeBytes = 0x138;
+    // const trainerDataOffset = 0x70;
+    // const trainerDataSize = 0xAC2 + 0x14;
+    // const pokedexOffset = 0x82A8;
+    // const pokedexSize = 0x1774;
+    // const pcOffset = 0xB88;
+    // const pcSize = 0x6DEC;
+    // const bagSize = 0x300;
+    // const itemPCSize = 0x3AC;
+    // const battlePartyPokeBytes = 0x154;
+    // const enemyTrainerBytes = 0x1A;
 
-    const partyOffset = 0xA0;
-    const partySize = 0x750;
-    const partyPokeBytes = 0x138;
-    const trainerDataOffset = 0x70;
-    const trainerDataSize = 0xAC2 + 0x14;
-    const pokedexOffset = 0x82A8;
-    const pokedexSize = 0x1774;
-    const pcOffset = 0xB88;
-    const pcSize = 0x6DEC;
-    const bagSize = 0x300;
-    const itemPCSize = 0x3AC;
-    const battlePartyPokeBytes = 0x154;
-    const enemyTrainerBytes = 0x1A;
+    // const battleBagAddress = 0x8046E58C;
+    // const battlePartyAddress = 0x8046E928;
+    // const enemyTrainerAddress = 0x80473038;
+    // const enemyPartyAddress = 0x80473B58;
+    // const baseAddrPtr = 0x8047ADB8;
+    // const musicIdAddress = 0x8047B0AC;
 
-    const battleBagAddress = 0x8046E58C;
-    const battlePartyAddress = 0x8046E928;
-    const enemyTrainerAddress = 0x80473038;
-    const enemyPartyAddress = 0x80473B58;
-    const baseAddrPtr = 0x8047ADB8;
-    const musicIdAddress = 0x8047B0AC;
+    // const fsysStartAddress = 0x807602E0;
+    // const fsysSlots = 16;
+    // const fsysStructBytes = 0x40;
 
-    const fsysStartAddress = 0x807602E0;
-    const fsysSlots = 16;
-    const fsysStructBytes = 0x40;
+    //const evoFsysId = 1572;
 
-    const evoFsysId = 1572;
-
-    const Status: { [key: number]: string } = {
-        3: "PSN",
-        4: "TOX",
-        5: "PAR",
-        6: "BRN",
-        7: "FRZ",
-        8: "SLP"
-    };
-
-    const Game: { [key: number]: string } = {
-        0: "None",
-        1: "FireRed",
-        2: "LeafGreen",
-        8: "Sapphire",
-        9: "Ruby",
-        10: "Emerald",
-        11: "Colosseum/XD"
-    };
-
-    export class ColXD extends RamReaderBase<RomReader.Col> {
+    export abstract class DolphinWatchBase<T extends RomReader.GCNReader> extends RamReaderBase<T> {
 
         private connection: import('net').Socket;
-        private transmitState: (state?: TPP.RunStatus) => void;
+        protected transmitState: (state?: TPP.RunStatus) => void;
         private saveStateInterval: ReturnType<typeof setInterval>;
+
 
         public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
             this.currentState = state;
@@ -69,6 +50,57 @@ namespace RamReader {
             this.connection.end();
         }
 
+        protected abstract battleBagAddress: number;
+        protected abstract battlePartyAddress: number;
+        protected abstract enemyTrainerAddress: number;
+        protected abstract enemyPartyAddress: number;
+        protected abstract baseAddrPtr: number;
+        protected abstract musicIdAddress: number;
+        protected abstract fsysStartAddress: number;
+
+        protected abstract fsysSlots: number;
+        protected abstract fsysStructBytes: number;
+        protected abstract partyOffset: number;
+        protected abstract partySize: number;
+        protected abstract partyPokeBytes: number;
+        protected abstract trainerDataOffset: number;
+        protected abstract trainerDataSize: number;
+        protected abstract pokedexOffset: number;
+        protected abstract pokedexSize: number;
+        protected abstract pcOffset: number;
+        protected abstract pcSize: number;
+        protected abstract pcBoxes: number;
+        protected abstract pcBoxBytes: number;
+        protected abstract bagSize: number;
+        protected abstract itemPCSize: number;
+        protected abstract daycareOffset: number;
+        protected abstract battlePartyPokeBytes: number;
+        protected abstract enemyTrainerBytes: number;
+
+        private currentPartyAddr: number;
+        private currentTrainerAddr: number;
+        private currentPokedexAddr: number;
+        private currentItemPCAddr: number;
+        private currentPCAddrs: number[] = [];
+        private currentDaycareAddr: number;
+
+        protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number) {
+            this.partyOffset && (this.currentPartyAddr = baseSub(this.currentPartyAddr, this.partyOffset, this.partySize, this.SendParty));
+            this.trainerDataOffset && (this.currentTrainerAddr = baseSub(this.currentTrainerAddr, this.trainerDataOffset, this.trainerDataSize, this.SendTrainer));
+            this.pokedexOffset && (this.currentPokedexAddr = baseSub(this.currentPokedexAddr, this.pokedexOffset, this.pokedexSize, this.SendPokedex));
+            this.pcOffset && this.itemPCSize && (this.currentItemPCAddr = baseSub(this.currentItemPCAddr, this.pcOffset + this.pcSize, this.itemPCSize, this.SendItemPC));
+            this.daycareOffset && (this.currentDaycareAddr = baseSub(this.currentDaycareAddr, this.daycareOffset, this.partyPokeBytes + 8, this.SendDaycare));
+            if (this.pcOffset && this.pcBoxBytes && this.pcBoxes)
+                for (var i = this.pcBoxes; i > 0; i--)
+                    this.currentPCAddrs[i - 1] = baseSub(this.currentPCAddrs[i - 1],
+                        this.pcOffset + (this.pcBoxBytes * (i - 1)),
+                        this.pcBoxBytes, this.PCBoxReader(i));
+        }
+
+        protected AdditionalSubscriptions() {
+
+        }
+
         public Init() {
             console.log(`Connecting to DolphinWatch (${this.hostname}:${this.port})`);
             if (this.connection)
@@ -76,28 +108,19 @@ namespace RamReader {
             this.connection = net.connect(this.port, this.hostname);
             this.connection.on('data', data => data.toString('ascii').split('\n').filter(d => !!d).forEach(d => this.ResponseHandler(d)));
             this.connection.on("error", err => setTimeout(() => this.Init(), 1000));
-            let partyAddr: number;
-            let trainerAddr: number;
-            let pokedexAddr: number;
-            let itemPCAddr: number;
-            let pcAddr: number;
             this.connection.on('connect', () => {
-                this.Subscribe(baseAddrPtr, 4, data => {
+                this.Subscribe(this.baseAddrPtr, 4, data => {
                     const baseAddr = data.readUInt32BE(0);
                     console.log(`Save Struct Base Address: ${baseAddr.toString(16)}`);
 
-                    const BaseSub = (addr: number, offset: number, size: number, handler: (data: Buffer) => void) => {
-                        this.Unsubscribe(addr);
-                        addr = baseAddr + offset;
+                    const BaseSub = (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => {
+                        this.Unsubscribe(oldAddr);
+                        const addr = baseAddr + offset;
                         this.Subscribe(addr, size, handler);
                         return addr;
                     }
 
-                    partyAddr = BaseSub(partyAddr, partyOffset, partySize, this.SendParty);
-                    trainerAddr = BaseSub(trainerAddr, trainerDataOffset, trainerDataSize, this.SendTrainer);
-                    pokedexAddr = BaseSub(pokedexAddr, pokedexOffset, pokedexSize, this.SendPokedex);
-                    itemPCAddr = BaseSub(itemPCAddr, pcOffset + pcSize, itemPCSize, this.SendItemPC);
-                    pcAddr = BaseSub(pcAddr, pcOffset, pcSize, this.SendPC);
+                    this.BaseAddrSubscriptions(BaseSub);
 
                     if (!this.saveStateInterval && this.config.saveStateIntervalSeconds && this.config.saveStatePath) {
                         this.saveStateInterval = setInterval(() => {
@@ -108,12 +131,13 @@ namespace RamReader {
                             this.config.saveStateIntervalSeconds * 1000);
                     }
                 });
-                this.Subscribe(battleBagAddress, bagSize, data => this.SendBag(data));
-                this.Subscribe(battlePartyAddress, battlePartyPokeBytes * 6, data => this.SendParty(data, battlePartyPokeBytes, true));
-                this.Subscribe(enemyPartyAddress, battlePartyPokeBytes * 6, data => this.SendEnemyParty(data));
-                this.Subscribe(enemyTrainerAddress, enemyTrainerBytes, data => this.SendEnemyTrainer(data));
-                this.Subscribe(fsysStartAddress, fsysSlots * fsysStructBytes, this.FsysWatcher);
-                this.Subscribe(musicIdAddress, 4, this.SendMusic);
+                this.battleBagAddress && this.Subscribe(this.battleBagAddress, this.bagSize, data => this.SendBag(data));
+                this.battlePartyAddress && this.Subscribe(this.battlePartyAddress, this.battlePartyPokeBytes * 6, data => this.SendParty(data, this.battlePartyPokeBytes, true));
+                this.enemyPartyAddress && this.Subscribe(this.enemyPartyAddress, this.battlePartyPokeBytes * 6, data => this.SendEnemyParty(data));
+                this.enemyTrainerAddress && this.Subscribe(this.enemyTrainerAddress, this.enemyTrainerBytes, data => this.SendEnemyTrainer(data));
+                this.fsysStartAddress && this.Subscribe(this.fsysStartAddress, this.fsysSlots * this.fsysStructBytes, this.FsysWatcher);
+                this.musicIdAddress && this.Subscribe(this.musicIdAddress, 4, this.SendMusic);
+                this.AdditionalSubscriptions();
             });
         }
 
@@ -150,14 +174,14 @@ namespace RamReader {
             }
         }
 
-        private ParsePokemon = (monData: Buffer) => monData.readUInt16BE(0x0) > 0 ? this.AugmentShadowMon(<TPP.ShadowPokemon><any>{
+        protected ParsePokemon = (monData: Buffer) => monData.readUInt16BE(0x0) > 0 ? this.AugmentShadowMon(<TPP.ShadowPokemon><any>{
             species: Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(monData.readUInt16BE(0x0))),
             personality_value: monData.readUInt32BE(0x4),
             met: {
                 map_id: monData.readUInt16BE(0xC),
                 level: monData[0xE],
                 caught_in: this.rom.GetItem(monData[0xF]).name,
-                game: Game[monData[0x8]]
+                game: this.Game[monData[0x8]]
             },
             original_trainer: {
                 gender: this.ParseGender(monData[0x10]),
@@ -170,7 +194,7 @@ namespace RamReader {
                 current: monData.readUInt32BE(0x5C)
             },
             level: monData[0x60],
-            status: Status[monData[0x65]],
+            status: this.Status[monData[0x65]],
             sleep_turns: monData.readInt8(0x69),
             //tox_turns: monData.readInt8(0x6B),
             moves: [
@@ -247,37 +271,40 @@ namespace RamReader {
             //data: monData.toString('hex')
         }) : null;
 
-        private AugmentShadowMon = (mon: TPP.ShadowPokemon) => {
-            mon.is_shadow = mon.shadow_id > 0 && mon.purification && mon.purification.current > -100;
+        protected AugmentShadowMon(mon: TPP.ShadowPokemon) {
+            mon.is_shadow = mon.shadow_id > 0 && (!mon.purification || mon.purification.current > -100);
             const shadowData = this.rom.shadowData[mon.shadow_id];
             if (mon.is_shadow && shadowData) {
+                mon.purification = mon.purification || { current: shadowData.purificationStart };
                 mon.purification.initial = shadowData.purificationStart;
                 mon.species.catch_rate = shadowData.catchRate;
 
-                //Colosseum
-                const shadowRush: TPP.ShadowMove = Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(0x164));
-                shadowRush.is_shadow = true;
-                const nullMove = (<TPP.ShadowMove>{
-                    id: 0,
-                    name: "????",
-                    is_shadow: true
-                });
-                mon.moves[0] = shadowRush;
+                const shadowMoves = (shadowData.shadowMoves || [this.rom.GetMove(0x164)])
+                    .map(m => Object.assign(Pokemon.Convert.MoveToRunStatus(m), { is_shadow: true }) as TPP.ShadowMove);
+                for (let i = -1; shadowMoves.length < 4; i--) {
+                    shadowMoves.push((<TPP.ShadowMove>{
+                        id: i,
+                        name: "????",
+                        is_shadow: true
+                    }));
+                }
+
+                mon.moves[0] = shadowMoves[0];
                 const purificationPercentage = Math.max(0, mon.purification.current) / mon.purification.initial * 100;
                 if (purificationPercentage >= 80 && mon.moves[1])
-                    mon.moves[1] = Object.assign({}, nullMove, { id: -1 });
+                    mon.moves[1] = shadowMoves[1];
                 if (purificationPercentage >= 60)
                     mon.nature = "????";
                 if (purificationPercentage >= 40 && mon.moves[2])
-                    mon.moves[2] = Object.assign({}, nullMove, { id: -2 });
+                    mon.moves[2] = shadowMoves[2];
                 if (purificationPercentage >= 20 && mon.moves[3])
-                    mon.moves[3] = Object.assign({}, nullMove, { id: -3 });
+                    mon.moves[3] = shadowMoves[3];
             }
             return mon;
-        };
+        }
 
 
-        private ParseMove = (moveData: Buffer) => <TPP.Move>Object.assign({},
+        protected ParseMove = (moveData: Buffer) => <TPP.Move>Object.assign({},
             Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(moveData.readUInt16BE(0))),
             <Partial<TPP.Move>>{
                 pp: moveData[2],
@@ -285,7 +312,7 @@ namespace RamReader {
             });
 
 
-        public SendParty = (data: Buffer, monBytes = 0x138, inBattle = false) => this.ReadParty(data, monBytes).then(party => {
+        public SendParty = (data: Buffer, monBytes = this.partyPokeBytes, inBattle = false) => this.ReadParty(data, monBytes).then(party => {
             this.currentState.in_battle = this.currentState.in_battle || inBattle;
             if (party && party.length) {
                 if (party.every(p => p && p.original_trainer && p.original_trainer.name && p.original_trainer.name.toLowerCase() == "eagun")) {
@@ -300,7 +327,7 @@ namespace RamReader {
             }
         }).catch(err => console.error(err));
 
-        public SendEnemyParty = (data: Buffer) => this.ReadParty(data, battlePartyPokeBytes).then(party => {
+        public SendEnemyParty = (data: Buffer) => this.ReadParty(data, this.battlePartyPokeBytes).then(party => {
             const enemyParty = party as TPP.EnemyParty;
             if (enemyParty && enemyParty.length > 0) {
                 // if (this.IsPartyDefeated(party))
@@ -358,12 +385,17 @@ namespace RamReader {
             }
         }).catch(err => console.error(err));
 
-        public SendPC = (data: Buffer) => this.ReadPC(data).then(pc => {
-            if (pc) {
-                this.currentState.pc = pc;
-                this.transmitState();
-            }
-        }).catch(err => console.error(err));
+        // public SendPC = (data: Buffer) => this.ReadPC(data).then(pc => {
+        //     if (pc) {
+        //         this.currentState.pc = pc;
+        //         this.transmitState();
+        //     }
+        // }).catch(err => console.error(err));
+
+        public SendDaycare = (data: Buffer) => this.ReadDaycare(data).then(daycare => {
+            this.currentState.daycare = [daycare].filter(d => !!d);
+            this.transmitState();
+        });
 
         public SendMap = (data: Buffer) => {
             const mapId = data.readUInt16BE(0);
@@ -376,19 +408,15 @@ namespace RamReader {
 
         public FsysWatcher = (data: Buffer) => {
             let changedState = false;
-            this.currentState["fsys"] = this.rom.ReadStridedData(data, 0, fsysStructBytes, fsysSlots)
+            this.currentState["fsys"] = this.rom.ReadStridedData(data, 0, this.fsysStructBytes, this.fsysSlots)
                 .map(fData => fData.readUInt32BE(0x34))
                 .map((fsysId, i) => {
                     const map = i == 0 ? this.rom.GetMap(fsysId) : { id: null, name: null };
                     if (fsysId && fsysId != this.currentState.map_id && map.id == fsysId && map.name) {
-                        //this.currentState.evolution_is_happening = false;
                         this.currentState.map_id = map.id;
                         this.currentState.map_name = map.name;
                         this.currentState.in_battle = fsysId > 1000;
                     }
-                    // else if (fsysId == evoFsysId) {
-                    //     this.currentState.evolution_is_happening = true;
-                    // }
                     else
                         return fsysId;
                     changedState = true;
@@ -449,24 +477,55 @@ namespace RamReader {
 
         public ReadItemPC = (data: Buffer) => new Promise<TPP.Item[]>(resolve => resolve(this.ReadPocket(data)));
 
-        public ReadPC: (data?: Buffer) => Promise<TPP.CombinedPCData> = data => new Promise<TPP.CombinedPCData>(resolve => resolve({
-            boxes: this.rom.ReadStridedData(data, 0, 0x24A4, 3).map((b, i) => this.ReadPCBox(b, i + 1))
-        } as TPP.CombinedPCData));
+        protected currentPC: TPP.BoxData[];
+
+        public PCBoxReader(boxNum: number) {
+            return (data: Buffer) => {
+                const box = this.ReadPCBox(data, boxNum);
+                this.currentPC = this.currentPC || [];
+                this.currentState.pc = this.currentState.pc || { current_box_number: 0, boxes: [] };
+                this.currentState.pc.boxes = this.currentState.pc.boxes || [];
+                this.currentPC[boxNum - 1] = box;
+                this.currentState.pc.boxes = this.currentPC.filter(b => !!b);
+                this.currentState.pc.current_box_number = boxNum;
+                this.transmitState();
+            }
+        }
 
         public ReadPCBox = (data: Buffer, boxNum: number) => (<TPP.BoxData>{
             box_number: boxNum,
             box_name: this.rom.ReadString(data),
-            box_contents: this.rom.ReadStridedData(data, 0x14, partyPokeBytes, 30).map((p, i) => Object.assign(this.ParsePokemon(p) || {}, { box_slot: i + 1 }) as TPP.PartyPokemon & TPP.BoxedPokemon).filter(p => !!p.species)
+            box_contents: this.rom.ReadStridedData(data, 0x14, this.partyPokeBytes, 30).map((p, i) => Object.assign(this.ParsePokemon(p) || {}, { box_slot: i + 1 }) as TPP.PartyPokemon & TPP.BoxedPokemon).filter(p => !!p && !!p.species)
         });
 
         public ReadDaycare = (data: Buffer) => new Promise<TPP.PartyPokemon>(resolve => resolve(
             data.readInt8(0) < 1 ? null : this.ParsePokemon(data.slice(0x8))
         ));
 
+        public ReadPC: (data?: Buffer) => Promise<TPP.CombinedPCData>;
         public ReadBattle: (data?: Buffer) => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: ((data?: Buffer) => Promise<TPP.TrainerData>)[];
         protected OptionsSpec: OptionsSpec;
 
         public IsPartyDefeated = (party: TPP.PartyData) => !party.some(p => p && p.health && p.health[0] > 0);
+
+        protected Status: { [key: number]: string } = {
+            3: "PSN",
+            4: "TOX",
+            5: "PAR",
+            6: "BRN",
+            7: "FRZ",
+            8: "SLP"
+        };
+
+        protected Game: { [key: number]: string } = {
+            0: "None",
+            1: "FireRed",
+            2: "LeafGreen",
+            8: "Sapphire",
+            9: "Ruby",
+            10: "Emerald",
+            11: "Colosseum/XD"
+        };
     }
 }

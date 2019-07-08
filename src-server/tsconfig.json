@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es6",
+		"target": "esnext",
 		"removeComments": true,
 		"declaration": true,
         "outFile": "server.js"

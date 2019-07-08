@@ -338,13 +338,13 @@ namespace RamReader {
                 this.ParseRibbon((ribbonVal >>> 17) % 2, "Victory"),
                 this.ParseRibbon((ribbonVal >>> 18) % 2, "Artist"),
                 this.ParseRibbon((ribbonVal >>> 19) % 2, "Effort"),
-                this.ParseRibbon((ribbonVal >>> 20) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >>> 21) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >>> 22) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >>> 23) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >>> 24) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >>> 25) % 2, "Gift"),
-                this.ParseRibbon((ribbonVal >>> 26) % 2, "Gift"),
+                this.ParseRibbon((ribbonVal >>> 20) % 2, "Champion Battle"),
+                this.ParseRibbon((ribbonVal >>> 21) % 2, "Regional Champion"),
+                this.ParseRibbon((ribbonVal >>> 22) % 2, "National Champion"),
+                this.ParseRibbon((ribbonVal >>> 23) % 2, "Country"),
+                this.ParseRibbon((ribbonVal >>> 24) % 2, "National"),
+                this.ParseRibbon((ribbonVal >>> 25) % 2, "Earth"),
+                this.ParseRibbon((ribbonVal >>> 26) % 2, "World"),
             ].filter(r => !!r);
         }
 
