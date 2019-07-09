@@ -801,6 +801,7 @@ declare namespace RamReader {
         protected enemyTrainerBytes: number;
         protected shadowDataOffset: number;
         protected shadowEntryBytes: number;
+        protected shadowEntries: number;
         protected purificationChamberOffset: number;
         protected purificationChamberSize: number;
         protected battlePartyAddress: any;
@@ -815,6 +816,8 @@ declare namespace RamReader {
         protected fsysStartAddress: any;
         protected fsysSlots: number;
         protected fsysStructBytes: number;
+        protected backupNormalParty: TPP.PartyData;
+        Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): void;
         protected purifierAddr: number;
         protected shadowAddr: number;
         protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number): void;
@@ -826,6 +829,7 @@ declare namespace RamReader {
         };
         ReadTrainer: (data?: Buffer) => Promise<TPP.TrainerData>;
         private currentBattle;
+        private currentEnemyTrainers;
         private currentEnemyParty;
         ReadBattle: (data?: Buffer) => Promise<TPP.BattleStatus>;
         BattleTrainerReader(slot: number): (data: Buffer) => void;
@@ -852,6 +856,7 @@ declare module TPP.Server {
     function setOverrides(dataJSON: string): any;
     function MergeOverrides(currState?: RunStatus): void;
     function setState(dataJson: string): void;
+    function NewCatch(dexNum: number): void;
     const fileExists: (path: string) => any;
 }
 declare module TPP.Server {

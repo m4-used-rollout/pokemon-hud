@@ -26,6 +26,8 @@ namespace Events {
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
             const seen = new Array<string>();
+            if ((newState.in_battle || oldState.in_battle))
+                return; //ignore battle-only changes in case of temporary battle mons
             AllMons(oldState).forEach(mon => {
                 const pv = mon.personality_value;
                 const known = this.knownPokemon[pv]
@@ -35,8 +37,10 @@ namespace Events {
                 const isShadow = (mon as TPP.ShadowPokemon).is_shadow;
                 const caughtIn = (mon.met || {} as typeof mon.met).caught_in;
                 seen.push(pv.toString());
-                if (!known)
+                if (!known) {
+                    this.PotentialNewCatch(dexNum); //trigger it here so it doesn't trigger on replays
                     return dispatch({ type: "Caught Pokemon", pv, dexNum, species, name, isShadow, caughtIn });
+                }
                 else if (known.dexNums.indexOf(dexNum) < 0)
                     dispatch({ type: "Evolved Pokemon", pv, dexNum, species, name });
                 else if (known.name != name)
@@ -108,6 +112,13 @@ namespace Events {
             knowns.map(k => k.caughtIn).filter((c, i, arr) => c && arr.indexOf(c) == i)
                 .forEach(ball => state.game_stats[`Pokémon Caught in a ${ball}`] = knowns.filter(k => k.caughtIn == ball).length);
             return state;
+        }
+
+        private caught = new Array<number>();
+        private PotentialNewCatch(dexNum: number) {
+            if (this.caught.indexOf(dexNum) < 0)
+                TPP.Server.NewCatch(dexNum);
+            this.caught.push(dexNum);
         }
 
     }

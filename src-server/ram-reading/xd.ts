@@ -31,6 +31,7 @@ namespace RamReader {
         protected enemyTrainerBytes = 0x1A;
         protected shadowDataOffset = 0xE380;
         protected shadowEntryBytes = 0x48;
+        protected shadowEntries = 128;
         protected purificationChamberOffset = 0x1D690;
         protected purificationChamberSize = 0x2298;
 
@@ -49,12 +50,25 @@ namespace RamReader {
         protected fsysSlots = 16;
         protected fsysStructBytes = 0x40;
 
+        protected backupNormalParty: TPP.PartyData;
+
+        public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
+            super.Read(state, (s = this.currentState) => {
+                if (this.backupNormalParty && !s.in_battle) {
+                    //deal with getting our party back after a training battle
+                    s.party = this.backupNormalParty;
+                    this.backupNormalParty = null;
+                }
+                transmitState(s);
+            });
+        }
 
         protected purifierAddr: number;
         protected shadowAddr: number;
 
+
         protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number) {
-            this.shadowDataOffset && (this.shadowAddr = baseSub(this.shadowAddr, this.shadowDataOffset, this.shadowEntryBytes * this.rom.shadowData.length, this.ReadShadowData));
+            this.shadowDataOffset && (this.shadowAddr = baseSub(this.shadowAddr, this.shadowDataOffset, this.shadowEntryBytes * this.shadowEntries, this.ReadShadowData));
 
             super.BaseAddrSubscriptions(baseSub);
 
@@ -187,15 +201,18 @@ namespace RamReader {
         } as TPP.TrainerData));
 
         private currentBattle: RomReader.XDBattle;
+        private currentEnemyTrainers: TPP.EnemyTrainer[];
         private currentEnemyParty: TPP.EnemyParty;
 
         public ReadBattle = async (data?: Buffer) => {
             const battleId = data.readUInt16BE(2);
             this.currentBattle = this.rom.GetBattle(battleId);
-            return (<Partial<TPP.BattleStatus> & { battle_id: number }>{
+            return (<Partial<TPP.BattleStatus> & { battle_id: number; battle_type: string;}>{
                 in_battle: battleId > 0 && !!this.currentBattle,
                 battle_kind: this.currentBattle && (this.currentBattle.battleType == RomReader.XDBattleType.WildBattle ? "Wild" : "Trainer"),
-                battle_id: battleId
+                battle_id: battleId,
+                party_is_rental: this.currentBattle.battleType == RomReader.XDBattleType.BattleTraining,
+                battle_type: this.currentBattle.battleTypeStr
             } as TPP.BattleStatus);
         };
 
@@ -211,12 +228,14 @@ namespace RamReader {
 
                 if (slot == 0) {
                     this.currentState.party = party;
-                    this.currentState.party_is_rental = trainerId != 5000;
+                    this.currentState.party_is_rental = this.currentState.party_is_rental || trainerId != 5000;
+                    this.backupNormalParty = this.backupNormalParty || this.currentState.party; //save non-battle party so we get it back after the battle
                 }
                 else {
                     if (this.currentState.battle_kind != "Wild") {
-                        this.currentState.enemy_trainers = this.currentState.enemy_trainers || [];
-                        this.currentState.enemy_trainers[slot] = Pokemon.Convert.EnemyTrainerToRunStatus(trainer);
+                        this.currentEnemyTrainers = this.currentEnemyTrainers || [];
+                        this.currentEnemyTrainers[slot] = Pokemon.Convert.EnemyTrainerToRunStatus(trainer);
+                        this.currentState.enemy_trainers = this.currentEnemyTrainers.filter(t => !!t);
                     }
                     while (party.length < battle.partySize)
                         party.push(null);
@@ -240,23 +259,27 @@ namespace RamReader {
 
         private shadowData: XDRAMShadowData[];
 
-        public ReadShadowData = (data: Buffer) => this.shadowData = this.rom.ReadStridedData(data, 0, 0x48, this.rom.shadowData.length).map(sData => (<XDRAMShadowData><any>{
+        public ReadShadowData = (data: Buffer) => this.shadowData = this.rom.ReadStridedData(data, 0, 0x48, this.rom.shadowData.length).map(sData => (<XDRAMShadowData>{
             snagged: (sData[0] >>> 6 & 1) > 0,
             purified: (sData[0] >>> 7 & 1) > 0,
             shadowExp: sData.readUInt32BE(4),
             speciesId: sData.readUInt16BE(0x1A),
             pId: sData.readUInt16BE(0x1C),
-            purification: sData.readInt32BE(0x24),
-            data: sData.toString('hex')
-        } as XDRAMShadowData));
+            purification: sData.readInt32BE(0x24)
+        }));
 
         protected AugmentShadowMon(mon: TPP.ShadowPokemon) {
             if (mon.shadow_id && this.shadowData) {
                 const shadow = this.shadowData[mon.shadow_id];
-                mon.shadow_exp = shadow.shadowExp;
-                mon.purification = { current: shadow.purified ? -100 : shadow.purification, initial: -100 };
-                mon["Shadow Species"] = shadow.speciesId;
-                mon["Shadow Data"] = shadow["data"];
+                if (shadow) {
+                    mon.shadow_exp = shadow.shadowExp;
+                    mon.purification = { current: shadow.purified ? -100 : shadow.purification, initial: -100 };
+                    mon["Shadow Species"] = shadow.speciesId;
+                    mon["Shadow Data"] = shadow["data"];
+                }
+                else {
+                    console.error(`Unable to find shadow #${mon.shadow_id} in RAM (only ${this.shadowData.length} found)`);
+                }
             }
             return super.AugmentShadowMon(mon);
         }
