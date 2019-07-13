@@ -25,7 +25,7 @@ namespace RamReader {
         protected pcBoxes = 8;
         protected pcBoxBytes = 0x170C;
         protected bagSize = 0x328 + 0xF0;
-        protected itemPCSize = 0x940;
+        protected itemPCSize = 0x3AC;
         protected daycareOffset = 0xC790;
         protected battlePartyPokeBytes = 0xC4;
         protected enemyTrainerBytes = 0x1A;
@@ -44,24 +44,13 @@ namespace RamReader {
         protected battleTrainerBytes = 0x6EF0;
         protected battleBagAddress = this.battleAddress + this.battleTrainersOffset + 0x4 + 0x4C8;
         // protected battleStructBytes = 0x1BC28;
-        protected musicIdAddress = null;
+        protected musicIdAddress = 0x8044707A;
+        protected musicIdBytes = 2;
+        protected mapIdAddress = 0x80446f32;
 
         protected fsysStartAddress = null;
         protected fsysSlots = 16;
         protected fsysStructBytes = 0x40;
-
-        protected backupNormalParty: TPP.PartyData;
-
-        public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
-            super.Read(state, (s = this.currentState) => {
-                if (this.backupNormalParty && !s.in_battle) {
-                    //deal with getting our party back after a training battle
-                    s.party = this.backupNormalParty;
-                    this.backupNormalParty = null;
-                }
-                transmitState(s);
-            });
-        }
 
         protected purifierAddr: number;
         protected shadowAddr: number;
@@ -81,6 +70,7 @@ namespace RamReader {
                 for (let i = 1; i >= 0; i--)
                     this.Subscribe(this.battleAddress + this.battleTrainersOffset + (this.battleTrainerBytes * i), this.battleTrainerBytes, this.BattleTrainerReader(i));
             }
+            this.mapIdAddress && this.Subscribe(this.mapIdAddress, 4, this.SendMap);
         }
 
         protected ParseOrreRibbons(ribbonVal: number, ribbonCounts: number[]) {
@@ -124,7 +114,7 @@ namespace RamReader {
             //tox_turns: monData.readInt8(0x17),
             sleep_turns: monData.readInt8(0x18),
             ability: (this.rom.GetSpecies(monData.readUInt16BE(0x0)) || { abilities: [] }).abilities[(monData[0x1D] >> 1) & 1] || (this.rom.GetSpecies(monData.readUInt16BE(0x0)) || { abilities: [] }).abilities[0],
-            is_egg: (monData[0x1D] & 1) == 1,
+            //is_egg: (monData[0x1D] & 1) == 1,
             experience: {
                 current: monData.readUInt32BE(0x20)
             },
@@ -207,9 +197,12 @@ namespace RamReader {
         public ReadBattle = async (data?: Buffer) => {
             const battleId = data.readUInt16BE(2);
             this.currentBattle = this.rom.GetBattle(battleId);
-            return (<Partial<TPP.BattleStatus> & { battle_id: number; battle_type: string;}>{
+            return (<Partial<TPP.BattleStatus> & { battle_id: number; battle_type: string; }>{
                 in_battle: battleId > 0 && !!this.currentBattle,
-                battle_kind: this.currentBattle && (this.currentBattle.battleType == RomReader.XDBattleType.WildBattle ? "Wild" : "Trainer"),
+                battle_kind: this.currentBattle && ((
+                    this.currentBattle.battleType == RomReader.XDBattleType.WildBattle ||
+                    this.currentBattle.battleType == RomReader.XDBattleType.BattleBingo
+                ) ? "Wild" : "Trainer"),
                 battle_id: battleId,
                 party_is_rental: this.currentBattle.battleType == RomReader.XDBattleType.BattleTraining,
                 battle_type: this.currentBattle.battleTypeStr
@@ -227,15 +220,13 @@ namespace RamReader {
                 (party as TPP.EnemyParty).filter((p, i) => !!p && i < battle.battleStyle).forEach(p => p.active = true);
 
                 if (slot == 0) {
-                    this.currentState.party = party;
-                    this.currentState.party_is_rental = this.currentState.party_is_rental || trainerId != 5000;
-                    this.backupNormalParty = this.backupNormalParty || this.currentState.party; //save non-battle party so we get it back after the battle
+                    this.currentState.battle_party = party;
                 }
                 else {
                     if (this.currentState.battle_kind != "Wild") {
                         this.currentEnemyTrainers = this.currentEnemyTrainers || [];
                         this.currentEnemyTrainers[slot] = Pokemon.Convert.EnemyTrainerToRunStatus(trainer);
-                        this.currentState.enemy_trainers = this.currentEnemyTrainers.filter(t => !!t);
+                        this.currentState.enemy_trainers = this.currentEnemyTrainers.filter(t => !!t && t.pic_id != 10);
                     }
                     while (party.length < battle.partySize)
                         party.push(null);
@@ -252,6 +243,7 @@ namespace RamReader {
             this.currentState.battle_id = battle.battle_id;
             this.currentState.battle_kind = battle.battle_kind;
             this.currentState.in_battle = battle.in_battle;
+            this.currentState.battle_party = this.currentState.battle_party || [];
             this.currentState.enemy_party = this.currentState.enemy_party || [];
             this.currentState.enemy_trainers = this.currentState.enemy_trainers || [];
             this.transmitState();

@@ -26,8 +26,6 @@ namespace Events {
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
             const seen = new Array<string>();
-            if ((newState.in_battle || oldState.in_battle))
-                return; //ignore battle-only changes in case of temporary battle mons
             AllMons(oldState).forEach(mon => {
                 const pv = mon.personality_value;
                 const known = this.knownPokemon[pv]
@@ -92,6 +90,9 @@ namespace Events {
                 .filter((d, i, arr) => arr.indexOf(d) == i) // de-dupe
                 .sort((d1, d2) => d1 - d2);
             state.caught = state.caught_list.length;
+            state.seen_list = state.seen_list || state.caught_list;
+            state.caught_list.forEach(c => state.seen_list.indexOf(c) < 0 && state.seen_list.unshift(c));
+            state.seen = state.seen_list.length;
             AllMons(state).forEach(mon => {
                 if (mon) {
                     const known = this.knownPokemon[mon.personality_value];

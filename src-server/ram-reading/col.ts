@@ -27,6 +27,7 @@ namespace RamReader {
         protected enemyPartyAddress = 0x80473B58;
         protected baseAddrPtr = 0x8047ADB8;
         protected musicIdAddress = 0x8047B0AC;
+        protected musicIdBytes = 4;
 
         protected fsysStartAddress = 0x807602E0;
         protected fsysSlots = 16;

@@ -12,10 +12,10 @@ declare namespace TPP {
     //sent from lua
     export interface BattleStatus {
         in_battle: boolean;
+        battle_party?: TPP.PartyData;
         battle_kind?: "Wild" | "Trainer";
         enemy_trainers?: EnemyTrainer[];
         enemy_party?: EnemyParty;
-        party_is_rental?: boolean;
         battle_id?:number;
     }
 
@@ -251,6 +251,7 @@ declare namespace TPP {
         name: string;
         gender?: string;
         secret?: number;
+        trainer_string?: string;
     }
 
     export interface Move {

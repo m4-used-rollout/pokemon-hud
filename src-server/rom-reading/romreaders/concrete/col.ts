@@ -3,6 +3,10 @@
 namespace RomReader {
 
     export class Col extends GCNReader {
+        
+        protected ReadAbilities(startDol: Buffer, abilityNames?: string[]): string[] {
+            return abilityNames;
+        }
 
         protected unlabeledMaps: { [key: number]: string } = {
             19: "Orre Region"

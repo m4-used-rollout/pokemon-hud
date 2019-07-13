@@ -2,9 +2,9 @@
 
 namespace RomReader {
     const fs = require("fs") as typeof import('fs');
+    const tmExp = /^(T|S)M([0-9]+)$/i;
 
     export interface XDTrainer extends Pokemon.Trainer {
-        trainerString: string;
         partySummary: string[];
         deckId: number;
     }
@@ -81,22 +81,20 @@ namespace RomReader {
 
     export class XD extends GCNReader {
 
-        // protected unlabeledMaps: { [key: number]: string } = {
-        //     19: "Orre Region"
-        // }
+        protected unlabeledMaps: { [key: number]: string } = {
+            0x38E: "Orre Region"
+        }
 
         protected trainers: XDTrainer[] = [];
         protected battles: XDBattle[] = [];
         public shadowData: XDShadowData[];
-        protected encounters: { rock: XDEncounters, oasis: XDEncounters, cave: XDEncounters, all: XDEncounters };
+        //protected encounters: { rock: XDEncounters, oasis: XDEncounters, cave: XDEncounters, all: XDEncounters };
 
         constructor(basePath: string, ) {
             super(basePath, XDCommonRelIndexes, true);
 
             const startDol = this.StartDol;
             const commonRel = this.CommonRel;
-
-            this.abilities = this.ReadAbilities(startDol);
 
             const decks = ["DarkPokemon", "Story", "Hundred", "Imasugu", "Virtual", "Bingo", "Colosseum", "Sample"]
                 .map(d => this.LoadDeckFile(d));
@@ -109,22 +107,29 @@ namespace RomReader {
 
             this.battles = this.ReadBattles(commonRel, deckTrainers);
 
-            this.encounters = {
+            const encounters = {
                 rock: this.ReadEncounters(commonRel.GetRecordEntry(this.commonIndex.PokespotRock), commonRel.GetValueEntry(this.commonIndex.PokespotRockEntries)),
                 cave: this.ReadEncounters(commonRel.GetRecordEntry(this.commonIndex.PokespotCave), commonRel.GetValueEntry(this.commonIndex.PokespotCaveEntries)),
                 oasis: this.ReadEncounters(commonRel.GetRecordEntry(this.commonIndex.PokespotOasis), commonRel.GetValueEntry(this.commonIndex.PokespotOasisEntries)),
                 all: this.ReadEncounters(commonRel.GetRecordEntry(this.commonIndex.PokespotAll), commonRel.GetValueEntry(this.commonIndex.PokespotAllEntries))
             }
 
+            //Load pokespots
+            this.GetMap(90).encounters = encounters.rock;
+            this.GetMap(91).encounters = encounters.oasis;
+            this.GetMap(92).encounters = encounters.cave;
+            // "All" encounters are Bonsly, Munchlax and legends. Not usually obtainable, so left out.
+
         }
+
 
         public GetTrainerByBattle(id: number, slot: number, battleId: number): XDTrainer {
             const { participants } = ((this.battles.find(b => b.id == battleId) || { participants: [] as XDBattle['participants'] }));
             return (participants.find(p => p.trainerId == id) || { trainer: this.trainers.find(t => t.id == id && t.deckId == participants[slot].deckId) }).trainer;
         }
 
-        public GetBattle(id:number) {
-            return this.battles.find(b=>b.id == id);
+        public GetBattle(id: number) {
+            return this.battles.find(b => b.id == id);
         }
 
         protected LoadDeckFile(deckName: string) {
@@ -160,6 +165,24 @@ namespace RomReader {
                     partySummary
                 } as XDTrainer;
             });
+        }
+
+        protected ReadTMHMMapping(startDol: Buffer) {
+            return [0, ...this.ReadStridedData(startDol, 0x4023A0, 0x8, 58).map(data => data.readUInt16BE(6))];
+        }
+
+        protected MapTM(name: string, tmMap: number[]) {
+            const matches = tmExp.exec(name);
+            if (matches) {
+                const isSM = matches[1] == "S";
+                const tmNum = parseInt(matches[2]);
+                return `${matches[1]}M${tmNum < 10 ? "0" : ""}${tmNum} ${(this.GetMove(tmMap[tmNum + (54 * (isSM ? 1 : 0))]) || { name: tmNum }).name}`;
+            }
+            return name;
+        }
+
+        public FixAllCaps(str: string) {
+            return str;
         }
 
         protected ReadAbilities(startDol: Buffer) {
@@ -259,7 +282,7 @@ namespace RomReader {
                     shadowLevel: data[2], // the pokemon's level after it's caught. Regular level can be increased so AI shadows are stronger
                     storyId, // dpkm index of pokemon data in deck story
                     purificationStart: data.readUInt16BE(0x08), // the starting value of the heart gauge
-                    shadowMoves: this.ReadStridedData(data, 0xC, 2, 4).map(m => Object.assign({}, this.GetMove(m.readUInt16BE(0)))).filter(m=>m && m.id),
+                    shadowMoves: this.ReadStridedData(data, 0xC, 2, 4).map(m => Object.assign({}, this.GetMove(m.readUInt16BE(0)))).filter(m => m && m.id),
                     aggression: data[0x14], // determines how often it enters reverse mode
                     alwaysFlee: data[0x15], // the shadow pokemon is sent to miror b. even if you lose the battle
                     baseMon,

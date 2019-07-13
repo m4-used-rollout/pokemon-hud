@@ -54,16 +54,15 @@ namespace RomReader {
                 this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableC)).forEach(s => this.strings[s.id] = s.string); //col 0x784E0
             }
 
-            this.abilities = ["-", ...mainStringList.filter(s => s.id > 3100 && s.id < 3200).map(s => s.string)];
+            this.abilities = this.ReadAbilities(startDol, ["-", ...mainStringList.filter(s => s.id > 3100 && s.id < 3200).map(s => s.string)]);
 
             this.moveLearns = {};
             this.ballIds = [];
 
 
-            this.items = this.ReadItemData(startDol, commonRel);
-
             if (this.commonIndex.Moves)
                 this.moves = this.ReadMoveData(commonRel);
+            this.items = this.ReadItemData(startDol, commonRel);
             if (this.commonIndex.PokemonStats)
                 this.pokemon = this.ReadPokeData(commonRel);
             if (this.commonIndex.TrainerClasses)
@@ -146,10 +145,6 @@ namespace RomReader {
             return false; //no water in Orre
         }
 
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet {
-            return map.encounters ? map.encounters.all : {};
-        }
-
         public GetMap(id: number) {
             const map = super.GetMap(id);
             if (!map || !map.id)
@@ -168,30 +163,33 @@ namespace RomReader {
 
         protected abstract ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
 
+        protected abstract ReadAbilities(startDol: Buffer, abilityNames?: string[]): string[];
+
         protected ReadItemData(startDol: Buffer, commonRel: RelTable, names: StringTable = this.strings) {
             const tmMap = this.ReadTMHMMapping(startDol);
-            const tmExp = /^TM([0-9]+)$/i;
-            const mapTm = (name: string) => {
-                const matches = tmExp.exec(name);
-                if (matches) {
-                    const tmNum = parseInt(matches[1]);
-                    return `TM${tmNum < 10 ? "0" : ""}${tmNum} ${this.GetMove(tmMap[tmNum]).name}`;
-                }
-                return name;
-            }
             return (
                 this.commonIndex.Items
                     ? this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Items), 0, 0x28, commonRel.GetValueEntry(this.commonIndex.NumberOfItems))
                     : this.ReadStridedData(startDol, 0x360CE8, 0x28, 397)
             ).map((data, i) => (<Pokemon.Item>{
                 id: i,
-                name: mapTm(names[data.readUInt32BE(0x10)]),
+                name: this.MapTM(names[data.readUInt32BE(0x10)], tmMap),
                 isKeyItem: data[1] > 0
             }));
         }
 
         protected ReadTMHMMapping(startDol: Buffer) {
             return [0, ...this.ReadStridedData(startDol, 0x365018, 0x8, 58).map(data => data.readUInt32BE(4))];
+        }
+
+        protected tmExp = /^TM([0-9]+)$/i;
+        protected MapTM(name: string, tmMap: number[]) {
+            const matches = this.tmExp.exec(name);
+            if (matches) {
+                const tmNum = parseInt(matches[1]);
+                return `TM${tmNum < 10 ? "0" : ""}${tmNum} ${this.GetMove(tmMap[tmNum]).name}`;
+            }
+            return name;
         }
 
         protected ReadMoveData(commonRel: RelTable, names: StringTable = this.strings) {

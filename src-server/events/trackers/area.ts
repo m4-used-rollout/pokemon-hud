@@ -31,9 +31,14 @@ namespace Events {
                 .filter((a, _, arr) => arr.find(a2 => a2.name == a.name) == a)
                 .forEach(a => state.events.push({ group: "First Visit", name: a.name, time: new Date(a.time).toISOString() }));
 
-            //Colosseum
+            // //Colosseum
+            // state.game_stats = state.game_stats || {};
+            // state.game_stats["Motorcycle Trips"] = (this.visitedMaps.find(m => m.id == 19) || { numVisits: 0 }).numVisits;
+
+            // XD
             state.game_stats = state.game_stats || {};
-            state.game_stats["Motorcycle Trips"] = (this.visitedMaps.find(m => m.id == 19) || { numVisits: 0 }).numVisits;
+            state.game_stats["Scooter Trips"] = (this.visitedMaps.find(m => m.id == 910) || { numVisits: 0 }).numVisits;
+
             return state;
         }
 

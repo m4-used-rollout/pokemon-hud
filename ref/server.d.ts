@@ -181,6 +181,7 @@ declare namespace Pokemon {
         name: string;
         spriteId: number;
         gender?: string;
+        trainerString?: string;
     }
 }
 declare namespace Tools {
@@ -327,15 +328,17 @@ declare namespace RomReader {
         ReadString(data: Buffer, address?: number): string;
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         GetMap(id: number): Pokemon.Map;
         readonly DefaultMap: Pokemon.Map;
         protected unlabeledMaps: {
             [key: number]: string;
         };
         protected abstract ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
+        protected abstract ReadAbilities(startDol: Buffer, abilityNames?: string[]): string[];
         protected ReadItemData(startDol: Buffer, commonRel: RelTable, names?: StringTable): Pokemon.Item[];
         protected ReadTMHMMapping(startDol: Buffer): number[];
+        protected tmExp: RegExp;
+        protected MapTM(name: string, tmMap: number[]): string;
         protected ReadMoveData(commonRel: RelTable, names?: StringTable): Pokemon.Move[];
         protected ReadShadowData(commonRel: RelTable): ShadowData[];
         protected ReadTrainerData(commonRel: RelTable, names?: StringTable, classes?: Pokemon.Trainer[]): Pokemon.Trainer[];
@@ -450,7 +453,6 @@ declare namespace RomReader {
 }
 declare namespace RomReader {
     interface XDTrainer extends Pokemon.Trainer {
-        trainerString: string;
         partySummary: string[];
         deckId: number;
     }
@@ -522,20 +524,20 @@ declare namespace RomReader {
         all: XDEncounterSet;
     }
     class XD extends GCNReader {
+        protected unlabeledMaps: {
+            [key: number]: string;
+        };
         protected trainers: XDTrainer[];
         protected battles: XDBattle[];
         shadowData: XDShadowData[];
-        protected encounters: {
-            rock: XDEncounters;
-            oasis: XDEncounters;
-            cave: XDEncounters;
-            all: XDEncounters;
-        };
         constructor(basePath: string);
         GetTrainerByBattle(id: number, slot: number, battleId: number): XDTrainer;
         GetBattle(id: number): XDBattle;
         protected LoadDeckFile(deckName: string): Deck;
         protected ReadDeckTrainers(deck: Deck, deckId: number): XDTrainer[];
+        protected ReadTMHMMapping(startDol: Buffer): number[];
+        protected MapTM(name: string, tmMap: number[]): string;
+        FixAllCaps(str: string): string;
         protected ReadAbilities(startDol: Buffer): string[];
         protected ReadBattles(commonRel: RelTable, deckTrainers: Pokemon.Trainer[][]): XDBattle[];
         protected ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
@@ -696,6 +698,7 @@ declare namespace RamReader {
         protected abstract enemyPartyAddress: number;
         protected abstract baseAddrPtr: number;
         protected abstract musicIdAddress: number;
+        protected abstract musicIdBytes: number;
         protected abstract fsysStartAddress: number;
         protected abstract fsysSlots: number;
         protected abstract fsysStructBytes: number;
@@ -812,12 +815,12 @@ declare namespace RamReader {
         protected battleTrainersOffset: number;
         protected battleTrainerBytes: number;
         protected battleBagAddress: number;
-        protected musicIdAddress: any;
+        protected musicIdAddress: number;
+        protected musicIdBytes: number;
+        protected mapIdAddress: number;
         protected fsysStartAddress: any;
         protected fsysSlots: number;
         protected fsysStructBytes: number;
-        protected backupNormalParty: TPP.PartyData;
-        Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): void;
         protected purifierAddr: number;
         protected shadowAddr: number;
         protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number): void;
@@ -938,18 +941,23 @@ declare namespace Events {
         id: number;
         classId?: number;
         name: string;
+        trainerString?: string;
     };
     type DefeatedTrainerAction = {
         type: "Defeated Trainer";
         id: number;
         classId?: number;
         name: string;
+        trainerString?: string;
     };
+}
+declare namespace Events {
 }
 declare namespace Events {
 }
 declare namespace RomReader {
     class Col extends GCNReader {
+        protected ReadAbilities(startDol: Buffer, abilityNames?: string[]): string[];
         protected unlabeledMaps: {
             [key: number]: string;
         };
@@ -982,6 +990,7 @@ declare namespace RamReader {
         protected enemyPartyAddress: number;
         protected baseAddrPtr: number;
         protected musicIdAddress: number;
+        protected musicIdBytes: number;
         protected fsysStartAddress: number;
         protected fsysSlots: number;
         protected fsysStructBytes: number;

@@ -12,7 +12,9 @@ namespace Events {
         private lastBlackout: string;
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
-            if (PartyIsFainted(newState.party) && !PartyIsFainted(oldState.party))
+            // if (PartyIsFainted(newState.party) && !PartyIsFainted(oldState.party))
+            //     dispatch({ type: "Blackout" });
+            if (PartyIsFainted(newState.battle_party) && !PartyIsFainted(oldState.battle_party))
                 dispatch({ type: "Blackout" });
         }
         public Reducer(action: KnownActions & Timestamp): void {

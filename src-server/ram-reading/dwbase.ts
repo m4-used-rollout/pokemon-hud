@@ -5,33 +5,6 @@ namespace RamReader {
 
     const net = require('net') as typeof import('net');
 
-    // const partyOffset = 0xA0;
-    // const partySize = 0x750;
-    // const partyPokeBytes = 0x138;
-    // const trainerDataOffset = 0x70;
-    // const trainerDataSize = 0xAC2 + 0x14;
-    // const pokedexOffset = 0x82A8;
-    // const pokedexSize = 0x1774;
-    // const pcOffset = 0xB88;
-    // const pcSize = 0x6DEC;
-    // const bagSize = 0x300;
-    // const itemPCSize = 0x3AC;
-    // const battlePartyPokeBytes = 0x154;
-    // const enemyTrainerBytes = 0x1A;
-
-    // const battleBagAddress = 0x8046E58C;
-    // const battlePartyAddress = 0x8046E928;
-    // const enemyTrainerAddress = 0x80473038;
-    // const enemyPartyAddress = 0x80473B58;
-    // const baseAddrPtr = 0x8047ADB8;
-    // const musicIdAddress = 0x8047B0AC;
-
-    // const fsysStartAddress = 0x807602E0;
-    // const fsysSlots = 16;
-    // const fsysStructBytes = 0x40;
-
-    //const evoFsysId = 1572;
-
     export abstract class DolphinWatchBase<T extends RomReader.GCNReader> extends RamReaderBase<T> {
 
         private connection: import('net').Socket;
@@ -56,6 +29,7 @@ namespace RamReader {
         protected abstract enemyPartyAddress: number;
         protected abstract baseAddrPtr: number;
         protected abstract musicIdAddress: number;
+        protected abstract musicIdBytes: number;
         protected abstract fsysStartAddress: number;
 
         protected abstract fsysSlots: number;
@@ -313,16 +287,20 @@ namespace RamReader {
 
 
         public SendParty = (data: Buffer, monBytes = this.partyPokeBytes, inBattle = false) => this.ReadParty(data, monBytes).then(party => {
-            this.currentState.in_battle = this.currentState.in_battle || inBattle;
+            this.currentState.in_battle = false;
             if (party && party.length) {
-                if (party.every(p => p && p.original_trainer && p.original_trainer.name && p.original_trainer.name.toLowerCase() == "eagun")) {
-                    this.currentState.in_battle = false;
-                    return; //Almost certainly we're watching Eagun fight and we don't actually own this party
-                }
-                this.currentState.party = party;
+                // if (party.every(p => p && p.original_trainer && p.original_trainer.name && p.original_trainer.name.toLowerCase() == "eagun")) {
+                //     this.currentState.in_battle = false;
+                //     return; //Almost certainly we're watching Eagun fight and we don't actually own this party
+                // }
+                if (inBattle)
+                    this.currentState.battle_party = party;
+                else
+                    this.currentState.party = party;
                 // if (this.IsPartyDefeated(party)) {
                 //     this.currentState.in_battle = false;
                 // }
+                this.currentState.in_battle = inBattle && !this.IsPartyDefeated(party);
                 this.transmitState();
             }
         }).catch(err => console.error(err));
@@ -399,8 +377,8 @@ namespace RamReader {
 
         public SendMap = (data: Buffer) => {
             const mapId = data.readUInt16BE(0);
-            console.log(`on map ${mapId}`);
             const map = this.rom.GetMap(mapId) || this.rom.DefaultMap;
+            console.log(`on map ${mapId} (${map.areaId})`);
             this.currentState.map_id = map.id;
             this.currentState.map_name = map.name;
             this.transmitState();
@@ -427,7 +405,7 @@ namespace RamReader {
         };
 
         public SendMusic = (data: Buffer) => {
-            const musicId = data.readUInt32BE(0);
+            const musicId = this.musicIdBytes == 4 ? data.readUInt32BE(0) : data.readUInt16BE(0);
             if (musicId != this.currentState.music_id) {
                 this.currentState.music_id = musicId;
                 this.transmitState();

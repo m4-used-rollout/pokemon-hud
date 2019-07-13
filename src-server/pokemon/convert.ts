@@ -39,7 +39,8 @@ namespace Pokemon.Convert {
             class_name: t.className,
             name: t.name,
             gender: t.gender,
-            pic_id: t.spriteId
+            pic_id: t.spriteId,
+            trainer_string: t.trainerString
         };
     }
 

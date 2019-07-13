@@ -6,5 +6,6 @@ namespace Pokemon {
         name: string;
         spriteId: number;
         gender?: string;
+        trainerString?: string;
     }
 }

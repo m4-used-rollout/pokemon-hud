@@ -2,12 +2,12 @@
 
 namespace Events {
 
-    export type ChallengedTrainerAction = { type: "Challenged Trainer", id: number, classId?: number, name: string };
-    export type DefeatedTrainerAction = { type: "Defeated Trainer", id: number, classId?: number, name: string };
+    export type ChallengedTrainerAction = { type: "Challenged Trainer"; id: number; classId?: number; name: string; trainerString?: string };
+    export type DefeatedTrainerAction = { type: "Defeated Trainer"; id: number; classId?: number; name: string; trainerString?: string };
 
     type KnownActions = BlackoutAction | ChallengedTrainerAction | DefeatedTrainerAction;
 
-    type EncounteredTrainer = { id: number, classId?: number, name: string, endeavors: Endeavor[] };
+    type EncounteredTrainer = { id: number, classId?: number, name: string, trainerString?: string; endeavors: Endeavor[] };
     type Endeavor = { challenged: string; attempts: number; defeated?: string; }
 
     function LastTry(trainer: EncounteredTrainer) {
@@ -25,12 +25,12 @@ namespace Events {
                 && newState.battle_kind == "Trainer"
                 && newState.enemy_trainers
                 && newState.enemy_trainers.length > 0
-                && !PartyIsFainted(newState.party)
+                && !PartyIsFainted(newState.battle_party)
                 && !PartyIsFainted(newState.enemy_party)
             )
                 newState.enemy_trainers
                     .filter(t => !this.currentTrainer || t.id != this.currentTrainer.id)
-                    .forEach(t => dispatch({ type: "Challenged Trainer", id: t.id, classId: t.class_id, name: `${t.class_name || ""} ${t.name}`.trim() }));
+                    .forEach(t => dispatch({ type: "Challenged Trainer", id: t.id, classId: t.class_id, trainerString: t.trainer_string, name: `${t.class_name || ""} ${t.name}`.trim() }));
             else if (PartyIsFainted(newState.enemy_party)
                 && !PartyIsFainted(oldState.enemy_party)
             ) {
@@ -38,7 +38,7 @@ namespace Events {
                 //     newState.enemy_trainers.forEach(t => dispatch({ type: "Defeated Trainer", id: t.id, name: `${t.class_name || ""} ${t.name}`.trim() }));
                 //else
                 if (this.currentTrainer)
-                    dispatch({ type: "Defeated Trainer", id: this.currentTrainer.id, classId: this.currentTrainer.classId, name: this.currentTrainer.name });
+                    dispatch({ type: "Defeated Trainer", id: this.currentTrainer.id, classId: this.currentTrainer.classId, name: this.currentTrainer.name, trainerString: this.currentTrainer.trainerString });
             }
         }
         public Reducer(action: KnownActions & Timestamp): void {
