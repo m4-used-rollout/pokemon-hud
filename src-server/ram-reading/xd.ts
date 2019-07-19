@@ -113,7 +113,7 @@ namespace RamReader {
             status: this.Status[monData[0x16]],
             //tox_turns: monData.readInt8(0x17),
             sleep_turns: monData.readInt8(0x18),
-            ability: (this.rom.GetSpecies(monData.readUInt16BE(0x0)) || { abilities: [] }).abilities[(monData[0x1D] >> 1) & 1] || (this.rom.GetSpecies(monData.readUInt16BE(0x0)) || { abilities: [] }).abilities[0],
+            ability: (this.rom.GetSpecies(monData.readUInt16BE(0x0)) || { abilities: [] }).abilities[(monData[0x1D] >> 6) & 1] || (this.rom.GetSpecies(monData.readUInt16BE(0x0)) || { abilities: [] }).abilities[0],
             //is_egg: (monData[0x1D] & 1) == 1,
             experience: {
                 current: monData.readUInt32BE(0x20)

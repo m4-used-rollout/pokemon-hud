@@ -56,12 +56,12 @@ module TPP.Server {
         let oldCatches = new Array<number>();
         stateChangeHandlers.push(s => {
             const sameTrainer = s.id == oldTrainer.id && s.secret == oldTrainer.secret;
-            // oldCatches = (sameTrainer ? oldCatches : s.caught_list) || [];
-            // if ((state.caught_list || []).length > oldCatches.length) {
-            //     let newCatches = state.caught_list.filter(c => oldCatches.indexOf(c) < 0);
-            //     if (newCatches.length < 2) //these should only happen one at a time, really, but 2 *might* happen at once
-            //         newCatches.forEach(NewCatch);
-            // }
+            oldCatches = (sameTrainer ? oldCatches : s.caught_list) || [];
+            if ((state.caught_list || []).length > oldCatches.length) {
+                let newCatches = state.caught_list.filter(c => oldCatches.indexOf(c) < 0);
+                if (newCatches.length <= 7) //these should only happen one at a time, really, but 2 *might* happen at once
+                    newCatches.forEach(NewCatch);
+            }
             if (!sameTrainer) {
                 oldTrainer = { id: s.id, secret: s.secret, name: s.name };
                 console.log(`New trainer: ${s.name} ${s.id}-${s.secret}`);

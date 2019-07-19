@@ -44,7 +44,7 @@ namespace Events {
             state.game_stats = state.game_stats || {};
             state.game_stats['News Reports Watched'] = this.newsReportsWatched;
             state.game_stats['Seconds Spent Watching News'] = Math.ceil(this.totalNewsSeconds);
-            state.game_stats['Mt. Battle Completion Percentage'] = Math.floor(this.defeatedMtBattleTrainers.length / 10 * 100);
+            //state.game_stats['Mt. Battle Completion Percentage'] = Math.floor(this.defeatedMtBattleTrainers.length / 10 * 100);
 
             // Add Mt. Battle Sequence Number
             (state.enemy_trainers || [])

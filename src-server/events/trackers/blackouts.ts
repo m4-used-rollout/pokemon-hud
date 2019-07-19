@@ -27,7 +27,7 @@ namespace Events {
         }
         public Reporter(state: TPP.RunStatus): TPP.RunStatus {
             state.game_stats = state.game_stats || {};
-            state.game_stats["Blackouts"] = this.blackouts;
+            //state.game_stats["Blackouts"] = this.blackouts;
             return state;
         }
 

@@ -72,18 +72,17 @@ namespace RomReader {
     }
     export interface XDEncounterSet {
         [key: string]: XDEncounterMon[];
-        all: XDEncounterMon[];
     }
     export interface XDEncounters extends Pokemon.Encounters {
         all: XDEncounterSet;
     }
 
+    const unlabeledMaps: { [key: number]: string } = {
+        0x38E: "Orre Region"
+    };
+
 
     export class XD extends GCNReader {
-
-        protected unlabeledMaps: { [key: number]: string } = {
-            0x38E: "Orre Region"
-        }
 
         protected trainers: XDTrainer[] = [];
         protected battles: XDBattle[] = [];
@@ -266,7 +265,7 @@ namespace RomReader {
         protected ReadRooms(commonRel: RelTable, names: StringTable = this.strings) {
             return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Rooms), 0, 0x40, commonRel.GetValueEntry(this.commonIndex.NumberOfRooms)).map(data => (<Pokemon.Map><any>{ //0x8D540
                 id: data.readUInt16BE(0x2),
-                name: names[data.readUInt32BE(0x18)] || this.unlabeledMaps[data.readUInt16BE(0x2)],
+                name: names[data.readUInt32BE(0x18)] || unlabeledMaps[data.readUInt16BE(0x2)],
                 areaId: data.readUInt16BE(0x2e),
                 data: data.toString('hex')
             }));
@@ -325,7 +324,7 @@ namespace RomReader {
         protected ReadEncounters(data: Buffer, entries = 12) {
             return {
                 all: {
-                    all: this.ReadStridedData(data, 0, 0xC, entries).map(encounterData => (<XDEncounterMon>{
+                    grass: this.ReadStridedData(data, 0, 0xC, entries).map(encounterData => (<XDEncounterMon>{
                         minLevel: encounterData[0],
                         maxLevel: encounterData[1],
                         speciesId: data.readUInt16BE(2),

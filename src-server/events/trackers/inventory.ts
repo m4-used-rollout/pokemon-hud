@@ -106,7 +106,7 @@ namespace Events {
             const ballIds = inv.filter(i => i.pocket == "balls").map(i => i.id).filter((p, i, arr) => p && arr.indexOf(p) == i);
             // state.game_stats["Thrown Balls (total)"] = ballIds.reduce((s, b) => s + this.inventory[b].usedInBattle, 0);
             // ballIds.forEach(ballId => state.game_stats[`Thrown ${this.inventory[ballId].name}s`] = this.inventory[ballId].usedInBattle);
-            state.game_stats["Total Money Paid to Trainers"] = this.moneyLost;
+            //state.game_stats["Total Money Paid to Trainers"] = this.moneyLost;
             return state;
         }
 

@@ -54,7 +54,7 @@ namespace Events {
                             }
                         }
                     }
-                    this.currentTrainer = this.encounteredTrainers.filter(t => t.id == action.id).pop();
+                    this.currentTrainer = this.encounteredTrainers.filter(t => t.id == action.id && t.classId == action.classId).pop();
                     if (!this.currentTrainer)
                         this.encounteredTrainers.push(this.currentTrainer = { id: action.id, classId: action.classId, name: action.name, endeavors: [] });
                     let lastTry = LastTry(this.currentTrainer);
@@ -65,7 +65,7 @@ namespace Events {
                 case "Defeated Trainer":
                     if (this.trainerDebounce) return;
                     if (!this.currentTrainer || this.currentTrainer.id != action.id)
-                        this.currentTrainer = this.encounteredTrainers.filter(t => t.id == action.id).pop() || this.currentTrainer;
+                        this.currentTrainer = this.encounteredTrainers.filter(t => t.id == action.id && t.classId == action.classId).pop() || this.currentTrainer;
                     if (this.currentTrainer) {
                         let lastTry = LastTry(this.currentTrainer);
                         if (!lastTry)
@@ -83,34 +83,20 @@ namespace Events {
         public Reporter(state: TPP.RunStatus): TPP.RunStatus {
             const defeated = this.encounteredTrainers.filter(t => t.endeavors.some(e => !!e.defeated));
             state.game_stats = state.game_stats || {};
-            state.game_stats["Trainer Battles Won"] = defeated.reduce((sum, t) => t.endeavors.filter(e => !!e.defeated).length + sum, 0);
+            //state.game_stats["Trainer Battles Won"] = defeated.reduce((sum, t) => t.endeavors.filter(e => !!e.defeated).length + sum, 0);
 
-
-            const goalTrainerIds = new Array<number>();
-            const goalTrainerClasses = new Array<number>();
+            const goalTrainers = new Array<{ id: Number, classId: number }>();
 
             function isGoalTrainer(id: number, classId: number) {
-                if (!goalTrainerIds.length)
-                    return true;
-                if (!goalTrainerClasses.length)
-                    return goalTrainerIds.indexOf(id) >= 0;
-                return goalTrainerIds.indexOf(id) >= 0 && goalTrainerIds.indexOf(id) == goalTrainerClasses.indexOf(classId);
+                return goalTrainers.some(t => t.id == id && (!t.classId || t.classId == classId));
             }
 
             const trainerGoals = (this.config.goals || []).find(g => g.goalType == "Trainers") as TrainerHitListConfig;
             if (trainerGoals) {
-                goalTrainerIds.push(
-                    ...(trainerGoals.requiredTrainerIds || []),
-                    ...(trainerGoals.finalTrainerIds || []),
-                    ...(trainerGoals.optionalTrainerIds || []),
-                    ...(trainerGoals.extraTrackedTrainerIds || [])
-                );
-                goalTrainerClasses.push(
-                    ...(trainerGoals.requiredTrainerClasses || []),
-                    ...(trainerGoals.finalTrainerClasses || []),
-                    ...(trainerGoals.optionalTrainerClasses || []),
-                    ...(trainerGoals.extraTrackedTrainerClasses || [])
-                );
+                (trainerGoals.requiredTrainerIds || []).forEach((t, i) => goalTrainers.push({ id: t, classId: (trainerGoals.requiredTrainerClasses || [])[i] }));
+                (trainerGoals.finalTrainerIds || []).forEach((t, i) => goalTrainers.push({ id: t, classId: (trainerGoals.finalTrainerClasses || [])[i] }));
+                (trainerGoals.optionalTrainerIds || []).forEach((t, i) => goalTrainers.push({ id: t, classId: (trainerGoals.optionalTrainerClasses || [])[i] }));
+                (trainerGoals.extraTrackedTrainerIds || []).forEach((t, i) => goalTrainers.push({ id: t, classId: (trainerGoals.extraTrackedTrainerClasses || [])[i] }));
             }
 
             this.encounteredTrainers

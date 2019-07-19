@@ -518,15 +518,11 @@ declare namespace RomReader {
     }
     interface XDEncounterSet {
         [key: string]: XDEncounterMon[];
-        all: XDEncounterMon[];
     }
     interface XDEncounters extends Pokemon.Encounters {
         all: XDEncounterSet;
     }
     class XD extends GCNReader {
-        protected unlabeledMaps: {
-            [key: number]: string;
-        };
         protected trainers: XDTrainer[];
         protected battles: XDBattle[];
         shadowData: XDShadowData[];
@@ -933,6 +929,15 @@ declare namespace Events {
 declare namespace Events {
 }
 declare namespace Events {
+    type CaughtPokemonAction = {
+        type: "Caught Pokemon";
+        pv: number;
+        dexNum: number;
+        species: string;
+        name: string;
+        isShadow?: boolean;
+        caughtIn?: string;
+    };
     const AllMons: (state: TPP.RunStatus) => TPP.Pokemon[];
 }
 declare namespace Events {

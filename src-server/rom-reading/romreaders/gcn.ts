@@ -44,8 +44,7 @@ namespace RomReader {
             }
 
             const startDol = this.StartDol;
-            if (!this.isXd)
-                this.ReadStringTable(startDol, 0x2CC810).forEach(s => this.strings[s.id] = s.string);
+            this.ReadStringTable(startDol, this.isXd ? 0x374FC0 : 0x2CC810).forEach(s => this.strings[s.id] = s.string);
             const commonRel = this.CommonRel;
             const mainStringList = this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.USStringTable).slice(this.isXd ? 0x68 : 0)); //col 0x59890
             mainStringList.forEach(s => this.strings[s.id] = s.string);

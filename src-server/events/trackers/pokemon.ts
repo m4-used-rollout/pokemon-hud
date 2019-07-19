@@ -2,7 +2,7 @@
 
 namespace Events {
 
-    type CaughtPokemonAction = { type: "Caught Pokemon", pv: number, dexNum: number, species: string, name: string, isShadow?: boolean; caughtIn?: string; };
+    export type CaughtPokemonAction = { type: "Caught Pokemon", pv: number, dexNum: number, species: string, name: string, isShadow?: boolean; caughtIn?: string; };
     type EvolvedPokemonAction = { type: "Evolved Pokemon", pv: number, dexNum: number, species: string, name: string };
     type RenamedPokemonAction = { type: "Renamed Pokemon", pv: number, dexNum: number, species: string, newName: string, oldName: string };
     type MissingPokemonAction = { type: "Missing Pokemon", pv: number, dexNum: number, species: string, name: string };
@@ -36,11 +36,13 @@ namespace Events {
                 const caughtIn = (mon.met || {} as typeof mon.met).caught_in;
                 seen.push(pv.toString());
                 if (!known) {
-                    this.PotentialNewCatch(dexNum); //trigger it here so it doesn't trigger on replays
+                    // this.PotentialNewCatch(dexNum, oldState); //trigger it here so it doesn't trigger on replays
                     return dispatch({ type: "Caught Pokemon", pv, dexNum, species, name, isShadow, caughtIn });
                 }
-                else if (known.dexNums.indexOf(dexNum) < 0)
+                else if (known.dexNums.indexOf(dexNum) < 0) {
+                    // this.PotentialNewCatch(dexNum, oldState); //trigger it here so it doesn't trigger on replays
                     dispatch({ type: "Evolved Pokemon", pv, dexNum, species, name });
+                }
                 else if (known.name != name)
                     dispatch({ type: "Renamed Pokemon", pv, dexNum, species, newName: name, oldName: known.name });
                 if (known.status == "Missing")
@@ -115,11 +117,9 @@ namespace Events {
             return state;
         }
 
-        private caught = new Array<number>();
-        private PotentialNewCatch(dexNum: number) {
-            if (this.caught.indexOf(dexNum) < 0)
+        private PotentialNewCatch(dexNum: number, state: TPP.RunStatus) {
+            if (state.caught_list.indexOf(dexNum) < 0)
                 TPP.Server.NewCatch(dexNum);
-            this.caught.push(dexNum);
         }
 
     }

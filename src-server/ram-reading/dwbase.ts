@@ -253,8 +253,9 @@ namespace RamReader {
                 mon.purification.initial = shadowData.purificationStart;
                 mon.species.catch_rate = shadowData.catchRate;
 
-                const shadowMoves = (shadowData.shadowMoves || [this.rom.GetMove(0x164)])
+                const shadowMoves = (shadowData.shadowMoves || [this.rom.GetMove(0x164)]) //Fall back to Shadow Rush (Col)
                     .map(m => Object.assign(Pokemon.Convert.MoveToRunStatus(m), { is_shadow: true }) as TPP.ShadowMove);
+                const shadowMoveCount = shadowMoves.length;
                 for (let i = -1; shadowMoves.length < 4; i--) {
                     shadowMoves.push((<TPP.ShadowMove>{
                         id: i,
@@ -263,16 +264,18 @@ namespace RamReader {
                     }));
                 }
 
+                const shadowMoveSlot = (slot:number)=> (shadowMoveCount -1 + slot - 1) % 3 + 1;
+
                 mon.moves[0] = shadowMoves[0];
                 const purificationPercentage = Math.max(0, mon.purification.current) / mon.purification.initial * 100;
-                if (purificationPercentage >= 80 && mon.moves[1])
-                    mon.moves[1] = shadowMoves[1];
+                if (purificationPercentage >= 80 && mon.moves[shadowMoveSlot(1)] || shadowMoves[shadowMoveSlot(1)].id > 0)
+                    mon.moves[shadowMoveSlot(1)] = shadowMoves[shadowMoveSlot(1)];
                 if (purificationPercentage >= 60)
                     mon.nature = "????";
-                if (purificationPercentage >= 40 && mon.moves[2])
-                    mon.moves[2] = shadowMoves[2];
-                if (purificationPercentage >= 20 && mon.moves[3])
-                    mon.moves[3] = shadowMoves[3];
+                if (purificationPercentage >= 40 && mon.moves[shadowMoveSlot(2)] || shadowMoves[shadowMoveSlot(2)].id > 0)
+                    mon.moves[shadowMoveSlot(2)] = shadowMoves[shadowMoveSlot(2)];
+                if (purificationPercentage >= 20 && mon.moves[shadowMoveSlot(3)] || shadowMoves[shadowMoveSlot(3)].id > 0)
+                    mon.moves[shadowMoveSlot(3)] = shadowMoves[shadowMoveSlot(3)];
             }
             return mon;
         }
@@ -408,6 +411,8 @@ namespace RamReader {
             const musicId = this.musicIdBytes == 4 ? data.readUInt32BE(0) : data.readUInt16BE(0);
             if (musicId != this.currentState.music_id) {
                 this.currentState.music_id = musicId;
+                if (this.musicIdBytes == 2 && musicId == 8) //music fades out in XD
+                    this.currentState.in_battle = false;
                 this.transmitState();
             }
         }
