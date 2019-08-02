@@ -80,7 +80,7 @@ namespace RamReader {
             if (this.connection)
                 this.Stop();
             this.connection = net.connect(this.port, this.hostname);
-            this.connection.on('data', data => data.toString('ascii').split('\n').filter(d => !!d).forEach(d => this.ResponseHandler(d)));
+            this.connection.on('data', data => this.DataHandler(data));
             this.connection.on("error", err => setTimeout(() => this.Init(), 1000));
             this.connection.on('connect', () => {
                 this.Subscribe(this.baseAddrPtr, 4, data => {
@@ -134,6 +134,18 @@ namespace RamReader {
         }
 
         private Handlers: { [address: number]: (data: Buffer) => void } = {};
+
+        private currentData = "";
+        private DataHandler(chunk: Buffer) {
+            this.currentData += chunk.toString('ascii');
+            const unfinishedChunk = this.currentData.lastIndexOf("\n") != this.currentData.length - 1;
+            const commands = this.currentData.split('\n');
+            if (unfinishedChunk)
+                this.currentData = commands.pop();
+            else
+                this.currentData = "";
+            commands.filter(d => !!d).forEach(d => this.ResponseHandler(d));
+        }
 
         private ResponseHandler(raw: string) {
             const parts = raw.split(' ');
@@ -264,7 +276,7 @@ namespace RamReader {
                     }));
                 }
 
-                const shadowMoveSlot = (slot:number)=> (shadowMoveCount -1 + slot - 1) % 3 + 1;
+                const shadowMoveSlot = (slot: number) => (shadowMoveCount - 1 + slot - 1) % 3 + 1;
 
                 mon.moves[0] = shadowMoves[0];
                 const purificationPercentage = Math.max(0, mon.purification.current) / mon.purification.initial * 100;

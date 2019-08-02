@@ -727,6 +727,8 @@ declare namespace RamReader {
         Subscribe(address: number, length: number, handler: (data: Buffer) => void): void;
         Unsubscribe(address: number): void;
         private Handlers;
+        private currentData;
+        private DataHandler;
         private ResponseHandler;
         protected ParsePokemon: (monData: Buffer) => TPP.ShadowPokemon;
         protected AugmentShadowMon(mon: TPP.ShadowPokemon): TPP.ShadowPokemon;
