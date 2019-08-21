@@ -6,7 +6,7 @@ namespace TPP.Server.DexNav {
 
     let state: State = null;
 
-    let ownedCount = 0, seenCount = 0, hour = 0, in_battle = false, enemyParty = "";
+    let ownedCount = 0, seenCount = 0, hour = 0, in_battle = false, enemyParty = "", party = "";
 
     ipcMain.on('register-dexnav', e => {
         let renderer = e.sender;
@@ -28,6 +28,7 @@ namespace TPP.Server.DexNav {
             || hour != getHour(runState) //Changed time of day
             || runState.in_battle != in_battle //Got into/out of a battle
             || enemyParty != JSON.stringify(runState.enemy_party) //enemy trainer update
+            || party != JSON.stringify(runState.party) //our party update
         ) {
             let map = RomData.GetMap(runState.map_id, runState.map_bank);
             state = new State(map, RomData.GetCurrentMapEncounters(map, runState), RomData.GetAllMapEncounters(map), runState);
@@ -36,7 +37,8 @@ namespace TPP.Server.DexNav {
             seenCount = runState.seen;
             hour = getHour(runState);
             in_battle = runState.in_battle;
-            enemyParty = JSON.stringify(runState.enemy_party)
+            enemyParty = JSON.stringify(runState.enemy_party);
+            party = JSON.stringify(runState.party);
             transmitState();
         }
     });

@@ -137,7 +137,8 @@ namespace RomReader {
         }
 
         private ReadItemData(romData: Buffer, config: PGEINI) {
-            return this.ReadStridedData(romData, parseInt(config.ItemData, 16), 44, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
+            // +16 for TriHard Emerald
+            return this.ReadStridedData(romData, parseInt(config.ItemData, 16), 44 + 16, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
                 name: this.FixAllCaps(this.ConvertText(data)),
                 id: i,
                 // price: data.readInt16LE(16),
@@ -145,14 +146,14 @@ namespace RomReader {
                 // parameter: data[19],
                 // description: this.ConvertText(romData.slice(this.readRomPtr(data, 20), this.readRomPtr(data, 20) + 255)),
                 // mystery: data.readInt16LE(24),
-                isKeyItem: data.readInt16LE(24) > 0,
+                isKeyItem: data.readInt16LE(24 + 16) > 0,
                 // pocket: data[26],
                 // type: data[27],
                 // fieldUsePtr: data.readInt32LE(28),
                 // battleUsage: data.readInt32LE(32),
                 // battleUsagePtr: data.readInt32LE(36),
                 // extraParameter: data.readInt32LE(40),
-                isPokeball: data.readInt32LE(32) == 2 && data.readInt32LE(40) == data[27]
+                isPokeball: data.readInt32LE(32 + 16) == 2 && data.readInt32LE(40) == data[27]
             }));
         }
 

@@ -65,6 +65,7 @@ namespace TPP.Server.DexNav {
         public WildBattle: WildPokemon[] = null;
         public EnemyTrainers: TPP.EnemyTrainer[] = null;
         public EnemyParty: TPP.EnemyParty = null;
+        public FriendlyParty: TPP.PartyData = null;
         public IsUnknownArea = false;
         public GoalTrainers: GoalTrainer[] = null;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {
@@ -85,6 +86,7 @@ namespace TPP.Server.DexNav {
             this.IsUnknownArea = RomData.IsUnknownTrainerMap(map.id, map.bank);
             this.PopulateKnownEncounters(encounters, runState);
             this.PopulateCompletionTotals(allMapEncounters, runState);
+            this.FriendlyParty = runState.party;
             if (runState.in_battle) {
                 this.BattleKind = runState.battle_kind;
                 if (runState.battle_kind == "Wild") {

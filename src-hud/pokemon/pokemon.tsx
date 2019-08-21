@@ -51,7 +51,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                 </div> :
                 <div className="pokemon-info">
                     <div className="top-line">
-                        <FitToWidth className="name">{mon.name}</FitToWidth>
+                        <div className="name">{mon.name}</div>
                         <div className="types">
                             <TypeImg type={mon.species.type1} />
                             {mon.species.type2 != mon.species.type1 ?
@@ -64,7 +64,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                         </div>
                     </div>
                     <FitToWidth className="extra-info">
-                        {mon.held_item && <HeldItem id={mon.held_item.id} name={mon.held_item.name} />}
+                        {/* {mon.held_item && <HeldItem id={mon.held_item.id} name={mon.held_item.name} />} */}
                         {mon.ability && <div className="ability"> {mon.ability} </div>}
                         {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
                         {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
@@ -84,7 +84,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                         <div className="hp" data-current={mon.health[0]} data-max={(mon.health[1].toString().length < 3 ? new Array(3 - mon.health[1].toString().length).fill(' ').join('') : "") + mon.health[1]} />
                     </div>
                 </div>}
-            {/* <HeldItem id={mon.held_item ? mon.held_item.id : 0} name={mon.held_item ? mon.held_item.name : ""} /> */}
+            <HeldItem id={mon.held_item ? mon.held_item.id : 0} name={mon.held_item ? mon.held_item.name : ""} />
         </li>
     }
 }

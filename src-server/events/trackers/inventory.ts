@@ -41,6 +41,7 @@ namespace Events {
 
         private justBlackedOut = false;
         private inventory: { [key: number]: InventoryItem } = {};
+        private keyItems: { [key: string]: string } = {};
         private moneyGained = 0;
         private moneySpent = 0;
         private moneyLost = 0;
@@ -90,6 +91,9 @@ namespace Events {
                         this.inventory[id].bought += quantity;
                     else
                         this.inventory[id].free += quantity;
+                    if (action.id >= 259) { //Gen 3 Mach Bike
+                        this.keyItems[action.name] = this.keyItems[action.name] || action.timestamp;
+                    }
                 case "Used/Sold/Tossed Item":
                     this.inventory[id] = this.inventory[id] || newInv;
                     if (cost)
@@ -104,9 +108,15 @@ namespace Events {
             state.game_stats = state.game_stats || {};
             const inv = Object.keys(this.inventory).map(k => this.inventory[k]) as InventoryItem[];
             const ballIds = inv.filter(i => i.pocket == "balls").map(i => i.id).filter((p, i, arr) => p && arr.indexOf(p) == i);
-            // state.game_stats["Thrown Balls (total)"] = ballIds.reduce((s, b) => s + this.inventory[b].usedInBattle, 0);
-            // ballIds.forEach(ballId => state.game_stats[`Thrown ${this.inventory[ballId].name}s`] = this.inventory[ballId].usedInBattle);
+            state.game_stats["Thrown Balls (total)"] = ballIds.reduce((s, b) => s + this.inventory[b].usedInBattle, 0);
+            ballIds.forEach(ballId => state.game_stats[`Thrown ${this.inventory[ballId].name}s`] = this.inventory[ballId].usedInBattle);
             //state.game_stats["Total Money Paid to Trainers"] = this.moneyLost;
+
+            Object.keys(this.keyItems).forEach(k => state.events.push({
+                group: "Key Items",
+                name: k,
+                time: this.keyItems[k]
+            }))
             return state;
         }
 

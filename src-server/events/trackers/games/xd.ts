@@ -84,5 +84,5 @@ namespace Events {
         }
 
     }
-    RegisterTracker(XDTracker);
+    //RegisterTracker(XDTracker);
 }

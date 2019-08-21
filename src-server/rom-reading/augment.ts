@@ -97,7 +97,7 @@ namespace RomReader {
                     m.accuracy = m.accuracy || romMove.accuracy;
                     m.base_power = m.base_power || romMove.basePower;
                     m.type = m.type || romMove.type || "???";
-                    if (false && m.name && m.name.toLowerCase() == "hidden power") { //HACK: SHUT OFF FOR XG TURN THIS BACK ON
+                    if (m.name && m.name.toLowerCase() == "hidden power") {
                         m.type = romData.CalculateHiddenPowerType(p.ivs);
                         m.base_power = romData.CalculateHiddenPowerPower(p.ivs);
                     }

@@ -35,9 +35,9 @@ namespace Events {
             // state.game_stats = state.game_stats || {};
             // state.game_stats["Motorcycle Trips"] = (this.visitedMaps.find(m => m.id == 19) || { numVisits: 0 }).numVisits;
 
-            // XD
-            state.game_stats = state.game_stats || {};
-            state.game_stats["Scooter Trips"] = (this.visitedMaps.find(m => m.id == 910) || { numVisits: 0 }).numVisits;
+            // // XD
+            // state.game_stats = state.game_stats || {};
+            // state.game_stats["Scooter Trips"] = (this.visitedMaps.find(m => m.id == 910) || { numVisits: 0 }).numVisits;
 
             return state;
         }

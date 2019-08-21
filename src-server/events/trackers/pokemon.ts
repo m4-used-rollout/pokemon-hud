@@ -1,4 +1,6 @@
 /// <reference path="../events.ts" />
+/// <reference path="../../pokemon/convert.ts" />
+
 
 namespace Events {
 
@@ -15,7 +17,7 @@ namespace Events {
     export const AllMons = (state: TPP.RunStatus) => [
         ...(state.party || []),
         ...(state.daycare || []),
-        ...((state.pc || { boxes: [] as TPP.BoxData[] }).boxes || []).reduce((all, box) => [...all, ...(box.box_contents || [])], [] as TPP.Pokemon[])
+        ...((state.pc || { boxes: [] as TPP.BoxData[] }).boxes || []).filter(b => b.box_number > 0).reduce((all, box) => [...all, ...(box.box_contents || [])], [] as TPP.Pokemon[])
     ].filter(p => !!p);
 
     const DexNum = (mon: TPP.Pokemon) => ((mon || { species: null as typeof mon.species }).species || { national_dex: null as number }).national_dex;
@@ -55,7 +57,7 @@ namespace Events {
                     .forEach(p => p.status == "Fine" && dispatch({ type: "Missing Pokemon", pv: p.pv, dexNum: p.dexNums.map(d => d).pop(), species: p.species.map(s => s).pop(), name: p.name }));
         }
         public Reducer(action: KnownActions & Timestamp): void {
-            if (!action.pv)
+            if (!action.pv || action.species == "??????????")
                 return;
             const { pv, dexNum, species, isShadow, caughtIn } = (action as CaughtPokemonAction);
             const name = (action as RenamedPokemonAction).oldName || (action as CaughtPokemonAction).name;
@@ -87,14 +89,14 @@ namespace Events {
         }
         public Reporter(state: TPP.RunStatus): TPP.RunStatus {
             const knowns = Object.keys(this.knownPokemon).map(k => this.knownPokemon[k] as KnownPokemon)
-            state.caught_list = knowns
-                .reduce((dex, mon) => [...dex, ...mon.dexNums], new Array<number>())
-                .filter((d, i, arr) => arr.indexOf(d) == i) // de-dupe
-                .sort((d1, d2) => d1 - d2);
-            state.caught = state.caught_list.length;
-            state.seen_list = state.seen_list || state.caught_list;
-            state.caught_list.forEach(c => state.seen_list.indexOf(c) < 0 && state.seen_list.unshift(c));
-            state.seen = state.seen_list.length;
+            // state.caught_list = knowns
+            //     .reduce((dex, mon) => [...dex, ...mon.dexNums], new Array<number>())
+            //     .filter((d, i, arr) => arr.indexOf(d) == i) // de-dupe
+            //     .sort((d1, d2) => d1 - d2);
+            // state.caught = state.caught_list.length;
+            // state.seen_list = state.seen_list || state.caught_list;
+            // state.caught_list.forEach(c => state.seen_list.indexOf(c) < 0 && state.seen_list.unshift(c));
+            // state.seen = state.seen_list.length;
             AllMons(state).forEach(mon => {
                 if (mon) {
                     const known = this.knownPokemon[mon.personality_value];
@@ -112,8 +114,23 @@ namespace Events {
                 .forEach(c => state.events.push({ group: "Pokemon", name: c.species, time: new Date(c.time).toISOString() }));
             state.game_stats = state.game_stats || {};
             state.game_stats["Pokémon Caught"] = knowns.length;
+            delete state.game_stats["Pokémon Caught While Fishing"];
             knowns.map(k => k.caughtIn).filter((c, i, arr) => c && arr.indexOf(c) == i)
                 .forEach(ball => state.game_stats[`Pokémon Caught in a ${ball}`] = knowns.filter(k => k.caughtIn == ball).length);
+
+            if (state.pc && state.pc.boxes) {
+                const missingBox = state.pc.boxes.find(b => b.box_number === 0) || { box_contents: [], box_name: "The Never-Were", box_number: 0 };
+                if (state.pc.boxes.indexOf(missingBox) < 0)
+                    state.pc.boxes.unshift(missingBox);
+                missingBox.box_contents = [];
+                missingBox.box_contents = knowns.filter(k => k.status == "Missing" && !state.pc.boxes.some(b => b.box_contents.some(p => p.personality_value == k.pv))).map(m => ({
+                    personality_value: m.pv,
+                    name: m.name,
+                    moves: [],
+                    species: { national_dex: m.dexNums.filter(d => d).pop(), name: m.species.filter(s => s).pop() },
+                } as any as TPP.BoxedPokemon));
+            }
+
             return state;
         }
 

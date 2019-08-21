@@ -210,7 +210,7 @@
                 display: inline-block
             }
         }
-        &.nothing-to-show, &.no-encounters {
+        &.nothing-to-show, &.no-encounters, &.error {
             background-color:@screen-off-color!important;
 
             &:before {
@@ -231,6 +231,20 @@
 
             &.nothing-to-show:before {
                 content:'{';
+            }
+
+            &.error {
+                .gbfade();
+                background-color:@screen-error-color!important;
+                &:before {
+                    content: attr(data-message);
+                    font-size: 2.2em;
+                    left: 0;
+                    right: 0;
+                    white-space: normal;
+                    text-align: center;
+                    transform: translateY(-50%);
+                }
             }
         }
 
@@ -427,7 +441,7 @@
                     width: auto;
 
                     //for Col/XD
-                    transform: rotateY(180deg);
+                    //transform: rotateY(180deg);
 
                     //image-rendering: auto;
                 }

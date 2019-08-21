@@ -54,9 +54,9 @@ namespace RamReader {
             current_box_number: data.readUInt32LE(0),
             boxes: this.rom.ReadStridedData(data.slice(4, 0x8344), 0, 30 * 80, 14).map((box, i) => ({
                 box_number: i + 1,
-                box_name: this.rom.ConvertText(data.slice(0x8344 + (i * 9), 0x8344 + ((i + 1) * 9))),
+                box_name: ["The Fallen", "The Forgiven", "The Innocent", "The Lost", "The Remembered", "The Loved", "The Mourned", "The Troubled", "The Faithful", "The Forlorn"][i] || this.rom.ConvertText(data.slice(0x8344 + (i * 9), 0x8344 + ((i + 1) * 9))), //TriHard Names
                 box_contents: this.rom.ReadStridedData(box, 0, 80, 30).map((pkmdata, b) => this.ParsePokemon(pkmdata, b + 1)).filter(p => !!p)
-            } as TPP.BoxData))
+            } as TPP.BoxData)).filter(b => b.box_contents.length > 0) // TriHard Filter
         } as TPP.CombinedPCData)));
 
         public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.InBattleAddr}/1/${this.rom.config.gBattleTypeFlags}/4/${this.rom.config.gTrainerBattleOpponent_A}/4/${this.rom.config.gEnemyParty}/${this.rom.config.PartyBytes}/${this.rom.config.gBattleMons}/${this.rom.config.gBattleMonsBytes}/${this.rom.config.gBattlersCount}/${((parseInt(this.rom.config.gBattlerPositions, 16) - parseInt(this.rom.config.gBattlersCount, 16)) + 4).toString(16)}`, this.WrapBytes<TPP.BattleStatus>(data => {
@@ -139,7 +139,7 @@ namespace RamReader {
                     money: data.readUInt32LE(0) ^ key,
                     coins: data.readUInt16LE(4) ^ halfKey,
                     items: {
-                        pc: this.ParseItemCollection(data.slice(8), PCCount), //no key
+                        //pc: this.ParseItemCollection(data.slice(8), PCCount), //no key //no PC (TriHard)
                         items: this.ParseItemCollection(data.slice((2 + PCCount) * 4), ItemCount, halfKey),
                         key: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount) * 4), KeyCount, halfKey),
                         balls: ballPocket,
@@ -150,34 +150,44 @@ namespace RamReader {
                 } as TPP.TrainerData
             })),
             //Badges Ruby/Sapphire
-            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
+            !this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
                 return {
                     badges: (data.readUInt16LE(0) >>> (parseInt(this.rom.config.BadgeFlag, 16) % 8)) % 0x100
                 } as TPP.Goals
             })),
-            //Flags/Vars/Stats Emerald
-            // this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/${(parseInt(this.rom.config.GameStatsOffset || "0", 16) - parseInt(this.rom.config.FlagsOffset, 16) + parseInt(this.rom.config.GameStatsBytes || "0", 16)).toString(16)}/*${this.rom.config.SaveBlock2Pointer}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
-            //     const GameStatsOffset = parseInt(this.rom.config.GameStatsOffset || "0", 16);
-            //     const FlagsOffset = parseInt(this.rom.config.FlagsOffset, 16);
-            //     const GameStatsBytes = parseInt(this.rom.config.GameStatsBytes || "0", 16);
-            //     const FlagsBytes = parseInt(this.rom.config.FlagsBytes, 16);
-            //     const VarsOffset = parseInt(this.rom.config.VarsOffset || "0", 16);
-            //     const VarsBytes = parseInt(this.rom.config.VarsBytes || "0", 16);
-            //     const key = data.readUInt32LE(FlagsOffset + FlagsBytes + VarsBytes + GameStatsBytes);
-            //     const flags = data.slice(0, FlagsBytes);
-            //     const vars = this.rom.ReadStridedData(data.slice(VarsOffset - FlagsOffset), 0, 2, 256).map(v => v.readUInt16LE(0));
-            //     const stats = this.rom.ReadStridedData(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => s.readUInt32LE(0) ^ key);
-            //     return {
-            //         badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
-            //         trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
-            //         game_stats: GameStatsBytes > 0 ? this.ParseGameStats(stats) : null
-            //     } as TPP.Goals
-            // }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step
+            ///Flags/Vars/Stats Emerald
+            this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/${(parseInt(this.rom.config.GameStatsOffset || "0", 16) - parseInt(this.rom.config.FlagsOffset, 16) + parseInt(this.rom.config.GameStatsBytes || "0", 16)).toString(16)}/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
+                const GameStatsOffset = parseInt(this.rom.config.GameStatsOffset || "0", 16);
+                const FlagsOffset = parseInt(this.rom.config.FlagsOffset, 16);
+                const GameStatsBytes = parseInt(this.rom.config.GameStatsBytes || "0", 16);
+                const FlagsBytes = parseInt(this.rom.config.FlagsBytes, 16);
+                const VarsOffset = parseInt(this.rom.config.VarsOffset || "0", 16);
+                const VarsBytes = parseInt(this.rom.config.VarsBytes || "0", 16);
+                const key = data.readUInt32LE((GameStatsOffset - FlagsOffset) + GameStatsBytes);
+                const flags = data.slice(0, FlagsBytes);
+                const vars = this.rom.ReadStridedData(data.slice(VarsOffset - FlagsOffset), 0, 2, 256).map(v => v.readUInt16LE(0));
+                const stats = this.rom.ReadStridedData(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => (s.readUInt32LE(0) ^ key) >>> 0);
+                return {
+                    badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
+                    trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
+                    game_stats: GameStatsBytes > 0 ? this.ParseGameStats(stats) : null
+                } as TPP.Goals
+            }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step
             //Clock
-            this.rom.config.IwramClockAddr && this.CachedEmulatorCaller<TPP.TrainerData>(`IWRAM/ReadU16BE/${this.rom.config.IwramClockAddr}+2`, this.WrapBytes(data => ({
+            this.rom.config.IwramClockAddr && this.CachedEmulatorCaller<TPP.TrainerData>(`${parseInt(this.rom.config.IwramClockAddr, 16) < 0x8000 ? 'IWRAM/' : ""}ReadByteRange/${this.rom.config.IwramClockAddr}/6`, this.WrapBytes(data => ({
+                // struct Time
+                // {
+                //     /*0x00*/ s16 days;
+                //     /*0x02*/ s8 hours;
+                //     /*0x03*/ s8 minutes;
+                //     /*0x04*/ s8 seconds;
+                //     /*0x05*/ s8 dayOfWeek;
+                // };
                 time: {
-                    h: data.readUInt8(0),
-                    m: data.readUInt8(1)
+                    h: data.readUInt8(2),
+                    m: data.readUInt8(3),
+                    // s: data.readUInt8(4),
+                    d: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][data.readUInt8(5) % 7]
                 }
             } as TPP.TrainerData))),
             //Rival Name
@@ -185,7 +195,7 @@ namespace RamReader {
                 rival_name: this.rom.ConvertText(data)
             } as TPP.TrainerData))),
             //Evolution
-            this.rom.config.IwramMusicAddr && this.rom.config.EvolutionMusicIds && this.CachedEmulatorCaller<TPP.TrainerData>(`IWRAM/ReadU16BE/${this.rom.config.IwramMusicAddr}`, this.WrapBytes(data => ({
+            this.rom.config.IwramMusicAddr && this.rom.config.EvolutionMusicIds && this.CachedEmulatorCaller<TPP.TrainerData>(`${parseInt(this.rom.config.IwramMusicAddr, 16) < 0x8000 ? 'IWRAM/' : ""}/ReadU16BE/${this.rom.config.IwramMusicAddr}`, this.WrapBytes(data => ({
                 evolution_is_happening: this.rom.config.EvolutionMusicIds.split(' ').map(i => parseInt(i, 16)).indexOf(data.readUInt16LE(0)) >= 0 && this.currentState.map_name.indexOf("Safari") < 0
             } as TPP.TrainerData))),
             //Daycare
@@ -198,7 +208,7 @@ namespace RamReader {
         ].filter(t => !!t) as Array<() => Promise<TPP.TrainerData>>;
 
         protected TotalItemSlots() {
-            return parseInt(this.rom.config.ItemPCCount) + parseInt(this.rom.config.ItemPocketCount) + parseInt(this.rom.config.ItemKeyCount) + parseInt(this.rom.config.ItemBallCount) + parseInt(this.rom.config.ItemTMCount) + parseInt(this.rom.config.ItemBerriesCount);
+            return parseInt(this.rom.config.ItemPCCount, 16) + parseInt(this.rom.config.ItemPocketCount, 16) + parseInt(this.rom.config.ItemKeyCount, 16) + parseInt(this.rom.config.ItemBallCount, 16) + parseInt(this.rom.config.ItemTMCount, 16) + parseInt(this.rom.config.ItemBerriesCount, 16);
         }
 
         protected ParseItemCollection(itemData: Buffer, length = itemData.length / 4, key = 0) {
@@ -434,19 +444,21 @@ namespace RamReader {
             }
         }
 
-        private GameStatsMapping = ["games_saved", "first_hof_play_time", "started_trends", "planted_berries", "traded_bikes",
-            "steps", "got_interviewed", "total_battles", "wild_battles", "trainer_battles", "hof_entries",
-            "pokemon_captures", "fishing_captures", "eggs_hatched", "pokemon_evolved", "pokecenter_used", "rested_at_home",
-            "entered_safari_zone", "trees_cut", "rocks_smashed", "secret_bases_moved", "pokemon_trades",
-            null, "link_battles_won", "link_battles_lost", "link_battles_tied", "splash_used", "struggle_used",
-            "slots_jackpots", "consecutive_roulette_wins", "entered_battle_tower", null, "best_battle_tower_streak",
-            "pokeblocks_made", "pokeblocks_made_with_friends", "link_contests_won", "contests_entered", "contests_won",
-            "shopping_trips", "itemfinder_uses", "got_rained_on", "checked_pokedex", "ribbons_earned", "ledges_jumped",
-            "tvs_watched", "clocks_checked", "lottery_wins", "daycare_uses", "cable_car_rides", "hot_spring_baths_taken", null, null];
+        private GameStatsMapping = ["Saves Made", "Play Time at First HoF", "Trends Started", "Berries Planted", "Bikes Traded",
+            "Steps Taken", "Interviews", "Battles Fought (Total)", "Battles Fought (Wild)", "Battles Fought (Trainer)", "Hall of Fame Entries",
+            "Pokémon Caught", "Pokémon Caught While Fishing", "Eggs Hatched", "Pokémon Evolved", "Pokémon Center Uses", "Naps Taken at Home",
+            "Safari Zone Trips", "Trees Cut", "Rocks Smashed", "Secret Bases Moved", "Pokémon Traded",
+            /*null*/ "Blackouts", "Link Battles Won", "Link Battles Lost", "Link Battles Tied", "Splash Uses", "Struggle Uses",
+            "Hit the Jackpot", "Consecutive Roulette Wins", "Battle Tower Attempts", null, "Best Battle Tower Streak",
+            "Pokéblocks Made", "Pokéblocks Made With Friends", "Link Contests Won", "Contests Entered", "Contests Won",
+            "Shopping Trips", "Itemfinder Uses", "Rainstorms Soaked By", "Pokédex Views", "Ribbons Earned", "Ledges Jumped",
+            "TVs Watched", "Clocks Checked", "Lottery Wins", "Daycare Uses", "Cable Car Rides", "Hot Spring Baths", "Union Room Battles", "Berries Crushed"//];
+
+            , "People Harassed", "Pokémon Lost", "Enemy Pokémon Defeated", "Things Stolen", "Elite Four Attempts"]; //TriHard Emerald
 
         protected ParseGameStats(statArr: number[]) {
             const stats: { [key: string]: number } = {};
-            statArr.forEach((stat, i) => this.GameStatsMapping[i] && (stats[this.GameStatsMapping[i]] = stat));
+            statArr.forEach((stat, i) => stat && this.GameStatsMapping[i] && (stats[this.GameStatsMapping[i]] = stat));
             return stats;
         }
 

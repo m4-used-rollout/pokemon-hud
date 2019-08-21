@@ -123,7 +123,7 @@ namespace RamReader {
             };
 
             mons.forEach((m, i) => {
-                if (monInEnemyParty[i] && !this.HasBeenSeenThisBattle(m))
+                if (m && monInEnemyParty[i] && !this.HasBeenSeenThisBattle(m))
                     this.CurrentBattleSeenPokemon.push(m.personality_value);
             });
         }
