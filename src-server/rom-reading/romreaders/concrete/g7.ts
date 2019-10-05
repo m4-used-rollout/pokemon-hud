@@ -27,5 +27,9 @@ namespace RomReader {
             seen.filter(s => s > 807).map(s => Object.keys(formSeenMap).filter(k => formSeenMap[parseInt(k)].some(e => e == s)).map(parseInt).pop() || s).forEach(s => seen.indexOf(s) < 0 && seen.push(s));
             return seen.filter(s => s <= 807);
         }
+
+        CalculateShiny(pkmn: TPP.Pokemon) {
+            pkmn.shiny = (((pkmn.personality_value >>> 16) ^ (pkmn.personality_value & 0xFFFF)) >>> 4) == (pkmn.original_trainer.id ^ pkmn.original_trainer.secret) >> 4;
+        }
     }
 }

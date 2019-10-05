@@ -38,6 +38,11 @@ namespace RamReader {
         private stringDataCache: { [key: string]: string } = {};
         protected currentState: TPP.RunStatus;
 
+        protected partyPollingIntervalMs = 320;
+        protected pcPollingIntervalMs = 1510;
+        protected trainerPollingIntervalMs = 350;
+        protected battlePollingIntervalMs = 330;
+
         public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
             this.currentState = state;
             if (this.partyInterval || this.pcInterval || this.trainerInterval)
@@ -52,7 +57,7 @@ namespace RamReader {
                     state.party = party.map((p, i) => p && Object.assign({}, p, this.GetBattleMon(i, false, p.personality_value, p.name, true) || {}));
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), 320);
+            }).catch(err => console.error(err)), this.partyPollingIntervalMs);
             this.pcInterval = setInterval(() => this.ReadPC().then(pc => {
                 if (pc) {
                     state.pc = state.pc || pc;
@@ -61,13 +66,13 @@ namespace RamReader {
                     (pc.boxes || []).forEach(b => state.pc.boxes[b.box_number - 1] = b);
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), 1510);
+            }).catch(err => console.error(err)), this.pcPollingIntervalMs);
             this.trainerInterval = setInterval(() => this.ReadTrainer().then(trainer => {
                 if (Object.keys(trainer).length) {
                     Object.assign(state, trainer);
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), 350);
+            }).catch(err => console.error(err)), this.trainerPollingIntervalMs);
             this.battleInterval = setInterval(() => this.ReadBattle().then(battle => {
                 if (battle) {
                     delete state.enemy_party;
@@ -86,7 +91,7 @@ namespace RamReader {
                     }
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), 330);
+            }).catch(err => console.error(err)), this.battlePollingIntervalMs);
         }
 
         public Stop() {
@@ -261,6 +266,21 @@ namespace RamReader {
 
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer {
             return data;
+        }
+
+        protected Multiply32(x: number, y: number) {
+            const xLWord = x % 0x10000;
+            const xUWord = Math.floor(x / 0x10000);
+            const yLWord = y % 0x10000;
+            const yUWord = Math.floor(y / 0x10000);
+            const resultLWord = xLWord * yLWord;
+            const resultUWord = (xLWord * yUWord + xUWord * yLWord) % 0x10000;
+            const result = resultLWord + resultUWord * 0x10000;
+            return result % 0x100000000;
+        }
+
+        protected PokeRNG(seed: number) {
+            return (this.Multiply32(0x41C64E6D, seed) + 0x6073) % 0x100000000;
         }
 
         public CalcChecksum(data: Buffer) {

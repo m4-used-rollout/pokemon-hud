@@ -47,7 +47,11 @@ namespace RomReader {
 
         ConvertText(text: string | Buffer | number[]): string {
             if (text instanceof Buffer) {
-                return text.toString("ucs2");
+                const decoded = text.toString("ucs2");
+                const terminatorLocation = decoded.indexOf('\u0000');
+                if (terminatorLocation > 0)
+                    return decoded.slice(0, terminatorLocation);
+                return decoded;
             }
             else if (Array.isArray(text)) {
                 return this.ConvertText(Buffer.from(text));
@@ -236,11 +240,18 @@ namespace RomReader {
             });//.sort((e1, e2) => ((e1.requiredItem || { id: 0 }).id - (e2.requiredItem || { id: 0 }).id) || (e2.rate - e1.rate));
         }
 
-        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false, endValue = 0xFF) {
+        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endFunc?: (data: Buffer) => boolean): Buffer[];
+        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endValue?: number): Buffer[];
+        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false, endValue?: (((data: Buffer) => boolean) | number)): Buffer[] {
             let choppedData = new Array<Buffer>();
+            const endFunc = typeof endValue === "undefined"
+                ? ((chunk: Buffer) => chunk[0] == 0xFF)
+                : typeof endValue === "number"
+                    ? ((chunk: Buffer) => chunk[0] == endValue)
+                    : endValue;
             for (let i = 0; (i < length || length <= 0) && (startOffset + (strideBytes * (i + 1))) <= romData.length; i++) {
                 let chunk = romData.slice(startOffset + (strideBytes * i), startOffset + (strideBytes * (i + 1)));
-                if ((length <= 0 || lengthIsMax) && chunk[0] == endValue) {
+                if ((length <= 0 || lengthIsMax) && endFunc(chunk)) {
                     return choppedData;
                 }
                 choppedData.push(chunk);

@@ -1,9 +1,9 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
 /// <reference path="events/events.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g3.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g7.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
-/// <reference path="ram-reading/g3.ts" />
+/// <reference path="ram-reading/g7.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/electron/electron.d.ts" />
 
@@ -159,10 +159,12 @@ module TPP.Server {
             path = RomReader.RomReaderBase.FindLocalFile(romFile);
             console.log(`Reading ROM at ${path}`);
         }
-        let rom = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
+        let rom = new RomReader.Gen7();
+        //let rom = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
         //let rom = new RomReader.XD(romFile);
         RomData = rom;
-        RamData = new RamReader.Gen3(rom, 5337, undefined, config);
+        RamData = new RamReader.Gen7(rom, 5340, "localhost", config);
+        //RamData = new RamReader.Gen3(rom, 5337, undefined, config);
     } catch (e) {
         console.log(`Could not read ROM.`);
         console.error(e);

@@ -72,6 +72,7 @@ declare namespace TPP {
         area_name?: string;
         x?: number;
         y?: number;
+        z?: number;
         evolution_is_happening?: boolean;
         music_id?: number;
     }
@@ -169,7 +170,7 @@ declare namespace TPP {
         met: {
             map_id?: number;
             area_id?: number;
-            area_name: string;
+            area_name?: string;
             area_id_egg?: number;
             area_name_egg?: string;
             level: number;
