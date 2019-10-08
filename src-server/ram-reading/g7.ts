@@ -10,10 +10,11 @@ namespace RamReader {
 
     const partyLocation = "33F7F9B8"; //USUM
     const pcLocation = "33015408"; //USUM
-    const battleLocation = "33000000"; //USUM
+    const battleLocation = "30000000"; //USUM
     const saveBlock1Location = "33011934"; //USUM
     const saveBlock2Location = "33F6D748"; //USUM
     const daycareLocation = "3307B010"; //USUM
+    const battleTrainerLocation = "30034B60"; //USUM
 
 
     interface Gen7Pokemon extends TPP.Pokemon {
@@ -28,25 +29,37 @@ namespace RamReader {
         enjoyment: number;
     }
 
+    interface Gen7BattleMon {
+        baseMonPtr: number;
+        level: number;
+        health: [number, number];
+        heldItem: TPP.Item | null;
+        ability: string;
+        experience: { current: number };
+        status: string | null;
+        moves: TPP.Move[];
+        active: boolean;
+    }
+
+    function Spy<T>(object: T, serialize: (obj: T) => string = obj => JSON.stringify(obj)) {
+        console.log(serialize(object));
+        return object;
+    }
+
     export class Gen7 extends RamReaderBase<RomReader.Gen7> {
         public ReadParty = this.CachedEmulatorCaller(`ReadByteRange/${partyLocation}/BA4`, this.WrapBytes(data => this.ParseParty(data)));
         public ReadPC = this.CachedEmulatorCaller(`ReadByteRange/${pcLocation}/36CA8`, this.WrapBytes(data => this.ParsePC(data)));
-        public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${battleLocation}/4000`, this.WrapBytes(data => this.ParseBattle(data)));
+        public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${battleLocation}/10000`, this.WrapBytes(data => this.ParseBattle(data)));
         protected TrainerChunkReaders = [
             this.CachedEmulatorCaller(`ReadByteRange/${saveBlock1Location}/4000`, this.WrapBytes(data => this.ParseSaveBlock1(data))),
             this.CachedEmulatorCaller(`ReadByteRange/${saveBlock2Location}/10`, this.WrapBytes(data => this.ParseSaveBlock2(data))),
-            //this.CachedEmulatorCaller(`ReadByteRange/${daycareLocation}/200`, this.WrapBytes(data => this.ParseDaycare(data))),
+            this.CachedEmulatorCaller(`ReadByteRange/${daycareLocation}/200`, this.WrapBytes(data => this.ParseDaycare(data))),
         ];
 
-        protected partyPollingIntervalMs = 320;
-        protected pcPollingIntervalMs = 1510;
-        protected trainerPollingIntervalMs = 550;
-        protected battlePollingIntervalMs = 530;
-
-        //     Battle_style = 0x50, bit 3, set = "Set", reset = "Switch"
-        //     Battle_scene = 0x50, bit 2, set = "Off", reset = "On"
-        //     Text_speed = 0x50 bits 0 & 1, 0 = "Slow", 1 = "Med", 2 or 3 = "Fast"
-        //     Box_mode = 0x51 bit 7, set = "Automatic", reset = "Manual"
+        protected partyPollingIntervalMs = 720;
+        protected pcPollingIntervalMs = 2010;
+        protected trainerPollingIntervalMs = 650;
+        protected battlePollingIntervalMs = 930;
 
         protected OptionsSpec = {
             text_speed: {
@@ -71,9 +84,78 @@ namespace RamReader {
                 0x8000: "Automatic"
             }
         }
-        protected ParseBattle(data: Buffer): TPP.BattleStatus {
-            const in_battle = false;
-            return { in_battle };
+
+        private battleMonCache: { [key: number]: TPP.PartyPokemon } | null = null;
+        private battleTrainerCache: TPP.EnemyTrainer[] | null = null;
+
+        protected async ParseBattle(data: Buffer): Promise<TPP.BattleStatus> {
+            const in_battle = data.slice(0x2738, 0x2738 + 0x10).toString('hex').toUpperCase() == "4455000020030000FC260030682A0030";
+            if (in_battle) {
+                if (!this.battleTrainerCache) {
+                    const trainersAndClasses = await this.CallEmulator(`ReadByteRange/${battleTrainerLocation}/8000`, this.WrapBytes(data =>
+                        this.ReadLinkedList(data, parseInt(battleTrainerLocation, 16))
+                            .filter(node => node.readUInt32LE(4) == 0x3C || node.readUInt32LE(4) == 0x4C)
+                            .map(node => this.rom.ConvertText(node.slice(0x30)))));
+                    this.battleTrainerCache = [];
+                    for (let i = 1; i < trainersAndClasses.length; i += 2) {
+                        this.battleTrainerCache.push({
+                            id: -1,
+                            class_id: -1,
+                            name: trainersAndClasses[i],
+                            class_name: trainersAndClasses[i + 1]
+                        } as TPP.EnemyTrainer);
+                    }
+                }
+                const isDouble = this.battleTrainerCache.length == 2; //two enemy trainers
+                const baseAddr = parseInt(battleLocation, 16);
+                const battleParties = this.rom.ReadStridedData(data, 0x404, 0x1C, 4).filter(p => p.readUInt32LE(0x18) > 0)
+                    .map((party, pCount) => this.rom.ReadStridedData(party, 0, 0x4, party.readUInt32LE(0x18))
+                        .map(p => p.readUInt32LE(0) - baseAddr).map(addr => data.slice(addr, addr + 0x330))
+                        .map((btlMon, i) => (<Gen7BattleMon>{
+                            baseMonPtr: btlMon.readUInt32LE(0x0),
+                            level: btlMon[0x18],
+                            health: [btlMon.readUInt16LE(0x10), btlMon.readUInt16LE(0xE)],
+                            heldItem: Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(btlMon.readUInt16LE(0x12))),
+                            ability: this.rom.GetAbility(btlMon[0x16]),
+                            experience: { current: btlMon.readUInt32LE(0x8) },
+                            status: ["PAR", "SLP", "FRZ", "BRN", "PSN"].filter((_, i) => (btlMon.readUInt32LE((0x28) + 8 * i) & 0x3) > 0).shift(),
+                            moves: this.rom.ReadStridedData(btlMon, 0x1FC, 0xE, 4)
+                                .map(mData => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(mData.readUInt16LE(0x6)), mData[0x8], undefined, mData[0x9])).filter(m => m && m.id > 0),
+                            active: i == 0 || (isDouble && i == 1 && pCount == 0)
+                        })));
+                if (!this.battleMonCache) {
+                    const ptrs = battleParties.reduce((ptrArr, party) => ptrArr.concat(...party.map(m => m.baseMonPtr)), new Array<number>()).sort((p1, p2) => p1 - p2);
+                    const lowestPtr = ptrs.shift();
+                    const highestPtr = ptrs.pop();
+                    const battleBlob = await this.CallEmulator(`ReadByteRange/${lowestPtr.toString(16)}/${((highestPtr - lowestPtr) + 0x1B4).toString(16)}`, this.WrapBytes(data => data));
+                    this.battleMonCache = {};
+                    [lowestPtr, ...ptrs, highestPtr].forEach(p => this.battleMonCache[p] = this.ParsePartyMon(battleBlob.slice((p - lowestPtr) + 0x40, (p - lowestPtr) + 0x1E4)));
+                }
+                const parties = battleParties.map(bp => bp.map(battleMon => (<TPP.PartyPokemon>{
+                    ...this.battleMonCache[battleMon.baseMonPtr],
+                    ...battleMon
+                })).filter(mon => !!mon.personality_value));
+                this.battleTrainerCache.forEach((t, i) => {
+                    if (t.id < 0) {
+                        const romTrainer = this.rom.TrainerSearch(t.name, t.class_name, parties[i + 1].length, parties[i + 1].map(p => p && p.species && p.species.id).filter(p => !!p), parties[i + 1].map(p => p && p.level).filter(p => !!p))
+                        if (romTrainer) {
+                            t.id = romTrainer.id;
+                            t.class_id = romTrainer.classId;
+                        }
+                    }
+                });
+
+                return {
+                    in_battle,
+                    battle_kind: this.battleTrainerCache.length > 0 ? "Trainer" : "Wild",
+                    battle_party: parties.shift(),
+                    enemy_party: parties.reduce((arr, party) => arr.concat(party), []),
+                    enemy_trainers: this.battleTrainerCache
+                }
+            }
+            this.battleTrainerCache = null;
+            this.battleMonCache = null;
+            return { in_battle, battle_party: null, enemy_party: null, enemy_trainers: null };
         }
 
         protected ParseSaveBlock1(data: Buffer): Partial<TPP.TrainerData> {
@@ -88,21 +170,20 @@ namespace RamReader {
             const seenListFemale = this.GetSetFlags(pokedexData.slice(0x88 + 0x68 + DEX_SEEN_FLAG_BYTES, 0x88 + 0x68 + DEX_SEEN_FLAG_BYTES * 2));
             const seenListShinyMale = this.GetSetFlags(pokedexData.slice(0x88 + 0x68 + DEX_SEEN_FLAG_BYTES * 2, 0x88 + 0x68 + DEX_SEEN_FLAG_BYTES * 3));
             const seenListShinyFemale = this.GetSetFlags(pokedexData.slice(0x88 + 0x68 + DEX_SEEN_FLAG_BYTES * 3, 0x88 + 0x68 + DEX_SEEN_FLAG_BYTES * 4));
-            const seen_list = [...seenListMale, ...seenListFemale, ...seenListShinyMale, ...seenListShinyFemale]
-                .filter((mon, i, arr) => arr.indexOf(mon) == i).sort((mon1, mon2) => mon2 - mon1).filter(mon => mon <= NUM_POKEMON);
+            const seen_list = this.rom.CollapseSeenForms([...seenListMale, ...seenListFemale, ...seenListShinyMale, ...seenListShinyFemale].sort((mon1, mon2) => mon2 - mon1));
 
             const rawOptions = optionsData.readUInt16LE(0x50);
             const options = this.ParseOptions(rawOptions);
             if (this.ShouldForceOptions(options)) {
-                this.CallEmulator(`WriteU16LE/${parseInt(saveBlock2Location, 16) + 0x3AD8 + 0x50}/${this.SetOptions(rawOptions, this.config.forceOptions).toString(16)}`);
+                this.CallEmulator(`WriteU16LE/${parseInt(saveBlock1Location, 16) + 0x3AD8 + 0x50}/${this.SetOptions(rawOptions, this.config.forceOptions).toString(16)}`);
             }
 
             // Ultra space control mode = 0x1FD1, bit 2, set = circle pad, reset = gyro
-            const ultraSpaceControlMode = data[0x1FD1];
-            if (!(ultraSpaceControlMode & 0x4)) {
-                this.CallEmulator(`WriteByte/${parseInt(saveBlock2Location, 16) + 0x1FD1}/${(ultraSpaceControlMode | 0x4).toString(16)}`);
-                console.log("Set Ultra Space control method to Circle Pad");
-            }
+            // const ultraSpaceControlMode = data[0x1FD1];
+            // if (!(ultraSpaceControlMode & 0x4)) {
+            //     this.CallEmulator(`WriteByte/${parseInt(saveBlock1Location, 16) + 0x1FD1}/${(ultraSpaceControlMode | 0x4).toString(16)}`);
+            //     console.log("Set Ultra Space control method to Circle Pad");
+            // }
 
             return {
                 id: trainerData.readUInt16LE(0),
@@ -158,31 +239,25 @@ namespace RamReader {
             }
         }
 
-        // protected ParseDaycare(data: Buffer): Partial<TPP.TrainerData> {
-
-        // }
+        protected ParseDaycare(data: Buffer): Partial<TPP.TrainerData> {
+            return {};
+        }
 
         protected ParsePC(data: Buffer): TPP.CombinedPCData {
-            // wCurrentBoxNum
-            // const currentBox = data[0] + 15; //pbr
-            // // Active Box
-            // // sBox1-12
-            // const pc = this.rom.ReadStridedData(data.slice(1), 0, this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
-            // const active = pc.shift();
-            // pc[currentBox - 15] = active; //pbr
+            const boxNames = this.rom.ReadStridedData(data, 0xBC, 0x22, 32).map(b => this.rom.ConvertText(b));
+
             return {
-                // current_box_number: currentBox,
-                // boxes: pc.map((box, i) => (<TPP.BoxData>{
-                //     box_contents: box,
-                //     box_name: ``,
-                //     box_number: i
-                // }))
+                current_box_number: data.readUInt32LE(0x69F),
+                boxes: this.rom.ReadStridedData(data, 0x6A8, 0x1B30, 32).map((boxData, i) => (<TPP.BoxData>{
+                    box_contents: this.ParsePCBox(boxData),
+                    box_name: boxNames[i],
+                    box_number: i + 1
+                }))
             } as TPP.CombinedPCData;
         }
 
         protected ParsePCBox(data: Buffer) {
-            const box = [];
-            return box;
+            return this.rom.ReadStridedData(data, 0, 0xE8, 30).map((p, i) => this.ParsePokemon(p, i + 1)).filter(p => !!p);
         }
 
         protected ParseParty(data: Buffer) {
@@ -212,16 +287,16 @@ namespace RamReader {
             return pkmn;
         }
 
-        protected ParsePokemon(pkmdata: Buffer) {
-            const pkmn = {} as Gen7Pokemon;
+        protected ParsePokemon(pkmdata: Buffer, box_slot?: number) {
+            const pkmn = { box_slot } as TPP.BoxedPokemon as Gen7Pokemon;
             pkmn.encryption_constant = pkmdata.readUInt32LE(0);
+            if (!pkmn.encryption_constant) return null;
             pkmn.sanity = pkmdata.readUInt16LE(4);
             pkmn.scramble_value = (pkmn.encryption_constant >> 0xD & 0x1F);
             pkmn.sanity = pkmdata.readUInt16LE(0x4);
             pkmn.checksum = pkmdata.readUInt16LE(0x6);
             const sections = this.Descramble(this.Decrypt(pkmdata.slice(0x8, 0xE8), pkmn.encryption_constant, pkmn.checksum), pkmn.scramble_value);
-            if (!sections)
-                return null;
+            if (!sections) return null;
             const decrypted = Buffer.from([...pkmdata.slice(0, 0x8), ...sections.A, ...sections.B, ...sections.C, ...sections.D]);
 
             //Block A
@@ -259,7 +334,8 @@ namespace RamReader {
             };
             pkmn.pelago_event_status = decrypted[0x2A];
             pkmn.pokerus = this.ParsePokerus(decrypted[0x2B]);
-            //Super Training and Ribbons
+            pkmn.ribbons = this.ParseAlolanRibbons(pkmdata.slice(0x30, 0x38));
+            //Super Training 
             {
                 // private byte ST1 { get => Data[0x2C]; set => Data[0x2C] = value; }
                 // public bool Unused0 { get => (ST1 & (1 << 0)) == 1 << 0; set => ST1 = (byte)(ST1 & ~(1 << 0) | (value ? 1 << 0 : 0)); }
@@ -297,70 +373,6 @@ namespace RamReader {
                 // public bool SuperTrain7_2 { get => (ST4 & (1 << 5)) == 1 << 5; set => ST4 = (byte)(ST4 & ~(1 << 5) | (value ? 1 << 5 : 0)); }
                 // public bool SuperTrain7_3 { get => (ST4 & (1 << 6)) == 1 << 6; set => ST4 = (byte)(ST4 & ~(1 << 6) | (value ? 1 << 6 : 0)); }
                 // public bool SuperTrain8_1 { get => (ST4 & (1 << 7)) == 1 << 7; set => ST4 = (byte)(ST4 & ~(1 << 7) | (value ? 1 << 7 : 0)); }
-                // private byte RIB0 { get => Data[0x30]; set => Data[0x30] = value; } // Ribbons are read as uints, but let's keep them per byte.
-                // private byte RIB1 { get => Data[0x31]; set => Data[0x31] = value; }
-                // private byte RIB2 { get => Data[0x32]; set => Data[0x32] = value; }
-                // private byte RIB3 { get => Data[0x33]; set => Data[0x33] = value; }
-                // private byte RIB4 { get => Data[0x34]; set => Data[0x34] = value; }
-                // private byte RIB5 { get => Data[0x35]; set => Data[0x35] = value; }
-                // private byte RIB6 { get => Data[0x36]; set => Data[0x36] = value; } // Unused
-                // private byte RIB7 { get => Data[0x37]; set => Data[0x37] = value; } // Unused
-                // public bool RibbonChampionKalos         { get => (RIB0 & (1 << 0)) == 1 << 0; set => RIB0 = (byte)(RIB0 & ~(1 << 0) | (value ? 1 << 0 : 0)); }
-                // public bool RibbonChampionG3Hoenn       { get => (RIB0 & (1 << 1)) == 1 << 1; set => RIB0 = (byte)(RIB0 & ~(1 << 1) | (value ? 1 << 1 : 0)); }
-                // public bool RibbonChampionSinnoh        { get => (RIB0 & (1 << 2)) == 1 << 2; set => RIB0 = (byte)(RIB0 & ~(1 << 2) | (value ? 1 << 2 : 0)); }
-                // public bool RibbonBestFriends           { get => (RIB0 & (1 << 3)) == 1 << 3; set => RIB0 = (byte)(RIB0 & ~(1 << 3) | (value ? 1 << 3 : 0)); }
-                // public bool RibbonTraining              { get => (RIB0 & (1 << 4)) == 1 << 4; set => RIB0 = (byte)(RIB0 & ~(1 << 4) | (value ? 1 << 4 : 0)); }
-                // public bool RibbonBattlerSkillful       { get => (RIB0 & (1 << 5)) == 1 << 5; set => RIB0 = (byte)(RIB0 & ~(1 << 5) | (value ? 1 << 5 : 0)); }
-                // public bool RibbonBattlerExpert         { get => (RIB0 & (1 << 6)) == 1 << 6; set => RIB0 = (byte)(RIB0 & ~(1 << 6) | (value ? 1 << 6 : 0)); }
-                // public bool RibbonEffort                { get => (RIB0 & (1 << 7)) == 1 << 7; set => RIB0 = (byte)(RIB0 & ~(1 << 7) | (value ? 1 << 7 : 0)); }
-                // public bool RibbonAlert                 { get => (RIB1 & (1 << 0)) == 1 << 0; set => RIB1 = (byte)(RIB1 & ~(1 << 0) | (value ? 1 << 0 : 0)); }
-                // public bool RibbonShock                 { get => (RIB1 & (1 << 1)) == 1 << 1; set => RIB1 = (byte)(RIB1 & ~(1 << 1) | (value ? 1 << 1 : 0)); }
-                // public bool RibbonDowncast              { get => (RIB1 & (1 << 2)) == 1 << 2; set => RIB1 = (byte)(RIB1 & ~(1 << 2) | (value ? 1 << 2 : 0)); }
-                // public bool RibbonCareless              { get => (RIB1 & (1 << 3)) == 1 << 3; set => RIB1 = (byte)(RIB1 & ~(1 << 3) | (value ? 1 << 3 : 0)); }
-                // public bool RibbonRelax                 { get => (RIB1 & (1 << 4)) == 1 << 4; set => RIB1 = (byte)(RIB1 & ~(1 << 4) | (value ? 1 << 4 : 0)); }
-                // public bool RibbonSnooze                { get => (RIB1 & (1 << 5)) == 1 << 5; set => RIB1 = (byte)(RIB1 & ~(1 << 5) | (value ? 1 << 5 : 0)); }
-                // public bool RibbonSmile                 { get => (RIB1 & (1 << 6)) == 1 << 6; set => RIB1 = (byte)(RIB1 & ~(1 << 6) | (value ? 1 << 6 : 0)); }
-                // public bool RibbonGorgeous              { get => (RIB1 & (1 << 7)) == 1 << 7; set => RIB1 = (byte)(RIB1 & ~(1 << 7) | (value ? 1 << 7 : 0)); }
-                // public bool RibbonRoyal                 { get => (RIB2 & (1 << 0)) == 1 << 0; set => RIB2 = (byte)(RIB2 & ~(1 << 0) | (value ? 1 << 0 : 0)); }
-                // public bool RibbonGorgeousRoyal         { get => (RIB2 & (1 << 1)) == 1 << 1; set => RIB2 = (byte)(RIB2 & ~(1 << 1) | (value ? 1 << 1 : 0)); }
-                // public bool RibbonArtist                { get => (RIB2 & (1 << 2)) == 1 << 2; set => RIB2 = (byte)(RIB2 & ~(1 << 2) | (value ? 1 << 2 : 0)); }
-                // public bool RibbonFootprint             { get => (RIB2 & (1 << 3)) == 1 << 3; set => RIB2 = (byte)(RIB2 & ~(1 << 3) | (value ? 1 << 3 : 0)); }
-                // public bool RibbonRecord                { get => (RIB2 & (1 << 4)) == 1 << 4; set => RIB2 = (byte)(RIB2 & ~(1 << 4) | (value ? 1 << 4 : 0)); }
-                // public bool RibbonLegend                { get => (RIB2 & (1 << 5)) == 1 << 5; set => RIB2 = (byte)(RIB2 & ~(1 << 5) | (value ? 1 << 5 : 0)); }
-                // public bool RibbonCountry               { get => (RIB2 & (1 << 6)) == 1 << 6; set => RIB2 = (byte)(RIB2 & ~(1 << 6) | (value ? 1 << 6 : 0)); }
-                // public bool RibbonNational              { get => (RIB2 & (1 << 7)) == 1 << 7; set => RIB2 = (byte)(RIB2 & ~(1 << 7) | (value ? 1 << 7 : 0)); }
-                // public bool RibbonEarth                 { get => (RIB3 & (1 << 0)) == 1 << 0; set => RIB3 = (byte)(RIB3 & ~(1 << 0) | (value ? 1 << 0 : 0)); }
-                // public bool RibbonWorld                 { get => (RIB3 & (1 << 1)) == 1 << 1; set => RIB3 = (byte)(RIB3 & ~(1 << 1) | (value ? 1 << 1 : 0)); }
-                // public bool RibbonClassic               { get => (RIB3 & (1 << 2)) == 1 << 2; set => RIB3 = (byte)(RIB3 & ~(1 << 2) | (value ? 1 << 2 : 0)); }
-                // public bool RibbonPremier               { get => (RIB3 & (1 << 3)) == 1 << 3; set => RIB3 = (byte)(RIB3 & ~(1 << 3) | (value ? 1 << 3 : 0)); }
-                // public bool RibbonEvent                 { get => (RIB3 & (1 << 4)) == 1 << 4; set => RIB3 = (byte)(RIB3 & ~(1 << 4) | (value ? 1 << 4 : 0)); }
-                // public bool RibbonBirthday              { get => (RIB3 & (1 << 5)) == 1 << 5; set => RIB3 = (byte)(RIB3 & ~(1 << 5) | (value ? 1 << 5 : 0)); }
-                // public bool RibbonSpecial               { get => (RIB3 & (1 << 6)) == 1 << 6; set => RIB3 = (byte)(RIB3 & ~(1 << 6) | (value ? 1 << 6 : 0)); }
-                // public bool RibbonSouvenir              { get => (RIB3 & (1 << 7)) == 1 << 7; set => RIB3 = (byte)(RIB3 & ~(1 << 7) | (value ? 1 << 7 : 0)); }
-                // public bool RibbonWishing               { get => (RIB4 & (1 << 0)) == 1 << 0; set => RIB4 = (byte)(RIB4 & ~(1 << 0) | (value ? 1 << 0 : 0)); }
-                // public bool RibbonChampionBattle        { get => (RIB4 & (1 << 1)) == 1 << 1; set => RIB4 = (byte)(RIB4 & ~(1 << 1) | (value ? 1 << 1 : 0)); }
-                // public bool RibbonChampionRegional      { get => (RIB4 & (1 << 2)) == 1 << 2; set => RIB4 = (byte)(RIB4 & ~(1 << 2) | (value ? 1 << 2 : 0)); }
-                // public bool RibbonChampionNational      { get => (RIB4 & (1 << 3)) == 1 << 3; set => RIB4 = (byte)(RIB4 & ~(1 << 3) | (value ? 1 << 3 : 0)); }
-                // public bool RibbonChampionWorld         { get => (RIB4 & (1 << 4)) == 1 << 4; set => RIB4 = (byte)(RIB4 & ~(1 << 4) | (value ? 1 << 4 : 0)); }
-                // public bool RIB4_5                      { get => (RIB4 & (1 << 5)) == 1 << 5; set => RIB4 = (byte)(RIB4 & ~(1 << 5) | (value ? 1 << 5 : 0)); } // Unused
-                // public bool RIB4_6                      { get => (RIB4 & (1 << 6)) == 1 << 6; set => RIB4 = (byte)(RIB4 & ~(1 << 6) | (value ? 1 << 6 : 0)); } // Unused
-                // public bool RibbonChampionG6Hoenn       { get => (RIB4 & (1 << 7)) == 1 << 7; set => RIB4 = (byte)(RIB4 & ~(1 << 7) | (value ? 1 << 7 : 0)); }
-                // public bool RibbonContestStar           { get => (RIB5 & (1 << 0)) == 1 << 0; set => RIB5 = (byte)(RIB5 & ~(1 << 0) | (value ? 1 << 0 : 0)); }
-                // public bool RibbonMasterCoolness        { get => (RIB5 & (1 << 1)) == 1 << 1; set => RIB5 = (byte)(RIB5 & ~(1 << 1) | (value ? 1 << 1 : 0)); }
-                // public bool RibbonMasterBeauty          { get => (RIB5 & (1 << 2)) == 1 << 2; set => RIB5 = (byte)(RIB5 & ~(1 << 2) | (value ? 1 << 2 : 0)); }
-                // public bool RibbonMasterCuteness        { get => (RIB5 & (1 << 3)) == 1 << 3; set => RIB5 = (byte)(RIB5 & ~(1 << 3) | (value ? 1 << 3 : 0)); }
-                // public bool RibbonMasterCleverness      { get => (RIB5 & (1 << 4)) == 1 << 4; set => RIB5 = (byte)(RIB5 & ~(1 << 4) | (value ? 1 << 4 : 0)); }
-                // public bool RibbonMasterToughness       { get => (RIB5 & (1 << 5)) == 1 << 5; set => RIB5 = (byte)(RIB5 & ~(1 << 5) | (value ? 1 << 5 : 0)); }
-                // public bool RibbonChampionAlola         { get => (RIB5 & (1 << 6)) == 1 << 6; set => RIB5 = (byte)(RIB5 & ~(1 << 6) | (value ? 1 << 6 : 0)); }
-                // public bool RibbonBattleRoyale          { get => (RIB5 & (1 << 7)) == 1 << 7; set => RIB5 = (byte)(RIB5 & ~(1 << 7) | (value ? 1 << 7 : 0)); }
-                // public bool RibbonBattleTreeGreat       { get => (RIB6 & (1 << 0)) == 1 << 0; set => RIB6 = (byte)(RIB6 & ~(1 << 0) | (value ? 1 << 0 : 0)); }
-                // public bool RibbonBattleTreeMaster      { get => (RIB6 & (1 << 1)) == 1 << 1; set => RIB6 = (byte)(RIB6 & ~(1 << 1) | (value ? 1 << 1 : 0)); }
-                // public bool RIB6_2                      { get => (RIB6 & (1 << 2)) == 1 << 2; set => RIB6 = (byte)(RIB6 & ~(1 << 2) | (value ? 1 << 2 : 0)); } // Unused
-                // public bool RIB6_3                      { get => (RIB6 & (1 << 3)) == 1 << 3; set => RIB6 = (byte)(RIB6 & ~(1 << 3) | (value ? 1 << 3 : 0)); } // Unused
-                // public bool RIB6_4                      { get => (RIB6 & (1 << 4)) == 1 << 4; set => RIB6 = (byte)(RIB6 & ~(1 << 4) | (value ? 1 << 4 : 0)); } // Unused
-                // public bool RIB6_5                      { get => (RIB6 & (1 << 5)) == 1 << 5; set => RIB6 = (byte)(RIB6 & ~(1 << 5) | (value ? 1 << 5 : 0)); } // Unused
-                // public bool RIB6_6                      { get => (RIB6 & (1 << 6)) == 1 << 6; set => RIB6 = (byte)(RIB6 & ~(1 << 6) | (value ? 1 << 6 : 0)); } // Unused
-                // public bool RIB6_7                      { get => (RIB6 & (1 << 7)) == 1 << 7; set => RIB6 = (byte)(RIB6 & ~(1 << 7) | (value ? 1 << 7 : 0)); } // Unused
                 // public int RibbonCountMemoryContest { get => Data[0x38]; set => Data[0x38] = (byte)value; }
                 // public int RibbonCountMemoryBattle { get => Data[0x39]; set => Data[0x39] = (byte)value; }
                 // private ushort DistByte { get => BitConverter.ToUInt16(Data, 0x3A); set => BitConverter.GetBytes(value).CopyTo(Data, 0x3A); }
@@ -406,13 +418,14 @@ namespace RamReader {
             pkmn.fullness = decrypted[0xAE];
             pkmn.enjoyment = decrypted[0xAF];
 
+            //Block D
             pkmn.met = {
                 game: decrypted[0xDF].toString(),
                 date_egg_received: decrypted[0xD1] ? `20${decrypted[0xD1]}-${decrypted[0xD2]}-${decrypted[0xD3]}` : undefined,
                 date: decrypted[0xD4] ? `20${decrypted[0xD4]}-${decrypted[0xD5]}-${decrypted[0xD6]}` : undefined,
                 area_id_egg: decrypted.readUInt16LE(0xD8) || undefined,
                 area_id: decrypted.readUInt16LE(0xDA) || undefined,
-                caught_in: this.rom.GetItem(decrypted[0xDC]).name,
+                caught_in: this.rom.GetBallItem(decrypted[0xDC]).name,
                 level: decrypted[0xDD] & 0x7F
             };
             pkmn.language = decrypted[0xE3].toString();

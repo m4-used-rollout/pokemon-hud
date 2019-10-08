@@ -197,7 +197,7 @@ namespace RamReader {
 
         protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
 
-        public CallEmulator<T>(path: string[] | string, callback?: (data: string) => T, force = false) {
+        public CallEmulator<T>(path: string[] | string, callback?: (data: string) => (T | Promise<T>), force = false) {
             let paths = Array.isArray(path) ? path : [path];
             return Promise.all(paths.map(path => new Promise<string>((resolve, reject) => {
                 if (!this.running && !force)
@@ -215,7 +215,7 @@ namespace RamReader {
             }))).then(r => {
                 const allData = r.reduce((str, s) => str + s, "");
                 try {
-                    return (callback || ((d) => d as any as T))(allData);
+                    return (callback || (async (d) => d as any as T))(allData);
                 }
                 catch (e) {
                     console.log(paths.map(path => `http://${this.hostname}:${this.port}/${path}`).join(' ') + " => " + allData);
@@ -224,7 +224,7 @@ namespace RamReader {
             });
         }
 
-        public CachedEmulatorCaller<T>(path: string[] | string, callback: (data: string) => T, ignoreCharStart = -1, ignoreCharEnd = -1) {
+        public CachedEmulatorCaller<T>(path: string[] | string, callback: (data: string) => (T | Promise<T>), ignoreCharStart = -1, ignoreCharEnd = -1) {
             const cacheKey = Array.isArray(path) ? path.join(' ') : path;
             //console.log(cacheKey);
             return () => this.CallEmulator<T>(path, data => {
@@ -249,6 +249,16 @@ namespace RamReader {
             });
         }
 
+        public ReadLinkedList(data:Buffer, baseAddr:number) {
+            const nodes = new Array<Buffer>();
+            let nextNodeAddr = data.indexOf("44550000", 0, "hex");
+            while (nextNodeAddr >= 0 && nextNodeAddr < data.length) {
+                const size = data.readUInt32LE(nextNodeAddr + 0x4);
+                nodes.push(data.slice(nextNodeAddr, nextNodeAddr + size + 0x20));
+                nextNodeAddr = data.readUInt32LE(nextNodeAddr + 0xC) - baseAddr;
+            }
+            return nodes;
+        }
 
         public WrapBytes<T>(callback: (data: Buffer) => T) {
             return (hex: string) => callback(Buffer.from(hex, "hex"));
@@ -346,7 +356,7 @@ namespace RamReader {
 
         protected RibbonRanks = [null, "", "Super", "Hyper", "Master"];
 
-        protected ParseHoennRibbons(ribbonVal) {
+        protected ParseHoennRibbons(ribbonVal:number) {
             return [
                 this.ParseRibbon(ribbonVal % 8, "Cool"),
                 this.ParseRibbon((ribbonVal >>> 3) % 8, "Beauty"),
@@ -366,6 +376,60 @@ namespace RamReader {
                 this.ParseRibbon((ribbonVal >>> 25) % 2, "Earth"),
                 this.ParseRibbon((ribbonVal >>> 26) % 2, "World"),
             ].filter(r => !!r);
+        }
+        protected ParseAlolanRibbons(ribbonData:Buffer) {
+            return [
+                this.ParseRibbon((ribbonData[0] >>> 0) & 1, "Kalos Champion"),
+                this.ParseRibbon((ribbonData[0] >>> 1) & 1, "Hoenn Champion"),
+                this.ParseRibbon((ribbonData[0] >>> 2) & 1, "Sinnoh Champion"),
+                this.ParseRibbon((ribbonData[0] >>> 3) & 1, "Best Friends"),
+                this.ParseRibbon((ribbonData[0] >>> 4) & 1, "Training"),
+                this.ParseRibbon((ribbonData[0] >>> 5) & 1, "Skillful Battler"),
+                this.ParseRibbon((ribbonData[0] >>> 6) & 1, "Expert Battler"),
+                this.ParseRibbon((ribbonData[0] >>> 7) & 1, "Effort"),
+                this.ParseRibbon((ribbonData[1] >>> 0) & 1, "Alert"),
+                this.ParseRibbon((ribbonData[1] >>> 1) & 1, "Shock"),
+                this.ParseRibbon((ribbonData[1] >>> 2) & 1, "Downcast"),
+                this.ParseRibbon((ribbonData[1] >>> 3) & 1, "Careless"),
+                this.ParseRibbon((ribbonData[1] >>> 4) & 1, "Relax"),
+                this.ParseRibbon((ribbonData[1] >>> 5) & 1, "Snooze"),
+                this.ParseRibbon((ribbonData[1] >>> 6) & 1, "Smile"),
+                this.ParseRibbon((ribbonData[1] >>> 7) & 1, "Gorgeous"),
+                this.ParseRibbon((ribbonData[2] >>> 0) & 1, "Royal"),
+                this.ParseRibbon((ribbonData[2] >>> 1) & 1, "Gorgeous Royal"),
+                this.ParseRibbon((ribbonData[2] >>> 2) & 1, "Artist"),
+                this.ParseRibbon((ribbonData[2] >>> 3) & 1, "Footprint"),
+                this.ParseRibbon((ribbonData[2] >>> 4) & 1, "Record"),
+                this.ParseRibbon((ribbonData[2] >>> 5) & 1, "Legend"),
+                this.ParseRibbon((ribbonData[2] >>> 6) & 1, "Country"),
+                this.ParseRibbon((ribbonData[2] >>> 7) & 1, "National"),
+                this.ParseRibbon((ribbonData[3] >>> 0) & 1, "Earth"),
+                this.ParseRibbon((ribbonData[3] >>> 1) & 1, "World"),
+                this.ParseRibbon((ribbonData[3] >>> 2) & 1, "Classic"),
+                this.ParseRibbon((ribbonData[3] >>> 3) & 1, "Premier"),
+                this.ParseRibbon((ribbonData[3] >>> 4) & 1, "Event"),
+                this.ParseRibbon((ribbonData[3] >>> 5) & 1, "Birthday"),
+                this.ParseRibbon((ribbonData[3] >>> 6) & 1, "Special"),
+                this.ParseRibbon((ribbonData[3] >>> 7) & 1, "Souvenir"),
+                this.ParseRibbon((ribbonData[4] >>> 0) & 1, "Wishing"),
+                this.ParseRibbon((ribbonData[4] >>> 1) & 1, "Battle Champion"),
+                this.ParseRibbon((ribbonData[4] >>> 2) & 1, "Regional Champion"),
+                this.ParseRibbon((ribbonData[4] >>> 3) & 1, "National Champion"),
+                this.ParseRibbon((ribbonData[4] >>> 4) & 1, "World Champion"),
+                // RIB4_5
+                // RIB4_6
+                this.ParseRibbon((ribbonData[4] >>> 7) & 1, "OR/AS Hoenn Champion"),
+                this.ParseRibbon((ribbonData[5] >>> 0) & 1, "Contest Star"),
+                this.ParseRibbon((ribbonData[5] >>> 1) & 1, "Coolness Master"),
+                this.ParseRibbon((ribbonData[5] >>> 2) & 1, "Beauty Master"),
+                this.ParseRibbon((ribbonData[5] >>> 3) & 1, "Cuteness Master"),
+                this.ParseRibbon((ribbonData[5] >>> 4) & 1, "Cleverness Master"),
+                this.ParseRibbon((ribbonData[5] >>> 5) & 1, "Toughness Master"),
+                this.ParseRibbon((ribbonData[5] >>> 6) & 1, "Alolan Champion"),
+                this.ParseRibbon((ribbonData[5] >>> 7) & 1, "Battle Royale"),
+                this.ParseRibbon((ribbonData[6] >>> 0) & 1, "Battle Tree Great"),
+                this.ParseRibbon((ribbonData[6] >>> 1) & 1, "Battle Tree Master")
+            ].filter(r=>!!r);
         }
 
         protected abstract OptionsSpec: OptionsSpec;

@@ -106,6 +106,9 @@ namespace RomReader {
         GetAreaName(id: number) {
             return this.areas[id] || '';
         }
+        GetBallItem(ballId: number) {
+            return this.items.filter(i=>this.ballIds.indexOf(i.id) >= 0)[ballId] || this.GetItem(ballId);
+        }
         ItemIsBall(id: number | Pokemon.Item) {
             if ((<Pokemon.Item>id).id) {
                 id = (<Pokemon.Item>id).id;

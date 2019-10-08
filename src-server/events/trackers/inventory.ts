@@ -2,7 +2,7 @@
 
 namespace Events {
 
-    type GotItemAction = { type: "Got Item", id: number, name: string, quantity: number, pocket?: string, cost: number };
+    export type GotItemAction = { type: "Got Item", id: number, name: string, quantity: number, pocket?: string, cost: number };
     type UsedSoldTossedItemAction = { type: "Used/Sold/Tossed Item", id: number, name: string, quantity: number, pocket?: string, cost: number, inBattle: boolean; };
     type MoneyGainedAction = { type: "Money Gained", amount: number };
     type MoneySpentAction = { type: "Money Spent", amount: number };

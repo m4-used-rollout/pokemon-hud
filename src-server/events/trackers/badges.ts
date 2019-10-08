@@ -3,15 +3,17 @@
 namespace Events {
 
     type EarnedBadgeAction = { type: "Earned Badge", name: string };
-    type KnownActions = EarnedBadgeAction | BlackoutAction | ChallengedTrainerAction | DefeatedTrainerAction;
+    type KnownActions = EarnedBadgeAction | BlackoutAction | ChallengedTrainerAction | DefeatedTrainerAction | GotItemAction;
 
     //const badges = ["Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"]; //Kanto
     //const badges = ["Zepyhr", "Hive", "Plain", "Fog", "Storm", "Mineral", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"]; //Johto
-    const badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"]; //Hoenn
+    //const badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"]; //Hoenn
+    const badges = []; //Alola
 
     class BadgeTracker extends Tracker<KnownActions> {
 
         private earnedBadges: TPP.Event[] = [];
+        private earnedZCrystals: number[] = [];
         private canEarnBadges: boolean = false;
 
         private ParseBadges(badgeBytes: number) {
@@ -23,7 +25,7 @@ namespace Events {
         }
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
-            if (newState.badges != oldState.badges) {
+            if (badges.length && newState.badges != oldState.badges) {
                 const oldBadges = this.ParseBadges(oldState.badges);
                 this.ParseBadges(newState.badges).filter(b => oldBadges.indexOf(b) < 0).forEach(b => dispatch({ type: "Earned Badge", name: b }));
             }
@@ -36,6 +38,15 @@ namespace Events {
                 case "Challenged Trainer":
                     this.canEarnBadges = (action.className || "Leader").toLowerCase() == "leader";
                     return;
+                case "Got Item":
+                    if (action.id >= 807 && action.id <= 824 && this.earnedZCrystals.indexOf(action.id) < 0) { //Earned new Z-Crystal
+                        this.earnedZCrystals.push(action.id);
+                        this.earnedBadges.push({
+                            group: "Badge",
+                            name: action.name,
+                            time: action.timestamp
+                        });
+                    }
                 case "Earned Badge":
                     if (this.canEarnBadges) {
                         this.earnedBadges.push({

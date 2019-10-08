@@ -249,6 +249,7 @@ declare namespace RomReader {
         readonly HasAbilities: boolean;
         GetNextMoveLearn(speciesId: number, form: number, level: number, moveSet: number[]): Pokemon.MoveLearn;
         GetAreaName(id: number): string;
+        GetBallItem(ballId: number): Pokemon.Item;
         ItemIsBall(id: number | Pokemon.Item): boolean;
         GetCurrentLevelCap(badges: number): number;
         GetNature(id: number): string;
@@ -296,11 +297,18 @@ declare namespace RomReader {
     }
 }
 declare namespace RomReader {
+    interface SearchableTrainer extends Pokemon.Trainer {
+        partySize: number;
+        partySpecies: number[];
+        partyLevels: number[];
+    }
     class Gen7 extends Generic {
+        protected trainers: SearchableTrainer[];
         constructor();
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         CollapseSeenForms(seen: number[]): number[];
         CalculateShiny(pkmn: TPP.Pokemon): void;
+        TrainerSearch(name: string, className: string, partySize: number, partySpecies: number[], partyLevels: number[]): SearchableTrainer;
     }
 }
 declare namespace Pokemon.Convert {
@@ -365,8 +373,9 @@ declare namespace RamReader {
             active?: boolean;
         })[]): TPP.EnemyParty;
         protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
-        CallEmulator<T>(path: string[] | string, callback?: (data: string) => T, force?: boolean): Promise<T>;
-        CachedEmulatorCaller<T>(path: string[] | string, callback: (data: string) => T, ignoreCharStart?: number, ignoreCharEnd?: number): () => Promise<T>;
+        CallEmulator<T>(path: string[] | string, callback?: (data: string) => (T | Promise<T>), force?: boolean): Promise<T>;
+        CachedEmulatorCaller<T>(path: string[] | string, callback: (data: string) => (T | Promise<T>), ignoreCharStart?: number, ignoreCharEnd?: number): () => Promise<T>;
+        ReadLinkedList(data: Buffer, baseAddr: number): Buffer[];
         WrapBytes<T>(callback: (data: Buffer) => T): (hex: string) => T;
         protected Markings: string[];
         protected ParseMarkings(marks: number): string;
@@ -391,7 +400,8 @@ declare namespace RamReader {
         protected ParseGender(gender: number): "Male" | "Female";
         protected ParseRibbon(ribbonVal: number, ribbonName: string): string;
         protected RibbonRanks: string[];
-        protected ParseHoennRibbons(ribbonVal: any): string[];
+        protected ParseHoennRibbons(ribbonVal: number): string[];
+        protected ParseAlolanRibbons(ribbonData: Buffer): string[];
         protected abstract OptionsSpec: OptionsSpec;
         ParseOptions: (rawOptions: number) => TPP.Options;
         SetOptions: (rawOptions: number, desiredOptions: TPP.Options) => number;
@@ -458,16 +468,19 @@ declare namespace RamReader {
                 0x8000: string;
             };
         };
-        protected ParseBattle(data: Buffer): TPP.BattleStatus;
+        private battleMonCache;
+        private battleTrainerCache;
+        protected ParseBattle(data: Buffer): Promise<TPP.BattleStatus>;
         protected ParseSaveBlock1(data: Buffer): Partial<TPP.TrainerData>;
         protected itemPocketOffsets: number[];
         protected ParseItems(data: Buffer): TPP.TrainerData["items"];
         protected ParseSaveBlock2(data: Buffer): Partial<TPP.TrainerData>;
+        protected ParseDaycare(data: Buffer): Partial<TPP.TrainerData>;
         protected ParsePC(data: Buffer): TPP.CombinedPCData;
-        protected ParsePCBox(data: Buffer): any[];
+        protected ParsePCBox(data: Buffer): Gen7Pokemon[];
         protected ParseParty(data: Buffer): (TPP.PartyPokemon & Gen7Pokemon)[];
         protected ParsePartyMon(data: Buffer, battleDataOffset?: number): TPP.PartyPokemon & Gen7Pokemon;
-        protected ParsePokemon(pkmdata: Buffer): Gen7Pokemon;
+        protected ParsePokemon(pkmdata: Buffer, box_slot?: number): Gen7Pokemon;
         protected ParseBattlePokemon(data: Buffer): void;
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
     }
@@ -563,6 +576,14 @@ declare namespace Events {
     }[]) => boolean;
 }
 declare namespace Events {
+    type GotItemAction = {
+        type: "Got Item";
+        id: number;
+        name: string;
+        quantity: number;
+        pocket?: string;
+        cost: number;
+    };
 }
 declare namespace Events {
     type CaughtPokemonAction = {
