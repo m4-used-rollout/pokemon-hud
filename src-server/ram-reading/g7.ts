@@ -196,6 +196,7 @@ namespace RamReader {
                 seen: seen_list.length,
                 items: this.ParseItems(itemData),
                 money: miscData.readUInt32LE(4),
+                stickers: data.readUInt16LE(0x1722), //may be related to 0x175C?
                 options,
             };
         }

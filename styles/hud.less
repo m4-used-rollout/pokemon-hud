@@ -789,9 +789,12 @@ body {
                     .stickers:before {
                         content:'';
                         display: inline-block;
-                        width:.8em;
-                        height:.8em;
-                        background-image:url('img/sticker.png');
+                        width:1em;
+                        height:1em;
+                        position: relative;
+                        top: .1em;
+                        background-image:url('img/sticker.svg');
+                        filter: drop-shadow(0 0 1px white);
                         background-size: contain;
                         background-repeat: no-repeat;
                     }
