@@ -33,7 +33,7 @@ namespace RamReader {
         baseMonPtr: number;
         level: number;
         health: [number, number];
-        heldItem: TPP.Item | null;
+        held_item: TPP.Item | null;
         ability: string;
         experience: { current: number };
         status: string | null;
@@ -56,27 +56,29 @@ namespace RamReader {
             this.CachedEmulatorCaller(`ReadByteRange/${daycareLocation}/200`, this.WrapBytes(data => this.ParseDaycare(data))),
         ];
 
-        protected partyPollingIntervalMs = 720;
-        protected pcPollingIntervalMs = 2010;
-        protected trainerPollingIntervalMs = 650;
-        protected battlePollingIntervalMs = 930;
+        protected readerFunc = this.ReadSync;
+
+        // protected partyPollingIntervalMs = 720;
+        // protected pcPollingIntervalMs = 2010;
+        // protected trainerPollingIntervalMs = 650;
+        // protected battlePollingIntervalMs = 930;
 
         protected OptionsSpec = {
             text_speed: {
                 2: "Fast",
-                1: "Med",
+                1: "Normal",
                 0: "Slow"
             },
             battle_style: {
-                0: "Shift",
-                0x4: "Set"
+                0: "Switch",
+                0x8: "Set"
             },
             battle_scene: {
                 0: "On",
-                0x8: "Off"
+                0x4: "Off"
             },
             button_mode: {
-                0: "Normal",
+                0: "Default",
                 0x2000: "L=A",
             },
             box_mode: {
@@ -96,8 +98,8 @@ namespace RamReader {
                         this.ReadLinkedList(data, parseInt(battleTrainerLocation, 16))
                             .filter(node => node.readUInt32LE(4) == 0x3C || node.readUInt32LE(4) == 0x4C)
                             .map(node => this.rom.ConvertText(node.slice(0x30)))));
-                    this.battleTrainerCache = [];
                     for (let i = 1; i < trainersAndClasses.length; i += 2) {
+                        this.battleTrainerCache = [];
                         this.battleTrainerCache.push({
                             id: -1,
                             class_id: -1,
@@ -106,7 +108,7 @@ namespace RamReader {
                         } as TPP.EnemyTrainer);
                     }
                 }
-                const isDouble = this.battleTrainerCache.length == 2; //two enemy trainers
+                const isDouble = this.battleTrainerCache && this.battleTrainerCache.length == 2; //two enemy trainers
                 const baseAddr = parseInt(battleLocation, 16);
                 const battleParties = this.rom.ReadStridedData(data, 0x404, 0x1C, 4).filter(p => p.readUInt32LE(0x18) > 0)
                     .map((party, pCount) => this.rom.ReadStridedData(party, 0, 0x4, party.readUInt32LE(0x18))
@@ -115,7 +117,8 @@ namespace RamReader {
                             baseMonPtr: btlMon.readUInt32LE(0x0),
                             level: btlMon[0x18],
                             health: [btlMon.readUInt16LE(0x10), btlMon.readUInt16LE(0xE)],
-                            heldItem: Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(btlMon.readUInt16LE(0x12))),
+                            held_item: Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(btlMon.readUInt16LE(0x12))),
+                            species: Object.assign(Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(btlMon.readUInt16LE(0xC))), { type1: this.rom.GetType(btlMon[0x1E4]), type2: this.rom.GetType(btlMon[0x1E5]) }),
                             ability: this.rom.GetAbility(btlMon[0x16]),
                             experience: { current: btlMon.readUInt32LE(0x8) },
                             status: ["PAR", "SLP", "FRZ", "BRN", "PSN"].filter((_, i) => (btlMon.readUInt32LE((0x28) + 8 * i) & 0x3) > 0).shift(),
@@ -123,7 +126,8 @@ namespace RamReader {
                                 .map(mData => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(mData.readUInt16LE(0x6)), mData[0x8], undefined, mData[0x9])).filter(m => m && m.id > 0),
                             active: i == 0 || (isDouble && i == 1 && pCount == 0)
                         })));
-                if (!this.battleMonCache) {
+                const allPartyCount = battleParties.reduce((sum, party) => sum + party.length, 0);
+                if (!this.battleMonCache || Object.keys(this.battleMonCache).length < allPartyCount) {
                     const ptrs = battleParties.reduce((ptrArr, party) => ptrArr.concat(...party.map(m => m.baseMonPtr)), new Array<number>()).sort((p1, p2) => p1 - p2);
                     const lowestPtr = ptrs.shift();
                     const highestPtr = ptrs.pop();
@@ -131,11 +135,8 @@ namespace RamReader {
                     this.battleMonCache = {};
                     [lowestPtr, ...ptrs, highestPtr].forEach(p => this.battleMonCache[p] = this.ParsePartyMon(battleBlob.slice((p - lowestPtr) + 0x40, (p - lowestPtr) + 0x1E4)));
                 }
-                const parties = battleParties.map(bp => bp.map(battleMon => (<TPP.PartyPokemon>{
-                    ...this.battleMonCache[battleMon.baseMonPtr],
-                    ...battleMon
-                })).filter(mon => !!mon.personality_value));
-                this.battleTrainerCache.forEach((t, i) => {
+                const parties = battleParties.map(bp => bp.map(battleMon => (<TPP.PartyPokemon>Object.assign({}, this.battleMonCache[battleMon.baseMonPtr], battleMon))).filter(mon => !!mon.personality_value));
+                (this.battleTrainerCache || []).forEach((t, i) => {
                     if (t.id < 0) {
                         const romTrainer = this.rom.TrainerSearch(t.name, t.class_name, parties[i + 1].length, parties[i + 1].map(p => p && p.species && p.species.id).filter(p => !!p), parties[i + 1].map(p => p && p.level).filter(p => !!p))
                         if (romTrainer) {
@@ -147,9 +148,9 @@ namespace RamReader {
 
                 return {
                     in_battle,
-                    battle_kind: this.battleTrainerCache.length > 0 ? "Trainer" : "Wild",
+                    battle_kind: (this.battleTrainerCache || []).filter(t => t && t.class_name && t.name).length > 0 ? "Trainer" : "Wild",
                     battle_party: parties.shift(),
-                    enemy_party: parties.reduce((arr, party) => arr.concat(party), []),
+                    enemy_party: parties.reduce((arr, party) => arr.concat((party || [].filter(p => !!p))), []),
                     enemy_trainers: this.battleTrainerCache
                 }
             }
@@ -158,7 +159,7 @@ namespace RamReader {
             return { in_battle, battle_party: null, enemy_party: null, enemy_trainers: null };
         }
 
-        protected ParseSaveBlock1(data: Buffer): Partial<TPP.TrainerData> {
+        protected async ParseSaveBlock1(data: Buffer): Promise<Partial<TPP.TrainerData>> {
             const itemData = data.slice(0, 0xE28);
             const trainerData = data.slice(0xEE4, 0xEE4 + 0xC0);
             const pokedexData = data.slice(0x23D4, 0x23D4 + 0xF78);
@@ -175,15 +176,18 @@ namespace RamReader {
             const rawOptions = optionsData.readUInt16LE(0x50);
             const options = this.ParseOptions(rawOptions);
             if (this.ShouldForceOptions(options)) {
-                this.CallEmulator(`WriteU16LE/${parseInt(saveBlock1Location, 16) + 0x3AD8 + 0x50}/${this.SetOptions(rawOptions, this.config.forceOptions).toString(16)}`);
+                await this.CallEmulator(`WriteU16LE/${(parseInt(saveBlock1Location, 16) + 0x3AD8 + 0x50).toString(16)}/${this.SetOptions(rawOptions, this.config.forceOptions).toString(16)}`)
+                    .then(() => console.log(`Forced Options to ${Object.keys(this.config.forceOptions).map(o => `${o}: ${this.config.forceOptions[o]}`).join(', ')}`))
+                    .catch(err => console.error(`Could not force options. Reason: ${err}`));
             }
 
-            // Ultra space control mode = 0x1FD1, bit 2, set = circle pad, reset = gyro
-            // const ultraSpaceControlMode = data[0x1FD1];
-            // if (!(ultraSpaceControlMode & 0x4)) {
-            //     this.CallEmulator(`WriteByte/${parseInt(saveBlock1Location, 16) + 0x1FD1}/${(ultraSpaceControlMode | 0x4).toString(16)}`);
-            //     console.log("Set Ultra Space control method to Circle Pad");
-            // }
+            //Ultra space control mode = 0x1FD1, bit 2, set = circle pad, reset = gyro
+            const ultraSpaceControlMode = data[0x1FD1];
+            if (!(ultraSpaceControlMode & 0x4)) {
+                await this.CallEmulator(`WriteByte/${(parseInt(saveBlock1Location, 16) + 0x1FD1).toString(16)}/${(ultraSpaceControlMode | 0x4).toString(16)}`)
+                    .then(() => console.log("Set Ultra Space control method to Circle Pad"))
+                    .catch(err => console.error(`Could not set Ultra Space control method to Circle Pad. Reason: ${err}`));
+            }
 
             return {
                 id: trainerData.readUInt16LE(0),
@@ -241,7 +245,7 @@ namespace RamReader {
         }
 
         protected ParseDaycare(data: Buffer): Partial<TPP.TrainerData> {
-            return {};
+            return {}; //TODO
         }
 
         protected ParsePC(data: Buffer): TPP.CombinedPCData {
@@ -426,16 +430,13 @@ namespace RamReader {
                 date: decrypted[0xD4] ? `20${decrypted[0xD4]}-${decrypted[0xD5]}-${decrypted[0xD6]}` : undefined,
                 area_id_egg: decrypted.readUInt16LE(0xD8) || undefined,
                 area_id: decrypted.readUInt16LE(0xDA) || undefined,
-                caught_in: this.rom.GetBallItem(decrypted[0xDC]).name,
+                caught_in: this.rom.GetItem(this.rom.MapCaughtBallId(decrypted[0xDC])).name,
                 level: decrypted[0xDD] & 0x7F
             };
             pkmn.language = decrypted[0xE3].toString();
 
             this.rom.CalculateShiny(pkmn);
             return pkmn;
-        }
-
-        protected ParseBattlePokemon(data: Buffer) {
         }
 
         protected Decrypt(data: Buffer, key: number, checksum?: number) {

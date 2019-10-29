@@ -43,22 +43,18 @@ namespace RamReader {
         protected trainerPollingIntervalMs = 350;
         protected battlePollingIntervalMs = 330;
 
-        public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
-            this.currentState = state;
-            if (this.partyInterval || this.pcInterval || this.trainerInterval)
-                this.Stop();
-
-            this.running = true;
-            this.Init();
-
-            this.partyInterval = setInterval(() => this.ReadParty().then(party => {
+        protected PartyProcessor(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
+            return () => this.ReadParty().then(party => {
                 if (party) {
                     this.CurrentParty = party;
                     state.party = party.map((p, i) => p && Object.assign({}, p, this.GetBattleMon(i, false, p.personality_value, p.name, true) || {}));
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), this.partyPollingIntervalMs);
-            this.pcInterval = setInterval(() => this.ReadPC().then(pc => {
+            }).catch(err => console.error(err));
+        }
+
+        protected PCProcessor(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
+            return () => this.ReadPC().then(pc => {
                 if (pc) {
                     state.pc = state.pc || pc;
                     state.pc.boxes = state.pc.boxes || [];
@@ -66,14 +62,20 @@ namespace RamReader {
                     (pc.boxes || []).forEach(b => state.pc.boxes[b.box_number - 1] = b);
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), this.pcPollingIntervalMs);
-            this.trainerInterval = setInterval(() => this.ReadTrainer().then(trainer => {
+            }).catch(err => console.error(err));
+        }
+
+        protected TrainerProcessor(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void, trainerFunc = this.ReadTrainer) {
+            return () => trainerFunc().then(trainer => {
                 if (Object.keys(trainer).length) {
                     Object.assign(state, trainer);
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), this.trainerPollingIntervalMs);
-            this.battleInterval = setInterval(() => this.ReadBattle().then(battle => {
+            }).catch(err => console.error(err));
+        }
+
+        protected BattleProcessor(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
+            return () => this.ReadBattle().then(battle => {
                 if (battle) {
                     delete state.enemy_party;
                     delete state.enemy_trainers;
@@ -82,7 +84,7 @@ namespace RamReader {
                     if (battle.in_battle) {
                         battle.enemy_party.forEach((p, i) => p && Object.assign(p, this.GetBattleMon(i, true, p.personality_value, p.name, true) || {}));
                         state.enemy_party = this.ConcealEnemyParty(battle.enemy_party as TPP.PartyData);
-                        state.party = this.CurrentParty.map((p, i) => p && Object.assign({}, p, this.GetBattleMon(i, false, p.personality_value, p.name, true) || {}));
+                        state.party = this.CurrentParty ? this.CurrentParty.map((p, i) => p && Object.assign({}, p, this.GetBattleMon(i, false, p.personality_value, p.name, true) || {})) : [];
                     }
                     else {
                         this.CurrentBattleMons = null;
@@ -91,8 +93,35 @@ namespace RamReader {
                     }
                     transmitState(state);
                 }
-            }).catch(err => console.error(err)), this.battlePollingIntervalMs);
+            }).catch(err => console.error(err));
         }
+
+        public Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
+            this.currentState = state;
+            if (this.running)
+                this.Stop();
+
+            this.running = true;
+            this.Init();
+            this.readerFunc(state, transmitState);
+        }
+
+        protected ReadAsync(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
+            this.partyInterval = setInterval(this.PartyProcessor(state, transmitState), this.partyPollingIntervalMs);
+            this.pcInterval = setInterval(this.PCProcessor(state, transmitState), this.pcPollingIntervalMs);
+            this.trainerInterval = setInterval(this.TrainerProcessor(state, transmitState), this.trainerPollingIntervalMs);
+            this.battleInterval = setInterval(this.BattleProcessor(state, transmitState), this.battlePollingIntervalMs);
+        }
+
+        protected ReadSync(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
+            this.TrainerProcessor(state, transmitState)()
+                .then(() => state.party && state.in_battle ? null : this.PartyProcessor(state, transmitState)())
+                .then(this.BattleProcessor(state, transmitState))
+                .then(this.PCProcessor(state, transmitState))
+                .then(() => this.ReadSync(state, transmitState));
+        }
+
+        protected readerFunc = this.ReadAsync;
 
         public Stop() {
             this.running = false;
@@ -117,6 +146,21 @@ namespace RamReader {
                     console.error(err);
                     return {} as TPP.TrainerData;
                 });
+        public ReadTrainerSync: () => Promise<TPP.TrainerData> = () =>
+            new Promise((resolve, reject) => {
+                const trainerData = {} as Partial<TPP.TrainerData> as TPP.TrainerData;
+                const queue = this.TrainerChunkReaders.filter(f => !!f);
+                function nextPromise() {
+                    if (queue.length)
+                        queue.shift()()
+                            .then(chunk => Object.assign(trainerData, chunk))
+                            .catch(err => console.error(err))
+                            .finally(nextPromise);
+                    else
+                        resolve(trainerData);
+                }
+            });
+
 
         public abstract ReadBattle: () => Promise<TPP.BattleStatus>;
 
@@ -249,7 +293,7 @@ namespace RamReader {
             });
         }
 
-        public ReadLinkedList(data:Buffer, baseAddr:number) {
+        public ReadLinkedList(data: Buffer, baseAddr: number) {
             const nodes = new Array<Buffer>();
             let nextNodeAddr = data.indexOf("44550000", 0, "hex");
             while (nextNodeAddr >= 0 && nextNodeAddr < data.length) {
@@ -356,7 +400,7 @@ namespace RamReader {
 
         protected RibbonRanks = [null, "", "Super", "Hyper", "Master"];
 
-        protected ParseHoennRibbons(ribbonVal:number) {
+        protected ParseHoennRibbons(ribbonVal: number) {
             return [
                 this.ParseRibbon(ribbonVal % 8, "Cool"),
                 this.ParseRibbon((ribbonVal >>> 3) % 8, "Beauty"),
@@ -377,7 +421,7 @@ namespace RamReader {
                 this.ParseRibbon((ribbonVal >>> 26) % 2, "World"),
             ].filter(r => !!r);
         }
-        protected ParseAlolanRibbons(ribbonData:Buffer) {
+        protected ParseAlolanRibbons(ribbonData: Buffer) {
             return [
                 this.ParseRibbon((ribbonData[0] >>> 0) & 1, "Kalos Champion"),
                 this.ParseRibbon((ribbonData[0] >>> 1) & 1, "Hoenn Champion"),
@@ -429,7 +473,7 @@ namespace RamReader {
                 this.ParseRibbon((ribbonData[5] >>> 7) & 1, "Battle Royale"),
                 this.ParseRibbon((ribbonData[6] >>> 0) & 1, "Battle Tree Great"),
                 this.ParseRibbon((ribbonData[6] >>> 1) & 1, "Battle Tree Master")
-            ].filter(r=>!!r);
+            ].filter(r => !!r);
         }
 
         protected abstract OptionsSpec: OptionsSpec;

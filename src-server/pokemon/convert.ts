@@ -86,7 +86,7 @@ namespace Pokemon.Convert {
             accuracy: move.accuracy,
             base_power: move.basePower,
             id: move.id,
-            pp: pp,
+            pp,
             pp_up: ppUp,
             max_pp: maxPP || (move.basePP + Math.floor(ppUp * move.basePP * 0.2)),
             name: move.name,
@@ -96,7 +96,7 @@ namespace Pokemon.Convert {
     }
 
 
-    export function MoveLearnToRunStatus(move: MoveLearn, pp = 0, ppUp = 0, maxPP = 0) {
+    export function MoveLearnToRunStatus(move: MoveLearn) {
         return move && {
             accuracy: move.accuracy,
             base_power: move.basePower,
@@ -107,9 +107,9 @@ namespace Pokemon.Convert {
         } as TPP.MoveLearn;
     }
 
-    export function ItemToRunStatus(item: Item, count = 0) {
+    export function ItemToRunStatus(item: Item, count?: number) {
         return {
-            count: count,
+            count,
             id: item.id,
             name: item.name
         } as TPP.Item;

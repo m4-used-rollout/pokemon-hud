@@ -21,7 +21,7 @@ namespace RomReader {
         constructor() {
             super("gen7");
             this.maps = require('./data/gen7/maps.json');
-            this.maps.forEach(m => Object.keys(m.encounters).forEach(k => Object.keys(m.encounters[k]).forEach(j => m.encounters[k][j].forEach(e => e.species = this.GetSpecies(e.speciesId)))));
+            this.maps.forEach(m => Object.keys(m.encounters).forEach(k => Object.keys(m.encounters[k] || {}).forEach(j => (m.encounters[k][j] || []).forEach(e => e.species = this.GetSpecies(e.speciesId)))));
             this.trainers = require('./data/gen7/trainers.json');
             require('./data/gen7/movelearns.json').forEach((entry: { speciesId: number, moveLearns: { level: number, id: number }[] }) => {
                 this.moveLearns[entry.speciesId] = entry.moveLearns.map(ml => {
@@ -37,14 +37,14 @@ namespace RomReader {
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet {
             if (!map || (!map.id && map.id !== 0))
                 return null;
-            let dayTime = new Date().getHours() >= 6 && new Date().getHours() < 18; 
+            let dayTime = new Date().getHours() >= 6 && new Date().getHours() < 18;
             // return map.encounters[dayTime ? "day" : "night"]; //Sun
             return map.encounters[dayTime ? "night" : "day"]; //Moon
         }
 
         CollapseSeenForms(seen: number[]) {
             seen.filter(s => s > 807).map(s => Object.keys(formSeenMap).filter(k => formSeenMap[parseInt(k)].some(e => e == s)).map(parseInt).pop() || s).forEach(s => seen.indexOf(s) < 0 && seen.push(s));
-            return seen.filter(s => s <= 807);
+            return seen.filter(s => s <= 807).filter((s, i, arr) => arr.indexOf(s) == i);
         }
 
         CalculateShiny(pkmn: TPP.Pokemon) {

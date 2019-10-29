@@ -249,7 +249,6 @@ declare namespace RomReader {
         readonly HasAbilities: boolean;
         GetNextMoveLearn(speciesId: number, form: number, level: number, moveSet: number[]): Pokemon.MoveLearn;
         GetAreaName(id: number): string;
-        GetBallItem(ballId: number): Pokemon.Item;
         ItemIsBall(id: number | Pokemon.Item): boolean;
         GetCurrentLevelCap(badges: number): number;
         GetNature(id: number): string;
@@ -321,7 +320,7 @@ declare namespace Pokemon.Convert {
     }
     function SpeciesToRunStatus(species: Species): StatSpeciesWithExp;
     function MoveToRunStatus(move: Move, pp?: number, ppUp?: number, maxPP?: number): TPP.Move;
-    function MoveLearnToRunStatus(move: MoveLearn, pp?: number, ppUp?: number, maxPP?: number): TPP.MoveLearn;
+    function MoveLearnToRunStatus(move: MoveLearn): TPP.MoveLearn;
     function ItemToRunStatus(item: Item, count?: number): TPP.Item;
     function EvolutionToRunStatus(evo: Evolution): TPP.Evolution;
 }
@@ -355,12 +354,20 @@ declare namespace RamReader {
         protected pcPollingIntervalMs: number;
         protected trainerPollingIntervalMs: number;
         protected battlePollingIntervalMs: number;
+        protected PartyProcessor(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): () => Promise<void>;
+        protected PCProcessor(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): () => Promise<void>;
+        protected TrainerProcessor(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void, trainerFunc?: () => Promise<TPP.TrainerData>): () => Promise<void>;
+        protected BattleProcessor(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): () => Promise<void>;
         Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): void;
+        protected ReadAsync(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): void;
+        protected ReadSync(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): void;
+        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
         Stop(): void;
         Init(): void;
         abstract ReadParty: () => Promise<TPP.PartyData>;
         abstract ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadTrainer: () => Promise<TPP.TrainerData>;
+        ReadTrainerSync: () => Promise<TPP.TrainerData>;
         abstract ReadBattle: () => Promise<TPP.BattleStatus>;
         protected StoreCurrentBattleMons(mons: TPP.PartyPokemon[], monPartyIndexes: number[], monInEnemyParty: boolean[]): void;
         private HasBeenSeenThisBattle;
@@ -441,10 +448,7 @@ declare namespace RamReader {
         ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadBattle: () => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: (() => Promise<Partial<TPP.TrainerData>>)[];
-        protected partyPollingIntervalMs: number;
-        protected pcPollingIntervalMs: number;
-        protected trainerPollingIntervalMs: number;
-        protected battlePollingIntervalMs: number;
+        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
         protected OptionsSpec: {
             text_speed: {
                 2: string;
@@ -453,11 +457,11 @@ declare namespace RamReader {
             };
             battle_style: {
                 0: string;
-                0x4: string;
+                0x8: string;
             };
             battle_scene: {
                 0: string;
-                0x8: string;
+                0x4: string;
             };
             button_mode: {
                 0: string;
@@ -471,7 +475,7 @@ declare namespace RamReader {
         private battleMonCache;
         private battleTrainerCache;
         protected ParseBattle(data: Buffer): Promise<TPP.BattleStatus>;
-        protected ParseSaveBlock1(data: Buffer): Partial<TPP.TrainerData>;
+        protected ParseSaveBlock1(data: Buffer): Promise<Partial<TPP.TrainerData>>;
         protected itemPocketOffsets: number[];
         protected ParseItems(data: Buffer): TPP.TrainerData["items"];
         protected ParseSaveBlock2(data: Buffer): Partial<TPP.TrainerData>;
@@ -481,7 +485,6 @@ declare namespace RamReader {
         protected ParseParty(data: Buffer): (TPP.PartyPokemon & Gen7Pokemon)[];
         protected ParsePartyMon(data: Buffer, battleDataOffset?: number): TPP.PartyPokemon & Gen7Pokemon;
         protected ParsePokemon(pkmdata: Buffer, box_slot?: number): Gen7Pokemon;
-        protected ParseBattlePokemon(data: Buffer): void;
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
     }
 }
@@ -562,6 +565,8 @@ declare namespace TPP.Server.DexNav {
     }
 }
 declare namespace TPP.Server.DexNav {
+}
+declare namespace Events {
 }
 declare namespace Events {
 }
