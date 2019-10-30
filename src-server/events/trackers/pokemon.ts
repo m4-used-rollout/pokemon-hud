@@ -17,7 +17,7 @@ namespace Events {
     export const AllMons = (state: TPP.RunStatus) => [
         ...(state.party || []),
         ...(state.daycare || []),
-        ...((state.pc || { boxes: [] as TPP.BoxData[] }).boxes || []).filter(b => b.box_number > 0).reduce((all, box) => [...all, ...(box.box_contents || [])], [] as TPP.Pokemon[])
+        ...((state.pc || { boxes: [] as TPP.BoxData[] }).boxes || []).filter(b => b && b.box_number > 0).reduce((all, box) => [...all, ...(box.box_contents || [])], [] as TPP.Pokemon[])
     ].filter(p => !!p);
 
     const DexNum = (mon: TPP.Pokemon) => ((mon || { species: null as typeof mon.species }).species || { national_dex: null as number }).national_dex;

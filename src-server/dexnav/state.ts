@@ -43,6 +43,8 @@ namespace TPP.Server.DexNav {
         public MapBank = 0;
         public AreaID = 0;
         public AreaName = "";
+        public PuzzleAuthor = "";
+        public PuzzleNumber = 0;
         public Hour = 0;
         public TotalEncounters = 0;
         public CompletedCategories = 0;
@@ -81,6 +83,10 @@ namespace TPP.Server.DexNav {
             this.TehUrn = this.MapID && this.MapID == config.hofMapId && (typeof config.hofMapBank !== "number" || this.MapBank == config.hofMapBank);
             if (this.TehUrn) {
                 this.MapName = "Hall of Fame";
+            }
+            if (map['author'] && map['puzzleNo']) {
+                this.PuzzleNumber = map['puzzleNo'];
+                this.PuzzleAuthor = map['author'];
             }
             this.ShowDexNav = !!(runState.id || runState.secret);
             this.IsUnknownArea = RomData.IsUnknownTrainerMap(map.id, map.bank);

@@ -20,10 +20,19 @@ namespace RomReader {
 
     interface Gen3Item extends Pokemon.Item {
         isPokeball: boolean;
+        isCandy: boolean; //TTH
+    }
+
+    export interface TTHMap extends Pokemon.Map {
+        author?: string;
+        puzzleNo?: number;
+        trainers: Pokemon.Trainer[];
     }
 
     export class Gen3 extends GBAReader {
         public config: PGEINI;
+
+        private puzzleList: { id: number, bank: number }[]; //TTH
 
         constructor(romFileLocation: string, iniFileLocation: string = "pge.ini") {
             super(romFileLocation, iniFileLocation);
@@ -37,6 +46,11 @@ namespace RomReader {
             this.moves = this.ReadMoveData(romData, config);
             this.GetTMHMNames(romData, config);
             this.areas = this.ReadMapLabels(romData, config);
+            this.puzzleList = [{ id: -1, bank: -1 },
+            ...(config.PuzzleList ?
+                this.ReadStridedData(romData, parseInt(config.PuzzleList, 16), 2, parseInt(config.PuzzleCount, 16), true, data => data.readUInt16LE(0) == 0xFFFF)
+                    .map(m => ({ id: m[0], bank: m[1] }))
+                : [])]; //TTH
             this.maps = this.ReadMaps(romData, config);
             this.FindMapEncounters(romData, config);
             this.moveLearns = this.ReadMoveLearns(romData, config);
@@ -59,6 +73,7 @@ namespace RomReader {
             return mapArr.some(m => m[0] == bank && ((m.length == 2 && m[1] == id) || m[1] <= id && m[2] >= id));
         }
         IsUnknownTrainerMap(id: number, bank: number) {
+            return false; //TTH
             switch (this.romHeader) {
                 case "BPEE":
                     return this.CurrentMapIn(id, bank, [
@@ -137,7 +152,7 @@ namespace RomReader {
         }
 
         private ReadItemData(romData: Buffer, config: PGEINI) {
-            // +16 for TriHard Emerald
+            // +16 for TriHard Emerald and TTH
             return this.ReadStridedData(romData, parseInt(config.ItemData, 16), 44 + 16, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
                 name: this.FixAllCaps(this.ConvertText(data)),
                 id: i,
@@ -229,19 +244,47 @@ namespace RomReader {
         }
 
         private ReadMaps(romData: Buffer, config: PGEINI) {
-            let mapBanksPtr = this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
+            let mapBanksPtr = parseInt(config.Pointer2PointersToMapBanks || "0", 16) || this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
             const mapLabelOffset = parseInt(config.MapLabelOffset || "0", 16);
             return this.ReadPtrBlock(romData, mapBanksPtr)
                 .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
-                    .map((mapHeader, m) => (<Pokemon.Map>{
+                    .map((mapHeader, m) => (<TTHMap>{
                         bank: b,
                         id: m,
                         areaId: mapHeader[0x14] - mapLabelOffset,
                         areaName: this.areas[mapHeader[0x14] - mapLabelOffset],
-                        name: this.areas[mapHeader[0x14] - mapLabelOffset],
+                        name: this.GetPuzzleName(romData, mapHeader.readUInt32LE(0x8) - 0x8000000) || this.areas[mapHeader[0x14] - mapLabelOffset],
+                        author: this.GetPuzzleAuthor(romData, mapHeader.readUInt32LE(0x8) - 0x8000000), //TTH
+                        trainers: this.GetPuzzleTrainers(romData, mapHeader.readUInt32LE(0x1C) - 0x8000000, config), //TTH
+                        puzzleNo: this.puzzleList.findIndex(p => p.id == m && p.bank == b),
                         encounters: {}
                     }))
                 ).reduce((allMaps, currBank) => Array.prototype.concat.apply(allMaps, currBank), []);
+        }
+
+        //Trick or Treat House
+        private GetPuzzleTrainers(romData: Buffer, mapTrainerTableAddr: number, config: PGEINI): Pokemon.Trainer[] {
+            if (mapTrainerTableAddr < 0)
+                return [];
+
+            const trainerClasses = this.ReadStridedData(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ConvertText(tc)));
+            return this.ReadStridedData(romData, mapTrainerTableAddr, 36, 32, true, data => data.readUInt16LE(0) == 0).map((data, i) => (<Pokemon.Trainer>{
+                classId: data[1],
+                className: trainerClasses[data[1]],
+                id: i + 1,
+                name: this.FixAllCaps(this.ConvertText(data.slice(4))),
+                spriteId: data[3],
+                gender: data[2] & 128 ? "Female" : "Male",
+            }));
+        }
+
+        //Trick or Treat House
+        private GetPuzzleName(romData: Buffer, mapScriptPtr: number) {
+            return this.ReadStridedData(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 20).map(data => this.ConvertText(romData.slice(data.readUInt32LE(1) - 0x8000000))).pop();
+        }
+
+        private GetPuzzleAuthor(romData: Buffer, mapScriptPtr: number) {
+            return this.ReadStridedData(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 21).map(data => this.ConvertText(romData.slice(data.readUInt32LE(1) - 0x8000000))).pop();
         }
 
         private FindMapEncounters(romData: Buffer, config: PGEINI) {

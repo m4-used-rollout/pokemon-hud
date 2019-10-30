@@ -113,7 +113,7 @@ body {
             margin:0;
             padding:0;
             margin-bottom: 5px;
-            height: (@party-member-height * 6);
+            height: (@party-member-height * 3); //TTH
             transition: filter .2s ease-in-out;
             
             > li {
@@ -631,6 +631,11 @@ body {
         }
 
         .trainer-info {
+
+            display:flex; //TTH
+            flex-flow: column nowrap;//TTH
+            justify-content: space-between; //TTH
+
             .badges {
                 font-size: 10vw;
                 width:100%;
@@ -684,6 +689,70 @@ body {
                 }
             }
 
+            .candy-counts {
+                flex: 1 1 auto;
+                display: inline-flex;
+                flex-flow: row wrap;
+                justify-content: space-between;
+                margin-bottom: auto;
+
+                h5 {
+                    display:none;
+                    width: 100%;
+                    margin: .25em;
+                    text-align: center;
+                }
+                .candy {
+                    flex: 0 0 auto;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    width: 45%;
+                    margin: 0;
+                    margin-bottom: -.1em;
+                    img {
+                        flex: 0 0 auto;
+                    }
+                    span {
+                        flex: 1 1 auto;
+                        vertical-align: middle;
+                    }
+                    .quantity {
+                        flex: 0 1 auto;
+                        margin-left: auto;
+                    }
+                    .candy-name {
+                        font-size: .8em;
+                        margin: 0 .5em;
+                     }
+                }
+            }
+
+            .key-items {
+                flex: 1 1 auto;
+                display: inline-flex;
+                flex-flow: row wrap;
+                justify-content: space-between;
+                h5 {
+                    display:none;
+                    width: 100%;
+                    margin: .25em;
+                    text-align: center;
+                }
+                ul {
+                    display:flex;
+                    list-style:none;
+                    margin: 0;
+                    padding: 0;
+
+                    li {
+                        flex: 0 1 auto;
+                        padding: 0;
+                        flex: 0 0 auto;
+                        margin: -.1em .5em;
+                    }
+                }
+            }
             
             .rtc {
                 //margin-top: .25em;
@@ -764,7 +833,18 @@ body {
                         padding-left:0;
                     }
                     .cash:before {
-                        content:"$";
+                        //content:"$";
+                        //TTH
+                        content:'';
+                        display: inline-block;
+                        width:1.75em;
+                        margin-right: -.25em;
+                        height:1em;
+                        background-image:url('img/CandyCorn.svg');
+                        image-rendering: pixelated;
+                        background-size: cover;
+                        background-repeat: no-repeat;
+                        background-position: top center;
                     }
                     .balls:before {
                         content:"\264e";
@@ -835,7 +915,7 @@ body {
 
 @import 'goals/goals.less';
 
-@import 'themes/n3ds.less';
+// @import 'themes/n3ds.less';
 // @import 'themes/gbc.less';
 // @import 'themes/dualgb.less';
 // @import 'themes/gcn.less';

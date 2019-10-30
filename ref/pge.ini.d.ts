@@ -126,6 +126,8 @@ declare interface PGEINI {
     "StarterPokemonLevel": string;
     "StarterEncounterPokemon": string;
     "StarterEncounterPokemonLevel": string;
+    "PuzzleList": string;
+    "PuzzleCount": string;
     "AttackAnimationTable": string;
     "BattleFrontierTrainers": string;
     "SlateportBattleTentTrainers": string;

@@ -1,5 +1,10 @@
 /// <reference path="z-crystals.tsx" />
 /// <reference path="../utils/fittowidth.tsx" />
+/// <reference path="../itemsprite.tsx" />
+
+
+
+const escapeRope = 85;//TTH
 
 class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
     private padTime(n: number) {
@@ -11,9 +16,12 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
         let displayOpts = config.displayOptions || ["text_speed", "battle_style", "battle_scene"];
         let pc: TPP.CombinedPCData = t.pc || { current_box_number: 0, boxes: [] };
         let pcBoxCount = (pc.boxes || []).filter(b => !!b && b.box_contents && b.box_number == pc.current_box_number).map(b => b.box_contents.length).shift() || 0;
+
+
+
         return <div className={`trainer-info ${t.transitioning ? "glitch" : ""}`}>
             {/* <Badges bitfield={t.badges} rematch={t.rematch_available} /> */}
-            {t.time ?
+            {/* {t.time ?
                 <div className="rtc">
                     {t.time.d ? <span className="days">{t.time.d}</span> : null}
                     <span className="hours">{(t.time.h || 0) % 12 ? t.time.h % 12 : 12}</span>
@@ -22,13 +30,27 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                     <span className="meridian">{t.time.h < 12 ? "AM" : "PM"}</span>
                 </div>
                 : null
-            }
+            } */}
+            <div className="candy-counts">
+                <h5>Candy Haul</h5>
+                {t.items.items.filter(i => i.id != escapeRope)/*.sort((c1, c2) => (c2.count || 1) - (c1.count || 1))*/.map(i => <div className="candy" key={i.id}>
+                    <ItemSprite id={i.id} />
+                    <span className="candy-name">{i.name}</span>
+                    <span className="quantity">{i.count || 1}</span>
+                </div>)}
+            </div>
+            <div className="key-items">
+                <h5>Key Items</h5>
+                <ul>
+                    {t.items.key.map(i => <li key={i.id}>{i.name}</li>)}
+                </ul>
+            </div>
             {/* {t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
             </div>} */}
             <FitToWidth className="bottom-row">
                 <span className={`cash ${t.money < 1000 ? t.money < 200 ? 'low' : 'med' : 'good'}`}>{(t.money || 0).toLocaleString()}</span>
-                <span className={`balls ${(t.ball_count || 0) < 10 ? (t.ball_count || 0) < 1 ? 'low' : 'med' : 'good'}`}>{(t.ball_count || 0).toLocaleString()}</span>
+                {/* <span className={`balls ${(t.ball_count || 0) < 10 ? (t.ball_count || 0) < 1 ? 'low' : 'med' : 'good'}`}>{(t.ball_count || 0).toLocaleString()}</span> */}
                 {(t.stickers || t.stickers === 0) && <span className="stickers">{t.stickers}</span>}
                 {/*<span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>*/}
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
