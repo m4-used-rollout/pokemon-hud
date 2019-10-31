@@ -29,6 +29,7 @@ namespace TPP.Server.DexNav {
             || runState.in_battle != in_battle //Got into/out of a battle
             || enemyParty != JSON.stringify(runState.enemy_party) //enemy trainer update
             || party != JSON.stringify(runState.party) //our party update
+            || (!state.PuzzleFoundScroll && runState.trick_house && runState.trick_house.filter(t => true).pop() != "Incomplete") //found TTH scroll
         ) {
             let map = RomData.GetMap(runState.map_id, runState.map_bank);
             state = new State(map, RomData.GetCurrentMapEncounters(map, runState), RomData.GetAllMapEncounters(map), runState);

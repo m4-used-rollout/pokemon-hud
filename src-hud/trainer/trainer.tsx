@@ -31,20 +31,20 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 </div>
                 : null
             } */}
-            <div className="candy-counts">
+            {t.items && t.items.items && <div className="candy-counts">
                 <h5>Candy Haul</h5>
                 {t.items.items.filter(i => i.id != escapeRope)/*.sort((c1, c2) => (c2.count || 1) - (c1.count || 1))*/.map(i => <div className="candy" key={i.id}>
                     <ItemSprite id={i.id} />
                     <span className="candy-name">{i.name}</span>
                     <span className="quantity">{i.count || 1}</span>
                 </div>)}
-            </div>
-            <div className="key-items">
+            </div>}
+            {t.items && t.items.key && <div className="key-items">
                 <h5>Key Items</h5>
                 <ul>
                     {t.items.key.map(i => <li key={i.id}>{i.name}</li>)}
                 </ul>
-            </div>
+            </div>}
             {/* {t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
             </div>} */}
@@ -60,10 +60,14 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 {t.items && t.items.z_crystals && <ZCrystals items={t.items} />}
                 {/* <Badges bitfield={t.badges} rematch={t.rematch_available} /> */}
                 {t.party_fitness && <span className="fitness">{t.party_fitness.toLocaleString()}</span>}
-                <div className="dex-counts">
+                {/* <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>
                     <span className="seen">{t.seen || 0}</span>
                     <span className="total">{config.totalInDex || "???"}</span>
+                </div> */}
+                <div className="dex-counts">
+                    <span className="owned">{t.game_stats && t.game_stats["Puzzles Completed"] || 0}</span>
+                    <span className="total">21</span>
                 </div>
             </FitToWidth>
         </div>

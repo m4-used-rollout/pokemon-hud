@@ -45,6 +45,7 @@ namespace TPP.Server.DexNav {
         public AreaName = "";
         public PuzzleAuthor = "";
         public PuzzleNumber = 0;
+        public PuzzleFoundScroll = false;
         public Hour = 0;
         public TotalEncounters = 0;
         public CompletedCategories = 0;
@@ -87,6 +88,7 @@ namespace TPP.Server.DexNav {
             if (map['author'] && map['puzzleNo']) {
                 this.PuzzleNumber = map['puzzleNo'];
                 this.PuzzleAuthor = map['author'];
+                this.PuzzleFoundScroll = runState.trick_house && runState.trick_house.filter(t => true).pop() != "Incomplete";
             }
             this.ShowDexNav = !!(runState.id || runState.secret);
             this.IsUnknownArea = RomData.IsUnknownTrainerMap(map.id, map.bank);

@@ -621,6 +621,7 @@ declare namespace TPP.Server.DexNav {
         AreaName: string;
         PuzzleAuthor: string;
         PuzzleNumber: number;
+        PuzzleFoundScroll: boolean;
         Hour: number;
         TotalEncounters: number;
         CompletedCategories: number;
