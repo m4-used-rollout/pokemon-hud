@@ -1,9 +1,19 @@
 /// <reference path="../ref/runstatus.d.ts" />
 /// <reference path="argv.ts" />
 /// <reference path="events/events.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g1.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g2.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g3.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g4.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g5.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g6.ts" />
+/// <reference path="rom-reading/romreaders/concrete/g7.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
+/// <reference path="ram-reading/g1.ts" />
+// /// <reference path="ram-reading/g2.ts" />
 /// <reference path="ram-reading/g3.ts" />
+// /// <reference path="ram-reading/g6.ts" />
+/// <reference path="ram-reading/g7.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/electron/electron.d.ts" />
 
@@ -126,30 +136,6 @@ module TPP.Server {
     }
 
     export const events = new Events.RunEvents(config);
-
-    // export let RomDataG3: RomReader.RomReaderBase;
-    // export let RamDataG3: RamReader.RamReaderBase;
-    // export let RomDataG1: RomReader.RomReaderBase;
-    // export let RamDataG1: RamReader.RamReaderBase;
-    // try {
-    //     let path = RomReader.RomReaderBase.FindLocalFile(config.romFile[0]);
-    //     console.log(`Reading ROM at ${path}`);
-    //     let rom3 = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
-    //     RomDataG3 = rom3;
-    //     RamDataG3 = new RamReader.Gen3(rom3, 5337, undefined, config);
-
-    //     path = RomReader.RomReaderBase.FindLocalFile(config.romFile[1]);
-    //     console.log(`Reading ROM at ${path}`);
-    //     let rom1 = new RomReader.Gen1(path);
-    //     RomDataG1 = rom1;
-    //     RamDataG1 = new RamReader.Gen1(rom1, 5337, undefined, config);
-    // } catch (e) {
-    //     console.log(`Could not read ROM.`);
-    //     console.error(e);
-    //     process.exit(1);
-    // }
-    // export let RomData = RomDataG3;
-    // export let RamData = RamDataG3;
     export let RomData: RomReader.RomReaderBase;
     export let RamData: RamReader.RamReaderBase;
     try {
@@ -159,12 +145,50 @@ module TPP.Server {
             path = RomReader.RomReaderBase.FindLocalFile(romFile);
             console.log(`Reading ROM at ${path}`);
         }
-        //let rom = new RomReader.Gen7();
-        let rom = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
-        //let rom = new RomReader.XD(romFile);
-        RomData = rom;
-        //RamData = new RamReader.Gen7(rom, 5340, "localhost", config);
-        RamData = new RamReader.Gen3(rom, 5337, undefined, config);
+        switch (config.generation) {
+            case 1: {
+                let rom = new RomReader.Gen1(path);
+                RomData = rom;
+                RamData = new RamReader.Gen1(rom, 5337, "localhost", config);
+                break;
+            }
+            case 2: {
+                let rom = new RomReader.Gen2(path);
+                RomData = rom;
+                //RamData = new RamReader.Gen2(rom, 5337, "localhost", config);
+                break;
+            }
+            case 3:{
+                let rom = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
+                RomData = rom;
+                RamData = new RamReader.Gen3(rom, 5337, "localhost", config);
+                break;
+            }
+            case 4: {
+                let rom = new RomReader.Gen4(path);
+                RomData =rom;
+                //RamData = new RamReader.Gen4(rom, 6337, "localhost", config);
+                break;
+            }
+            case 5: {
+                let rom = new RomReader.Gen5(path);
+                RomData =rom;
+                //RamData = new RamReader.Gen5(rom, 6337, "localhost", config);
+                break;
+            }
+            case 6: {
+                let rom = new RomReader.Gen6();
+                RomData = rom;
+                //RamData = new RamReader.Gen6(rom, 5340, "localhost", config);
+                break;
+            }
+            case 7: {
+                let rom = new RomReader.Gen7();
+                RomData = rom;
+                RamData = new RamReader.Gen7(rom, 5340, "localhost", config);
+                break;
+            }
+        }
     } catch (e) {
         console.log(`Could not read ROM.`);
         console.error(e);
@@ -190,10 +214,7 @@ module TPP.Server {
         if (RamData) {
             RamData.Stop();
         }
-        // RamDataG1.Stop();
-        // RamDataG3.Stop();
         clearTimeout(transitionTimeout);
-        //state.transitioning = true;
     }
 
     StartRamReading();
@@ -228,15 +249,6 @@ module TPP.Server {
 
     function switchGame(game: string) {
         StopRamReading();
-        //if (game.split('.').pop() == "gb") {
-        // if ((game || "").toLowerCase().indexOf("fire") >= 0) {
-        //     RomData = RomDataG3;
-        //     RamData = RamDataG3;
-        // }
-        // else {
-        //     RomData = RomDataG1;
-        //     RamData = RamDataG1;
-        // }
         setTimeout(() => state.updates_paused ? null : StartRamReading(), 1);
     }
 

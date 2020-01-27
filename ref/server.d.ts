@@ -3,9 +3,9 @@
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../ref/ini.d.ts" />
 /// <reference path="../ref/pge.ini.d.ts" />
+/// <reference path="../ref/upr.ini.d.ts" />
 /// <reference path="../node_modules/electron/electron.d.ts" />
 /// <reference path="../ref/joypad.d.ts" />
-/// <reference path="../ref/upr.ini.d.ts" />
 declare module Args {
     interface CmdConf extends Config {
     }
@@ -47,6 +47,11 @@ declare namespace Events {
         private SaveAction;
         private DispatchInternal;
     }
+}
+declare const gen1Charmap: string[];
+declare const gen1MapNames: string[];
+declare namespace Tools.LZGSC {
+    function Decompress(compressed: Buffer): Buffer;
 }
 declare namespace Pokemon {
     namespace ExpCurve {
@@ -329,6 +334,107 @@ declare namespace RomReader {
         FindTerminator(data: Buffer): number;
     }
 }
+declare namespace RomReader {
+    class Gen1 extends GBReader {
+        private fishingRodIds;
+        constructor(romFileLocation: string);
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+        GetTrainerSprite(id: number): string;
+        GetItemSprite(id: number): string;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        private FindFishingEncounters;
+        private ParseEncounters;
+        private ReadEncounterTablesAt;
+        private ReadMaps;
+        private ReadAreaNames;
+        private AddTMHMs;
+        private ReadMoveData;
+        private FindBallIds;
+        private FindFishingRods;
+        private ReadItemData;
+        BankSizes: {
+            ROM: number;
+            VRAM: number;
+            SRAM: number;
+            CartRAM: number;
+            WRAM: number;
+        };
+        private ReadTrainerData;
+        private PokedexToIndex;
+        private IndexToPokedex;
+        private ReadPokeData;
+        private ReadMoveLearns;
+        private ProcessPalette;
+    }
+}
+declare const gen2Offsets: {
+    ItemAttributesOffset: string;
+    PokemonPalettes: string;
+    TrainerPalettes: string;
+    TMMovesOffset: string;
+    TimeOfDayOffset: string;
+    WildPokemonOffset: string;
+    TrainerClassNamesOffset: string;
+    TrainerGroupsOffset: string;
+    MoveDataOffset: string;
+    PokemonStatsOffset: string;
+    PokemonNamesOffset: string;
+    FishingWildsOffset: string;
+    TimeFishGroups: string;
+    MapHeaders: string;
+    BugContestWilds: string;
+    HeadbuttWildsOffset: string;
+    FrameBordersOffset: string;
+    PokemonPicPointers: string;
+    UnownPicPointers: string;
+    TrainerPicPointers: string;
+    ItemNamesOffset: string;
+    MoveNamesOffset: string;
+    AreaNamesOffset: string;
+    CrystalPicBankOffset: number;
+    charmap: any[];
+    mapNames: {
+        [key: number]: {
+            [key: number]: {
+                name: string;
+            };
+        };
+    };
+};
+declare namespace RomReader {
+    class Gen2 extends GBReader {
+        private timeOfDay;
+        private tmMapping;
+        private johtoGrassSummary;
+        private johtoSurfSummary;
+        private kantoGrassSummary;
+        private kantoSurfSummary;
+        private treeSummary;
+        private fishingSummary;
+        private trainerSummary;
+        constructor(romFileLocation: string);
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        private ReadPyriteLevelCaps;
+        private FindFishingEncounters;
+        private FindTreeEncounters;
+        private FindMapEncounters;
+        private ReadMaps;
+        private ReadAreaNames;
+        private GetTMHMNames;
+        private ReadMoveData;
+        private ReadItemData;
+        private ReadTrainerData;
+        private ReadPokeData;
+        private ReadMoveLearns;
+        private ReadFrameBorders;
+        private TranslatePicBank;
+        private ProcessPalette;
+        private ReadTrainerSprites;
+        private ReadPokemonSprites;
+        private CalculateTimesOfDay;
+    }
+}
 declare const gen3Charmap: string[];
 declare namespace Tools.LZ77 {
     function Decompress(compressed: Buffer, offset?: number): Buffer;
@@ -381,6 +487,123 @@ declare namespace RomReader {
         private ReadMoveLearns;
     }
 }
+declare const gen4FilesOffsets: {
+    TextStrings: string;
+    PokemonGraphics: string;
+    PokemonStats: string;
+    MapTableFile: string;
+    MoveData: string;
+    ItemData: string;
+    ItemGraphics: string;
+    BadgeGraphics: string;
+    EncounterData: string;
+    PokemonFormIndex: string;
+    TextOffsets: {
+        PokemonNames: number;
+        MoveNames: number;
+        AbilityNames: number;
+        ItemNames: number;
+        MapNames: number;
+    };
+    MapTableARM9Offset: number;
+    MapTableNameIndexSize: number;
+};
+declare namespace Tools {
+    class NARChive {
+        filenames: string[];
+        files: Buffer[];
+        hasFilenames: boolean;
+        constructor(data?: Buffer);
+        getBytes(): Buffer;
+        private readNitroFrames;
+    }
+}
+declare namespace BLZCoder {
+    function Decode(data: Buffer): Buffer;
+}
+declare namespace RomReader {
+    abstract class NDSReader extends RomReaderBase {
+        private basePath;
+        protected dataPath: string;
+        protected romHeader: string;
+        constructor(basePath: string);
+        protected readNARC(path: string): Tools.NARChive;
+        protected readArm9(): Buffer;
+        protected readFile(path: string): Buffer;
+        protected LoadConfig(iniFileLocation: string): UPRINI;
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+    }
+}
+declare namespace Tools.PokeText {
+    function GetStrings(data: Buffer): string[];
+    class PokeTextData {
+        private data;
+        ptrlist: PointerEntry[];
+        strlist: string[];
+        compressFlag: boolean;
+        constructor(data: Buffer);
+        readonly Data: Buffer;
+        decrypt(): void;
+        encrypt(): void;
+        private DecyptPtrs;
+        private CreatePtrList;
+        private DecyptTxt;
+        private MakeString;
+        Key: number;
+    }
+    class PointerEntry {
+        private ptr;
+        private chars;
+        constructor(ptr: number, chars: number);
+        readonly Ptr: number;
+        readonly Chars: number;
+    }
+    const CharMap: {
+        [key: number]: string;
+    };
+}
+declare namespace RomReader {
+    class Gen4 extends NDSReader {
+        private tmHmMoves;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+        GetItemSprite(id: number): string;
+        ConvertText(text: string): string;
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        constructor(basePath: string);
+    }
+}
+declare const gen5FilesOffsets: {
+    TextStrings: string;
+    PokemonGraphics: string;
+    PokemonStats: string;
+    MapTableFile: string;
+    MoveData: string;
+    ItemData: string;
+    ItemGraphics: string;
+    BadgeGraphics: string;
+    EncounterData: string;
+    PokemonFormIndex: string;
+    TextOffsets: {
+        PokemonNames: number;
+        MoveNames: number;
+        AbilityNames: number;
+        ItemNames: number;
+        MapNames: number;
+    };
+};
+declare namespace Tools.PPTxt {
+    function GetStrings(ds: Buffer): string[];
+    function PokeToText(str: string): string;
+}
+declare namespace RomReader {
+    class Gen5 extends NDSReader {
+        ConvertText(text: string): string;
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        constructor(basePath: string, iniFile?: string);
+    }
+}
 declare namespace RomReader {
     class Generic extends RomReaderBase {
         constructor(dataFolder?: string);
@@ -388,6 +611,28 @@ declare namespace RomReader {
         GetItemSprite(id: number): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         CollapseSeenForms(seen: number[]): number[];
+    }
+}
+declare namespace RomReader {
+    class Gen6 extends Generic {
+        constructor();
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        GetItemSprite(id: number): string;
+    }
+}
+declare namespace RomReader {
+    interface SearchableTrainer extends Pokemon.Trainer {
+        partySize: number;
+        partySpecies: number[];
+        partyLevels: number[];
+    }
+    class Gen7 extends Generic {
+        protected trainers: SearchableTrainer[];
+        constructor();
+        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        CollapseSeenForms(seen: number[]): number[];
+        CalculateShiny(pkmn: TPP.Pokemon): void;
+        TrainerSearch(name: string, className: string, partySize: number, partySpecies: number[], partyLevels: number[]): SearchableTrainer;
     }
 }
 declare namespace Pokemon.Convert {
@@ -512,6 +757,54 @@ declare namespace RamReader {
     }
 }
 declare namespace RamReader {
+    interface Gen1BoxedMon extends TPP.Pokemon {
+        health: number[];
+        status: string;
+        sleep_turns?: number;
+    }
+    class Gen1 extends RamReaderBase<RomReader.Gen1> {
+        protected SymAddr: (symbol: string) => string;
+        protected PCBoxSize: () => number;
+        protected PartySize: () => number;
+        protected PartyMonSize: () => number;
+        protected BattleMonSize: () => number;
+        ReadParty: () => Promise<TPP.PartyData>;
+        ReadPC: () => Promise<TPP.CombinedPCData>;
+        ReadBattle: () => Promise<TPP.BattleStatus>;
+        protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
+        protected OptionsSpec: {
+            text_speed: {
+                1: string;
+                3: string;
+                5: string;
+            };
+            battle_style: {
+                0: string;
+                0x40: string;
+            };
+            battle_scene: {
+                0: string;
+                0x80: string;
+            };
+        };
+        protected BaseOffsetCalc: (baseSymbol: string, extraOffset?: number) => (symbol: string) => number;
+        protected ParseBattleBundle(data: Buffer): TPP.BattleStatus;
+        protected ParsePC(data: Buffer): TPP.CombinedPCData;
+        protected ParsePCBox(data: Buffer): Gen1BoxedMon[];
+        protected ParseParty(data: Buffer): TPP.PartyData;
+        protected AddOTNames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
+        protected AddNicknames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
+        protected FixCapsNonNickname(nick: string, speciesName: string): string;
+        protected ParsePartyMon(data: Buffer, species?: number): TPP.PartyPokemon;
+        protected ParsePokemon(data: Buffer, species?: number): Gen1BoxedMon;
+        protected ParseBattlePokemon(data: Buffer): TPP.PartyPokemon & {
+            active: boolean;
+        };
+        protected UnpackDVs(dvs: number): TPP.Stats;
+        Init(): void;
+    }
+}
+declare namespace RamReader {
     class Gen3 extends RamReaderBase<RomReader.Gen3> {
         protected Markings: string[];
         ReadParty: () => Promise<TPP.PartyPokemon[]>;
@@ -563,6 +856,63 @@ declare namespace RamReader {
                 2: string;
             };
         };
+    }
+}
+declare namespace RamReader {
+    interface Gen7Pokemon extends TPP.Pokemon {
+        encryption_constant: number;
+        sanity: number;
+        scramble_value: number;
+        checksum: number;
+        pelago_event_status: number;
+        is_nicknamed: boolean;
+        affection: number;
+        fullness: number;
+        enjoyment: number;
+    }
+    class Gen7 extends RamReaderBase<RomReader.Gen7> {
+        ReadParty: () => Promise<(TPP.PartyPokemon & Gen7Pokemon)[]>;
+        ReadPC: () => Promise<TPP.CombinedPCData>;
+        ReadBattle: () => Promise<TPP.BattleStatus>;
+        protected TrainerChunkReaders: (() => Promise<Partial<TPP.TrainerData>>)[];
+        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
+        protected OptionsSpec: {
+            text_speed: {
+                2: string;
+                1: string;
+                0: string;
+            };
+            battle_style: {
+                0: string;
+                0x8: string;
+            };
+            battle_scene: {
+                0: string;
+                0x4: string;
+            };
+            button_mode: {
+                0: string;
+                0x2000: string;
+            };
+            box_mode: {
+                0: string;
+                0x8000: string;
+            };
+        };
+        private battleMonCache;
+        private battleTrainerCache;
+        protected ParseBattle(data: Buffer): Promise<TPP.BattleStatus>;
+        protected ParseSaveBlock1(data: Buffer): Promise<Partial<TPP.TrainerData>>;
+        protected itemPocketOffsets: number[];
+        protected ParseItems(data: Buffer): TPP.TrainerData["items"];
+        protected ParseSaveBlock2(data: Buffer): Partial<TPP.TrainerData>;
+        protected ParseDaycare(data: Buffer): Partial<TPP.TrainerData>;
+        protected ParsePC(data: Buffer): TPP.CombinedPCData;
+        protected ParsePCBox(data: Buffer): Gen7Pokemon[];
+        protected ParseParty(data: Buffer): (TPP.PartyPokemon & Gen7Pokemon)[];
+        protected ParsePartyMon(data: Buffer, battleDataOffset?: number): TPP.PartyPokemon & Gen7Pokemon;
+        protected ParsePokemon(pkmdata: Buffer, box_slot?: number): Gen7Pokemon;
+        protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
     }
 }
 declare module TPP.Server {
@@ -1005,111 +1355,6 @@ declare namespace RamReader {
         protected evoFsysId: number;
     }
 }
-declare namespace RamReader {
-    interface Gen1BoxedMon extends TPP.Pokemon {
-        health: number[];
-        status: string;
-        sleep_turns?: number;
-    }
-    class Gen1 extends RamReaderBase<RomReader.Gen1> {
-        protected SymAddr: (symbol: string) => string;
-        protected PCBoxSize: () => number;
-        protected PartySize: () => number;
-        protected PartyMonSize: () => number;
-        protected BattleMonSize: () => number;
-        ReadParty: () => Promise<TPP.PartyData>;
-        ReadPC: () => Promise<TPP.CombinedPCData>;
-        ReadBattle: () => Promise<TPP.BattleStatus>;
-        protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
-        protected OptionsSpec: {
-            text_speed: {
-                1: string;
-                3: string;
-                5: string;
-            };
-            battle_style: {
-                0: string;
-                0x40: string;
-            };
-            battle_scene: {
-                0: string;
-                0x80: string;
-            };
-        };
-        protected BaseOffsetCalc: (baseSymbol: string, extraOffset?: number) => (symbol: string) => number;
-        protected ParseBattleBundle(data: Buffer): TPP.BattleStatus;
-        protected ParsePC(data: Buffer): TPP.CombinedPCData;
-        protected ParsePCBox(data: Buffer): Gen1BoxedMon[];
-        protected ParseParty(data: Buffer): TPP.PartyData;
-        protected AddOTNames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
-        protected AddNicknames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
-        protected FixCapsNonNickname(nick: string, speciesName: string): string;
-        protected ParsePartyMon(data: Buffer, species?: number): TPP.PartyPokemon;
-        protected ParsePokemon(data: Buffer, species?: number): Gen1BoxedMon;
-        protected ParseBattlePokemon(data: Buffer): TPP.PartyPokemon & {
-            active: boolean;
-        };
-        protected UnpackDVs(dvs: number): TPP.Stats;
-        Init(): void;
-    }
-}
-declare namespace RamReader {
-    interface Gen7Pokemon extends TPP.Pokemon {
-        encryption_constant: number;
-        sanity: number;
-        scramble_value: number;
-        checksum: number;
-        pelago_event_status: number;
-        is_nicknamed: boolean;
-        affection: number;
-        fullness: number;
-        enjoyment: number;
-    }
-    class Gen7 extends RamReaderBase<RomReader.Gen7> {
-        ReadParty: () => Promise<(TPP.PartyPokemon & Gen7Pokemon)[]>;
-        ReadPC: () => Promise<TPP.CombinedPCData>;
-        ReadBattle: () => Promise<TPP.BattleStatus>;
-        protected TrainerChunkReaders: (() => Promise<Partial<TPP.TrainerData>>)[];
-        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
-        protected OptionsSpec: {
-            text_speed: {
-                2: string;
-                1: string;
-                0: string;
-            };
-            battle_style: {
-                0: string;
-                0x8: string;
-            };
-            battle_scene: {
-                0: string;
-                0x4: string;
-            };
-            button_mode: {
-                0: string;
-                0x2000: string;
-            };
-            box_mode: {
-                0: string;
-                0x8000: string;
-            };
-        };
-        private battleMonCache;
-        private battleTrainerCache;
-        protected ParseBattle(data: Buffer): Promise<TPP.BattleStatus>;
-        protected ParseSaveBlock1(data: Buffer): Promise<Partial<TPP.TrainerData>>;
-        protected itemPocketOffsets: number[];
-        protected ParseItems(data: Buffer): TPP.TrainerData["items"];
-        protected ParseSaveBlock2(data: Buffer): Partial<TPP.TrainerData>;
-        protected ParseDaycare(data: Buffer): Partial<TPP.TrainerData>;
-        protected ParsePC(data: Buffer): TPP.CombinedPCData;
-        protected ParsePCBox(data: Buffer): Gen7Pokemon[];
-        protected ParseParty(data: Buffer): (TPP.PartyPokemon & Gen7Pokemon)[];
-        protected ParsePartyMon(data: Buffer, battleDataOffset?: number): TPP.PartyPokemon & Gen7Pokemon;
-        protected ParsePokemon(pkmdata: Buffer, box_slot?: number): Gen7Pokemon;
-        protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
-    }
-}
 declare namespace RomReader {
     interface XDTrainer extends Pokemon.Trainer {
         partySummary: string[];
@@ -1295,250 +1540,6 @@ declare namespace RamReader {
 }
 declare namespace RomReader {
     function AugmentState(romData: RomReaderBase, state: TPP.RunStatus): void;
-}
-declare const gen1Charmap: string[];
-declare const gen1MapNames: string[];
-declare const gen2Offsets: {
-    ItemAttributesOffset: string;
-    PokemonPalettes: string;
-    TrainerPalettes: string;
-    TMMovesOffset: string;
-    TimeOfDayOffset: string;
-    WildPokemonOffset: string;
-    TrainerClassNamesOffset: string;
-    TrainerGroupsOffset: string;
-    MoveDataOffset: string;
-    PokemonStatsOffset: string;
-    PokemonNamesOffset: string;
-    FishingWildsOffset: string;
-    TimeFishGroups: string;
-    MapHeaders: string;
-    BugContestWilds: string;
-    HeadbuttWildsOffset: string;
-    FrameBordersOffset: string;
-    PokemonPicPointers: string;
-    UnownPicPointers: string;
-    TrainerPicPointers: string;
-    ItemNamesOffset: string;
-    MoveNamesOffset: string;
-    AreaNamesOffset: string;
-    CrystalPicBankOffset: number;
-    charmap: any[];
-    mapNames: {
-        [key: number]: {
-            [key: number]: {
-                name: string;
-            };
-        };
-    };
-};
-declare const gen4FilesOffsets: {
-    TextStrings: string;
-    PokemonGraphics: string;
-    PokemonStats: string;
-    MapTableFile: string;
-    MoveData: string;
-    ItemData: string;
-    ItemGraphics: string;
-    BadgeGraphics: string;
-    EncounterData: string;
-    PokemonFormIndex: string;
-    TextOffsets: {
-        PokemonNames: number;
-        MoveNames: number;
-        AbilityNames: number;
-        ItemNames: number;
-        MapNames: number;
-    };
-    MapTableARM9Offset: number;
-    MapTableNameIndexSize: number;
-};
-declare const gen5FilesOffsets: {
-    TextStrings: string;
-    PokemonGraphics: string;
-    PokemonStats: string;
-    MapTableFile: string;
-    MoveData: string;
-    ItemData: string;
-    ItemGraphics: string;
-    BadgeGraphics: string;
-    EncounterData: string;
-    PokemonFormIndex: string;
-    TextOffsets: {
-        PokemonNames: number;
-        MoveNames: number;
-        AbilityNames: number;
-        ItemNames: number;
-        MapNames: number;
-    };
-};
-declare namespace Tools {
-    class NARChive {
-        filenames: string[];
-        files: Buffer[];
-        hasFilenames: boolean;
-        constructor(data?: Buffer);
-        getBytes(): Buffer;
-        private readNitroFrames;
-    }
-}
-declare namespace BLZCoder {
-    function Decode(data: Buffer): Buffer;
-}
-declare namespace RomReader {
-    abstract class NDSReader extends RomReaderBase {
-        private basePath;
-        protected dataPath: string;
-        protected romHeader: string;
-        constructor(basePath: string);
-        protected readNARC(path: string): Tools.NARChive;
-        protected readArm9(): Buffer;
-        protected readFile(path: string): Buffer;
-        protected LoadConfig(iniFileLocation: string): UPRINI;
-        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
-    }
-}
-declare namespace Tools.LZGSC {
-    function Decompress(compressed: Buffer): Buffer;
-}
-declare namespace RomReader {
-    class Gen1 extends GBReader {
-        private fishingRodIds;
-        constructor(romFileLocation: string);
-        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
-        GetTrainerSprite(id: number): string;
-        GetItemSprite(id: number): string;
-        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        private FindFishingEncounters;
-        private ParseEncounters;
-        private ReadEncounterTablesAt;
-        private ReadMaps;
-        private ReadAreaNames;
-        private AddTMHMs;
-        private ReadMoveData;
-        private FindBallIds;
-        private FindFishingRods;
-        private ReadItemData;
-        BankSizes: {
-            ROM: number;
-            VRAM: number;
-            SRAM: number;
-            CartRAM: number;
-            WRAM: number;
-        };
-        private PokedexToIndex;
-        private IndexToPokedex;
-        private ReadPokeData;
-        private ReadMoveLearns;
-        private ProcessPalette;
-    }
-}
-declare namespace RomReader {
-    class Gen2 extends GBReader {
-        private timeOfDay;
-        private tmMapping;
-        private johtoGrassSummary;
-        private johtoSurfSummary;
-        private kantoGrassSummary;
-        private kantoSurfSummary;
-        private treeSummary;
-        private fishingSummary;
-        private trainerSummary;
-        constructor(romFileLocation: string);
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
-        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        private ReadPyriteLevelCaps;
-        private FindFishingEncounters;
-        private FindTreeEncounters;
-        private FindMapEncounters;
-        private ReadMaps;
-        private ReadAreaNames;
-        private GetTMHMNames;
-        private ReadMoveData;
-        private ReadItemData;
-        private ReadTrainerData;
-        private ReadPokeData;
-        private ReadMoveLearns;
-        private ReadFrameBorders;
-        private TranslatePicBank;
-        private ProcessPalette;
-        private ReadTrainerSprites;
-        private ReadPokemonSprites;
-        private CalculateTimesOfDay;
-    }
-}
-declare namespace Tools.PokeText {
-    function GetStrings(data: Buffer): string[];
-    class PokeTextData {
-        private data;
-        ptrlist: PointerEntry[];
-        strlist: string[];
-        compressFlag: boolean;
-        constructor(data: Buffer);
-        readonly Data: Buffer;
-        decrypt(): void;
-        encrypt(): void;
-        private DecyptPtrs;
-        private CreatePtrList;
-        private DecyptTxt;
-        private MakeString;
-        Key: number;
-    }
-    class PointerEntry {
-        private ptr;
-        private chars;
-        constructor(ptr: number, chars: number);
-        readonly Ptr: number;
-        readonly Chars: number;
-    }
-    const CharMap: {
-        [key: number]: string;
-    };
-}
-declare namespace RomReader {
-    class Gen4 extends NDSReader {
-        private tmHmMoves;
-        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
-        GetItemSprite(id: number): string;
-        ConvertText(text: string): string;
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
-        constructor(basePath: string);
-    }
-}
-declare namespace Tools.PPTxt {
-    function GetStrings(ds: Buffer): string[];
-    function PokeToText(str: string): string;
-}
-declare namespace RomReader {
-    class Gen5 extends NDSReader {
-        ConvertText(text: string): string;
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
-        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        constructor(basePath: string, iniFile?: string);
-    }
-}
-declare namespace RomReader {
-    class Gen6 extends Generic {
-        constructor();
-        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        GetItemSprite(id: number): string;
-    }
-}
-declare namespace RomReader {
-    interface SearchableTrainer extends Pokemon.Trainer {
-        partySize: number;
-        partySpecies: number[];
-        partyLevels: number[];
-    }
-    class Gen7 extends Generic {
-        protected trainers: SearchableTrainer[];
-        constructor();
-        GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
-        CollapseSeenForms(seen: number[]): number[];
-        CalculateShiny(pkmn: TPP.Pokemon): void;
-        TrainerSearch(name: string, className: string, partySize: number, partySpecies: number[], partyLevels: number[]): SearchableTrainer;
-    }
 }
 declare namespace Tools.DSDecmp {
     function Decompress(data: Buffer, offset?: number): Buffer;

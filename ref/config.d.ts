@@ -1,6 +1,7 @@
 /// <reference path="./runstatus.d.ts" />
 
 declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig {
+    generation: number;
     runName: string;
     badgeCount?: number;
     mainRegion?: string;
