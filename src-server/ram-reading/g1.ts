@@ -50,6 +50,7 @@ namespace RamReader {
                 x: struct.wXCoord[0],
                 y: struct.wYCoord[0],
                 map_id: struct.wCurMap[0],
+                map_name: this.rom.GetMap(struct.wCurMap[0]).name,
                 map_bank: null,
                 area_id: null,
                 area_name: null,
@@ -124,8 +125,10 @@ namespace RamReader {
                 current_box_number: currentBox,
                 boxes: pc.map((box, i) => (<TPP.BoxData>{
                     box_contents: box,
-                    box_name: `Red Box ${i + 1}`, //PBR
-                    box_number: i + 15 //PBR
+                    box_name: `Box ${i + 1}`,
+                    box_number: i
+                    // box_name: `Red Box ${i + 1}`, //PBR
+                    // box_number: i + 15 //PBR
                 }))
             };
         }
@@ -287,9 +290,9 @@ namespace RamReader {
             // Fake PV
             poke.personality_value = (data.readUInt16BE(offset('DVs')) << 16) + (poke.original_trainer.id | poke.species.catch_rate);
 
-            //PBR
-            (poke as any).aiss_id = this.AissId(poke.species.national_dex, poke.species.catch_rate);
-            poke.gender = "";
+            // //PBR
+            // (poke as any).aiss_id = this.AissId(poke.species.national_dex, poke.species.catch_rate);
+            // poke.gender = "";
 
             return poke;
         }

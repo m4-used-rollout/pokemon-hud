@@ -12,7 +12,7 @@ namespace RomReader {
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
     const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
 
-    const tmCount = 50, hmCount = 5, dexCount = 152; //PBR
+    const tmCount = 50, hmCount = 5, dexCount = 151, trainerClasses = 47;
 
     interface ClearFix { [key: number]: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } };
     const pokeSpriteClearFix: ClearFix = {};
@@ -36,7 +36,7 @@ namespace RomReader {
             this.symTable = this.LoadSymbolFile(romFileLocation.replace(/\.[^.]*$/, '.sym'));
             this.pokemon = this.ReadPokeData(romData);
             // this.pokemonSprites = this.ReadPokemonSprites(romData);
-            // this.trainers = this.ReadTrainerData(romData);
+            this.trainers = this.ReadTrainerData(romData);
             // this.trainerSprites = this.ReadTrainerSprites(romData);
             // this.frameBorders = this.ReadFrameBorders(romData);
             this.items = this.ReadItemData(romData);
@@ -200,25 +200,35 @@ namespace RomReader {
             WRAM: 0x2000
         }
 
-        // private ReadTrainerData(romData: Buffer) {
-        //     let classNames = this.ReadStringBundle(romData, config.TrainerClassNamesOffset, trainerClasses).map(n => this.FixAllCaps(n));
-        //     let trainers: Pokemon.Trainer[] = [];
-        //     let bank = this.LinearAddrToROMBank(config.TrainerGroupsOffset).bank;
-        //     this.ReadStridedData(romData, config.TrainerGroupsOffset, 2, trainerClasses).forEach((ptr, cId, ptrArr) => {
-        //         let thisAddr = this.ROMBankAddrToLinear(bank, ptr.readUInt16LE(0));
-        //         let nextAddr = ptrArr[cId + 1] ? this.ROMBankAddrToLinear(bank, ptrArr[cId + 1].readUInt16LE(0)) : 0;
-        //         this.ReadBundledData(romData, thisAddr, 0xFF, nextAddr || 1, nextAddr).forEach((tData, tId) => {
-        //             trainers.push({
-        //                 classId: cId,
-        //                 spriteId: cId,
-        //                 id: tId,
-        //                 className: classNames[cId],
-        //                 name: this.FixAllCaps(this.ConvertText(tData))
-        //             });
-        //         });
-        //     });
-        //     return trainers;
-        // }
+        private ReadTrainerData(romData: Buffer) {
+            let classNames = this.ReadStringBundle(romData, this.symTable["TrainerNames"], trainerClasses).map(n => this.FixAllCaps(n));
+            classNames.unshift(""); //trainer class 0
+            let trainers: Pokemon.Trainer[] = [];
+            let bank = this.LinearAddressToBanked(this.symTable["TrainerDataPointers"]).bank;
+            this.ReadStridedData(romData, this.symTable["TrainerDataPointers"], 2, trainerClasses).forEach((ptr, cId, ptrArr) => {
+                cId++;
+                let thisAddr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
+                let nextAddr = ptrArr[cId] ? this.BankAddressToLinear(bank, ptrArr[cId].readUInt16LE(0)) : 0;
+                this.ReadBundledData(romData, thisAddr, 0, nextAddr || 1, nextAddr).forEach((tData, tId) => {
+                    const level = tData[0];
+                    let party: { level: number, species: Pokemon.Species }[] = undefined;
+                    if (level == 0xFF)
+                        party = this.ReadStridedData(tData, 1, 2).map(p=> ({level: p[0], species: this.GetSpecies(p[1])}));
+                    else
+                        party = this.ReadStridedData(tData, 1, 1).map(p=>({level, species:this.GetSpecies(p[0])}));
+                    trainers.push({
+                        classId: cId,
+                        spriteId: cId,
+                        id: tId + 1,
+                        className: classNames[cId],
+                        name: "",
+                        party
+                    } as Pokemon.Trainer);
+                });
+            });
+            return trainers;
+        }
+
 
         private PokedexToIndex(romData: Buffer, dexNum: number) {
             for (var c = 0; romData.readUInt8(this.symTable['PokedexOrder'] + c) != dexNum; c++);
