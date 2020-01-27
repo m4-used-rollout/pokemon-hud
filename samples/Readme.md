@@ -1,0 +1,1 @@
+These are sample JSON dumps of the API that were made during testing over the years. I probably should've excluded them from the repo. They do serve as a sample output, though most are very out of date.
