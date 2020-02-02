@@ -768,7 +768,7 @@ declare namespace RamReader {
         protected PartySize: () => number;
         protected PartyMonSize: () => number;
         protected BattleMonSize: () => number;
-        ReadParty: () => Promise<TPP.PartyData>;
+        ReadParty: () => Promise<TPP.PartyPokemon[]>;
         ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadBattle: () => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
@@ -791,12 +791,12 @@ declare namespace RamReader {
         protected ParseBattleBundle(data: Buffer): TPP.BattleStatus;
         protected ParsePC(data: Buffer): TPP.CombinedPCData;
         protected ParsePCBox(data: Buffer): Gen1BoxedMon[];
-        protected ParseParty(data: Buffer): TPP.PartyData;
+        protected ParseParty(data: Buffer): TPP.PartyPokemon[];
         protected AddOTNames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
         protected AddNicknames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
         protected FixCapsNonNickname(nick: string, speciesName: string): string;
         protected ParsePartyMon(data: Buffer, species?: number): TPP.PartyPokemon;
-        protected ParsePokemon(data: Buffer, species?: number): Gen1BoxedMon;
+        protected ParsePokemon(data: Buffer, species?: number, nickname?: Buffer, otName?: Buffer): Gen1BoxedMon;
         protected ParseBattlePokemon(data: Buffer): TPP.PartyPokemon & {
             active: boolean;
         };

@@ -28,7 +28,7 @@ namespace Events {
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
             const seen = new Array<string>();
-            AllMons(oldState).forEach(mon => {
+            AllMons(oldState).filter(mon => mon && mon.personality_value).forEach(mon => {
                 const pv = mon.personality_value;
                 const known = this.knownPokemon[pv]
                 const dexNum = DexNum(mon);

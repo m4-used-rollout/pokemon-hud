@@ -7,6 +7,8 @@ namespace RamReader {
     const MONS_PER_BOX = 20;
     const NUM_BOXES = 12;
     const NUM_POKEMON = 151;
+    const BAG_ITEM_CAPACITY = 20;
+    const PC_ITEM_CAPACITY = 50;
     const DEX_FLAG_BYTES = Math.floor((NUM_POKEMON + 7) / 8);
 
     interface Gen1BoxedMon extends TPP.Pokemon {
@@ -36,29 +38,50 @@ namespace RamReader {
                 wXCoord: 1,
                 wYCoord: 1,
                 wCurMap: 1,
+                wNumBagItems: 1,
+                wBagItems: BAG_ITEM_CAPACITY * 2,
                 wPlayerMoney: 3,
                 wPlayerCoins: 2,
-                wRivalName: NAME_LENGTH
-            }, sym => this.rom.symTable[sym], struct => ({
-                name: this.rom.ConvertText(struct.wPlayerName),
-                id: struct.wPlayerID.readUInt16BE(0),
-                options: this.ParseOptions(struct.wOptions[0]),
-                caught_list: this.GetSetFlags(struct.wPokedexOwned),
-                seen_list: this.GetSetFlags(struct.wPokedexSeen),
-                caught: this.GetSetFlags(struct.wPokedexOwned).length,
-                seen: this.GetSetFlags(struct.wPokedexSeen).length,
-                x: struct.wXCoord[0],
-                y: struct.wYCoord[0],
-                map_id: struct.wCurMap[0],
-                map_name: this.rom.GetMap(struct.wCurMap[0]).name,
-                map_bank: null,
-                area_id: null,
-                area_name: null,
-                money: parseInt(struct.wPlayerMoney.toString('hex')),
-                coins: parseInt(struct.wPlayerCoins.toString('hex')),
-                rival_name: this.rom.ConvertText(struct.wRivalName),
-                evolution_is_happening: false
-            })),
+                wRivalName: NAME_LENGTH,
+                wObtainedBadges: 1,
+                wNumBoxItems: 1,
+                wBoxItems: PC_ITEM_CAPACITY * 2,
+                wDayCareInUse: 1,
+                wDayCareMonName: NAME_LENGTH,
+                wDayCareMonOT: NAME_LENGTH,
+                wDayCareMon: this.rom.symTable['wMainDataEnd'] - this.rom.symTable['wDayCareMon']
+            }, sym => this.rom.symTable[sym], struct => {
+                const options = this.ParseOptions(struct.wOptions[0]);
+                if (this.ShouldForceOptions(options)) {
+                    this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wOptions')}/${this.SetOptions(struct.wOptions[0], this.config.forceOptions).toString(16)}`);
+                }
+                return {
+                    name: this.rom.ConvertText(struct.wPlayerName),
+                    id: struct.wPlayerID.readUInt16BE(0),
+                    options,
+                    caught_list: this.GetSetFlags(struct.wPokedexOwned),
+                    seen_list: this.GetSetFlags(struct.wPokedexSeen),
+                    caught: this.GetSetFlags(struct.wPokedexOwned).length,
+                    seen: this.GetSetFlags(struct.wPokedexSeen).length,
+                    x: struct.wXCoord[0],
+                    y: struct.wYCoord[0],
+                    map_id: struct.wCurMap[0],
+                    map_name: this.rom.GetMap(struct.wCurMap[0]).name,
+                    map_bank: null,
+                    area_id: null,
+                    area_name: null,
+                    money: parseInt(struct.wPlayerMoney.toString('hex')),
+                    coins: parseInt(struct.wPlayerCoins.toString('hex')),
+                    rival_name: this.rom.ConvertText(struct.wRivalName),
+                    evolution_is_happening: false,
+                    badges: struct.wObtainedBadges[0],
+                    items: {
+                        items: this.rom.ReadStridedData(struct.wBagItems, 0, 2, struct.wNumBagItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
+                        pc: this.rom.ReadStridedData(struct.wBoxItems, 0, 2, struct.wNumBoxItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
+                    },
+                    daycare: struct.wDayCareInUse[0] > 0 ? [this.ParsePokemon(struct.wDayCareMon, struct.wDayCareMon[0], struct.wDayCareMonName, struct.wDayCareMonOT)] : []
+                };
+            }),
         ];
 
         protected OptionsSpec = {
@@ -94,6 +117,10 @@ namespace RamReader {
                     const trainer = Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(trainerNum, trainerClass));
                     //wTrainerName/NAME_LENGTH
                     trainer.name = this.rom.ConvertText(data.slice(4, 4 + NAME_LENGTH));
+                    if (/Rival\d+/i.test(trainer.class_name))
+                        trainer.class_name = "Rival"
+                    if ((trainer.name || "").toLowerCase() == (trainer.class_name || '').toLowerCase())
+                        trainer.name = trainer.class_name;
                     trainer.class_id = trainerClass;
                     trainer.id = trainerNum;
                     enemy_trainers.push(trainer);
@@ -105,7 +132,10 @@ namespace RamReader {
                     enemy_party[0].species.catch_rate = actualCatchRate;
                 }
                 else {
+                    const trainerClass = data.readUInt8(2);
+                    const trainerNum = data.readUInt8(3);
                     enemy_party = this.ParseParty(data.slice(4 + NAME_LENGTH));
+                    enemy_party.forEach((p, i) => p.personality_value = p.personality_value ^ i ^ ((trainerClass << 8 | trainerNum) << 16)); //attempt to avoid enemy PV collisions
                 }
 
                 return { in_battle, battle_kind, enemy_party, enemy_trainers };
@@ -115,18 +145,18 @@ namespace RamReader {
 
         protected ParsePC(data: Buffer): TPP.CombinedPCData {
             // wCurrentBoxNum
-            const currentBox = data[0] + 15; //pbr
+            const currentBox = (data[0] & 0x1F) + 1;// + 15; //pbr
             // Active Box
             // sBox1-12
             const pc = this.rom.ReadStridedData(data.slice(1), 0, this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
-            const active = pc.shift();
-            pc[currentBox - 15] = active; //pbr
+            //const active = pc.shift();
+            //pc[currentBox - 15] = active; //pbr
             return {
                 current_box_number: currentBox,
                 boxes: pc.map((box, i) => (<TPP.BoxData>{
                     box_contents: box,
                     box_name: `Box ${i + 1}`,
-                    box_number: i
+                    box_number: i + 1
                     // box_name: `Red Box ${i + 1}`, //PBR
                     // box_number: i + 15 //PBR
                 }))
@@ -193,7 +223,7 @@ namespace RamReader {
                     party[battleMonIndex] = Object.assign(party[battleMonIndex], this.ParseBattlePokemon(data.slice(pastPartyOffset + 2)) || {});
                 }
             }
-            return party;
+            return party.filter(p => !!p && !!p.species && !!p.personality_value);
         }
 
         protected AddOTNames(mons: Gen1BoxedMon[], data: Buffer, monCount: number) {
@@ -235,7 +265,7 @@ namespace RamReader {
             return poke;
         }
 
-        protected ParsePokemon(data: Buffer, species?: number) {
+        protected ParsePokemon(data: Buffer, species?: number, nickname?: Buffer, otName?: Buffer) {
             const poke = {} as Gen1BoxedMon;
             const offset = this.BaseOffsetCalc('wPartyMon1');
             if (data[offset('Species')] == 0)
@@ -289,6 +319,11 @@ namespace RamReader {
 
             // Fake PV
             poke.personality_value = (data.readUInt16BE(offset('DVs')) << 16) + (poke.original_trainer.id | poke.species.catch_rate);
+
+            if (nickname)
+                poke.name = this.rom.ConvertText(nickname);
+            if (otName)
+                poke.original_trainer.name = this.rom.ConvertText(otName);
 
             // //PBR
             // (poke as any).aiss_id = this.AissId(poke.species.national_dex, poke.species.catch_rate);
@@ -353,7 +388,6 @@ namespace RamReader {
 
             return poke;
         }
-
 
         protected UnpackDVs(dvs: number) {
             const ivs = {

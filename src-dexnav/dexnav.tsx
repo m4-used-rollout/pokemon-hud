@@ -19,8 +19,8 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
             config.dexNavTheme
         ];
         return <div className={classes.filter(c => !!c).join(' ')} data-completed={map.CompletedCategories}>
-            <h3>PuzzNav</h3>
-            {/* <h3>DexNav</h3> */}
+            {/* <h3>PuzzNav</h3> */}
+            <h3>DexNav</h3>
             {/* <h3>T★DA</h3> */}
             {map.MapName && !glitchOut ? <h4>{map.MapName}</h4> : null}
             {glitchOut && <div className="encounters glitch" />}

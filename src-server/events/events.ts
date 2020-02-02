@@ -82,15 +82,21 @@ namespace Events {
         }
 
         public Analyze(newState: TPP.RunStatus) {
-            if (newState.id != (this.currentState || { id: undefined }).id) {
+            if (newState.id != (this.currentState || { id: undefined }).id || newState.name != (this.currentState || { name: undefined }).name) {
                 this.currentState = JSON.parse(JSON.stringify(newState));
                 this.Replay();
             }
             if (this.ready) {
-                this.trackers.forEach(t => t.Analyzer(newState, this.currentState || newState, a => this.Dispatch(a)));
+                this.trackers.forEach(t => {
+                    try {
+                        t.Analyzer(newState, this.currentState || newState, a => this.Dispatch(a));
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
                 this.currentState = JSON.parse(JSON.stringify(newState));
             }
-            newState.events = /*newState.events ||*/ [];
+            newState.events = /*newState.events ||*/[];
             (this.trackers || []).forEach(t => newState = Object.assign(newState, t.Reporter(newState)));
             newState.events = this.DedupeEvents(newState.events);
             return newState;
