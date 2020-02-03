@@ -135,7 +135,7 @@ namespace RamReader {
                     const trainerClass = data.readUInt8(2);
                     const trainerNum = data.readUInt8(3);
                     enemy_party = this.ParseParty(data.slice(4 + NAME_LENGTH));
-                    enemy_party.forEach((p, i) => p.personality_value = p.personality_value ^ i ^ ((trainerClass << 8 | trainerNum) << 16)); //attempt to avoid enemy PV collisions
+                    enemy_party.forEach((p, i) => p.personality_value = (p.personality_value ^ (i << 16) ^ ((trainerClass << 8 | trainerNum))) >>> 0); //attempt to avoid enemy PV collisions
                 }
 
                 return { in_battle, battle_kind, enemy_party, enemy_trainers };
