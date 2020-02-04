@@ -2,15 +2,9 @@
 /// <reference path="../utils/fittowidth.tsx" />
 /// <reference path="../itemsprite.tsx" />
 
-
-
 const escapeRope = 85;//TTH
 
 class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
-    private padTime(n: number) {
-        let str = '0' + (n || 0).toString();
-        return str.substring(str.length - 2);
-    }
     render() {
         let t = this.props.trainer;
         let displayOpts = config.displayOptions || ["text_speed", "battle_style", "battle_scene"];
@@ -19,16 +13,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
 
         return <div className={`trainer-info ${t.transitioning ? "glitch" : ""}`}>
             <Badges bitfield={t.badges} rematch={t.rematch_available} />
-            {t.time ?
-                <div className="rtc">
-                    {t.time.d ? <span className="days">{t.time.d}</span> : null}
-                    <span className="hours">{(t.time.h || 0) % 12 ? t.time.h % 12 : 12}</span>
-                    <span className="minutes">{this.padTime(t.time.m)}</span>
-                    {typeof t.time.s === "number" ? <span className="seconds">{this.padTime(t.time.s)}</span> : null}
-                    <span className="meridian">{t.time.h < 12 ? "AM" : "PM"}</span>
-                </div>
-                : null
-            }
+            <Clock time={t.time} />
             {/*t.items && t.items.items && <div className="candy-counts">
                 <h5>Candy Haul</h5>
                 {t.items.items.filter(i => i.id != escapeRope).map(i => <div className="candy" key={i.id}>
