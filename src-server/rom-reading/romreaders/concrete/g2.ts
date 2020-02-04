@@ -145,164 +145,164 @@ namespace RomReader {
     // pokeSpriteClearFix[251] = { start: [[19, 39], [31, 31]] }; //Celebi
 
     // Crystal
-    // pokeSpriteClearFix[5] = { start: [[16, 37], [41, 23]] }; //Charmeleon
-    // pokeSpriteClearFix[6] = { start: [[36, 27], [37, 28], [38, 29], [39, 30]] }; //Charizard
-    // pokeSpriteClearFix[15] = { start: [[11, 30]] }; //Beedrill
-    // pokeSpriteClearFix[26] = { start: [[37, 22], [39, 22]] }; //Raichu
-    // pokeSpriteClearFix[34] = { start: [[13, 12]] }; //Nidoking
-    // pokeSpriteClearFix[52] = { start: [[35, 35]] }; //Meowth
-    // pokeSpriteClearFix[56] = { start: [[18, 18], [37, 18], [39, 31], [16, 25]] }; //Mankey
-    // pokeSpriteClearFix[57] = { start: [[15, 15]] }; //Primeape
-    // pokeSpriteClearFix[58] = { stop: [[22, 9]] }; //Growlithe
-    // pokeSpriteClearFix[65] = { start: [[42, 15]] }; //Alakazam
-    // pokeSpriteClearFix[69] = { start: [[31, 31], [31, 27], [32, 28], [33, 30]] }; //Bellsprout
-    // pokeSpriteClearFix[71] = { start: [[37, 5], [38, 6]] }; //Victreebel
-    // pokeSpriteClearFix[73] = { start: [[37, 41], [38, 42], [37, 48], [45, 43], [46, 44]] }; //Tentacruel
-    // pokeSpriteClearFix[78] = { start: [[39, 10]] }; //Rapidash
-    // pokeSpriteClearFix[81] = { start: [[19, 33], [20, 32], [24, 34]] }; //Magnemite
-    // pokeSpriteClearFix[82] = { start: [[23, 29], [24, 28], [25, 27], [33, 27]] }; //Magneton
-    // pokeSpriteClearFix[84] = { start: [[33, 35], [34, 36]] }; //Doduo
-    // pokeSpriteClearFix[85] = { start: [[19, 15], [20, 14], [26, 17]] }; //Dodrio
-    // pokeSpriteClearFix[86] = { start: [[22, 19]] }; //Seel
-    // pokeSpriteClearFix[92] = { clearDiagonal: true }; //Gastly
-    // pokeSpriteClearFix[93] = { start: [[14, 35], [39, 39]] }; //Haunter
-    // pokeSpriteClearFix[99] = { start: [[36, 19], [37, 20], [35, 27], [8, 39]] }; //Kingler
-    // pokeSpriteClearFix[104] = { start: [[24, 26]] }; //Cubone
-    // pokeSpriteClearFix[107] = { start: [[27, 37]] }; //Hitmonchan
-    // pokeSpriteClearFix[116] = { start: [[25, 34], [24, 35]] }; //Horsea
-    // pokeSpriteClearFix[118] = { start: [[23, 44]], stop: [[23, 46]] }; //Goldeen
-    // pokeSpriteClearFix[125] = { start: [[13, 23], [42, 23], [42, 30], [31, 42]] }; //Electabuzz
-    // pokeSpriteClearFix[126] = { start: [[42, 18]] }; //Magmar
-    // pokeSpriteClearFix[141] = { start: [[22, 30], [42, 30]] }; //Kabutops
-    // pokeSpriteClearFix[144] = { start: [[16, 45], [17, 46], [40, 11], [40, 27], [45, 23], [49, 11]] }; //Articuno
-    // pokeSpriteClearFix[148] = { start: [[38, 34]] }; //Dragonair
-    // pokeSpriteClearFix[149] = { start: [[17, 8], [17, 12], [17, 22], [31, 5], [32, 6]] }; //Dragonite
-    // pokeSpriteClearFix[150] = { start: [[13, 33], [14, 32], [24, 32], [35, 17]] }; //Mewtwo
-    // pokeSpriteClearFix[165] = { start: [[14, 41], [15, 42]], stop: [[14, 20]] }; //Ledyba
-    // pokeSpriteClearFix[166] = { start: [[16, 25], [17, 26], [15, 30], [31, 39], [18, 43]] }; //Ledian
-    // pokeSpriteClearFix[167] = { start: [[12, 33], [13, 32]] }; //Spinarak
-    // pokeSpriteClearFix[168] = { start: [[11, 34], [12, 30], [44, 25]] }; //Ariados
-    // pokeSpriteClearFix[183] = { start: [[44, 44]] }; //Marill
-    // pokeSpriteClearFix[185] = { start: [[21, 24], [36, 24]] }; //Sudowoodo
-    // pokeSpriteClearFix[190] = { start: [[15, 33], [16, 34], [26, 34]] }; //Aipom
-    // pokeSpriteClearFix[191] = { start: [[30, 21], [31, 20], [33, 21]] }; //Sunkern
-    // pokeSpriteClearFix[198] = { start: [[11, 16], [8, 25], [12, 34], [21, 29], [22, 30], [21, 27], [22, 26], [43, 33], [45, 46], [45, 15]] }; //Murkrow
-    // pokeSpriteClearFix[200] = { start: [[32, 17], [19, 36], [22, 36], [23, 37], [31, 44]] }; //Misdreavus
-    // pokeSpriteClearFix[203] = { start: [[32, 42]] }; //Girafarig
-    // pokeSpriteClearFix[207] = { start: [[35, 37]] }; //Gligar
-    // pokeSpriteClearFix[212] = { start: [[42, 42], [43, 43], [44, 44], [34, 30], [7, 37]] }; //Scizor
-    // pokeSpriteClearFix[228] = { start: [[18, 35], [20, 41], [21, 40], [22, 39]] }; //Houndour
-    // pokeSpriteClearFix[229] = { start: [[34, 43], [35, 42]] }; //Houndoom
-    // pokeSpriteClearFix[234] = { start: [[9, 13], [40, 41]] }; //Stantler
-    // pokeSpriteClearFix[235] = { start: [[21, 25], [21, 41], [12, 29]] }; //Smeargle
-    // pokeSpriteClearFix[236] = { start: [[39, 29]] }; //Tyrogue
-    // pokeSpriteClearFix[239] = { start: [[39, 38], [40, 37]] }; //Elekid
-    // pokeSpriteClearFix[242] = { start: [[9, 31]], stop: [[14, 46]] }; //Blissey
+    pokeSpriteClearFix[5] = { start: [[16, 37], [41, 23]] }; //Charmeleon
+    pokeSpriteClearFix[6] = { start: [[36, 27], [37, 28], [38, 29], [39, 30]] }; //Charizard
+    pokeSpriteClearFix[15] = { start: [[11, 30]] }; //Beedrill
+    pokeSpriteClearFix[26] = { start: [[37, 22], [39, 22]] }; //Raichu
+    pokeSpriteClearFix[34] = { start: [[13, 12]] }; //Nidoking
+    pokeSpriteClearFix[52] = { start: [[35, 35]] }; //Meowth
+    pokeSpriteClearFix[56] = { start: [[18, 18], [37, 18], [39, 31], [16, 25]] }; //Mankey
+    pokeSpriteClearFix[57] = { start: [[15, 15]] }; //Primeape
+    pokeSpriteClearFix[58] = { stop: [[22, 9]] }; //Growlithe
+    pokeSpriteClearFix[65] = { start: [[42, 15]] }; //Alakazam
+    pokeSpriteClearFix[69] = { start: [[31, 31], [31, 27], [32, 28], [33, 30]] }; //Bellsprout
+    pokeSpriteClearFix[71] = { start: [[37, 5], [38, 6]] }; //Victreebel
+    pokeSpriteClearFix[73] = { start: [[37, 41], [38, 42], [37, 48], [45, 43], [46, 44]] }; //Tentacruel
+    pokeSpriteClearFix[78] = { start: [[39, 10]] }; //Rapidash
+    pokeSpriteClearFix[81] = { start: [[19, 33], [20, 32], [24, 34]] }; //Magnemite
+    pokeSpriteClearFix[82] = { start: [[23, 29], [24, 28], [25, 27], [33, 27]] }; //Magneton
+    pokeSpriteClearFix[84] = { start: [[33, 35], [34, 36]] }; //Doduo
+    pokeSpriteClearFix[85] = { start: [[19, 15], [20, 14], [26, 17]] }; //Dodrio
+    pokeSpriteClearFix[86] = { start: [[22, 19]] }; //Seel
+    pokeSpriteClearFix[92] = { clearDiagonal: true }; //Gastly
+    pokeSpriteClearFix[93] = { start: [[14, 35], [39, 39]] }; //Haunter
+    pokeSpriteClearFix[99] = { start: [[36, 19], [37, 20], [35, 27], [8, 39]] }; //Kingler
+    pokeSpriteClearFix[104] = { start: [[24, 26]] }; //Cubone
+    pokeSpriteClearFix[107] = { start: [[27, 37]] }; //Hitmonchan
+    pokeSpriteClearFix[116] = { start: [[25, 34], [24, 35]] }; //Horsea
+    pokeSpriteClearFix[118] = { start: [[23, 44]], stop: [[23, 46]] }; //Goldeen
+    pokeSpriteClearFix[125] = { start: [[13, 23], [42, 23], [42, 30], [31, 42]] }; //Electabuzz
+    pokeSpriteClearFix[126] = { start: [[42, 18]] }; //Magmar
+    pokeSpriteClearFix[141] = { start: [[22, 30], [42, 30]] }; //Kabutops
+    pokeSpriteClearFix[144] = { start: [[16, 45], [17, 46], [40, 11], [40, 27], [45, 23], [49, 11]] }; //Articuno
+    pokeSpriteClearFix[148] = { start: [[38, 34]] }; //Dragonair
+    pokeSpriteClearFix[149] = { start: [[17, 8], [17, 12], [17, 22], [31, 5], [32, 6]] }; //Dragonite
+    pokeSpriteClearFix[150] = { start: [[13, 33], [14, 32], [24, 32], [35, 17]] }; //Mewtwo
+    pokeSpriteClearFix[165] = { start: [[14, 41], [15, 42]], stop: [[14, 20]] }; //Ledyba
+    pokeSpriteClearFix[166] = { start: [[16, 25], [17, 26], [15, 30], [31, 39], [18, 43]] }; //Ledian
+    pokeSpriteClearFix[167] = { start: [[12, 33], [13, 32]] }; //Spinarak
+    pokeSpriteClearFix[168] = { start: [[11, 34], [12, 30], [44, 25]] }; //Ariados
+    pokeSpriteClearFix[183] = { start: [[44, 44]] }; //Marill
+    pokeSpriteClearFix[185] = { start: [[21, 24], [36, 24]] }; //Sudowoodo
+    pokeSpriteClearFix[190] = { start: [[15, 33], [16, 34], [26, 34]] }; //Aipom
+    pokeSpriteClearFix[191] = { start: [[30, 21], [31, 20], [33, 21]] }; //Sunkern
+    pokeSpriteClearFix[198] = { start: [[11, 16], [8, 25], [12, 34], [21, 29], [22, 30], [21, 27], [22, 26], [43, 33], [45, 46], [45, 15]] }; //Murkrow
+    pokeSpriteClearFix[200] = { start: [[32, 17], [19, 36], [22, 36], [23, 37], [31, 44]] }; //Misdreavus
+    pokeSpriteClearFix[203] = { start: [[32, 42]] }; //Girafarig
+    pokeSpriteClearFix[207] = { start: [[35, 37]] }; //Gligar
+    pokeSpriteClearFix[212] = { start: [[42, 42], [43, 43], [44, 44], [34, 30], [7, 37]] }; //Scizor
+    pokeSpriteClearFix[228] = { start: [[18, 35], [20, 41], [21, 40], [22, 39]] }; //Houndour
+    pokeSpriteClearFix[229] = { start: [[34, 43], [35, 42]] }; //Houndoom
+    pokeSpriteClearFix[234] = { start: [[9, 13], [40, 41]] }; //Stantler
+    pokeSpriteClearFix[235] = { start: [[21, 25], [21, 41], [12, 29]] }; //Smeargle
+    pokeSpriteClearFix[236] = { start: [[39, 29]] }; //Tyrogue
+    pokeSpriteClearFix[239] = { start: [[39, 38], [40, 37]] }; //Elekid
+    pokeSpriteClearFix[242] = { start: [[9, 31]], stop: [[14, 46]] }; //Blissey
 
     // Fused Crystal
-    pokeSpriteClearFix[218] = { start: [[1, 1]], stop: [[24, 7]] }; //Sluineco
-    pokeSpriteClearFix[214] = { start: [[15, 28]] }; //Herapras
-    pokeSpriteClearFix[213] = { start: [[14, 48], [44, 48]] }; //Shucsir
-    pokeSpriteClearFix[212] = { start: [[42, 42], [43, 43], [44, 44], [34, 30], [7, 37]] }; //Scizeton
-    pokeSpriteClearFix[207] = { start: [[35, 37], [17, 18], [18, 17]] }; //Gligala
-    pokeSpriteClearFix[204] = { start: [[40, 33]] }; //Pinehoot
-    pokeSpriteClearFix[198] = { start: [[11, 16], [8, 25], [12, 34], [21, 29], [22, 30], [21, 27], [22, 26], [43, 33], [45, 46], [45, 15]] }; //Murfish
-    pokeSpriteClearFix[194] = { start: [[35, 37]] }; //Woochum   
-    pokeSpriteClearFix[193] = { start: [[26, 26], [11, 32], [17, 37], [14, 34], [15, 33]] }; //Yamnasola
-    pokeSpriteClearFix[192] = { start: [[16, 34], [23, 34], [37, 33]] }; //Sunfersian
-    pokeSpriteClearFix[191] = { start: [[30, 21], [31, 20], [26, 19]] }; //Sunowth
-    pokeSpriteClearFix[189] = { start: [[18, 38], [27, 22], [14, 31], [33, 18]] }; //Jumpganium
-    pokeSpriteClearFix[185] = { start: [[21, 24], [36, 24]] }; //Sudoditto
-    pokeSpriteClearFix[181] = { start: [[23, 22], [25, 23], [31, 25]] }; //Amphiqueen
-    pokeSpriteClearFix[177] = { start: [[40, 36]] }; //Natarill
-    pokeSpriteClearFix[176] = { start: [[31, 26]] }; //Togetape
-    pokeSpriteClearFix[169] = { start: [[21, 24], [36, 24]] }; //Sudoditto
-    pokeSpriteClearFix[168] = { start: [[11, 34], [12, 30], [44, 25]] }; //Arislash
-    pokeSpriteClearFix[167] = { start: [[12, 33], [13, 32], [13, 39]] }; //Spinshrew
-    pokeSpriteClearFix[166] = { start: [[16, 25], [17, 26], [15, 30], [31, 39], [18, 43]] }; //Ledinine
-    pokeSpriteClearFix[165] = { start: [[16, 38]], stop: [[28, 8]] }; //Ledithe
-    pokeSpriteClearFix[164] = { start: [[26, 20]] }; //Noctdrio
-    pokeSpriteClearFix[163] = { start: [[33, 35], [35, 40]] }; //Hootduo
-    pokeSpriteClearFix[161] = { start: [[26, 36]] }; //Sentubone
-    pokeSpriteClearFix[160] = { start: [[19, 4]] }; //Feralgeot
-    pokeSpriteClearFix[159] = { start: [[29, 14]] }; //Crocotto
-    pokeSpriteClearFix[156] = { start: [[27, 33], [24, 35]] }; //Quileadra
-    pokeSpriteClearFix[153] = { start: [[18, 29], [35, 29]] }; //Baytortle
-    pokeSpriteClearFix[149] = { start: [[16, 13], [47, 28]] }; //Dragonbell
-    pokeSpriteClearFix[148] = { start: [[20, 40], [40, 35]] }; //Dragonbell
-    pokeSpriteClearFix[147] = { start: [[24, 32]] }; //Dratsprout
-    pokeSpriteClearFix[144] = { start: [[16, 45], [17, 46], [40, 11], [40, 27], [45, 23], [49, 11]] }; //Articou
-    pokeSpriteClearFix[141] = { start: [[16, 40], [44, 37]] }; //Kabutillary
-    pokeSpriteClearFix[135] = { start: [[33, 11]] }; //Joltuckle
-    pokeSpriteClearFix[134] = { start: [[40, 32]] }; //Vapordoom
-    pokeSpriteClearFix[133] = { start: [[21, 26], [22, 28]] }; //Eevdour
-    pokeSpriteClearFix[128] = { start: [[14, 14]] }; //Taurtler
-    pokeSpriteClearFix[127] = { start: [[12, 16], [16, 22], [39, 37], [43, 38], [45, 41], [48, 43]] }; //Pinsicross
-    pokeSpriteClearFix[126] = { start: [[18, 31]] }; //Magmastar
-    pokeSpriteClearFix[125] = { start: [[13, 23], [42, 23], [42, 30], [31, 42]] }; //Electadian
-    pokeSpriteClearFix[123] = { start: [[32, 32], [34, 31], [39, 34], [40, 35]] }; //Scythemite
-    pokeSpriteClearFix[122] = { start: [[16, 30], [17, 29], [35, 42]] }; //Mr. Tank	
-    pokeSpriteClearFix[116] = { start: [[31, 27]] }; //Seaodude	
-    pokeSpriteClearFix[110] = { start: [[30, 37]] }; //Weezomoth
-    pokeSpriteClearFix[107] = { start: [[25, 41]] }; //Hitmoneon
-    pokeSpriteClearFix[107] = { start: [[44, 40]] }; //Hitmonossom
-    pokeSpriteClearFix[102] = { start: [[25, 20]] }; //Exeggyta
-    pokeSpriteClearFix[99] = { start: [[36, 19], [37, 20], [35, 27], [8, 39]] }; //Kingler
-    pokeSpriteClearFix[96] = { start: [[17, 20]] }; //Drowticool
-    pokeSpriteClearFix[93] = { start: [[14, 35], [39, 39]] }; //Hauntchoke
-    pokeSpriteClearFix[92] = { clearDiagonal: true }; //Gastchop
-    pokeSpriteClearFix[87] = { start: [[31, 8], [22, 22]] }; //Dewgizor
-    pokeSpriteClearFix[84] = { start: [[41, 24], [42, 25]] }; //Dougby
-    pokeSpriteClearFix[82] = { start: [[8, 10], [15, 31], [24, 27], [30, 24], [48, 9], [47, 10], [46, 11]] }; //Magnearow
-    pokeSpriteClearFix[81] = { start: [[16, 34], [18, 33], [21, 29]] }; //Dougby
-    pokeSpriteClearFix[78] = { clearDiagonal: true, stop: [[53, 33], [18, 7], [20, 30], [19, 31], [24, 41]] }; //Rapidgon2
-    pokeSpriteClearFix[77] = { start: [[27, 42], [42, 45]] }; //Ponygon
-    pokeSpriteClearFix[75] = { start: [[25, 46]] }; //Gravitar
-    pokeSpriteClearFix[74] = { start: [[17, 23], [35, 38]] }; //Geoditar
-    pokeSpriteClearFix[73] = { start: [[12, 44], [15, 39], [21, 40]] }; //Tenarbok
-    pokeSpriteClearFix[72] = { start: [[22, 38]] }; //Tentekans
-    pokeSpriteClearFix[69] = { start: [[31, 31], [31, 27], [32, 28], [33, 30]] }; //Bellmander
-    pokeSpriteClearFix[68] = { start: [[17, 33], [15, 30], [43, 14]] }; //Macharos
-    pokeSpriteClearFix[65] = { start: [[42, 15], [36, 13], [32, 11], [29, 10], [17, 11]] }; //Alakonite
-    pokeSpriteClearFix[64] = { start: [[34, 43]] }; //Kadabonair
-    pokeSpriteClearFix[63] = { start: [[38, 32], [39, 33], [11, 23]] }; //Abratini
-    pokeSpriteClearFix[56] = { start: [[18, 18], [37, 18], [39, 31], [16, 25], [19, 36], [16, 26]] }; //Mankey
-    pokeSpriteClearFix[55] = { start: [[42, 25]] }; //Golsire
-    pokeSpriteClearFix[52] = { start: [[35, 35], [37, 18], [35, 15]] }; //Meowth
-    pokeSpriteClearFix[47] = { start: [[51, 45]] }; //Paracissy
-    pokeSpriteClearFix[44] = { start: [[18, 29], [19, 28]] }; //Paracissy
-    pokeSpriteClearFix[42] = { start: [[31, 44]] }; //Goliwhirl
-    pokeSpriteClearFix[40] = { start: [[42, 21]] }; //Wigglychu
-    pokeSpriteClearFix[38] = { start: [[24, 20]] }; //Ninetwine
-    pokeSpriteClearFix[30] = { start: [[39, 23]] }; //Nidorlava
-    pokeSpriteClearFix[25] = { start: [[36, 38], [35, 42]] }; //Pikakuna
-    pokeSpriteClearFix[24] = { start: [[41, 37], [45, 24], [46, 12], [16, 42]] }; //Paracissy
-    pokeSpriteClearFix[23] = { start: [[42, 42]] }; //Ekanicute
-    pokeSpriteClearFix[21] = { start: [[20, 36]] }; //Spearmer
-    pokeSpriteClearFix[20] = { clearDiagonal: true, stop: [[46, 24], [9, 23], [7, 17], [8, 17], [9, 18], [10, 18], [7, 36], [9, 23], [10, 35], [9, 35], [10, 35], [11, 34], [13, 31], [17, 16], [14, 17], [13, 18], [13, 37]] }; //Ratitrio
-    pokeSpriteClearFix[18] = { start: [[41, 50]] }; //Pidgigator
-    pokeSpriteClearFix[17] = { start: [[29, 42]] }; //Pidginaw
-    pokeSpriteClearFix[15] = { start: [[11, 30], [40, 12]] }; //Beetuff
-    pokeSpriteClearFix[8] = { start: [[16, 25], [36, 25], [37, 24]] }; //Wortuff
-    pokeSpriteClearFix[7] = { start: [[14, 15], [37, 24], [36, 44]], stop: [[10, 34]] }; //Squirthip
-    pokeSpriteClearFix[6] = { start: [[6, 26], [8, 24], [34, 7], [14, 29], [29, 20], [32, 19], [40, 30], [45, 35], [33, 13]] }; //Charikazam
-    pokeSpriteClearFix[5] = { start: [[14, 29]] }; //Chardabra
-    pokeSpriteClearFix[248] = { stop: [[54, 32]] }; //Pupitoom
-    pokeSpriteClearFix[245] = { start: [[6, 26], [32, 18], [42, 17], [28, 38]] }; //Suitwo
-    pokeSpriteClearFix[243] = { start: [[23, 13]] }; //Rai-oh
-    pokeSpriteClearFix[239] = { start: [[39, 38], [40, 37]], stop: [[21, 2]] }; //Elekediba
-    pokeSpriteClearFix[236] = { start: [[39, 29]] }; //Tyroffing
-    pokeSpriteClearFix[235] = { start: [[21, 25], [21, 41], [12, 29]] }; //Smeargma
-    pokeSpriteClearFix[229] = { start: [[34, 43], [35, 42], [45, 12]] }; //Houndmie
-    pokeSpriteClearFix[228] = { start: [[18, 35], [20, 41], [21, 40], [22, 39]] }; //Houndyu
-    pokeSpriteClearFix[227] = { start: [[28, 8], [10, 44]], stop: [[25, 55]] }; //Skarvious
-    pokeSpriteClearFix[226] = { start: [[45, 41], [24, 28], [23, 26]] }; //Mantitoad
-    pokeSpriteClearFix[50] = { clearDiagonal: true }; //Digvee
-    pokeSpriteClearFix[118] = { start: [[23, 44]], stop: [[23, 46]] }; //Goldatu
-    pokeSpriteClearFix[119] = { start: [[48, 35]] };
-    pokeSpriteClearFix[139] = { start: [[43, 43]] };
-    pokeSpriteClearFix[150] = { start: [[35, 17]] };
-    pokeSpriteClearFix[242] = { start: [[9, 31]], stop: [[14, 46]] };
+    // pokeSpriteClearFix[218] = { start: [[1, 1]], stop: [[24, 7]] }; //Sluineco
+    // pokeSpriteClearFix[214] = { start: [[15, 28]] }; //Herapras
+    // pokeSpriteClearFix[213] = { start: [[14, 48], [44, 48]] }; //Shucsir
+    // pokeSpriteClearFix[212] = { start: [[42, 42], [43, 43], [44, 44], [34, 30], [7, 37]] }; //Scizeton
+    // pokeSpriteClearFix[207] = { start: [[35, 37], [17, 18], [18, 17]] }; //Gligala
+    // pokeSpriteClearFix[204] = { start: [[40, 33]] }; //Pinehoot
+    // pokeSpriteClearFix[198] = { start: [[11, 16], [8, 25], [12, 34], [21, 29], [22, 30], [21, 27], [22, 26], [43, 33], [45, 46], [45, 15]] }; //Murfish
+    // pokeSpriteClearFix[194] = { start: [[35, 37]] }; //Woochum   
+    // pokeSpriteClearFix[193] = { start: [[26, 26], [11, 32], [17, 37], [14, 34], [15, 33]] }; //Yamnasola
+    // pokeSpriteClearFix[192] = { start: [[16, 34], [23, 34], [37, 33]] }; //Sunfersian
+    // pokeSpriteClearFix[191] = { start: [[30, 21], [31, 20], [26, 19]] }; //Sunowth
+    // pokeSpriteClearFix[189] = { start: [[18, 38], [27, 22], [14, 31], [33, 18]] }; //Jumpganium
+    // pokeSpriteClearFix[185] = { start: [[21, 24], [36, 24]] }; //Sudoditto
+    // pokeSpriteClearFix[181] = { start: [[23, 22], [25, 23], [31, 25]] }; //Amphiqueen
+    // pokeSpriteClearFix[177] = { start: [[40, 36]] }; //Natarill
+    // pokeSpriteClearFix[176] = { start: [[31, 26]] }; //Togetape
+    // pokeSpriteClearFix[169] = { start: [[21, 24], [36, 24]] }; //Sudoditto
+    // pokeSpriteClearFix[168] = { start: [[11, 34], [12, 30], [44, 25]] }; //Arislash
+    // pokeSpriteClearFix[167] = { start: [[12, 33], [13, 32], [13, 39]] }; //Spinshrew
+    // pokeSpriteClearFix[166] = { start: [[16, 25], [17, 26], [15, 30], [31, 39], [18, 43]] }; //Ledinine
+    // pokeSpriteClearFix[165] = { start: [[16, 38]], stop: [[28, 8]] }; //Ledithe
+    // pokeSpriteClearFix[164] = { start: [[26, 20]] }; //Noctdrio
+    // pokeSpriteClearFix[163] = { start: [[33, 35], [35, 40]] }; //Hootduo
+    // pokeSpriteClearFix[161] = { start: [[26, 36]] }; //Sentubone
+    // pokeSpriteClearFix[160] = { start: [[19, 4]] }; //Feralgeot
+    // pokeSpriteClearFix[159] = { start: [[29, 14]] }; //Crocotto
+    // pokeSpriteClearFix[156] = { start: [[27, 33], [24, 35]] }; //Quileadra
+    // pokeSpriteClearFix[153] = { start: [[18, 29], [35, 29]] }; //Baytortle
+    // pokeSpriteClearFix[149] = { start: [[16, 13], [47, 28]] }; //Dragonbell
+    // pokeSpriteClearFix[148] = { start: [[20, 40], [40, 35]] }; //Dragonbell
+    // pokeSpriteClearFix[147] = { start: [[24, 32]] }; //Dratsprout
+    // pokeSpriteClearFix[144] = { start: [[16, 45], [17, 46], [40, 11], [40, 27], [45, 23], [49, 11]] }; //Articou
+    // pokeSpriteClearFix[141] = { start: [[16, 40], [44, 37]] }; //Kabutillary
+    // pokeSpriteClearFix[135] = { start: [[33, 11]] }; //Joltuckle
+    // pokeSpriteClearFix[134] = { start: [[40, 32]] }; //Vapordoom
+    // pokeSpriteClearFix[133] = { start: [[21, 26], [22, 28]] }; //Eevdour
+    // pokeSpriteClearFix[128] = { start: [[14, 14]] }; //Taurtler
+    // pokeSpriteClearFix[127] = { start: [[12, 16], [16, 22], [39, 37], [43, 38], [45, 41], [48, 43]] }; //Pinsicross
+    // pokeSpriteClearFix[126] = { start: [[18, 31]] }; //Magmastar
+    // pokeSpriteClearFix[125] = { start: [[13, 23], [42, 23], [42, 30], [31, 42]] }; //Electadian
+    // pokeSpriteClearFix[123] = { start: [[32, 32], [34, 31], [39, 34], [40, 35]] }; //Scythemite
+    // pokeSpriteClearFix[122] = { start: [[16, 30], [17, 29], [35, 42]] }; //Mr. Tank	
+    // pokeSpriteClearFix[116] = { start: [[31, 27]] }; //Seaodude	
+    // pokeSpriteClearFix[110] = { start: [[30, 37]] }; //Weezomoth
+    // pokeSpriteClearFix[107] = { start: [[25, 41]] }; //Hitmoneon
+    // pokeSpriteClearFix[107] = { start: [[44, 40]] }; //Hitmonossom
+    // pokeSpriteClearFix[102] = { start: [[25, 20]] }; //Exeggyta
+    // pokeSpriteClearFix[99] = { start: [[36, 19], [37, 20], [35, 27], [8, 39]] }; //Kingler
+    // pokeSpriteClearFix[96] = { start: [[17, 20]] }; //Drowticool
+    // pokeSpriteClearFix[93] = { start: [[14, 35], [39, 39]] }; //Hauntchoke
+    // pokeSpriteClearFix[92] = { clearDiagonal: true }; //Gastchop
+    // pokeSpriteClearFix[87] = { start: [[31, 8], [22, 22]] }; //Dewgizor
+    // pokeSpriteClearFix[84] = { start: [[41, 24], [42, 25]] }; //Dougby
+    // pokeSpriteClearFix[82] = { start: [[8, 10], [15, 31], [24, 27], [30, 24], [48, 9], [47, 10], [46, 11]] }; //Magnearow
+    // pokeSpriteClearFix[81] = { start: [[16, 34], [18, 33], [21, 29]] }; //Dougby
+    // pokeSpriteClearFix[78] = { clearDiagonal: true, stop: [[53, 33], [18, 7], [20, 30], [19, 31], [24, 41]] }; //Rapidgon2
+    // pokeSpriteClearFix[77] = { start: [[27, 42], [42, 45]] }; //Ponygon
+    // pokeSpriteClearFix[75] = { start: [[25, 46]] }; //Gravitar
+    // pokeSpriteClearFix[74] = { start: [[17, 23], [35, 38]] }; //Geoditar
+    // pokeSpriteClearFix[73] = { start: [[12, 44], [15, 39], [21, 40]] }; //Tenarbok
+    // pokeSpriteClearFix[72] = { start: [[22, 38]] }; //Tentekans
+    // pokeSpriteClearFix[69] = { start: [[31, 31], [31, 27], [32, 28], [33, 30]] }; //Bellmander
+    // pokeSpriteClearFix[68] = { start: [[17, 33], [15, 30], [43, 14]] }; //Macharos
+    // pokeSpriteClearFix[65] = { start: [[42, 15], [36, 13], [32, 11], [29, 10], [17, 11]] }; //Alakonite
+    // pokeSpriteClearFix[64] = { start: [[34, 43]] }; //Kadabonair
+    // pokeSpriteClearFix[63] = { start: [[38, 32], [39, 33], [11, 23]] }; //Abratini
+    // pokeSpriteClearFix[56] = { start: [[18, 18], [37, 18], [39, 31], [16, 25], [19, 36], [16, 26]] }; //Mankey
+    // pokeSpriteClearFix[55] = { start: [[42, 25]] }; //Golsire
+    // pokeSpriteClearFix[52] = { start: [[35, 35], [37, 18], [35, 15]] }; //Meowth
+    // pokeSpriteClearFix[47] = { start: [[51, 45]] }; //Paracissy
+    // pokeSpriteClearFix[44] = { start: [[18, 29], [19, 28]] }; //Paracissy
+    // pokeSpriteClearFix[42] = { start: [[31, 44]] }; //Goliwhirl
+    // pokeSpriteClearFix[40] = { start: [[42, 21]] }; //Wigglychu
+    // pokeSpriteClearFix[38] = { start: [[24, 20]] }; //Ninetwine
+    // pokeSpriteClearFix[30] = { start: [[39, 23]] }; //Nidorlava
+    // pokeSpriteClearFix[25] = { start: [[36, 38], [35, 42]] }; //Pikakuna
+    // pokeSpriteClearFix[24] = { start: [[41, 37], [45, 24], [46, 12], [16, 42]] }; //Paracissy
+    // pokeSpriteClearFix[23] = { start: [[42, 42]] }; //Ekanicute
+    // pokeSpriteClearFix[21] = { start: [[20, 36]] }; //Spearmer
+    // pokeSpriteClearFix[20] = { clearDiagonal: true, stop: [[46, 24], [9, 23], [7, 17], [8, 17], [9, 18], [10, 18], [7, 36], [9, 23], [10, 35], [9, 35], [10, 35], [11, 34], [13, 31], [17, 16], [14, 17], [13, 18], [13, 37]] }; //Ratitrio
+    // pokeSpriteClearFix[18] = { start: [[41, 50]] }; //Pidgigator
+    // pokeSpriteClearFix[17] = { start: [[29, 42]] }; //Pidginaw
+    // pokeSpriteClearFix[15] = { start: [[11, 30], [40, 12]] }; //Beetuff
+    // pokeSpriteClearFix[8] = { start: [[16, 25], [36, 25], [37, 24]] }; //Wortuff
+    // pokeSpriteClearFix[7] = { start: [[14, 15], [37, 24], [36, 44]], stop: [[10, 34]] }; //Squirthip
+    // pokeSpriteClearFix[6] = { start: [[6, 26], [8, 24], [34, 7], [14, 29], [29, 20], [32, 19], [40, 30], [45, 35], [33, 13]] }; //Charikazam
+    // pokeSpriteClearFix[5] = { start: [[14, 29]] }; //Chardabra
+    // pokeSpriteClearFix[248] = { stop: [[54, 32]] }; //Pupitoom
+    // pokeSpriteClearFix[245] = { start: [[6, 26], [32, 18], [42, 17], [28, 38]] }; //Suitwo
+    // pokeSpriteClearFix[243] = { start: [[23, 13]] }; //Rai-oh
+    // pokeSpriteClearFix[239] = { start: [[39, 38], [40, 37]], stop: [[21, 2]] }; //Elekediba
+    // pokeSpriteClearFix[236] = { start: [[39, 29]] }; //Tyroffing
+    // pokeSpriteClearFix[235] = { start: [[21, 25], [21, 41], [12, 29]] }; //Smeargma
+    // pokeSpriteClearFix[229] = { start: [[34, 43], [35, 42], [45, 12]] }; //Houndmie
+    // pokeSpriteClearFix[228] = { start: [[18, 35], [20, 41], [21, 40], [22, 39]] }; //Houndyu
+    // pokeSpriteClearFix[227] = { start: [[28, 8], [10, 44]], stop: [[25, 55]] }; //Skarvious
+    // pokeSpriteClearFix[226] = { start: [[45, 41], [24, 28], [23, 26]] }; //Mantitoad
+    // pokeSpriteClearFix[50] = { clearDiagonal: true }; //Digvee
+    // pokeSpriteClearFix[118] = { start: [[23, 44]], stop: [[23, 46]] }; //Goldatu
+    // pokeSpriteClearFix[119] = { start: [[48, 35]] };
+    // pokeSpriteClearFix[139] = { start: [[43, 43]] };
+    // pokeSpriteClearFix[150] = { start: [[35, 17]] };
+    // pokeSpriteClearFix[242] = { start: [[9, 31]], stop: [[14, 46]] };
 
 
     const unownSpriteClearFix: ClearFix = {};
@@ -389,6 +389,7 @@ namespace RomReader {
         private treeSummary = new Array<TreeSummary>();
         private fishingSummary = { fishGroups: new Array<FishingSummary>(), timeFishGroups: new Array<{ day: EncounterSummary, night: EncounterSummary }>() };
         private trainerSummary = new Array<TrainerSummary[]>();
+        private phoneContacts = new Array<string>();
 
         constructor(romFileLocation: string) {
             super(romFileLocation, config.charmap);
@@ -414,6 +415,7 @@ namespace RomReader {
             this.pokemonSprites = this.ReadPokemonSprites(romData);
             this.trainerSprites = this.ReadTrainerSprites(romData);
             this.frameBorders = this.ReadFrameBorders(romData);
+            this.phoneContacts = this.ReadPhoneContacts(romData);
             //this.levelCaps = this.ReadPyriteLevelCaps(romData);
         }
 
@@ -427,8 +429,32 @@ namespace RomReader {
             return (runState.badges & 8) == 8; //Fog Badge
         }
 
+        public GetTMsHMs() {
+            let tmExp = /^[TH]M\d\d.*$/i;
+            return this.items.filter((tm, i, arr) => tmExp.test(tm.name) && arr.indexOf(tm) == i);
+        }
+
+        public GetPhoneContact(id: number): string | undefined {
+            return this.phoneContacts[id];
+        }
+
         private ReadPyriteLevelCaps(romData: Buffer) {
             return this.ReadStridedData(romData, 0x3fef, 1, 17).map(l => l[0]).filter(l => l > 0);
+        }
+
+        private ReadPhoneContacts(romData: Buffer) {
+            const contactNameBank = this.LinearAddressToBanked(this.symTable['NonTrainerCallerNames']).bank;
+            const nonTrainerContactNames = this.ReadStridedData(romData.slice(this.symTable['NonTrainerCallerNames'], this.symTable['NonTrainerCallerNames.none']), 0, 2, 255)
+                .map(ptr => this.FixAllCaps(this.ConvertText(romData.slice(this.BankAddressToLinear(contactNameBank, ptr.readUInt16LE(0))))));
+            return this.ReadStridedData(romData.slice(this.symTable['PhoneContacts'], this.symTable['SpecialPhoneCallList']), 0, 12, 255).map((data) => {
+                const trainerClass = data[0];
+                if (trainerClass == 0)
+                    return (nonTrainerContactNames[data[1]] || "").replace(':', '').replace('\n', ':').replace(/\s+/g, ' ');
+                const trainer = this.GetTrainer(data[1], trainerClass);
+                if (trainer)
+                    return `${trainer.name}: ${trainer.className}`;
+                return nonTrainerContactNames[0];
+            });
         }
 
         private FindFishingEncounters(romData: Buffer) {
@@ -801,8 +827,8 @@ namespace RomReader {
         private ReadPokemonSprites(romData: Buffer) {
             let palettes = this.ReadStridedData(romData, this.symTable[config.PokemonPalettes], 8, this.pokemon.length)
                 .map(data => ({ base: this.ProcessPalette(data), shiny: this.ProcessPalette(data.slice(4)) }));
-            function readPokeSprite(ptrAddr: number, mon: Pokemon.Species, clearFix: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } = {}) {
-                let spriteAddr = this.ROMBankAddrToLinear(this.TranslatePicBank(romData[ptrAddr]), romData.readInt16LE(ptrAddr + 1));
+            const readPokeSprite = (ptrAddr: number, mon: Pokemon.Species, clearFix: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } = {}) => {
+                let spriteAddr = this.BankAddressToLinear(this.TranslatePicBank(romData[ptrAddr]), romData.readInt16LE(ptrAddr + 1));
                 let spriteData = Tools.LZGSC.Decompress(romData.slice(spriteAddr));
                 let imgData = Sprites.ParseTilesToImageMap(spriteData, palettes[mon.id].base, mon.spriteSize, mon.spriteSize);
                 Sprites.FloodClear(imgData, 0, clearFix.stop || [], clearFix.start || [], clearFix.clearDiagonal);

@@ -478,9 +478,9 @@ namespace RamReader {
 
         protected abstract OptionsSpec: OptionsSpec;
 
-        public ParseOptions = (rawOptions: number) => ParseOptions(rawOptions, this.OptionsSpec);
-        public SetOptions = (rawOptions: number, desiredOptions: TPP.Options) => SetOptions(rawOptions, desiredOptions, this.OptionsSpec);
-        public ShouldForceOptions = (options: TPP.Options) => Object.keys(this.config.forceOptions || {}).filter(k => !!this.OptionsSpec[k]).some(k => this.config.forceOptions[k].toLowerCase() != options[k].toLowerCase());
+        public ParseOptions = (rawOptions: number, optionsSpec = this.OptionsSpec) => ParseOptions(rawOptions, optionsSpec);
+        public SetOptions = (rawOptions: number, desiredOptions: TPP.Options, optionsSpec = this.OptionsSpec) => SetOptions(rawOptions, desiredOptions, optionsSpec);
+        public ShouldForceOptions = (options: TPP.Options, optionsSpec = this.OptionsSpec) => Object.keys(this.config.forceOptions || {}).filter(k => !!optionsSpec[k]).some(k => this.config.forceOptions[k].toLowerCase() != options[k].toLowerCase());
 
         public GetSetFlags(flagBytes: Buffer, flagCount = flagBytes.length * 8, offset = 0) {
             return this.rom.GetSetFlags(flagBytes, flagCount, offset);
@@ -521,5 +521,9 @@ namespace RamReader {
         }
 
         protected AissId = (dexNum: number, idByte: number) => ((dexNum - aissIdOffsets[dexNum]) << 8) | idByte;
+
+        protected ReadUInt24BE(buffer: Buffer, offset: number) {
+            return (buffer.readUInt16BE(offset) << 8) | buffer[offset + 2];
+        }
     }
 }
