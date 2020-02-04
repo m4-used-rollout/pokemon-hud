@@ -149,7 +149,8 @@ namespace RamReader {
             // Active Box
             // sBox1-12
             const pc = this.rom.ReadStridedData(data.slice(1), 0, this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
-            //const active = pc.shift();
+            const active = pc.shift();
+            pc[currentBox - 1] = active;
             //pc[currentBox - 15] = active; //pbr
             return {
                 current_box_number: currentBox,

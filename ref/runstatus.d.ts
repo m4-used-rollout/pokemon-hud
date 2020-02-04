@@ -55,6 +55,7 @@ declare namespace TPP {
         rival_name?: string;
         partner_name?: string;
         party_fitness?: number;
+        phone_book?: string[];
         rematch_available?: number;
         time?: {
             d: string;
@@ -177,7 +178,8 @@ declare namespace TPP {
             game: string;
             date?: string;
             date_egg_received?: string;
-            caught_in: string;
+            time_of_day?:string;
+            caught_in?: string;
             caught?: string;
             evolved?: string[];
         }
