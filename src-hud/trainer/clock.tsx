@@ -58,7 +58,7 @@ class Clock extends React.Component<{ time: TPP.TrainerData["time"] }, { lastUpd
             return null;
         const totalSeconds = this.totalSeconds() + Math.floor((Date.now() - this.state.lastUpdated) / 1000);
         return <div className="rtc">
-            {time.d && <span className="days">{this.day(totalSeconds)}</span>}
+            <span className="days">{time.d && this.day(totalSeconds)}</span>
             <span className="hours">{this.hour(totalSeconds)}</span>
             <span className="minutes">{this.minute(totalSeconds)}</span>
             {typeof time.s === "number" && <span className="seconds">{this.second(totalSeconds)}</span>}
