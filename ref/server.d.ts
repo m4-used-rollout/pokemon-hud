@@ -412,10 +412,14 @@ declare namespace RomReader {
         private treeSummary;
         private fishingSummary;
         private trainerSummary;
+        private phoneContacts;
         constructor(romFileLocation: string);
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        GetTMsHMs(): Pokemon.Item[];
+        GetPhoneContact(id: number): string | undefined;
         private ReadPyriteLevelCaps;
+        private ReadPhoneContacts;
         private FindFishingEncounters;
         private FindTreeEncounters;
         private FindMapEncounters;
@@ -735,9 +739,9 @@ declare namespace RamReader {
         protected ParseHoennRibbons(ribbonVal: number): string[];
         protected ParseAlolanRibbons(ribbonData: Buffer): string[];
         protected abstract OptionsSpec: OptionsSpec;
-        ParseOptions: (rawOptions: number) => TPP.Options;
-        SetOptions: (rawOptions: number, desiredOptions: TPP.Options) => number;
-        ShouldForceOptions: (options: TPP.Options) => boolean;
+        ParseOptions: (rawOptions: number, optionsSpec?: OptionsSpec) => TPP.Options;
+        SetOptions: (rawOptions: number, desiredOptions: TPP.Options, optionsSpec?: OptionsSpec) => number;
+        ShouldForceOptions: (options: TPP.Options, optionsSpec?: OptionsSpec) => boolean;
         GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
         protected CalculateShiny(pokemon: TPP.Pokemon): boolean;
         protected CalculateLevelFromExp(current: number, expFunction: Pokemon.ExpCurve.CalcExp): number;
@@ -754,6 +758,7 @@ declare namespace RamReader {
         }) => T): () => Promise<T>;
         protected SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress?: number, ifValue?: number, bytes?: number): Promise<{}>;
         protected AissId: (dexNum: number, idByte: number) => number;
+        protected ReadUInt24BE(buffer: Buffer, offset: number): number;
     }
 }
 declare namespace RamReader {
@@ -768,7 +773,7 @@ declare namespace RamReader {
         protected PartySize: () => number;
         protected PartyMonSize: () => number;
         protected BattleMonSize: () => number;
-        ReadParty: () => Promise<TPP.PartyData>;
+        ReadParty: () => Promise<TPP.PartyPokemon[]>;
         ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadBattle: () => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
@@ -791,16 +796,70 @@ declare namespace RamReader {
         protected ParseBattleBundle(data: Buffer): TPP.BattleStatus;
         protected ParsePC(data: Buffer): TPP.CombinedPCData;
         protected ParsePCBox(data: Buffer): Gen1BoxedMon[];
-        protected ParseParty(data: Buffer): TPP.PartyData;
+        protected ParseParty(data: Buffer): TPP.PartyPokemon[];
         protected AddOTNames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
         protected AddNicknames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
         protected FixCapsNonNickname(nick: string, speciesName: string): string;
         protected ParsePartyMon(data: Buffer, species?: number): TPP.PartyPokemon;
-        protected ParsePokemon(data: Buffer, species?: number): Gen1BoxedMon;
+        protected ParsePokemon(data: Buffer, species?: number, nickname?: Buffer, otName?: Buffer): Gen1BoxedMon;
         protected ParseBattlePokemon(data: Buffer): TPP.PartyPokemon & {
             active: boolean;
         };
         protected UnpackDVs(dvs: number): TPP.Stats;
+        Init(): void;
+    }
+}
+declare namespace RamReader {
+    interface Gen2BoxedMon extends TPP.Pokemon {
+        health: number[];
+        status: string;
+        sleep_turns?: number;
+    }
+    class Gen2 extends RamReaderBase<RomReader.Gen2> {
+        protected SymAddr: (symbol: string) => string;
+        protected StructSize: (startSymbol: string, endSymbol?: string) => number;
+        protected PCBoxSize: () => number;
+        protected PartySize: () => number;
+        protected PartyMonSize: () => number;
+        protected BattleMonSize: () => number;
+        ReadParty: () => Promise<TPP.PartyPokemon[]>;
+        ReadPC: () => Promise<TPP.CombinedPCData>;
+        ReadBattle: () => Promise<TPP.BattleStatus>;
+        protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
+        protected OptionsSpec: OptionsSpec;
+        protected FrameSpec: OptionsSpec;
+        protected PrinterSpec: OptionsSpec;
+        protected Options2Spec: OptionsSpec;
+        protected BaseOffsetCalc: (baseSymbol: string, extraOffset?: number) => (symbol: string) => number;
+        protected ParseBattleBundle(data: Buffer): TPP.BattleStatus;
+        protected ParsePC(data: Buffer): TPP.CombinedPCData;
+        protected ParsePCBox(data: Buffer): Gen2BoxedMon[];
+        protected ParseParty(data: Buffer): TPP.PartyPokemon[];
+        protected AddOTNames(mons: Gen2BoxedMon[], data: Buffer, monCount: number): void;
+        protected AddNicknames(mons: Gen2BoxedMon[], data: Buffer, monCount: number): void;
+        protected FixCapsNonNickname(nick: string, speciesName: string): string;
+        protected ParsePartyMon(data: Buffer, species?: number): TPP.PartyPokemon;
+        protected ParsePokemon(data: Buffer, species?: number, nickname?: Buffer, otName?: Buffer): Gen2BoxedMon;
+        protected ParseBattlePokemon(data: Buffer): TPP.PartyPokemon & {
+            active: boolean;
+        };
+        protected UnpackDVs(dvs: number): TPP.Stats;
+        protected PackDVs(dvs: TPP.Stats): number;
+        protected UnpackCaughtData(caught: number, ot: TPP.Trainer): {
+            map_id?: number;
+            area_id?: number;
+            area_name?: string;
+            area_id_egg?: number;
+            area_name_egg?: string;
+            level: number;
+            game: string;
+            date?: string;
+            date_egg_received?: string;
+            time_of_day?: string;
+            caught_in?: string;
+            caught?: string;
+            evolved?: string[];
+        };
         Init(): void;
     }
 }

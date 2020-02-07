@@ -117,7 +117,7 @@ namespace RomReader {
         }
 
         function augmentPokemonSpeciesAndExp(p: TPP.Pokemon) {
-            if (!p.species.id) return;
+            if (!p || !p.species || !p.species.id) return;
             let romMon = romData.GetSpecies(p.species.id, p.form);
             augmentSpecies(p.species, romMon);
             if (romMon.expFunction) {
@@ -221,6 +221,7 @@ namespace RomReader {
             }
         }
 
+        // AugmentState
         try {
             normalizeDex();
             augmentItems();

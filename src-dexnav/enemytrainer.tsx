@@ -12,7 +12,12 @@ class EnemyTrainer extends PersistentComponent<{ trainers: TPP.EnemyTrainer[], b
         // const partyFitness = (this.state.party || []).reduce((sum, mon) => sum + mon.fitness, 0);
         return <div className={`encounters enemy-trainer ${this.props.trainers ? "" : "hidden"}`} key={`${trainers[0] && trainers[0].class_id}${trainers[0] && trainers[0].id}`}>
             <div className="info-left">
-                {trainers.map(trainer => <div className="name">{`${trainer.class_name || ''} ${trainer.name || ''}`.trim()}</div>)}
+                {trainers.map(trainer => {
+                    let name = `${trainer.class_name || ''} ${trainer.name || ''}`.trim();
+                    if ((trainer.class_name || "").toLowerCase() == (trainer.name || "").toLowerCase())
+                        name = (trainer.name || '').trim();
+                    return <div className="name">{name}</div>;
+                })}
                 {/* {partyFitness ? <div className="fitness">{partyFitness.toLocaleString()}</div> : null} */}
                 <EnemyParty party={this.state.party} />
             </div>

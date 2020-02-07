@@ -113,7 +113,8 @@ body {
             margin:0;
             padding:0;
             margin-bottom: 5px;
-            height: (@party-member-height * 3); //TTH
+            height: (@party-member-height * 6);
+            //height: (@party-member-height * 3); //TTH
             transition: filter .2s ease-in-out;
             
             > li {
@@ -775,11 +776,14 @@ body {
             .options {
                 flex: 1 1 auto;
                 display:flex;
+                width: 100%;
                 justify-content: space-around;
                 text-align: center;
                 margin:auto;
-                //font-size: 1.5em;
+                font-size: 1.25em;
                 line-height: .75em;
+                margin-top: -2vw;
+                
                 span {
                     flex: 1 1 auto;
                 }
@@ -829,24 +833,28 @@ body {
                         }
                     }
 
+                    .options {
+                        width: auto;   
+                    }
+
                     .cash {
                         margin-right:auto;
                         margin-left:0;
                         padding-left:0;
                     }
                     .cash:before {
-                        //content:"$";
+                        content:"$";
                         //TTH
-                        content:'';
-                        display: inline-block;
-                        width:1.75em;
-                        margin-right: -.25em;
-                        height:1em;
-                        background-image:url('img/CandyCorn.svg');
-                        image-rendering: pixelated;
-                        background-size: cover;
-                        background-repeat: no-repeat;
-                        background-position: top center;
+                        // content:'';
+                        // display: inline-block;
+                        // width:1.75em;
+                        // margin-right: -.25em;
+                        // height:1em;
+                        // background-image:url('img/CandyCorn.svg');
+                        // image-rendering: pixelated;
+                        // background-size: cover;
+                        // background-repeat: no-repeat;
+                        // background-position: top center;
                     }
                     .balls:before {
                         content:"\264e";

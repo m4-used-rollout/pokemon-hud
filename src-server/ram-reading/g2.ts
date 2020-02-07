@@ -1,0 +1,515 @@
+/// <reference path="base.ts" />
+
+namespace RamReader {
+
+    const NAME_LENGTH = 11;
+    const BOX_NAME_LENGTH = 9;
+    const MONS_PER_BOX = 20;
+    const NUM_BOXES = 14;
+    const NUM_POKEMON = 251;
+    const DEX_FLAG_BYTES = Math.floor((NUM_POKEMON + 7) / 8);
+
+    const dayOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    const timeOfDay = ["Morning", "Day", "Night"];
+
+    interface Gen2BoxedMon extends TPP.Pokemon {
+        health: number[];
+        status: string;
+        sleep_turns?: number;
+    }
+
+    export class Gen2 extends RamReaderBase<RomReader.Gen2> {
+        protected SymAddr = (symbol: string) => this.rom.symTable[symbol].toString(16);
+        protected StructSize = (startSymbol: string, endSymbol: string = startSymbol.replace("Start", '') + "End") => this.rom.symTable[endSymbol] - this.rom.symTable[startSymbol];
+
+        protected PCBoxSize = () => this.StructSize('sBox');
+        protected PartySize = () => this.StructSize('wPokemonData', 'wPartyMonNicknamesEnd');
+        protected PartyMonSize = () => this.StructSize('wPartyMon1', 'wPartyMon2');
+        protected BattleMonSize = () => this.StructSize('wBattleMon', 'wWildMon') - 2;
+
+        public ReadParty = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wPokemonData')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurPartyMon')}/1/${this.SymAddr('wBattleMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wBattleMon')}/${this.BattleMonSize().toString(16)}`, this.WrapBytes(data => this.ParseParty(data)));
+        public ReadPC = this.CachedEmulatorCaller([`WRAM/ReadByteRange/${this.SymAddr('wCurBox')}/1/${this.SymAddr('wBoxNames')}/${(BOX_NAME_LENGTH * NUM_BOXES).toString(16)}`, `CartRAM/ReadByteRange/${this.SymAddr('sBox')}/${this.PCBoxSize().toString(16)}/${this.SymAddr('sBox1')}/${(this.PCBoxSize() * 7).toString(16)}/${this.SymAddr('sBox8')}/${(this.PCBoxSize() * 7).toString(16)}`], this.WrapBytes(data => this.ParsePC(data)));
+        public ReadBattle = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wEnemyMonCatchRate')}/1/${this.SymAddr('wOtherTrainerClass')}/1/${this.SymAddr('wOtherTrainerID')}/1/${this.SymAddr('wOTPartyCount')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurOTMon')}/1/${this.SymAddr('wEnemyMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wEnemyMon')}/${this.BattleMonSize().toString(16)}`, this.WrapBytes(data => this.ParseBattleBundle(data)));
+        protected TrainerChunkReaders = [
+            this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
+                wPlayerName: NAME_LENGTH,
+                wRivalName: NAME_LENGTH,
+                wPlayerID: 2,
+                wSecretID: 2,
+                wOptions: this.StructSize('wOptions'),
+                wPokedexCaught: DEX_FLAG_BYTES,
+                wPokedexSeen: DEX_FLAG_BYTES,
+                wXCoord: 1,
+                wYCoord: 1,
+                wMapGroup: 2,
+                wMoney: 3,
+                wMomsMoney: 3,
+                wCoins: 2,
+                wBadges: 2,
+                wTMsHMs: this.StructSize('wTMsHMs'),
+                wNumItems: 1,
+                wItems: this.StructSize('wItems'),
+                wNumKeyItems: 1,
+                wKeyItems: this.StructSize('wKeyItems'),
+                wNumBalls: 1,
+                wBalls: this.StructSize('wBalls'),
+                wPCItems: this.StructSize('wPCItems'),
+                wPhoneList: this.StructSize('wPhoneList', 'wLuckyNumberShowFlag') - 23,
+                wCurDay: 1,
+            }, sym => this.rom.symTable[sym], struct => {
+                const map = this.rom.GetMap(struct.wMapGroup[1], struct.wMapGroup[0]) || {} as Pokemon.Map;
+                const options = {
+                    ...this.ParseOptions(struct.wOptions[0], this.OptionsSpec),
+                    ...this.ParseOptions(struct.wOptions[2], this.FrameSpec),
+                    ...this.ParseOptions(struct.wOptions[4], this.PrinterSpec),
+                    ...this.ParseOptions(struct.wOptions[5], this.Options2Spec)
+                };
+                if (this.ShouldForceOptions(options, this.OptionsSpec))
+                    this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wOptions')}/${this.SetOptions(struct.wOptions[0], this.config.forceOptions, this.OptionsSpec).toString(16)}`);
+                if (this.ShouldForceOptions(options, this.FrameSpec))
+                    this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wTextBoxFrame')}/${this.SetOptions(struct.wOptions[2], this.config.forceOptions, this.FrameSpec).toString(16)}`);
+                if (this.ShouldForceOptions(options, this.PrinterSpec))
+                    this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wGBPrinter')}/${this.SetOptions(struct.wOptions[4], this.config.forceOptions, this.PrinterSpec).toString(16)}`);
+                if (this.ShouldForceOptions(options, this.Options2Spec))
+                    this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wOptions2')}/${this.SetOptions(struct.wOptions[5], this.config.forceOptions, this.Options2Spec).toString(16)}`);
+                options.frame = (parseInt(options.frame || "0") + 1).toFixed(0);
+                const tms = this.rom.GetTMsHMs();
+                return {
+                    name: this.rom.ConvertText(struct.wPlayerName),
+                    id: struct.wPlayerID.readUInt16BE(0),
+                    secret: struct.wSecretID.readUInt16BE(0),
+                    options,
+                    caught_list: this.GetSetFlags(struct.wPokedexCaught),
+                    seen_list: this.GetSetFlags(struct.wPokedexSeen),
+                    caught: this.GetSetFlags(struct.wPokedexCaught).length,
+                    seen: this.GetSetFlags(struct.wPokedexSeen).length,
+                    x: struct.wXCoord[0],
+                    y: struct.wYCoord[0],
+                    map_id: struct.wMapGroup[1],
+                    map_bank: struct.wMapGroup[0],
+                    map_name: map.name,
+                    area_id: map.areaId,
+                    area_name: map.areaName,
+                    money: this.ReadUInt24BE(struct.wMoney, 0),
+                    momsMoney: this.ReadUInt24BE(struct.wMomsMoney, 0),
+                    coins: struct.wCoins.readUInt16BE(0),
+                    rival_name: this.rom.ConvertText(struct.wRivalName),
+                    evolution_is_happening: false,
+                    badges: struct.wBadges.readUInt16BE(0),
+                    items: {
+                        items: this.rom.ReadStridedData(struct.wItems, 0, 2, struct.wNumItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
+                        balls: this.rom.ReadStridedData(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
+                        key: this.rom.ReadStridedData(struct.wKeyItems, 0, 1, struct.wNumKeyItems[0], true, e => e[0] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]))),
+                        tms: this.rom.ReadStridedData(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
+                        pc: this.rom.ReadStridedData(struct.wPCItems, 0, 2, 255, true, e => e[1] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
+                    },
+                    phone_book: this.rom.ReadStridedData(struct.wPhoneList, 0, 1, 255).map(data => this.rom.GetPhoneContact(data[0])).filter(p => !!p),
+                    time: { ...((this.currentState || { time: null }).time || { h: 0, m: 0, s: 0 }), d: dayOfWeek[struct.wCurDay[0] % 7] }
+                };
+            }),
+            this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
+                wDayCareMan: 1,
+                wBreedMon1Nick: NAME_LENGTH,
+                wBreedMon1OT: NAME_LENGTH,
+                wBreedMon1Stats: this.StructSize('wBreedMon1Stats', 'wDayCareLady'),
+                wDayCareLady: 1,
+                wBreedMon2Nick: NAME_LENGTH,
+                wBreedMon2OT: NAME_LENGTH,
+                wBreedMon2Stats: this.StructSize('wBreedMon1Stats', 'wEggNick'),
+            }, sym => this.rom.symTable[sym], struct => ({
+                daycare: [
+                    (struct.wDayCareMan[0] & 1) && this.ParsePokemon(struct.wBreedMon1Stats, struct.wBreedMon1Stats[0], struct.wBreedMon1Nick, struct.wBreedMon1OT),
+                    (struct.wDayCareLady[0] & 1) && this.ParsePokemon(struct.wBreedMon2Stats, struct.wBreedMon2Stats[0], struct.wBreedMon2Nick, struct.wBreedMon2OT)
+                ].filter(p => !!p)
+            })),
+            this.StructEmulatorCaller<TPP.TrainerData>('System Bus', {
+                hHours: 1,
+                hMinutes: 1,
+                hSeconds: 1
+            }, sym => this.rom.symTable[sym], struct => ({
+                time: {
+                    ...((this.currentState || { time: null }).time || { d: "" }),
+                    h: struct.hHours[0],
+                    m: struct.hMinutes[0],
+                    s: struct.hSeconds[0]
+                }
+            }))
+        ];
+
+
+        protected OptionsSpec: OptionsSpec = {
+            text_speed: {
+                1: "Fast",
+                3: "Med",
+                5: "Slow"
+            },
+            sound: {
+                0: "Mono",
+                0x20: "Stereo",
+            },
+            battle_style: {
+                0: "Shift",
+                0x40: "Set"
+            },
+            battle_scene: {
+                0: "On",
+                0x80: "Off"
+            }
+        }
+        protected FrameSpec: OptionsSpec = {
+            frame: { bitmask: 0x7 }
+        }
+        protected PrinterSpec: OptionsSpec = {
+            print: {
+                0: 'Lightest',
+                0x20: 'Lighter',
+                0x40: 'Normal',
+                0x60: 'Darker',
+                0x7F: 'Darkest'
+            }
+        }
+        protected Options2Spec: OptionsSpec = {
+            menu_account: {
+                0: 'Off',
+                1: 'On'
+            }
+        }
+
+        protected BaseOffsetCalc = (baseSymbol: string, extraOffset = 0) => ((symbol: string) => (this.rom.symTable[baseSymbol + symbol] - this.rom.symTable[baseSymbol]) + extraOffset);
+
+        protected ParseBattleBundle(data: Buffer): TPP.BattleStatus {
+            //wBattleMode/1
+            const in_battle = data[0] > 0;
+            const battle_kind = data[0] < 2 ? "Wild" : "Trainer";
+            //wEnemyMonCatchRate/1
+            const actualCatchRate = data.readUInt8(1);
+            if (in_battle) {
+                const enemy_trainers = new Array<TPP.EnemyTrainer>();
+                if (battle_kind == "Trainer") {
+                    //wTrainerClass/1
+                    const trainerClass = data.readUInt8(2);
+                    //wTrainerNo/1
+                    const trainerNum = data.readUInt8(3);
+                    const trainer = Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(trainerNum, trainerClass));
+                    if (/Rival\d+/i.test(trainer.class_name))
+                        trainer.class_name = "Rival"
+                    enemy_trainers.push(trainer);
+                }
+                //wOTParty
+                let enemy_party: TPP.PartyData = [];
+                if (battle_kind == "Wild") {
+                    enemy_party[0] = this.ParseBattlePokemon(data.slice(4 + this.PartySize() + 2));
+                    enemy_party[0].species.catch_rate = actualCatchRate;
+                }
+                else {
+                    const trainerClass = data.readUInt8(2);
+                    const trainerNum = data.readUInt8(3);
+                    enemy_party = this.ParseParty(data.slice(4));
+                    enemy_party.forEach((p, i) => p.personality_value = (p.personality_value ^ (i << 16) ^ ((trainerClass << 8 | trainerNum))) >>> 0); //attempt to avoid enemy PV collisions
+                }
+
+                return { in_battle, battle_kind, enemy_party, enemy_trainers };
+            }
+            return { in_battle };
+        }
+
+        protected ParsePC(data: Buffer): TPP.CombinedPCData {
+            // wCurrentBoxNum
+            const currentBox = (data[0] & 0x1F) + 1;
+            // wBoxNames
+            const boxNames = this.rom.ReadStridedData(data, 1, BOX_NAME_LENGTH, NUM_BOXES).map(b => this.rom.ConvertText(b));
+            // Active Box
+            // sBox1-14
+            const pc = this.rom.ReadStridedData(data, 1 + (BOX_NAME_LENGTH * NUM_BOXES), this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
+            const active = pc.shift();
+            pc[currentBox - 1] = active;
+            return {
+                current_box_number: currentBox,
+                boxes: pc.map((box, i) => (<TPP.BoxData>{
+                    box_contents: box,
+                    box_name: boxNames[i],
+                    box_number: i + 1
+                }))
+            };
+        }
+
+        protected ParsePCBox(data: Buffer) {
+            // wBoxDataStart::
+            // wNumInBox::  ds 1
+            const numInBox = data[0];
+            if (numInBox > MONS_PER_BOX)
+                return []; //uninitialized box
+            // wBoxSpecies:: ds MONS_PER_BOX + 1
+            const boxSpecies = data.slice(1, 1 + numInBox).map(s => s);
+
+            // wBoxMons::
+            // wBoxMon1:: box_struct wBoxMon1
+            // wBoxMon2:: ds box_struct_length * (MONS_PER_BOX + -1)
+            const box = numInBox ? this.rom.ReadStridedData(data, this.rom.symTable['wBoxMons'] - this.rom.symTable['wBoxDataStart'], this.rom.symTable['wBoxMon2'] - this.rom.symTable['wBoxMon1'], numInBox)
+                .map((p, i) => this.ParsePokemon(p, boxSpecies[i])) : [];
+
+            if (numInBox) {
+                // wBoxMonOT::    ds NAME_LENGTH * MONS_PER_BOX
+                this.AddOTNames(box, data.slice(this.rom.symTable['wBoxMonOT'] - this.rom.symTable['wBoxDataStart']), numInBox);
+                // wBoxMonNicks:: ds NAME_LENGTH * MONS_PER_BOX
+                this.AddNicknames(box, data.slice(this.rom.symTable['wBoxMonNicks'] - this.rom.symTable['wBoxDataStart']), numInBox);
+                // wBoxMonNicksEnd::
+                // wBoxDataEnd::
+            }
+            return box;
+        }
+
+        protected ParseParty(data: Buffer) {
+            // wPartyCount::   ds 1 ; d163
+            const partyCount = data[0];
+            // wPartySpecies:: ds PARTY_LENGTH ; d164
+            // wPartyEnd::     ds 1 ; d16a
+            const partySpecies = data.slice(1, 1 + partyCount).map(s => s);
+
+            // wPartyMons::
+            // wPartyMon1:: party_struct wPartyMon1 ; d16b
+            // wPartyMon2:: party_struct wPartyMon2 ; d197
+            // wPartyMon3:: party_struct wPartyMon3 ; d1c3
+            // wPartyMon4:: party_struct wPartyMon4 ; d1ef
+            // wPartyMon5:: party_struct wPartyMon5 ; d21b
+            // wPartyMon6:: party_struct wPartyMon6 ; d247
+            const party: TPP.PartyData = partyCount ? this.rom.ReadStridedData(data, this.rom.symTable['wPartyMons'] - this.rom.symTable['wPokemonData'], this.PartyMonSize(), partyCount)
+                .map((p, i) => this.ParsePartyMon(p, partySpecies[i])) : [];
+
+            if (partyCount) {
+                // wPartyMonOT::    ds NAME_LENGTH * PARTY_LENGTH ; d273
+                this.AddOTNames(party, data.slice(this.rom.symTable['wPartyMonOT'] - this.rom.symTable['wPokemonData']), partyCount);
+                // wPartyMonNicknames:: ds NAME_LENGTH * PARTY_LENGTH ; d2b5
+                this.AddNicknames(party, data.slice(this.rom.symTable['wPartyMonNicknames'] - this.rom.symTable['wPokemonData']), partyCount);
+                // wPartyDataEnd::
+            }
+
+            const pastPartyOffset = this.PartySize();
+            // wBattleMode: ds 1
+            if (data[pastPartyOffset] != 0) {
+                // wPlayerMonNumber: ds 1
+                const battleMonIndex = data[pastPartyOffset + 1];
+                const battleMon = this.ParseBattlePokemon(data.slice(pastPartyOffset + 2));
+                if (
+                    battleMon && party[battleMonIndex] &&
+                    party[battleMonIndex].species && battleMon.species &&
+                    party[battleMonIndex].species.id == battleMon.species.id &&
+                    battleMon.ivs && party[battleMonIndex].ivs &&
+                    this.PackDVs(battleMon.ivs) == this.PackDVs(party[battleMonIndex].ivs)
+                ) {
+                    party[battleMonIndex] = Object.assign(party[battleMonIndex], battleMon);
+                }
+            }
+            return party.filter(p => !!p && !!p.species && !!p.personality_value);
+        }
+
+        protected AddOTNames(mons: Gen2BoxedMon[], data: Buffer, monCount: number) {
+            this.rom.ReadStridedData(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].original_trainer ? mons[i].original_trainer.name = this.rom.ConvertText(n) : null);
+        }
+
+        protected AddNicknames(mons: Gen2BoxedMon[], data: Buffer, monCount: number) {
+            this.rom.ReadStridedData(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].species ? mons[i].name = this.FixCapsNonNickname(this.rom.ConvertText(n), mons[i].species.name) : null);
+        }
+
+        protected FixCapsNonNickname(nick: string, speciesName: string) {
+            if (this.rom.FixAllCaps(nick) != speciesName)
+                return nick;
+            return speciesName;
+        }
+
+        protected ParsePartyMon(data: Buffer, species?: number) {
+            const poke = this.ParsePokemon(data, species) as TPP.PartyPokemon;
+            const offset = this.BaseOffsetCalc('wPartyMon1');
+            if (data[offset('Species')] == 0)
+                return poke;
+            // \1Status::     db
+            const statusNum = data[offset('Status')];
+            poke.status = this.ParseStatus(statusNum);
+            poke.sleep_turns = statusNum % 8;
+            //\1Unused::         db
+            // \1HP::         dw
+            poke.health = [data.readUInt16BE(offset('HP')), data.readUInt16BE(offset('MaxHP'))];
+            // \1Stats::
+            poke.stats = {
+                // \1MaxHP::      dw
+                hp: data.readUInt16BE(offset('MaxHP')),
+                // \1Attack::     dw
+                attack: data.readUInt16BE(offset('Attack')),
+                // \1Defense::    dw
+                defense: data.readUInt16BE(offset('Defense')),
+                // \1Speed::      dw
+                speed: data.readUInt16BE(offset('Speed')),
+                // \1SpclAtk::    dw
+                special_attack: data.readUInt16BE(offset('SpclAtk')),
+                // \1SpclDef::    dw
+                special_defense: data.readUInt16BE(offset('SpclDef')),
+            }
+            poke.health[1] = poke.stats.hp;
+            return poke;
+        }
+
+        protected ParsePokemon(data: Buffer, species?: number, nickname?: Buffer, otName?: Buffer) {
+            const poke = {} as Gen2BoxedMon;
+            const offset = this.BaseOffsetCalc('wPartyMon1');
+            if (data[offset('Species')] == 0)
+                return poke;
+
+            // \1Species::    db
+            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(species) || this.rom.GetSpecies(data[offset('Species')]));
+            // \1Item::       db
+            poke.held_item = data[offset('Item')] > 0 ? Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[offset('Item')])) : null;
+            // \1Moves::      ds NUM_MOVES
+            poke.moves = Array.from(data.slice(offset('Moves'), offset('ID'))).map(m => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(m)));
+            // \1ID::         dw
+            poke.original_trainer = { id: data.readUInt16BE(offset('ID')) } as TPP.Trainer;
+            // \1Exp::        ds 3
+            poke.experience = { current: data.readUInt32BE(offset('Exp') - 1) % 0x1000000 };
+            // \1StatExp::
+            poke.evs = {
+                // \1HPExp::      dw
+                hp: data.readUInt16BE(offset('HPExp')),
+                // \1AtkExp::  dw
+                attack: data.readUInt16BE(offset('AtkExp')),
+                // \1DefExp:: dw
+                defense: data.readUInt16BE(offset('DefExp')),
+                // \1SpdExp::   dw
+                speed: data.readUInt16BE(offset('SpdExp')),
+                // \1SpcExp:: dw
+                special_attack: data.readUInt16BE(offset('SpcExp')),
+                special_defense: data.readUInt16BE(offset('SpcExp'))
+            }
+            // \1DVs::        ds 2
+            poke.ivs = this.UnpackDVs(data.readUInt16BE(offset('DVs')));
+            // \1PP::         ds NUM_MOVES
+            data.slice(offset('PP')).forEach((pp, i) => {
+                if (poke.moves[i]) {
+                    poke.moves[i].pp = pp % 64;
+                    poke.moves[i].pp_up = pp >>> 6;
+                }
+            });
+            poke.moves = poke.moves.filter(m => m && m.id);
+
+            // \1Happiness:: db
+            poke.friendship = data[offset("Happiness")];
+            // \1PokerusStatus:: db
+            poke.pokerus = this.ParsePokerus(data[offset("PokerusStatus")]);
+            // \1CaughtData::
+            // \1CaughtTime::
+            // \1CaughtLevel:: db
+            // \1CaughtGender::
+            // \1CaughtLocation:: db
+            poke.met = this.UnpackCaughtData(data.readInt16BE(offset('CaughtData')), poke.original_trainer);
+
+            // \1Level::   db
+            poke.level = data[offset('Level')];
+
+            // Fake PV
+            poke.personality_value = (data.readUInt16BE(offset('DVs')) << 16) + (poke.original_trainer.id | data.readInt16BE(offset('CaughtData')));
+
+            if (nickname)
+                poke.name = this.rom.ConvertText(nickname);
+            if (otName)
+                poke.original_trainer.name = this.rom.ConvertText(otName);
+
+            return poke;
+        }
+
+        protected ParseBattlePokemon(data: Buffer) {
+            const poke = {} as TPP.PartyPokemon & { active: boolean };
+            const offset = this.BaseOffsetCalc('wBattleMon', NAME_LENGTH);
+            if (data[offset('Species')] == 0)
+                return poke;
+            // \1Species::    db
+            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(data[offset('Species')]))
+            poke.name = this.FixCapsNonNickname(this.rom.ConvertText(data), poke.species.name);
+            // \1Item::       db
+            poke.held_item = data[offset('Item')] > 0 ? Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[offset('Item')])) : null;
+            // \1Moves::      ds NUM_MOVES
+            poke.moves = Array.from(data.slice(offset('Moves'), offset('DVs'))).map(m => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(m)));
+            // \1DVs::        ds 2
+            poke.ivs = this.UnpackDVs(data.readUInt16BE(offset('DVs')));
+            // \1PP::         ds NUM_MOVES
+            data.slice(offset('PP')).forEach((pp, i) => {
+                if (poke.moves[i]) {
+                    poke.moves[i].pp = pp % 64;
+                    poke.moves[i].pp_up = pp >>> 6;
+                }
+            });
+            poke.moves = poke.moves.filter(m => m && m.id);
+            // \1Happiness:: db
+            poke.friendship = data[offset("Happiness")];
+            // \1Level::      db
+            poke.level = data[offset('Level')];
+            // \1Status::     db
+            const statusNum = data[offset('Status')];
+            poke.status = this.ParseStatus(statusNum);
+            poke.sleep_turns = statusNum % 8;
+            // \1HP::         dw
+            poke.health = [data.readUInt16BE(offset('HP')), data.readUInt16BE(offset('MaxHP'))];
+            // \1Stats::
+            poke.stats = {
+                // \1MaxHP::      dw
+                hp: data.readUInt16BE(offset('MaxHP')),
+                // \1Attack::     dw
+                attack: data.readUInt16BE(offset('Attack')),
+                // \1Defense::    dw
+                defense: data.readUInt16BE(offset('Defense')),
+                // \1Speed::      dw
+                speed: data.readUInt16BE(offset('Speed')),
+                // \1SpclAtk::    dw
+                special_attack: data.readUInt16BE(offset('SpclAtk')),
+                // \1SpclDef::    dw
+                special_defense: data.readUInt16BE(offset('SpclDef')),
+            }
+            // \1Type::
+            // \1Type1::      db
+            poke.species.type1 = this.rom.GetType(data[offset('Type1')]);
+            // \1Type2::      db
+            poke.species.type2 = this.rom.GetType(data[offset('Type2')]);
+
+            poke.active = true;
+
+            return poke;
+        }
+
+        protected UnpackDVs(dvs: number) {
+            const ivs = {
+                attack: dvs >> 12,
+                defense: (dvs >> 8) % 16,
+                speed: (dvs >> 4) % 16,
+                special_attack: dvs % 16,
+                special_defense: dvs % 16
+            } as TPP.Stats;
+            ivs.hp = (8 * (ivs.attack % 2)) + (4 * (ivs.defense % 2)) + (2 * (ivs.speed % 2)) + (ivs.special_attack % 2);
+            return ivs;
+        }
+
+        protected PackDVs(dvs: TPP.Stats) {
+            return (dvs.attack << 12) | (dvs.defense << 8) | (dvs.speed << 4) | (dvs.special_attack);
+        }
+
+        protected UnpackCaughtData(caught: number, ot: TPP.Trainer) {
+            if (caught) {
+                //CaughtTime (bits 14-15), CaughtLevel (bits 8-13), Caught(OT)Gender (bit 7), CaughtLocation (bits 0-6)
+                const met: TPP.Pokemon['met'] = {
+                    area_id: caught % 0x80,
+                    level: caught >> 8 % 0x40,
+                    game: "Pokémon Crystal", //Crystal is the only one that sets CatchData
+                    time_of_day: timeOfDay[caught >> 14]
+                }
+                ot && (ot.gender = (caught & 0x80) ? "Female" : "Male");
+                return met;
+            }
+            return undefined;
+        }
+
+        public Init() {
+            const hRomBank = 0xFF9D; // 0xFF9F; //GS
+            //Evolution detect
+            const { bank: startBank, address: startAddr } = this.rom.LinearAddressToBanked(this.rom.symTable["EvolutionAnimation"]);
+            const { bank: endBank, address: endAddr } = this.rom.LinearAddressToBanked(this.rom.symTable["EvolutionAnimation.EvolutionAnimation"]);
+            this.SetSelfCallEvent("Evolution Start", "Execute", startAddr, "override/evolution_is_happening/true", hRomBank, startBank);
+            this.SetSelfCallEvent("Evolution End", "Execute", endAddr - 1, "override/evolution_is_happening", hRomBank, endBank);
+        }
+    }
+}

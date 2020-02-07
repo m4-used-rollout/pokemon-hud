@@ -10,7 +10,7 @@
 /// <reference path="rom-reading/romreaders/concrete/g7.ts" />
 /// <reference path="rom-reading/romreaders/concrete/generic.ts" />
 /// <reference path="ram-reading/g1.ts" />
-// /// <reference path="ram-reading/g2.ts" />
+/// <reference path="ram-reading/g2.ts" />
 /// <reference path="ram-reading/g3.ts" />
 // /// <reference path="ram-reading/g6.ts" />
 /// <reference path="ram-reading/g7.ts" />
@@ -155,10 +155,10 @@ module TPP.Server {
             case 2: {
                 let rom = new RomReader.Gen2(path);
                 RomData = rom;
-                //RamData = new RamReader.Gen2(rom, 5337, "localhost", config);
+                RamData = new RamReader.Gen2(rom, 5337, "localhost", config);
                 break;
             }
-            case 3:{
+            case 3: {
                 let rom = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
                 RomData = rom;
                 RamData = new RamReader.Gen3(rom, 5337, "localhost", config);
@@ -166,13 +166,13 @@ module TPP.Server {
             }
             case 4: {
                 let rom = new RomReader.Gen4(path);
-                RomData =rom;
+                RomData = rom;
                 //RamData = new RamReader.Gen4(rom, 6337, "localhost", config);
                 break;
             }
             case 5: {
                 let rom = new RomReader.Gen5(path);
-                RomData =rom;
+                RomData = rom;
                 //RamData = new RamReader.Gen5(rom, 6337, "localhost", config);
                 break;
             }

@@ -2,7 +2,7 @@
 
 namespace Events {
 
-    type BattleAction = { type: "Started Battle", kind: string };
+    type BattleAction = { type: "Started Battle", kind: string, wildOpponents?: string[] };
     type KnownActions = BattleAction;
 
 
@@ -14,7 +14,7 @@ namespace Events {
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
             if (newState.in_battle && !oldState.in_battle)
-                dispatch({ type: "Started Battle", kind: newState.battle_kind });
+                dispatch({ type: "Started Battle", kind: newState.battle_kind, wildOpponents: newState.battle_kind == "Wild" ? (newState.enemy_party || []).map(e => e.name) : undefined });
         }
         public Reducer(action: KnownActions & Timestamp): void {
             switch (action.type) {
