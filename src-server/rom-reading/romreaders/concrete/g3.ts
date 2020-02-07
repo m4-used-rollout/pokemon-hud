@@ -20,14 +20,14 @@ namespace RomReader {
 
     interface Gen3Item extends Pokemon.Item {
         isPokeball: boolean;
-        isCandy: boolean; //TTH
+        //isCandy: boolean; //TTH
     }
 
-    export interface TTHMap extends Pokemon.Map {
-        author?: string;
-        puzzleNo?: number;
-        trainers: Pokemon.Trainer[];
-    }
+    // export interface TTHMap extends Pokemon.Map {
+    //     author?: string;
+    //     puzzleNo?: number;
+    //     trainers: Pokemon.Trainer[];
+    // }
 
     export class Gen3 extends GBAReader {
         public config: PGEINI;
@@ -73,7 +73,7 @@ namespace RomReader {
             return mapArr.some(m => m[0] == bank && ((m.length == 2 && m[1] == id) || m[1] <= id && m[2] >= id));
         }
         IsUnknownTrainerMap(id: number, bank: number) {
-            return false; //TTH
+            //return false; //TTH
             switch (this.romHeader) {
                 case "BPEE":
                     return this.CurrentMapIn(id, bank, [
@@ -152,8 +152,8 @@ namespace RomReader {
         }
 
         private ReadItemData(romData: Buffer, config: PGEINI) {
-            // +16 for TriHard Emerald and TTH
-            return this.ReadStridedData(romData, parseInt(config.ItemData, 16), 44 + 16, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
+            const itemStructExtensionBytes = 0; // 16 for TriHard Emerald and TTH
+            return this.ReadStridedData(romData, parseInt(config.ItemData, 16), 44 + itemStructExtensionBytes, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
                 name: this.FixAllCaps(this.ConvertText(data)),
                 id: i,
                 // price: data.readInt16LE(16),
@@ -161,14 +161,14 @@ namespace RomReader {
                 // parameter: data[19],
                 // description: this.ConvertText(romData.slice(this.readRomPtr(data, 20), this.readRomPtr(data, 20) + 255)),
                 // mystery: data.readInt16LE(24),
-                isKeyItem: data.readInt16LE(24 + 16) > 0,
+                isKeyItem: data.readInt16LE(24 + itemStructExtensionBytes) > 0,
                 // pocket: data[26],
                 // type: data[27],
                 // fieldUsePtr: data.readInt32LE(28),
                 // battleUsage: data.readInt32LE(32),
                 // battleUsagePtr: data.readInt32LE(36),
                 // extraParameter: data.readInt32LE(40),
-                isPokeball: data.readInt32LE(32 + 16) == 2 && data.readInt32LE(40) == data[27]
+                isPokeball: data.readInt32LE(32 + itemStructExtensionBytes) == 2 && data.readInt32LE(40) == data[27]
             }));
         }
 
@@ -244,19 +244,20 @@ namespace RomReader {
         }
 
         private ReadMaps(romData: Buffer, config: PGEINI) {
-            let mapBanksPtr = parseInt(config.Pointer2PointersToMapBanks || "0", 16) || this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
+            let mapBanksPtr = /*parseInt(config.Pointer2PointersToMapBanks || "0", 16) ||*/ this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
             const mapLabelOffset = parseInt(config.MapLabelOffset || "0", 16);
             return this.ReadPtrBlock(romData, mapBanksPtr)
                 .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
-                    .map((mapHeader, m) => (<TTHMap>{
+                    .map((mapHeader, m) => (<Pokemon.Map>{//(<TTHMap>{
                         bank: b,
                         id: m,
                         areaId: mapHeader[0x14] - mapLabelOffset,
                         areaName: this.areas[mapHeader[0x14] - mapLabelOffset],
-                        name: this.GetPuzzleName(romData, mapHeader.readUInt32LE(0x8) - 0x8000000) || this.areas[mapHeader[0x14] - mapLabelOffset],
-                        author: this.GetPuzzleAuthor(romData, mapHeader.readUInt32LE(0x8) - 0x8000000), //TTH
-                        trainers: this.GetPuzzleTrainers(romData, mapHeader.readUInt32LE(0x1C) - 0x8000000, config), //TTH
-                        puzzleNo: this.puzzleList.findIndex(p => p.id == m && p.bank == b),
+                        name: this.areas[mapHeader[0x14] - mapLabelOffset],
+                        // name: this.GetPuzzleName(romData, mapHeader.readUInt32LE(0x8) - 0x8000000) || this.areas[mapHeader[0x14] - mapLabelOffset],
+                        // author: this.GetPuzzleAuthor(romData, mapHeader.readUInt32LE(0x8) - 0x8000000), //TTH
+                        // trainers: this.GetPuzzleTrainers(romData, mapHeader.readUInt32LE(0x1C) - 0x8000000, config), //TTH
+                        // puzzleNo: this.puzzleList.findIndex(p => p.id == m && p.bank == b), //TTH
                         encounters: {}
                     }))
                 ).reduce((allMaps, currBank) => Array.prototype.concat.apply(allMaps, currBank), []);

@@ -505,6 +505,7 @@ body {
                             .exp {
                                 background-color:@shadow-color;
                                 @heart-gauge-segment-width: 11.5vw;
+                                mask-image: repeating-linear-gradient(to right, black 0%, black @heart-gauge-segment-width, transparent @heart-gauge-segment-width + .1vw, transparent @heart-gauge-segment-width + 1vw);
                                 -webkit-mask-image: repeating-linear-gradient(to right, black 0%, black @heart-gauge-segment-width, transparent @heart-gauge-segment-width + .1vw, transparent @heart-gauge-segment-width + 1vw);
                             }
                         }
@@ -761,14 +762,26 @@ body {
                 //margin-top: .25em;
                 text-align: center;
                 font-family: pokered;
+                white-space:nowrap;
                 // font-size: 2.5vh;
                 font-size: 3vh;
-                > span {
-                    &:before {
-                        content:' ';
-                    }
-                    &.minutes:before, &.seconds:before {
-                        content:':';
+                width: 100%;
+
+                .fit-to-width-container {
+                    width: 100%;
+
+                    div {
+                        min-width: 100%;
+                        padding: 0 .25em;
+
+                         > span {
+                            &:before {
+                                content:' ';
+                            }
+                            &.minutes:before, &.seconds:before {
+                                content:':';
+                            }
+                        }
                     }
                 }
             }
@@ -805,7 +818,7 @@ body {
 
             .bottom-row {
                 position: absolute!important;
-                bottom:0;
+                bottom:-.1em;
                 left:0;
                 right:0; 
                 font-size:1.5em;
@@ -834,6 +847,8 @@ body {
 
                     .options {
                         width: auto;   
+                        font-size: 1em;
+                        line-height: normal;
                     }
 
                     .cash {

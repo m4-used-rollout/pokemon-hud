@@ -30,7 +30,7 @@ module TPP.Server {
 
     let config = getConfig();
 
-    var state: TPP.RunStatus = { party: [], pc: {}, game: config.runName } as any;
+    var state: TPP.RunStatus = { party: [], pc: {}, game: config.runName, generation: config.generation } as Partial<TPP.RunStatus> as TPP.RunStatus;
     var stateChangeHandlers: ((state: TPP.RunStatus) => void)[] = [];
 
     const fsSafe = /[^a-z0-9-.]*/ig;

@@ -12,7 +12,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
         let pcBoxCount = (pc.boxes || []).filter(b => !!b && b.box_contents && b.box_number == pc.current_box_number).map(b => b.box_contents.length).shift() || 0;
 
         return <div className={`trainer-info ${t.transitioning ? "glitch" : ""}`}>
-            <Badges bitfield={t.badges} rematch={t.rematch_available} />
+            {t.generation < 6 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
             <Clock time={t.time} />
             {/*t.items && t.items.items && <div className="candy-counts">
                 <h5>Candy Haul</h5>
@@ -28,20 +28,20 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                     {t.items.key.map(i => <li key={i.id}>{i.name}</li>)}
                 </ul>
             </div>*/}
-            {t.options && displayOpts.length > 1 && <div className="options">
+            {!t.time && t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
             </div>}
             <FitToWidth className="bottom-row">
                 <span className={`cash ${t.money < 1000 ? t.money < 200 ? 'low' : 'med' : 'good'}`}>{(t.money || 0).toLocaleString()}</span>
                 <span className={`balls ${(t.ball_count || 0) < 10 ? (t.ball_count || 0) < 1 ? 'low' : 'med' : 'good'}`}>{(t.ball_count || 0).toLocaleString()}</span>
                 {(t.stickers || t.stickers === 0) && <span className="stickers">{t.stickers}</span>}
-                <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>
+                {t.generation < 3 && <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>}
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
-                {/* {t.options && displayOpts.length >= 1 && <div className="options">
+                {t.generation > 2 && t.time && t.options && displayOpts.length >= 1 && <div className="options">
                     {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
-                </div>} */}
+                </div>}
                 {t.items && t.items.z_crystals && <ZCrystals items={t.items} />}
-                {/* <Badges bitfield={t.badges} rematch={t.rematch_available} /> */}
+                {t.generation > 5 && <Badges bitfield={t.badges} rematch={t.rematch_available} /> }
                 {t.party_fitness && <span className="fitness">{t.party_fitness.toLocaleString()}</span>}
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>
