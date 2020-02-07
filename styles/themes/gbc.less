@@ -131,7 +131,7 @@
                     transition: transform .25s ease-in-out, opacity .25s ease-in-out;
                     .outline(white);
 
-                    background-size: 87%;
+                    background-size: 87% 87%;
                     background-position: 50% 64%;
                     background-repeat: no-repeat;
 
@@ -149,7 +149,7 @@
                             height:@party-member-height;
                             transition: all @transition-time ease-in-out;
                             background-image:linear-gradient(45deg, white 0%, white 50%, white 50%, white 100%);
-                            background-size: 87%;
+                            background-size: 87% 87%;
                             background-position: 50% 64%;
                             background-repeat: no-repeat;
                             transform-origin: bottom;
@@ -811,7 +811,7 @@
             .options {
                 display: none;
                 flex: 1 1 auto;
-                display:flex;
+                // display:flex;
                 // justify-content: space-around;
                 justify-content: space-between;
                 font-family: pokered;
@@ -839,6 +839,36 @@
                 }
             }
 
+            .option {
+                &[data-val=slow], &[data-val=off], &[data-val=manual] {
+                    color:@low-health;
+                    font-weight: bold;
+                }
+                &[data-val=med] {
+                    color:@med-health;
+                    font-weight: bold;
+                }
+                &[data-val=fast], &[data-val=on], &[data-val=automatic] {
+                    color:@high-health;
+                    font-weight: bold;
+                }
+            }
+
+            .pc.almost-full {
+                color:@med-health;
+            }
+            .pc.full {
+                color:@low-health;
+            }
+            .good {
+                color:@high-health;
+            }
+            .med {
+                color:@med-health;
+            }
+            .low {
+                color:@low-health;
+            }
 
             .bottom-row {
                 position: absolute!important;
