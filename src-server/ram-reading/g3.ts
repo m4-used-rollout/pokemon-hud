@@ -56,7 +56,7 @@ namespace RamReader {
                 box_number: i + 1,
                 box_name: /*["The Fallen", "The Forgiven", "The Innocent", "The Lost", "The Remembered", "The Loved", "The Mourned", "The Troubled", "The Faithful", "The Forlorn"][i] ||*/ this.rom.ConvertText(data.slice(0x8344 + (i * 9), 0x8344 + ((i + 1) * 9))), //TriHard Names
                 box_contents: this.rom.ReadStridedData(box, 0, 80, 30).map((pkmdata, b) => this.ParsePokemon(pkmdata, b + 1)).filter(p => !!p)
-            } as TPP.BoxData)).filter(b => b.box_contents.length > 0) // TriHard Filter
+            } as TPP.BoxData))//.filter(b => b.box_contents.length > 0) // TriHard Filter
         } as TPP.CombinedPCData)));
 
         public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.InBattleAddr}/1/${this.rom.config.gBattleTypeFlags}/4/${this.rom.config.gTrainerBattleOpponent_A}/4/${this.rom.config.gEnemyParty}/${this.rom.config.PartyBytes}/${this.rom.config.gBattleMons}/${this.rom.config.gBattleMonsBytes}/${this.rom.config.gBattlersCount}/${((parseInt(this.rom.config.gBattlerPositions, 16) - parseInt(this.rom.config.gBattlersCount, 16)) + 4).toString(16)}`, this.WrapBytes<TPP.BattleStatus>(data => {
@@ -66,12 +66,12 @@ namespace RamReader {
                 const battle_kind = battleFlags & 8 ? "Trainer" : "Wild";
                 const enemy_trainers = new Array<TPP.EnemyTrainer>();
                 if (battle_kind == "Trainer") {
-                    const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank) as RomReader.TTHMap; //TTH
-                    //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
-                    enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
+                    const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank);// as RomReader.TTHMap; //TTH
+                    enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
+                    //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
                     if (battleFlags & 0x41) { //multi-battle
-                        //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
-                        enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
+                        enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
+                        //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
                     }
                 }
                 const partyBytes = parseInt(this.rom.config.PartyBytes, 16);
@@ -142,7 +142,7 @@ namespace RamReader {
                     money: data.readUInt32LE(0) ^ key,
                     coins: data.readUInt16LE(4) ^ halfKey,
                     items: {
-                        //pc: this.ParseItemCollection(data.slice(8), PCCount), //no key //no PC (TriHard)
+                        pc: this.ParseItemCollection(data.slice(8), PCCount), //no key //no PC (TriHard)
                         items: this.ParseItemCollection(data.slice((2 + PCCount) * 4), ItemCount, halfKey),
                         key: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount) * 4), KeyCount, halfKey),
                         balls: ballPocket,
@@ -190,7 +190,7 @@ namespace RamReader {
                 time: {
                     h: data.readUInt8(2),
                     m: data.readUInt8(3),
-                    // s: data.readUInt8(4),
+                    s: data.readUInt8(4),
                     d: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][data.readUInt8(5) % 7]
                 }
             } as TPP.TrainerData))),
@@ -199,7 +199,7 @@ namespace RamReader {
                 rival_name: this.rom.ConvertText(data)
             } as TPP.TrainerData))),
             //Evolution
-            this.rom.config.IwramMusicAddr && this.rom.config.EvolutionMusicIds && this.CachedEmulatorCaller<TPP.TrainerData>(`${parseInt(this.rom.config.IwramMusicAddr, 16) < 0x8000 ? 'IWRAM/' : ""}/ReadU16BE/${this.rom.config.IwramMusicAddr}`, this.WrapBytes(data => ({
+            this.rom.config.IwramMusicAddr && this.rom.config.EvolutionMusicIds && this.CachedEmulatorCaller<TPP.TrainerData>(`${parseInt(this.rom.config.IwramMusicAddr, 16) < 0x8000 ? 'IWRAM/' : ""}ReadU16BE/${this.rom.config.IwramMusicAddr}`, this.WrapBytes(data => ({
                 evolution_is_happening: this.rom.config.EvolutionMusicIds.split(' ').map(i => parseInt(i, 16)).indexOf(data.readUInt16LE(0)) >= 0 && this.currentState.map_name.indexOf("Safari") < 0
             } as TPP.TrainerData))),
             //Daycare

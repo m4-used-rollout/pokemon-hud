@@ -5,6 +5,7 @@ declare namespace TPP {
         party: PartyData;
         pc: CombinedPCData;
         game?: string;
+        generation?: number;
         updates_paused?: boolean;
         transitioning?: boolean;
     }
@@ -16,7 +17,7 @@ declare namespace TPP {
         battle_kind?: "Wild" | "Trainer";
         enemy_trainers?: EnemyTrainer[];
         enemy_party?: EnemyParty;
-        battle_id?:number;
+        battle_id?: number;
     }
 
     export interface TrainerData extends OverlayData {
@@ -178,7 +179,7 @@ declare namespace TPP {
             game: string;
             date?: string;
             date_egg_received?: string;
-            time_of_day?:string;
+            time_of_day?: string;
             caught_in?: string;
             caught?: string;
             evolved?: string[];
