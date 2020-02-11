@@ -149,7 +149,7 @@ namespace TPP.Server.DexNav {
                 }
             }
             const goalTrainers = (config.goals || []).find(g => g.goalType == "Trainers") as TrainerHitListConfig;
-            if (goalTrainers) {
+            if (goalTrainers && goalTrainers.requiredTrainerIds) {
                 this.GoalTrainers = goalTrainers.requiredTrainerIds
                     .map((id, i) => {
                         const classId = (goalTrainers.requiredTrainerClasses || [])[i];

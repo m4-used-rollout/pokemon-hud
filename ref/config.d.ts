@@ -1,9 +1,10 @@
 /// <reference path="./runstatus.d.ts" />
 
-declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig {
+declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig, SplitsConfig {
     generation: number;
     runName: string;
     badgeCount?: number;
+    dexName?: string;
     mainRegion?: string;
     totalInDex?: number;
     romDexToNatDex?: (number | number[])[];
@@ -48,8 +49,17 @@ declare interface DexNavConfig {
 }
 
 declare interface EmuCtlConfig {
-    saveStatePath?:string;
-    saveStateIntervalSeconds?:number;
+    saveStatePath?: string;
+    saveStateIntervalSeconds?: number;
+}
+
+declare interface SplitsConfig {
+    runStartTime?: string;
+    splitFile?: string;
+    splitsX?:number;
+    splitsY?:number;
+    splitsWidth?:number;
+    splitsHeight?:number;
 }
 
 declare interface GoalConfig {

@@ -27,13 +27,13 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
             <KillScreen party={map.FriendlyParty} enemyParty={map.EnemyParty} />
             <WildBattle wilds={map.WildBattle} />
             <EnemyTrainer trainers={map.EnemyTrainers} battleKind={map.BattleKind} party={map.EnemyParty} />
-            {!totalKnownEncounters && map.GoalTrainers && <GoalTrainers goalTrainers={map.GoalTrainers} />}
-            {map.PuzzleNumber > 0 && <div className="encounters puzzle-display">
+            {/* {!totalKnownEncounters && map.GoalTrainers && <GoalTrainers goalTrainers={map.GoalTrainers} />} */}
+            {/* {map.PuzzleNumber > 0 && <div className="encounters puzzle-display">
                 <span className="puzzle-number">{map.PuzzleNumber}</span>
                 <span className="puzzle-name">{map.MapName}</span>
                 <span className="puzzle-author">by {map.PuzzleAuthor}</span>
                 {map.PuzzleFoundScroll && <img className="puzzle-scroll" src="img/goals/scroll.png" />}
-            </div>}
+            </div>} */}
             <div className={`encounters unknown-zone ${map.TotalEncounters || !map.IsUnknownArea ? 'hidden' : ""}`}>
                 <TrainerSprite picId={-1} />
             </div>

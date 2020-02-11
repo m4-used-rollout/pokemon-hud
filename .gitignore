@@ -1,4 +1,4 @@
-**/config.json
+**/config*.json
 node_modules/
 bin/
 img/items/
@@ -11,4 +11,5 @@ release/
 .DS_Store
 *.ini
 !pge.ini
+!config.default.json
 !**/data/**/*.ini

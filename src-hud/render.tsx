@@ -3,7 +3,6 @@
 /// <reference path="pokedex/pokedex.tsx" />
 /// <reference path="pokemon/appraisal.tsx" />
 
-
 var data: TPP.RunStatus = null;
 
 var targetId: string;

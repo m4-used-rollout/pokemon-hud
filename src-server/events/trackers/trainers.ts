@@ -105,10 +105,10 @@ namespace Events {
             //state.game_stats = state.game_stats || {};
             //state.game_stats["Trainer Battles Won"] = defeated.reduce((sum, t) => t.endeavors.filter(e => !!e.defeated).length + sum, 0);
 
-            const goalTrainers = new Array<{ id: Number, classId: number }>();
+            const goalTrainers = new Array<{ id?: Number, classId: number }>();
 
             function isGoalTrainer(id: number, classId: number) {
-                return goalTrainers.some(t => t.id == id && (!t.classId || t.classId == classId));
+                return goalTrainers.some(t => (t.id == id && (!t.classId || t.classId == classId)) || (!t.id && t.classId == classId));
             }
 
             const trainerGoals = (this.config.goals || []).find(g => g.goalType == "Trainers") as TrainerHitListConfig;
@@ -117,10 +117,12 @@ namespace Events {
                 (trainerGoals.finalTrainerIds || []).forEach((t, i) => goalTrainers.push({ id: t, classId: (trainerGoals.finalTrainerClasses || [])[i] }));
                 (trainerGoals.optionalTrainerIds || []).forEach((t, i) => goalTrainers.push({ id: t, classId: (trainerGoals.optionalTrainerClasses || [])[i] }));
                 (trainerGoals.extraTrackedTrainerIds || []).forEach((t, i) => goalTrainers.push({ id: t, classId: (trainerGoals.extraTrackedTrainerClasses || [])[i] }));
+                if (!trainerGoals.requiredTrainerIds && trainerGoals.requiredTrainerClasses)
+                    trainerGoals.requiredTrainerClasses.forEach(classId => goalTrainers.push({ classId }));
             }
 
             this.encounteredTrainers
-                .filter(t => isGoalTrainer(t.id, t.classId) || t.endeavors.some(e => e.attempts > 2))
+                .filter(t => isGoalTrainer(t.id, t.classId) || t.endeavors.some(e => e.attempts > 1))
                 // .filter(t => (t.className || "").toLowerCase() == "leader" || (t.className || "").toLowerCase() == "elite four" || (t.className || "").toLowerCase() == "champion")
                 .forEach(t => t.endeavors
                     .forEach(e => state.events.push({ group: e.defeated ? "Trainers Defeated" : "Trainers Undefeated", id: t.id, class_id: t.classId, name: t.name, time: e.defeated || e.challenged, attempts: e.attempts } as TPP.TrainerEvent))

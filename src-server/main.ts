@@ -16,6 +16,8 @@
 /// <reference path="ram-reading/g7.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/electron/electron.d.ts" />
+/// <reference path="../ref/splits.d.ts" />
+
 
 module TPP.Server {
 
@@ -26,6 +28,14 @@ module TPP.Server {
         const configPath = './config.json';
         delete require.cache[require.resolve(configPath)];
         return Args.Parse().Merge(require(configPath));
+    }
+
+    export function getSplits(): Splits {
+        if (config.splitFile) {
+            delete require.cache[require.resolve(config.splitFile)];
+            return require(config.splitFile);
+        }
+        return [];
     }
 
     let config = getConfig();

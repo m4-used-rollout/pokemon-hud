@@ -62,7 +62,7 @@ class Pokedex extends React.Component<dexProps, dexState> {
             }
         }
         let style = { transform: state.scrollTo ? `translateY(${state.scrollTo}%)` : null };
-        return <div className={`pokedex ${state.newEntry ? "new-entry" : ""}`} data-region={config.mainRegion || "National"}>
+        return <div className={`pokedex ${state.newEntry ? "new-entry" : ""}`} data-region={(typeof config.dexName === "undefined" ? config.mainRegion : config.dexName) || "National"}>
             <div className="pokemon-display">
                 <ul className="pokemon-list" style={style}>
                     {mons}

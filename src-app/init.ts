@@ -50,9 +50,9 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
         win.show()
     });
 
-    win.webContents.on("crashed", ()=> {
+    win.webContents.on("crashed", () => {
         win.destroy();
-        createWindow(page, windowWidth,windowHeight,x,y,frameless,resize,resetEveryHours);
+        createWindow(page, windowWidth, windowHeight, x, y, frameless, resize, resetEveryHours);
     });
 
 
@@ -84,12 +84,12 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     createWindow('hud', config.screenWidth, config.screenHeight, config.windowX, config.windowY, config.frameless, !config.blockResize, config.resetEveryHours)
-    if (config.showDexNav) {
+    if (config.showDexNav)
         createWindow('dexnav', config.dexNavWidth, config.dexNavHeight, config.dexNavX || -1, config.dexNavY || -1, config.frameless, !config.blockResize, config.dexNavResetEveryHours)
-    }
-    if (config.showGoals) {
+    if (config.showGoals)
         createWindow('goal', config.goalWidth, config.goalHeight, config.goalX || -1, config.goalY || -1, config.frameless, !config.blockResize, config.resetEveryHours)
-    }
+    if (config.splitFile)
+        createWindow('splits', config.splitsWidth || 960, config.splitsHeight || config.dexNavHeight || 144, config.splitsX || -1, config.splitsY || -1, config.frameless, !config.blockResize, config.resetEveryHours);
 });
 
 // Quit when all windows are closed.

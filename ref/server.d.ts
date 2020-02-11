@@ -5,6 +5,7 @@
 /// <reference path="../ref/pge.ini.d.ts" />
 /// <reference path="../ref/upr.ini.d.ts" />
 /// <reference path="../node_modules/electron/electron.d.ts" />
+/// <reference path="../ref/splits.d.ts" />
 /// <reference path="../ref/joypad.d.ts" />
 declare module Args {
     interface CmdConf extends Config {
@@ -971,6 +972,7 @@ declare namespace RamReader {
 }
 declare module TPP.Server {
     function getConfig(): Config;
+    function getSplits(): Splits;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
     const events: Events.RunEvents;
