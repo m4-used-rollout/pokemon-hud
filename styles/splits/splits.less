@@ -1,0 +1,55 @@
+.live-split-display {
+    display:flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    min-width: 0;
+    font-family: pokered, pokeplatinum;
+
+    .split {
+        flex: 0 0 auto;
+        text-align: center;
+
+        &.active {
+            background-repeat: no-repeat;
+            background-image: radial-gradient(ellipse at top, #999 0%, rgba(0,0,0,0) 80%);
+        }
+
+        img {
+            width: 80%;
+        }
+
+        .time {
+            margin: 0 .5em;
+            color: #AAA;
+            white-space: normal;
+            position: relative;
+
+            &:before {
+                font-family: pokeplatinum;
+                font-size: 2em;
+                font-weight: bold;
+                position: absolute;
+                left: -.25em;
+                top: -.25em;
+            }
+
+            &.pass {
+                &:before {
+                    content: '-';
+                }
+                color: lime;
+            }
+            &.fail {
+                &:before {
+                    content: '+';
+                }
+                color: red;
+            }
+        }
+    }
+}

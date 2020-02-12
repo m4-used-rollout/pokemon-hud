@@ -71,7 +71,7 @@ namespace Events {
                     this.canEarnBadges = this.isTrainerAGymLeader(action);
                     return;
                 case "Got Item":
-                    if (action.id >= 807 && action.id <= 824 && this.earnedZCrystals.indexOf(action.id) < 0) { //Earned new Z-Crystal
+                    if (this.config.generation == 7 && action.id >= 807 && action.id <= 824 && this.earnedZCrystals.indexOf(action.id) < 0) { //Earned new Z-Crystal
                         this.earnedZCrystals.push(action.id);
                         this.earnedBadges.push({
                             group: "Badge",
@@ -79,6 +79,7 @@ namespace Events {
                             time: action.timestamp
                         });
                     }
+                    return;
                 case "Earned Badge":
                     if (this.canEarnBadges) {
                         this.earnedBadges.push({

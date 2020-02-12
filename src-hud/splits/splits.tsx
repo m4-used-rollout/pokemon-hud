@@ -1,44 +1,67 @@
 namespace SplitDisplay {
     export class SplitDisplay extends React.Component<{ startTime: Date, splits: Splits, events: TPP.Event[] }> {
-        private splits: ProcessedSplit[];
-
-        constructor(props: SplitDisplay["props"], context: any) {
-            super(props, context);
-            this.splits = props.splits.map(s => ({ ...s, Duration: Duration.parse(s.Time) }));
+        private findMatchingEvent(s: SplitEvent) {
+            return this.props.events.find(e => this.isEventGroupMatch(s, e) && (e.name == s.Name || (s.ClassId && (e as TPP.TrainerEvent).class_id == s.ClassId)));
         }
-
-        private findMatchingEvent(s: ProcessedSplit) {
-            return this.props.events.find(e => e.group == s.Group && (e.name == s.Name || (e as TPP.TrainerEvent).class_id == s.ClassId));
+        private isEventGroupMatch(s: SplitEvent, e: TPP.Event) {
+            switch (s.Group) {
+                case "Badges":
+                    return e.group == "Badge";
+                case "Champions":
+                case "Elite Four":
+                    return e.group == "Trainers Defeated";
+            }
+            return false;
         }
 
         render() {
-            let foundActive = false;
+            const splits = this.props.splits.map((s, i, arr) => {
+                const duration = new Duration(0);
+                duration.TotalSeconds = Duration.parse(s.Time).TotalSeconds - (i > 0 ? Duration.parse(arr[i - 1].Time).TotalSeconds : 0);
+                return {
+                    ...s,
+                    Duration: duration,
+                    CompletionEvent: this.findMatchingEvent(s),
+                } as ProcessedSplit;
+            }).sort((s1, s2) =>
+                Duration.parse((s1.CompletionEvent || { time: s1.Time }).time, this.props.startTime).TotalSeconds -
+                Duration.parse((s2.CompletionEvent || { time: s2.Time }).time, this.props.startTime).TotalSeconds
+            ).map((s, i, arr) => {
+                const startTime = new Date(((this.props.startTime.valueOf() / 1000) +
+                    (i > 0 ? Duration.parse((arr[i - 1].CompletionEvent || { time: "0s" }).time, this.props.startTime).TotalSeconds : 0)) * 1000)
+                const completedDuration = new Duration(0);
+                const difference = new Duration(0);
+                if (s.CompletionEvent) {
+                    completedDuration.TotalSeconds = Duration.parse(s.CompletionEvent.time, this.props.startTime).TotalSeconds - (i > 0 ? Duration.parse((arr[i - 1].CompletionEvent || { time: arr[i - 1].Time }).time, this.props.startTime).TotalSeconds : 0);
+                    difference.TotalSeconds = completedDuration.TotalSeconds - s.Duration.TotalSeconds;
+                }
+                return {
+                    ...s,
+                    Active: arr.find(ps => !ps.CompletionEvent) == s,
+                    StartTime: startTime,
+                    CompletedDuration: s.CompletionEvent ? completedDuration : undefined,
+                    Difference: s.CompletionEvent ? difference : undefined
+                } as ProcessedSplit;
+            });
+            // console.dir(this.props.events);
+            // console.dir(splits);
             return <div className="live-split-display">
-                {this.splits.map(s => {
-                    const event = this.findMatchingEvent(s);
-                    let active = !!event;
-                    if (foundActive)
-                        active = false;
-                    else if (active)
-                        foundActive = true;
-                    return <SingleSplit split={s} current={active} completionEvent={event} />
-                })}
+                {splits.map(s => <SingleSplit split={s} />)}
+                <style dangerouslySetInnerHTML={{ __html: `.live-split-display .split {width: ${100 / splits.length}vw;}` }} />
             </div>;
         }
 
     }
 
-    class SingleSplit extends React.Component<{ split: ProcessedSplit, current?: boolean, completionEvent?: TPP.Event }, { tick: number }> {
+    class SingleSplit extends React.Component<{ split: ProcessedSplit }, { tick: number }> {
         constructor(props: SingleSplit["props"], context: any) {
             super(props, context);
             this.state = { tick: 0 };
         }
         private running = false;
-        private tick() {
-            this.setState(s => ({ tick: s.tick + 1 }), () => this.running && requestAnimationFrame(this.tick));
-        }
+        private tick = () => this.setState(s => ({ tick: (s.tick + 1) % 1024 }), () => this.running && requestAnimationFrame(this.tick));
         componentDidMount() {
-            if (this.props.current) {
+            if (this.props.split.Active) {
                 this.running = true;
                 this.tick();
             }
@@ -47,19 +70,34 @@ namespace SplitDisplay {
             this.running = false;
         }
         componentWillReceiveProps(props = this.props) {
-            if (this.props.current != props.current)
-                (this.running = props.current) && this.tick();
+            if (this.props.split.Active != props.split.Active)
+                (this.running = props.split.Active) && this.tick();
+        }
+        private get currTime(): Duration {
+            const time = new Duration(0);
+            if (this.props.split.Active)
+                time.TotalSeconds = (Date.now() / 1000) - (this.props.split.Duration.TotalSeconds + (this.props.split.StartTime.valueOf() / 1000));
+            return time;
         }
         render() {
-            //return <div className={`split ${this.props.current && "active"}`}>
-                return <img src={this.props.split.Image} alt={this.props.split.Name}/>;
-
-            //</div>;
+            const split = this.props.split;
+            const currTime = this.currTime;
+            return <div className={`split ${split.Active && "active"}`}>
+                <img src={this.props.split.Image} alt={this.props.split.Name} />
+                {!split.Active && !split.CompletionEvent && <div className="future time">{Duration.parse(split.Time).toString()}</div>}
+                {split.CompletionEvent && <div className={`past time ${split.Difference.IsNegative ? "pass" : "fail"}`}>{split.Difference.toString()}</div>}
+                {split.Active && !split.CompletionEvent && <div className={`current time ${currTime.IsNegative ? "pass" : "fail"}`}>{currTime.toString()}</div>}
+            </div>;
         }
     }
 
     interface ProcessedSplit extends SplitEvent {
         Duration: Duration;
+        StartTime: Date;
+        Active: boolean;
+        CompletionEvent?: TPP.Event;
+        CompletedDuration?: Duration;
+        Difference?: Duration;
     }
 
     enum Scale {
@@ -119,11 +157,17 @@ namespace SplitDisplay {
             return this.TotalDays;
         }
 
-        toString(scale = Scale.Days) {
-            return (this.negative ? "-" : "") + (scale == Scale.Minutes ? (this.days * 24 + this.hours) * 60 + this.minutes : (scale == Scale.Hours ? this.days * 24 + this.hours : (scale == Scale.Weeks ? Math.floor(this.days / 7) + "w " + (this.days % 7) : this.days) + "d " + this.hours) + "h " + this.minutes) + "m" + (this.seconds ? " " + this.seconds + "s" : "");
+        private pad(num: number) {
+            if (Math.abs(num) < 10)
+                return `0${num.toFixed(0)}`;
+            return num.toFixed(0);
         }
 
-        static parse(time: string, baseTime?: number) {
+        toString(scale = Scale.Days) {
+            return (scale == Scale.Minutes ? (this.days * 24 + this.hours) * 60 + this.minutes : (scale == Scale.Hours ? this.days * 24 + this.hours : (scale == Scale.Weeks ? this.pad(Math.floor(this.days / 7)) + "w " + this.pad(this.days % 7) : this.pad(this.days)) + "d " + this.pad(this.hours)) + "h " + this.pad(this.minutes)) + "m " + this.pad(this.seconds) + "s";
+        }
+
+        static parse(time: string, baseTime?: Date) {
             var retval = new Duration();
             if (time) {
                 if (this.canParse(time)) {
@@ -134,7 +178,7 @@ namespace SplitDisplay {
                     catch (e) { }
                 }
                 if (baseTime) {
-                    retval.TotalSeconds = (Date.parse(time) / 1000) - baseTime;
+                    retval.TotalSeconds = (Date.parse(time) / 1000) - (baseTime.valueOf() / 1000);
                 }
             }
             return retval;
