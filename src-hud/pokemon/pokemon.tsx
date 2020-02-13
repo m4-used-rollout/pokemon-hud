@@ -68,7 +68,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                         {mon.ability && <div className="ability"> {mon.ability} </div>}
                         {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
                         {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
-                        {/* {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />} */}
+                        {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />}
                     </FitToWidth>
                     <ul className="moves">
                         {mon.moves.map(m => <Move move={m} key={m.id} />)}

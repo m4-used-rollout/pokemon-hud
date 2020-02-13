@@ -213,9 +213,9 @@ namespace RomReader {
                     const level = tData[0];
                     let party: { level: number, species: Pokemon.Species }[] = undefined;
                     if (level == 0xFF)
-                        party = this.ReadStridedData(tData, 1, 2).map(p=> ({level: p[0], species: this.GetSpecies(p[1])}));
+                        party = this.ReadStridedData(tData, 1, 2).map(p => ({ level: p[0], species: this.GetSpecies(p[1]) }));
                     else
-                        party = this.ReadStridedData(tData, 1, 1).map(p=>({level, species:this.GetSpecies(p[0])}));
+                        party = this.ReadStridedData(tData, 1, 1).map(p => ({ level, species: this.GetSpecies(p[0]) }));
                     trainers.push({
                         classId: cId,
                         spriteId: cId,
@@ -285,7 +285,7 @@ namespace RomReader {
                 for (addr++; romData[addr] != 0; addr += 2)
                     if (romData[addr] && romData[addr + 1])
                         moves.push(Object.assign({ level: romData[addr] }, this.GetMove(romData[addr + 1])));
-                moveLearns[i] = moves;
+                moveLearns[i + 1] = moves;
             });
             // console.dir(moveLearns);
             return moveLearns;
