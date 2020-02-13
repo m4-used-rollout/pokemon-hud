@@ -1,3 +1,5 @@
+@import '../mixins/utility.less';
+
 .live-split-display {
     display:flex;
     flex-flow: row nowrap;
@@ -16,11 +18,12 @@
 
         &.active {
             background-repeat: no-repeat;
-            background-image: radial-gradient(ellipse at top, #999 0%, rgba(0,0,0,0) 80%);
+            background-image: radial-gradient(ellipse at bottom, #FFF 0%, rgba(0,0,0,0) 80%);
         }
 
         img {
             width: 80%;
+            .outline(black);
         }
 
         .time {
@@ -28,6 +31,9 @@
             color: #AAA;
             white-space: normal;
             position: relative;
+            top: -1em;
+            .outline(black);
+            
 
             &:before {
                 font-family: pokeplatinum;

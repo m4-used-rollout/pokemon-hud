@@ -37,7 +37,7 @@ namespace SplitDisplay {
                 }
                 return {
                     ...s,
-                    Active: arr.find(ps => !ps.CompletionEvent) == s,
+                    Active: this.props.startTime.valueOf() < Date.now() && arr.find(ps => !ps.CompletionEvent) == s,
                     StartTime: startTime,
                     CompletedDuration: s.CompletionEvent ? completedDuration : undefined,
                     Difference: s.CompletionEvent ? difference : undefined

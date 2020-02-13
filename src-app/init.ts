@@ -89,7 +89,7 @@ app.on('ready', () => {
     if (config.showGoals)
         createWindow('goal', config.goalWidth, config.goalHeight, config.goalX || -1, config.goalY || -1, config.frameless, !config.blockResize, config.resetEveryHours)
     if (config.splitFile)
-        createWindow('splits', config.splitsWidth || 960, config.splitsHeight || config.dexNavHeight || 144, config.splitsX || -1, config.splitsY || -1, config.frameless, !config.blockResize, config.resetEveryHours);
+        createWindow('splits', config.splitsWidth || 940, config.splitsHeight || config.dexNavHeight || 144, config.splitsX || -1, config.splitsY || -1, config.frameless, !config.blockResize, config.resetEveryHours);
 });
 
 // Quit when all windows are closed.
