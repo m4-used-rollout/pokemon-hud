@@ -118,18 +118,18 @@ namespace Events {
             knowns.map(k => k.caughtIn).filter((c, i, arr) => c && arr.indexOf(c) == i)
                 .forEach(ball => state.game_stats[`Pokémon Caught in a ${ball}`] = knowns.filter(k => k.caughtIn == ball).length);
 
-            if (state.pc && state.pc.boxes) {
-                const missingBox = state.pc.boxes.find(b => b.box_number === 0) || { box_contents: [], box_name: "The Lost", box_number: 0 };
-                missingBox.box_contents = [];
-                missingBox.box_contents = knowns.filter(k => k.status == "Missing" && !state.pc.boxes.some(b => b.box_contents.some(p => p.personality_value == k.pv))).map(m => ({
-                    personality_value: m.pv,
-                    name: m.name,
-                    moves: [],
-                    species: { national_dex: m.dexNums.filter(d => d).pop(), name: m.species.filter(s => s).pop() },
-                } as any as TPP.BoxedPokemon));
-                if (state.pc.boxes.indexOf(missingBox) < 0 && missingBox.box_contents.length > 0)
-                    state.pc.boxes.unshift(missingBox);
-            }
+            // if (state.pc && state.pc.boxes) {
+            //     const missingBox = state.pc.boxes.find(b => b.box_number === 0) || { box_contents: [], box_name: "The Lost", box_number: 0 };
+            //     missingBox.box_contents = [];
+            //     missingBox.box_contents = knowns.filter(k => k.status == "Missing" && !state.pc.boxes.some(b => b.box_contents.some(p => p.personality_value == k.pv))).map(m => ({
+            //         personality_value: m.pv,
+            //         name: m.name,
+            //         moves: [],
+            //         species: { national_dex: m.dexNums.filter(d => d).pop(), name: m.species.filter(s => s).pop() },
+            //     } as any as TPP.BoxedPokemon));
+            //     if (state.pc.boxes.indexOf(missingBox) < 0 && missingBox.box_contents.length > 0)
+            //         state.pc.boxes.unshift(missingBox);
+            // }
 
             return state;
         }
