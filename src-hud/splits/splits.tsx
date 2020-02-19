@@ -13,6 +13,11 @@ namespace SplitDisplay {
             }
             return false;
         }
+        shouldComponentUpdate(nextProps = this.props) {
+            return nextProps.startTime != this.props.startTime
+            || nextProps.splits.length != this.props.splits.length
+            || nextProps.events.length != this.props.events.length
+        }
 
         render() {
             const splits = this.props.splits.map((s, i, arr) => {
@@ -43,6 +48,13 @@ namespace SplitDisplay {
                     Difference: s.CompletionEvent ? difference : undefined
                 } as ProcessedSplit;
             });
+            // readjust displayed times based on gains or losses from past splits
+            splits[0] && (splits[0].EstimatedRunTime = (splits[0].CompletedDuration || splits[0].Duration));
+            for (var i = 1; i < splits.length; i++) {
+                const estimate = new Duration(0);
+                estimate.TotalSeconds = splits[i - 1].EstimatedRunTime.TotalSeconds + (splits[i].CompletedDuration || splits[i].Duration).TotalSeconds;
+                splits[i].EstimatedRunTime = estimate;
+            }
             // console.dir(this.props.events);
             // console.dir(splits);
             return <div className="live-split-display">
@@ -84,7 +96,7 @@ namespace SplitDisplay {
             const currTime = this.currTime;
             return <div className={`split ${split.Active && "active"}`}>
                 <img src={this.props.split.Image} alt={this.props.split.Name} />
-                {!split.Active && !split.CompletionEvent && <div className="future time">{Duration.parse(split.Time).toString()}</div>}
+                {!split.Active && !split.CompletionEvent && <div className="future time">{split.EstimatedRunTime.toString()}</div>}
                 {split.CompletionEvent && <div className={`past time ${split.Difference.IsNegative ? "pass" : "fail"}`}>{split.Difference.toString()}</div>}
                 {split.Active && !split.CompletionEvent && <div className={`current time ${currTime.IsNegative ? "pass" : "fail"}`}>{currTime.toString()}</div>}
             </div>;
@@ -98,6 +110,7 @@ namespace SplitDisplay {
         CompletionEvent?: TPP.Event;
         CompletedDuration?: Duration;
         Difference?: Duration;
+        EstimatedRunTime?: Duration;
     }
 
     enum Scale {

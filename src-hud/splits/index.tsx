@@ -16,7 +16,7 @@ namespace SplitDisplay {
         }
     }
     ipcRenderer.on('state-update', (event, state: TPP.RunStatus) => {
-        events = state.events || [];
+        events = (state.events || []).filter(e => e.group == "Badge" || e.group == "Trainers Defeated");
         Render();
     });
     ipcRenderer.send('register-renderer');
