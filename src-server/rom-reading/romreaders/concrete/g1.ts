@@ -52,7 +52,7 @@ namespace RomReader {
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
             //return `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${this.GetSpecies(id).dexNumber}.png`;
-            return `./img/sprites/redblue/${this.GetSpecies(id).dexNumber}.png`;
+            return `./img/sprites/redblue/${this.GetSpecies(id).dexNumber || "../../missingno"}.png`;
         }
         GetTrainerSprite(id: number) {
             //return `./img/trainers/${TPP.Server.getConfig().trainerSpriteFolder || TPP.Server.getConfig().spriteFolder}/${id}.png`
