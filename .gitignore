@@ -13,3 +13,4 @@ release/
 !pge.ini
 !config.default.json
 !**/data/**/*.ini
+ksMessages.ts
