@@ -36,6 +36,13 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
         ].filter(c => !!c).map(cleanString).join(' ');
         if (mon.is_egg)
             classes = "egg" + (eggPercent > 99 ? " shimmy-shake" : "");
+        const extraInfo = <FitToWidth className="extra-info">
+            {config.generation < 3 && mon.held_item && <HeldItem id={mon.held_item.id} name={mon.held_item.name} />}
+            {mon.ability && <div className="ability"> {mon.ability} </div>}
+            {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
+            {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
+            {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />}
+        </FitToWidth>;
         return <li className={classes}>
             <Sleepy status={mon.sleep_turns} />
             <div className={`pokemon-image ${cleanString(mon.species.name)} ${mon.species.do_not_flip_sprite ? "no-flip" : ""}`}>
@@ -63,28 +70,16 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                             <div className="exp" style={{ width: expPercent + '%' }} />
                         </div>
                     </div>
-                    <FitToWidth className="extra-info">
-                        {/* {mon.held_item && <HeldItem id={mon.held_item.id} name={mon.held_item.name} />} */}
-                        {mon.ability && <div className="ability"> {mon.ability} </div>}
-                        {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
-                        {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
-                        {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />}
-                    </FitToWidth>
+                    {extraInfo}
                     <ul className="moves">
                         {mon.moves.map(m => <Move move={m} key={m.id} />)}
                     </ul>
-                    {/* <div className="extra-info">
-                        {mon.ability && <div className="ability"> {mon.ability} </div>}
-                        {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
-                        {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
-                        {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />}
-                    </div> */}
                     <div className="health-bar">
                         <div className="health" style={{ width: hpPercent + '%' }} />
                         <div className="hp" data-current={mon.health[0]} data-max={(mon.health[1].toString().length < 3 ? new Array(3 - mon.health[1].toString().length).fill(' ').join('') : "") + mon.health[1]} />
                     </div>
                 </div>}
-            <HeldItem id={mon.held_item ? mon.held_item.id : 0} name={mon.held_item ? mon.held_item.name : ""} />
+            {config.generation > 2 && <HeldItem id={mon.held_item ? mon.held_item.id : 0} name={mon.held_item ? mon.held_item.name : ""} />}
         </li>
     }
 }

@@ -22,7 +22,7 @@ namespace RamReader {
         protected SymAddr = (symbol: string) => this.rom.symTable[symbol].toString(16);
         protected StructSize = (startSymbol: string, endSymbol: string = startSymbol.replace("Start", '') + "End") => this.rom.symTable[endSymbol] - this.rom.symTable[startSymbol];
 
-        protected PCBoxSize = () => this.StructSize('sBox');
+        protected PCBoxSize = () => this.StructSize('sBox') + 2;
         protected PartySize = () => this.StructSize('wPokemonData', 'wPartyMonNicknamesEnd');
         protected PartyMonSize = () => this.StructSize('wPartyMon1', 'wPartyMon2');
         protected BattleMonSize = () => this.StructSize('wBattleMon', 'wWildMon') - 2;
@@ -95,7 +95,7 @@ namespace RamReader {
                     coins: struct.wCoins.readUInt16BE(0),
                     rival_name: this.rom.ConvertText(struct.wRivalName),
                     evolution_is_happening: false,
-                    badges: struct.wBadges.readUInt16BE(0),
+                    badges: struct.wBadges.readUInt16LE(0),
                     items: {
                         items: this.rom.ReadStridedData(struct.wItems, 0, 2, struct.wNumItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         balls: this.rom.ReadStridedData(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
@@ -219,7 +219,7 @@ namespace RamReader {
             // wBoxNames
             const boxNames = this.rom.ReadStridedData(data, 1, BOX_NAME_LENGTH, NUM_BOXES).map(b => this.rom.ConvertText(b));
             // Active Box
-            // sBox1-14
+            // sBox0-14
             const pc = this.rom.ReadStridedData(data, 1 + (BOX_NAME_LENGTH * NUM_BOXES), this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
             const active = pc.shift();
             pc[currentBox - 1] = active;
@@ -234,27 +234,26 @@ namespace RamReader {
         }
 
         protected ParsePCBox(data: Buffer) {
-            // wBoxDataStart::
-            // wNumInBox::  ds 1
-            const numInBox = data[0];
-            if (numInBox > MONS_PER_BOX)
+            // sBoxCount::  db
+            const boxCount = data[0];
+            if (boxCount > MONS_PER_BOX)
                 return []; //uninitialized box
-            // wBoxSpecies:: ds MONS_PER_BOX + 1
-            const boxSpecies = data.slice(1, 1 + numInBox).map(s => s);
+            // sBoxSpecies:: ds MONS_PER_BOX + 1
+            const boxSpecies = data.slice(1, 1 + boxCount).map(s => s);
 
-            // wBoxMons::
-            // wBoxMon1:: box_struct wBoxMon1
-            // wBoxMon2:: ds box_struct_length * (MONS_PER_BOX + -1)
-            const box = numInBox ? this.rom.ReadStridedData(data, this.rom.symTable['wBoxMons'] - this.rom.symTable['wBoxDataStart'], this.rom.symTable['wBoxMon2'] - this.rom.symTable['wBoxMon1'], numInBox)
+            // sBoxMons::
+            // sBoxMon1:: box_struct sBoxMon1
+            // sBoxMon2:: ds box_struct_length * (MONS_PER_BOX + -1)
+            const box = boxCount ? this.rom.ReadStridedData(data, this.rom.symTable['sBoxMons'] - this.rom.symTable['sBoxCount'], this.rom.symTable['sBoxMon2'] - this.rom.symTable['sBoxMon1'], boxCount)
                 .map((p, i) => this.ParsePokemon(p, boxSpecies[i])) : [];
 
-            if (numInBox) {
-                // wBoxMonOT::    ds NAME_LENGTH * MONS_PER_BOX
-                this.AddOTNames(box, data.slice(this.rom.symTable['wBoxMonOT'] - this.rom.symTable['wBoxDataStart']), numInBox);
-                // wBoxMonNicks:: ds NAME_LENGTH * MONS_PER_BOX
-                this.AddNicknames(box, data.slice(this.rom.symTable['wBoxMonNicks'] - this.rom.symTable['wBoxDataStart']), numInBox);
-                // wBoxMonNicksEnd::
-                // wBoxDataEnd::
+            if (boxCount) {
+                // sBoxMonOT::    ds NAME_LENGTH * MONS_PER_BOX
+                this.AddOTNames(box, data.slice(this.rom.symTable['sBoxMonOT'] - this.rom.symTable['sBoxCount']), boxCount);
+                // sBoxMonNicknames:: ds NAME_LENGTH * MONS_PER_BOX
+                this.AddNicknames(box, data.slice(this.rom.symTable['sBoxMonNicknames'] - this.rom.symTable['sBoxCount']), boxCount);
+                // sBoxMonNicknamessEnd::
+                // sBoxEnd::  ds 2 ; padding
             }
             return box;
         }
@@ -354,8 +353,11 @@ namespace RamReader {
             if (data[offset('Species')] == 0)
                 return poke;
 
+            const actualSpecies = data[offset('Species')];
+            poke.is_egg = species != actualSpecies;
+
             // \1Species::    db
-            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(species) || this.rom.GetSpecies(data[offset('Species')]));
+            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(actualSpecies));
             // \1Item::       db
             poke.held_item = data[offset('Item')] > 0 ? Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[offset('Item')])) : null;
             // \1Moves::      ds NUM_MOVES

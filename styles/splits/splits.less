@@ -15,6 +15,7 @@
     .split {
         flex: 0 0 auto;
         text-align: center;
+        position:relative;
 
         &.active {
             background-repeat: no-repeat;
@@ -30,8 +31,10 @@
             margin: 0 .5em;
             color: #AAA;
             white-space: normal;
-            position: relative;
-            top: -1em;
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0.1em;
             .outline(black);
             
 

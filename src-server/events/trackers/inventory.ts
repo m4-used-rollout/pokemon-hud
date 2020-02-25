@@ -47,12 +47,14 @@ namespace Events {
         private moneyLost = 0;
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
-            if (!this.moneyGained)
-                dispatch({ type: "Money Gained", amount: newState.money });
-            else if (newState.money > oldState.money)
-                dispatch({ type: "Money Gained", amount: newState.money - oldState.money });
-            else if (newState.money < oldState.money)
-                dispatch({ type: "Money Spent", amount: oldState.money - newState.money });
+            if (typeof newState.money === typeof oldState.money && newState.money) {
+                if (!this.moneyGained)
+                    dispatch({ type: "Money Gained", amount: newState.money });
+                else if (newState.money > oldState.money)
+                    dispatch({ type: "Money Gained", amount: newState.money - oldState.money });
+                else if (newState.money < oldState.money)
+                    dispatch({ type: "Money Spent", amount: oldState.money - newState.money });
+            }
             const newItems = ItemTotals(newState);
             const oldItems = ItemTotals(oldState);
             [...Object.keys(newItems), ...Object.keys(oldItems).filter(k => !newItems[k])]
@@ -76,14 +78,17 @@ namespace Events {
                     this.justBlackedOut = true;
                     return;
                 case "Money Gained":
-                    this.moneyGained += amount;
+                    if (amount)
+                        this.moneyGained += amount;
                     return;
                 case "Money Spent":
-                    if (this.justBlackedOut)
-                        this.moneyLost += amount;
-                    else
-                        this.moneySpent += amount;
-                    this.justBlackedOut = false;
+                    if (amount) {
+                        if (this.justBlackedOut)
+                            this.moneyLost += amount;
+                        else
+                            this.moneySpent += amount;
+                        this.justBlackedOut = false;
+                    }
                     return;
                 case "Got Item":
                     this.inventory[id] = this.inventory[id] || newInv;

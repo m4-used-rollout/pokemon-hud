@@ -19,7 +19,7 @@ namespace Events {
                 case "kanto":
                     return this._badges = ["Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "johto":
-                    return this._badges = ["Zepyhr", "Hive", "Plain", "Fog", "Storm", "Mineral", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
+                    return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Storm", "Mineral", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "hoenn":
                     return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
                 case "sinnoh":
@@ -69,6 +69,7 @@ namespace Events {
                     return;
                 case "Challenged Trainer":
                     this.canEarnBadges = this.isTrainerAGymLeader(action);
+                    console.log("Can earn badge!")
                     return;
                 case "Got Item":
                     if (this.config.generation == 7 && action.id >= 807 && action.id <= 824 && this.earnedZCrystals.indexOf(action.id) < 0) { //Earned new Z-Crystal
@@ -81,7 +82,9 @@ namespace Events {
                     }
                     return;
                 case "Earned Badge":
-                    if (this.canEarnBadges) {
+                    if (!this.earnedBadges.find(b=>b.name == action.name)) { //should be solid
+                    // if (this.canEarnBadges) { //if badges can be duplicated, try to make this check work instead
+                        console.log("Earned a badge!")
                         this.earnedBadges.push({
                             group: "Badge",
                             name: action.name,

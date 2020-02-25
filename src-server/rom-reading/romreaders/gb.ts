@@ -68,7 +68,7 @@ namespace RomReader {
         }
 
         CalculateShiny(pokemon: TPP.Pokemon) {
-            if (pokemon.original_trainer) {
+            if (pokemon.ivs) {
                 // In Generation II, being Shiny is determined by a Pokémon's IVs.
                 // If a Pokémon's Speed, Defense, and Special IVs are all 10,
                 // and its Attack IV is 2, 3, 6, 7, 10, 11, 14 or 15, it will be Shiny.
