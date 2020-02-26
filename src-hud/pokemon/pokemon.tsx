@@ -39,6 +39,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
         const extraInfo = <FitToWidth className="extra-info">
             {config.generation < 3 && mon.held_item && <HeldItem id={mon.held_item.id} name={mon.held_item.name} />}
             {mon.ability && <div className="ability"> {mon.ability} </div>}
+            {mon.species && mon.species.evolutions && mon.species.evolutions.some(e => !!e.required_happiness) && <div className="friendship" data-friendship={mon.friendship} />}
             {mon.cp && <div className="cp"> {mon.cp.toLocaleString()} </div>}
             {mon.fitness && <div className="fitness"> {mon.fitness.toLocaleString()} </div>}
             {mon.next_move && <div className={`movelearn ${mon.next_move.level == mon.level + 1 && "alert"} ${mon.next_move.type}`} data-level={mon.next_move.level} />}

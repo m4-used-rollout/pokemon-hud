@@ -281,6 +281,8 @@
                             display:flex;
                             flex-flow: row nowrap;
                             justify-content: space-around;
+                            align-items: center;
+                            
                             > * {
                                 width: auto;
                                 flex: 0 1 auto;
@@ -305,6 +307,16 @@
                                 content:attr(data-name);
                                 font-size:.8em;
                                 text-transform: capitalize;
+                            }
+                        }
+                        .friendship {
+                            font-size: .8em;
+                            &:before {
+                                content:'❤️';
+                                margin-left: -.1em;
+                            }
+                            &:after {
+                                content: attr(data-friendship);
                             }
                         }
                         .movelearn {

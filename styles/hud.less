@@ -267,6 +267,16 @@ body {
                             text-align: center;
                             .outline();
                         }
+                        .friendship {
+                            font-size: .8em;
+                            &:before {
+                                content:'❤️';
+                                margin-left: -.1em;
+                            }
+                            &:after {
+                                content: attr(data-friendship);
+                            }
+                        }
                         .movelearn {
                             padding-left: 20px;
                             background-image: url('img/generic/item/item_tm.png');
