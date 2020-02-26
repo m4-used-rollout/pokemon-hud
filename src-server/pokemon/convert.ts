@@ -121,7 +121,8 @@ namespace Pokemon.Convert {
             is_trade: evo.isTrade,
             required_happiness: evo.happiness,
             required_item: evo.item && ItemToRunStatus(evo.item),
-            required_time_of_day: evo.timeOfDay
+            required_time_of_day: evo.timeOfDay,
+            special_condition: evo.specialCondition
         } as TPP.Evolution;
     }
 }

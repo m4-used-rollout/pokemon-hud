@@ -132,7 +132,8 @@ declare namespace TPP {
         required_happiness?: number;
         required_map_id?: number;
         required_map_name?: string;
-        required_time_of_day?: "Morn" | "Day" | "Night";
+        required_time_of_day?: "Morn" | "Day" | "Night" | "MornDay";
+        special_condition?: string;
     }
 
     export interface Pokemon {

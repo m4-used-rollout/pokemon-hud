@@ -750,7 +750,32 @@ namespace RomReader {
             this.ReadStridedData(romData, this.symTable["EvosAttacksPointers"], 2, dexCount).forEach((ptr, i) => {
                 let addr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
                 const moves = new Array<Pokemon.MoveLearn>();
-                for (addr = addr; romData[addr] != 0; addr++); //skip evolution data
+                const evos = new Array<Pokemon.Evolution>();
+                for (addr = addr; romData[addr] != 0; addr++) { //evolution data
+                    switch (romData[addr]) {
+                        case 1: //db EVOLVE_LEVEL, level, species
+                            evos.push({ speciesId: romData[addr + 2], level: romData[addr + 1] });
+                            addr += 2;
+                            break;
+                        case 2: //db EVOLVE_ITEM, used item, species
+                            evos.push({ speciesId: romData[addr + 2], item: this.GetItem(romData[addr + 1]) });
+                            addr += 2;
+                            break;
+                        case 3: //db EVOLVE_TRADE, held item (or -1 for none), species
+                            evos.push({ speciesId: romData[addr + 2], isTrade: true, item: romData[addr + 1] < 0 ? undefined : this.GetItem(romData[addr + 1]) });
+                            addr += 2;
+                            break;
+                        case 4: //db EVOLVE_HAPPINESS, TR_* constant (ANYTIME, MORNDAY, NITE), species
+                            evos.push({ speciesId: romData[addr + 2], happiness: 220, timeOfDay: [undefined, undefined, "MornDay", "Night"][romData[addr + 1]] as any });
+                            addr += 2;
+                            break;
+                        case 5: //EVOLVE_STAT 5, level, ATK_*_DEF constant (LT, GT, EQ), species
+                            evos.push({ speciesId: romData[addr + 3], level: romData[addr + 1], specialCondition: ["Attack > Defense", "Attack < Defense", "Attack = Defense"][romData[addr + 2]] });
+                            addr += 3;
+                            break;
+                    }
+                }
+                this.GetSpecies(i + 1).evolutions = evos;
                 for (addr++; romData[addr] != 0; addr += 2) {
                     const move = this.GetMove(romData[addr + 1]);
                     if (move && romData[addr]) {

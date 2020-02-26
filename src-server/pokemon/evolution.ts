@@ -5,7 +5,8 @@ namespace Pokemon {
         isTrade?: boolean;
         happiness?: number;
         mapId?: number;
-        timeOfDay?: "Morn" | "Day" | "Night";
+        specialCondition?: string;
+        timeOfDay?: "Morn" | "Day" | "Night" | "MornDay";
         speciesId: number;
     }
 }
