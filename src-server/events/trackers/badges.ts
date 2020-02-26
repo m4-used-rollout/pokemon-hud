@@ -19,7 +19,7 @@ namespace Events {
                 case "kanto":
                     return this._badges = ["Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "johto":
-                    return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Storm", "Mineral", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
+                    return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "hoenn":
                     return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
                 case "sinnoh":
@@ -82,8 +82,8 @@ namespace Events {
                     }
                     return;
                 case "Earned Badge":
-                    if (!this.earnedBadges.find(b=>b.name == action.name)) { //should be solid
-                    // if (this.canEarnBadges) { //if badges can be duplicated, try to make this check work instead
+                    if (!this.earnedBadges.find(b => b.name == action.name)) { //should be solid
+                        // if (this.canEarnBadges) { //if badges can be duplicated, try to make this check work instead
                         console.log("Earned a badge!")
                         this.earnedBadges.push({
                             group: "Badge",
