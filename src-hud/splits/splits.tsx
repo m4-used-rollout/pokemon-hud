@@ -14,9 +14,8 @@ namespace SplitDisplay {
             return false;
         }
         shouldComponentUpdate(nextProps = this.props) {
-            return nextProps.startTime != this.props.startTime
-            || nextProps.splits.length != this.props.splits.length
-            || nextProps.events.length != this.props.events.length
+            return nextProps.splits.length != this.props.splits.length
+                || nextProps.events.length != this.props.events.length
         }
 
         render() {
@@ -55,51 +54,53 @@ namespace SplitDisplay {
                 estimate.TotalSeconds = splits[i - 1].EstimatedRunTime.TotalSeconds + (splits[i].CompletedDuration || splits[i].Duration).TotalSeconds;
                 splits[i].EstimatedRunTime = estimate;
             }
-            // console.dir(this.props.events);
-            // console.dir(splits);
+            console.dir(this.props.events);
+            console.dir(splits);
             return <div className="live-split-display">
-                {splits.map(s => <SingleSplit split={s} />)}
+                {splits.map(s => <SingleSplit key={s.Time} split={s} />)}
                 <style dangerouslySetInnerHTML={{ __html: `.live-split-display .split {width: ${100 / splits.length}vw;}` }} />
             </div>;
         }
 
     }
 
-    class SingleSplit extends React.Component<{ split: ProcessedSplit }, { tick: number }> {
-        constructor(props: SingleSplit["props"], context: any) {
-            super(props, context);
-            this.state = { tick: 0 };
-        }
-        private running = false;
-        private tick = () => this.setState(s => ({ tick: (s.tick + 1) % 1024 }), () => this.running && requestAnimationFrame(this.tick));
-        componentDidMount() {
-            if (this.props.split.Active) {
-                this.running = true;
-                this.tick();
-            }
-        }
-        componentWillUnmount() {
-            this.running = false;
-        }
-        componentWillReceiveProps(props = this.props) {
-            if (this.props.split.Active != props.split.Active)
-                (this.running = props.split.Active) && this.tick();
-        }
-        private get currTime(): Duration {
-            const time = new Duration(0);
-            if (this.props.split.Active)
-                time.TotalSeconds = (Date.now() / 1000) - (this.props.split.Duration.TotalSeconds + (this.props.split.StartTime.valueOf() / 1000));
-            return time;
-        }
+    class SingleSplit extends React.Component<{ split: ProcessedSplit }> {
         render() {
             const split = this.props.split;
-            const currTime = this.currTime;
             return <div className={`split ${split.Active && "active"}`}>
                 <img src={this.props.split.Image} alt={this.props.split.Name} />
                 {!split.Active && !split.CompletionEvent && <div className="future time">{split.EstimatedRunTime.toString()}</div>}
                 {split.CompletionEvent && <div className={`past time ${split.Difference.IsNegative ? "pass" : "fail"}`}>{split.Difference.toString()}</div>}
-                {split.Active && !split.CompletionEvent && <div className={`current time ${currTime.IsNegative ? "pass" : "fail"}`}>{currTime.toString()}</div>}
+                {split.Active && !split.CompletionEvent && <Countdown toTime={(this.props.split.Duration.TotalSeconds + (this.props.split.StartTime.valueOf() / 1000))} />}
             </div>;
+        }
+    }
+
+    class Countdown extends React.PureComponent<{ toTime: number }, { currTime: number }> {
+        constructor(props: Countdown["props"], context: any) {
+            super(props, context);
+            this.state = { currTime: (Date.now() / 1000) };
+        }
+        private requestAnimationFrame(callback: () => void) {
+            return setTimeout(callback, 500);
+        }
+        private running = false;
+        private tick = () => this.setState({ currTime: (Date.now() / 1000) }, () => this.running && requestAnimationFrame(this.tick));
+        componentDidMount() {
+            this.running = true;
+            this.tick();
+        }
+        componentWillUnmount() {
+            this.running = false;
+        }
+        private get timeLeft(): Duration {
+            const time = new Duration(0);
+            time.TotalSeconds = this.state.currTime - this.props.toTime;
+            return time;
+        }
+        render() {
+            const timeLeft = this.timeLeft;
+            return <div className={`current time ${timeLeft.IsNegative ? "pass" : "fail"}`}>{timeLeft.toString()}</div>;
         }
     }
 
