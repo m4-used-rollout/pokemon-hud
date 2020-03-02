@@ -29,7 +29,7 @@ namespace RamReader {
 
         public ReadParty = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wPokemonData')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurPartyMon')}/1/${this.SymAddr('wBattleMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wBattleMon')}/${this.BattleMonSize().toString(16)}`, this.WrapBytes(data => this.ParseParty(data)));
         public ReadPC = this.CachedEmulatorCaller([`WRAM/ReadByteRange/${this.SymAddr('wCurBox')}/1/${this.SymAddr('wBoxNames')}/${(BOX_NAME_LENGTH * NUM_BOXES).toString(16)}`, `CartRAM/ReadByteRange/${this.SymAddr('sBox')}/${this.PCBoxSize().toString(16)}/${this.SymAddr('sBox1')}/${(this.PCBoxSize() * 7).toString(16)}/${this.SymAddr('sBox8')}/${(this.PCBoxSize() * 7).toString(16)}`], this.WrapBytes(data => this.ParsePC(data)));
-        public ReadBattle = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wEnemyMonCatchRate')}/1/${this.SymAddr('wOtherTrainerClass')}/1/${this.SymAddr('wOtherTrainerID')}/1/${this.SymAddr('wOTPartyCount')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurOTMon')}/1/${this.SymAddr('wEnemyMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wEnemyMon')}/${this.BattleMonSize().toString(16)}`, this.WrapBytes(data => this.ParseBattleBundle(data)));
+        public ReadBattle = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wEnemyMonCatchRate')}/1/${this.SymAddr('wOtherTrainerClass')}/1/${this.SymAddr('wOtherTrainerID')}/1/${this.SymAddr('wOTPartyCount')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurOTMon')}/1/${this.SymAddr('wEnemyMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wEnemyMon')}/${this.BattleMonSize().toString(16)}/${this.SymAddr('wStringBuffer3')}/${NAME_LENGTH.toString(16)}`, this.WrapBytes(data => this.ParseBattleBundle(data)));
         protected TrainerChunkReaders = [
             this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
                 wPlayerName: NAME_LENGTH,
@@ -101,7 +101,7 @@ namespace RamReader {
                         balls: this.rom.ReadStridedData(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         key: this.rom.ReadStridedData(struct.wKeyItems, 0, 1, struct.wNumKeyItems[0], true, e => e[0] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]))),
                         tms: this.rom.ReadStridedData(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
-                        pc: this.rom.ReadStridedData(struct.wPCItems, 0, 2, 255, true, e => e[1] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
+                        pc: this.rom.ReadStridedData(struct.wPCItems, 1, 2, struct.wPCItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])) //wNumPCItems was wPCItems
                     },
                     phone_book: this.rom.ReadStridedData(struct.wPhoneList, 0, 1, 255).map(data => this.rom.GetPhoneContact(data[0])).filter(p => !!p),
                     time: { ...((this.currentState || { time: null }).time || { h: 0, m: 0, s: 0 }), d: dayOfWeek[struct.wCurDay[0] % 7] }
@@ -193,6 +193,8 @@ namespace RamReader {
                     const trainer = Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(trainerNum, trainerClass));
                     if (/Rival\d+/i.test(trainer.class_name))
                         trainer.class_name = "Rival"
+                    if (trainer.name == "Cal")
+                        trainer.name = this.rom.ConvertText(data.slice(data.length - NAME_LENGTH));
                     enemy_trainers.push(trainer);
                 }
                 //wOTParty
