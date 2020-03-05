@@ -5,6 +5,7 @@ declare interface SplitEvent {
     Time: string;
     Attempts?: number;
     ClassId?: number;
+    TrainerId?: number;
 }
 
-declare interface Splits extends Array<SplitEvent> {}
+declare interface Splits extends Array<SplitEvent> { }

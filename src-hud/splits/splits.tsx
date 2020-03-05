@@ -1,7 +1,7 @@
 namespace SplitDisplay {
     export class SplitDisplay extends React.Component<{ startTime: Date, splits: Splits, events: TPP.Event[] }> {
         private findMatchingEvent(s: SplitEvent) {
-            return this.props.events.find(e => this.isEventGroupMatch(s, e) && (e.name == s.Name || (s.ClassId && (e as TPP.TrainerEvent).class_id == s.ClassId)));
+            return this.props.events.find(e => this.isEventGroupMatch(s, e) && (e.name == s.Name || (s.ClassId && (e as TPP.TrainerEvent).class_id == s.ClassId && (!s.TrainerId || (e as TPP.TrainerEvent).id == s.TrainerId))));
         }
         private isEventGroupMatch(s: SplitEvent, e: TPP.Event) {
             switch (s.Group) {
