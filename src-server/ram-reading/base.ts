@@ -184,7 +184,7 @@ namespace RamReader {
             if (mon.health[0] < mon.health[1]) //obviously we've seen it because it's hurt
                 return true;
             //TODO: Also check for PP below maximum
-            if (mon.active) { //Gen 1 reader manages the active flag itself, so let's go off that
+            if (mon.active) { //Gen 1/2 reader manages the active flag itself, so let's go off that
                 if (!this.CurrentBattleSeenPokemon.some(pv => mon.personality_value == pv))
                     this.CurrentBattleSeenPokemon.push(mon.personality_value);
                 return true;

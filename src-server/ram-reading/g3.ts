@@ -152,10 +152,10 @@ namespace RamReader {
                     ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
                 } as TPP.TrainerData
             })),
-            //Badges Ruby/Sapphire
-            !this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
+            //Badges Ruby/Sapphire/FireRed/LeafGreen
+            !this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${this.rom.config.BadgesOffset || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
                 return {
-                    badges: (data.readUInt16LE(0) >>> (parseInt(this.rom.config.BadgeFlag, 16) % 8)) % 0x100
+                    badges: (data.readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100
                 } as TPP.Goals
             })),
             ///Flags/Vars/Stats Emerald
