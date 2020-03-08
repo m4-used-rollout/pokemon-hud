@@ -18,6 +18,8 @@ namespace RomReader {
     const wildPokemonPtrMarker = '0348048009E00000FFFF0000';
     const mapBanksPtrMarker = '80180068890B091808687047';
 
+    const touhouTypes = ["Normal", "Dark", "Flying", "Miasma", "Earth", "Beast", "Dream", "Ghost", "Steel", "???", "Fire", "Water", "Native", "Wind", "Reason", "Ice", "Faith", "Heart"];
+
     interface Gen3Item extends Pokemon.Item {
         isPokeball: boolean;
         //isCandy: boolean; //TTH
