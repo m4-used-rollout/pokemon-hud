@@ -225,10 +225,10 @@ namespace RomReader {
         try {
             normalizeDex();
             augmentItems();
-            (state.daycare || []).filter(p => !!p).forEach(augmentPokemon);
-            (state.party || []).filter(p => !!p).map(augmentPartyPokemon).forEach(augmentPokemon);
-            (state.battle_party || []).filter(p => !!p).map(augmentPartyPokemon).forEach(augmentPokemon);
-            (state.pc.boxes || []).forEach(b => (b.box_contents || []).filter(p => !!p).forEach(augmentPokemon));
+            (state.daycare = (state.daycare || []).filter(p => !!p)).forEach(augmentPokemon);
+            (state.party = (state.party || []).filter(p => !!p).map(augmentPartyPokemon)).forEach(augmentPokemon);
+            (state.battle_party = (state.battle_party || []).filter(p => !!p).map(augmentPartyPokemon)).forEach(augmentPokemon);
+            (state.pc.boxes || []).forEach(b => (b.box_contents = (b.box_contents || []).filter(p => !!p)).forEach(augmentPokemon));
 
             state.name = romData.ConvertText(state.name);
             state.ball_count = countBalls();
