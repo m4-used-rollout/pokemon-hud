@@ -104,7 +104,7 @@ namespace Events {
                     if (cost)
                         this.inventory[id].sold += quantity;
                     else if (inBattle)
-                        this.inventory[id].usedInBattle += quantity;
+                        this.inventory[id].usedInBattle += 1; //can't use more than one at a time, anything else is a fluke
                     else
                         this.inventory[id].usedOutOfBattle += quantity;
             }
