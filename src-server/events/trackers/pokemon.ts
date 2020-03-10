@@ -39,9 +39,7 @@ namespace Events {
                 seen.push(pv.toString());
                 if (!known) {
                     // this.PotentialNewCatch(dexNum, oldState); //trigger it here so it doesn't trigger on replays
-                    if (mon.species && newState.caught_list.indexOf(mon.species.id) >= 0)
-                        return dispatch({ type: "Caught Pokemon", pv, dexNum, species, name, isShadow, caughtIn });
-                    return;
+                    return dispatch({ type: "Caught Pokemon", pv, dexNum, species, name, isShadow, caughtIn });
                 }
                 else if (known.dexNums.indexOf(dexNum) < 0) {
                     // this.PotentialNewCatch(dexNum, oldState); //trigger it here so it doesn't trigger on replays
