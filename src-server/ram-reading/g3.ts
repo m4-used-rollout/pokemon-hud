@@ -172,8 +172,8 @@ namespace RamReader {
                 const stats = this.rom.ReadStridedData(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => (s.readUInt32LE(0) ^ key) >>> 0);
                 return {
                     badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
-                    trick_house: [flags[(0x60 / 8)] & 2 ? "Complete" : flags[(0x60 / 8)] & 1 ? "Found Scroll" : "Incomplete"],
-                    //trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
+                    //trick_house: [flags[(0x60 / 8)] & 2 ? "Complete" : flags[(0x60 / 8)] & 1 ? "Found Scroll" : "Incomplete"], //TTH
+                    trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
                     game_stats: GameStatsBytes > 0 ? this.ParseGameStats(stats) : null
                 } as TPP.Goals
             }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step
