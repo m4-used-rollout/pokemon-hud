@@ -4,8 +4,6 @@
 
 namespace RomReader {
 
-    const config = gen4FilesOffsets;
-
     const fs = require('fs');
 
     const moveCategories = ["Status", "Physical", "Special"];
@@ -37,8 +35,13 @@ namespace RomReader {
 
         private tmHmMoves: string[];
 
-        public CheckIfCanSurf(runState: TPP.RunStatus) { //HGSS
-            return (runState.badges & 8) == 8; //Fog Badge
+        public CheckIfCanSurf(runState: TPP.RunStatus) {
+            if (TPP.Server.getConfig().mainRegion == "Johto")
+                return (runState.badges & 8) == 8; //Fog Badge
+            if (TPP.Server.getConfig().runName.indexOf("Platinum")>=0)
+                return (runState.badges & 16) == 16; //Fen Badge
+            return (runState.badges & 32) == 32; //Relic Badge
+            
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
@@ -80,15 +83,17 @@ namespace RomReader {
             return map.encounters.nite;
         }
 
-        constructor(basePath: string) {
+        constructor(basePath: string, iniFile = Gen5.FindLocalFile("./data/gen4/gen4_offsets.ini")) {
             super(basePath);
 
+            const config = this.LoadConfig(iniFile);
+
             const arm9 = this.readArm9();
-            const stringsNarc = this.readNARC(config.TextStrings);
+            const stringsNarc = this.readNARC(config.TextStrings || config.Text);
             const pokeNarc = this.readNARC(config.PokemonStats);
             const moveNarc = this.readNARC(config.MoveData);
             const itemNarc = this.readNARC(config.ItemData);
-            const encounterNarc = this.readNARC(config.EncounterData);
+            const encounterNarc = this.readNARC(config.WildPokemon);
             // const pokegrNarc = this.readNARC(config.PokemonGraphics);
             // const badgesgrNarc = this.readNARC(config.BadgeGraphics);
             // const itemgrNarc = this.readNARC(config.ItemGraphics);
@@ -97,11 +102,11 @@ namespace RomReader {
                 return Tools.PokeText.GetStrings(stringsNarc.files[index]);
             }
 
-            const moveNames = getStrings(config.TextOffsets.MoveNames);
-            const pokemonNames = getStrings(config.TextOffsets.PokemonNames);
-            const abilityNames = getStrings(config.TextOffsets.AbilityNames);
-            const itemNames = getStrings(config.TextOffsets.ItemNames);
-            const mapNames = getStrings(config.TextOffsets.MapNames);
+            const moveNames = getStrings(parseInt(config.MoveNamesTextOffset));
+            const pokemonNames = getStrings(parseInt(config.PokemonNamesTextOffset));
+            const abilityNames = getStrings(parseInt(config.AbilityNamesTextOffset));
+            const itemNames = getStrings(parseInt(config.ItemNamesTextOffset));
+            const mapNames = getStrings(parseInt(config.MapNamesTextOffset));
 
             this.abilities = abilityNames;
 
@@ -223,10 +228,10 @@ namespace RomReader {
                 };
             });
 
-            const numMapHeaders = this.readFile(config.MapTableFile).byteLength / 16;
+            const numMapHeaders = this.readDataFile(config.MapTableFile).byteLength / 16;
             for (let m = 0; m < numMapHeaders; m++) {
-                const baseOffset = config.MapTableARM9Offset + m * 24;
-                const mapNameIndex = (config.MapTableNameIndexSize == 2)
+                const baseOffset = parseInt(config.MapTableARM9Offset,16) + m * 24;
+                const mapNameIndex = (parseInt(config.MapTableNameIndexSize) == 2)
                     ? arm9.readUInt16LE(baseOffset + 18)
                     : arm9[baseOffset + 18];
                 const wildSet = arm9[baseOffset]; //HGSS

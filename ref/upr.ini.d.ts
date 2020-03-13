@@ -1,5 +1,5 @@
 declare interface UPRINI {
-    [key: string]: string;
+    // [key: string]: string;
     Game: string;
     ProperName: string;
     Type: string;
@@ -12,17 +12,20 @@ declare interface UPRINI {
     TrainerPokemon: string;
     MoveData: string;
     WildPokemon: string;
+    ItemData?: string;
     Scripts: string;
     InGameTrades: string;
     TradesUnused: string;
-    StarterOffsets1: string;
-    StarterOffsets2: string;
-    StarterOffsets3: string;
+    StarterOffsets1?: string;
+    StarterOffsets2?: string;
+    StarterOffsets3?: string;
+    StarterPokemonOffset?: string;
     PokedexGivenFileOffset: string;
     StarterGraphics: string;
     PokemonGraphics: string;
-    TextStrings: string;
-    TextStory: string;
+    TextStrings?: string;
+    TextStory?: string;
+    Text?: string;
     PokemonNamesTextOffset: string;
     TrainerNamesTextOffset: string;
     TrainerClassesTextOffset: string;
@@ -38,6 +41,8 @@ declare interface UPRINI {
     ItemBallsScriptOffset: string;
     HiddenItemsScriptOffset: string;
     MapTableFile: string;
+    MapTableARM9Offset: string;
+    MapTableNameIndexSize: string;
     MapNamesTextOffset: string;
     ItemBallsSkip: string;
     HiddenItemsSkip: string;

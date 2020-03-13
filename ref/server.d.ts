@@ -529,6 +529,7 @@ declare namespace RomReader {
         protected romHeader: string;
         constructor(basePath: string);
         protected readNARC(path: string): Tools.NARChive;
+        protected readDataFile(path: string): Buffer;
         protected readArm9(): Buffer;
         protected readFile(path: string): Buffer;
         protected LoadConfig(iniFileLocation: string): UPRINI;
@@ -571,7 +572,7 @@ declare namespace RomReader {
         GetItemSprite(id: number): string;
         ConvertText(text: string): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
-        constructor(basePath: string);
+        constructor(basePath: string, iniFile?: string);
     }
 }
 declare const gen5FilesOffsets: {

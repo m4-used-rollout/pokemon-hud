@@ -24,7 +24,11 @@ namespace RomReader {
         }
 
         protected readNARC(path: string) {
-            return new NARCArchive(this.readFile(this.dataPath + path));
+            return new NARCArchive(this.readDataFile(path));
+        }
+
+        protected readDataFile(path:string):Buffer {
+            return this.readFile(this.dataPath + path);
         }
 
         protected readArm9() {
