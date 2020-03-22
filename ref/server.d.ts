@@ -228,7 +228,7 @@ declare namespace RomReader {
         protected levelCaps: number[];
         protected ballIds: number[];
         protected natures: string[];
-        protected types: string[];
+        types: string[];
         protected expCurves: Pokemon.ExpCurve.CalcExp[];
         protected expCurveNames: string[];
         protected characteristics: {
@@ -315,6 +315,7 @@ declare namespace RomReader {
         };
         BankAddressToLinear(bank: number, address: number, bankSize?: number): number;
         SameBankPtrToLinear(baseAddr: number, ptr: number): number;
+        protected shouldFixCaps: boolean;
         FixAllCaps(str: string): string;
         CalculateHiddenPowerType(stats: TPP.Stats): string;
         CalculateHiddenPowerPower(stats: TPP.Stats): number;
@@ -741,6 +742,9 @@ declare namespace RamReader {
         SetOptions: (rawOptions: number, desiredOptions: TPP.Options, optionsSpec?: OptionsSpec) => number;
         ShouldForceOptions: (options: TPP.Options, optionsSpec?: OptionsSpec) => boolean;
         GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
+        GetFlag(flagBytes: Buffer, flag: number): boolean;
+        SetFlag(flagBytes: Buffer, flag: number): void;
+        ClearFlag(flagBytes: Buffer, flag: number): void;
         protected CalculateShiny(pokemon: TPP.Pokemon): boolean;
         protected CalculateLevelFromExp(current: number, expFunction: Pokemon.ExpCurve.CalcExp): number;
         protected CalculateExpVals(current: number, level: number, expFunction: Pokemon.ExpCurve.CalcExp): {

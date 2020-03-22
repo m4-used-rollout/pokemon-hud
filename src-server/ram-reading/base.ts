@@ -486,6 +486,24 @@ namespace RamReader {
             return this.rom.GetSetFlags(flagBytes, flagCount, offset);
         }
 
+        public GetFlag(flagBytes: Buffer, flag: number) {
+            const byte = Math.floor(flag / 8);
+            const bit = flag % 8;
+            return (flagBytes[byte] & (1 << bit)) > 0;
+        }
+
+        public SetFlag(flagBytes: Buffer, flag: number) {
+            const byte = Math.floor(flag / 8);
+            const bit = flag % 8;
+            flagBytes[byte] = flagBytes[byte] | (1 << bit);
+        }
+
+        public ClearFlag(flagBytes: Buffer, flag: number) {
+            const byte = Math.floor(flag / 8);
+            const bit = flag % 8;
+            flagBytes[byte] = flagBytes[byte] & ~(1 << bit) & 0xFF;
+        }
+
         protected CalculateShiny(pokemon: TPP.Pokemon) {
             pokemon.shiny_value = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536)))
             return pokemon.shiny = pokemon.shiny_value < this.rom.ShinyThreshold();

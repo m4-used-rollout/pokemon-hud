@@ -1,0 +1,21 @@
+.touhoumon-theme {
+    &.pokemon-hud {
+        ul.party {
+            > li {
+                &.female .name:after {
+                    content: "☯";
+                    display: inline-block;
+                    transform: rotateZ(-90deg);
+                    color: @female-color;
+                }
+
+                &.male .name:after {
+                    content: "☯";
+                    display: inline-block;
+                    transform: rotateZ(90deg);
+                    color: @male-color;
+                }
+            }
+        }
+    }
+}

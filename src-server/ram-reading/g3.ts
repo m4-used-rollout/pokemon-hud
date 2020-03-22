@@ -69,7 +69,7 @@ namespace RamReader {
                     const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank);// as RomReader.TTHMap; //TTH
                     enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
                     //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
-                    if (battleFlags & 0x41) { //multi-battle
+                    if (battleFlags & 0x8000) { //BATTLE_TYPE_TWO_OPPONENTS
                         enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
                         //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
                     }
@@ -153,9 +153,26 @@ namespace RamReader {
                 } as TPP.TrainerData
             })),
             //Badges Ruby/Sapphire/FireRed/LeafGreen
-            !this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${this.rom.config.BadgesOffset || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
+            !this.rom.config.GameStatsOffset && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${this.rom.config.BadgesOffset || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
                 return {
                     badges: (data.readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100
+                } as TPP.Goals
+            })),
+            //Badges Touhoumon
+            this.rom.types[0] == "Illusion" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/290`, this.WrapBytes(data => {
+                const kantoBadges = (data.readUInt16LE(parseInt(this.rom.config.BadgesOffset, 16)) >>> 0) % 0x100;
+                const johtoBadgesBuffer = Buffer.from([0]);
+                const trainer = 0x500;
+                if (this.GetFlag(data, trainer + 0x1)) this.SetFlag(johtoBadgesBuffer, 0); //Falkner
+                if (this.GetFlag(data, trainer + 0x3)) this.SetFlag(johtoBadgesBuffer, 1); //Bugsy
+                if (this.GetFlag(data, trainer + 0x5)) this.SetFlag(johtoBadgesBuffer, 2); //Whitney
+                if (this.GetFlag(data, trainer + 0x7)) this.SetFlag(johtoBadgesBuffer, 3); //Morty
+                if (this.GetFlag(data, trainer + 0x9)) this.SetFlag(johtoBadgesBuffer, 4); //Jasmine
+                if (this.GetFlag(data, trainer + 0xB)) this.SetFlag(johtoBadgesBuffer, 5); //Chuck
+                if (this.GetFlag(data, trainer + 0xD)) this.SetFlag(johtoBadgesBuffer, 6); //Pryce
+                if (this.GetFlag(data, 0x1449)) this.SetFlag(johtoBadgesBuffer, 7); //Rising Badge
+                return {
+                    badges: kantoBadges | (johtoBadgesBuffer[0] << 8)
                 } as TPP.Goals
             })),
             ///Flags/Vars/Stats Emerald

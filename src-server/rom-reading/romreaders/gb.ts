@@ -115,7 +115,10 @@ namespace RomReader {
             return this.BankAddressToLinear(this.LinearAddressToBanked(baseAddr).bank, ptr);
         }
 
+        protected shouldFixCaps = true;
         public FixAllCaps(str: string) {
+            if (!this.shouldFixCaps)
+                return str;
             return str.toLowerCase().replace(fixCaps, c => c.toUpperCase()).replace(fixWronglyCapped, c => c.toLowerCase()).replace(fixWronglyLowercased, c => c.toUpperCase());
         }
 
