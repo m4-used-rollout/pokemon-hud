@@ -54,7 +54,8 @@ namespace RomReader {
             const itemNarc = this.readNARC(config.ItemData);
             const mapNarc = this.readNARC(config.MapTableFile);
             const encounterNarc = this.readNARC(config.WildPokemon);
-            const trainerNarc = this.readNARC(config.TrainerData);
+            const trDataNarc = this.readNARC(config.TrainerData);
+            const trPokeNarc = this.readNARC(config.TrainerPokemon);
             // const pokegrNarc = this.readNARC(config.PokemonGraphics);
             // const badgesgrNarc = this.readNARC(config.BadgeGraphics);
             // const itemgrNarc = this.readNARC(config.ItemGraphics);
@@ -116,7 +117,7 @@ namespace RomReader {
 
             this.pokemon = pokemon;
 
-            this.trainers = trainerNarc.files.map((t, i) => (<Pokemon.Trainer>{
+            this.trainers = trDataNarc.files.map((t, i) => (<Pokemon.Trainer>{
                 classId: t[1],
                 className: trainerClassNames[t[1]],
                 id: i,

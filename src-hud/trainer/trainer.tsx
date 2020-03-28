@@ -12,8 +12,6 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
         let pcBoxCount = (pc.boxes || []).filter(b => !!b && b.box_contents && b.box_number == pc.current_box_number).map(b => b.box_contents.length).shift() || 0;
 
         return <div className={`trainer-info ${t.transitioning ? "glitch" : ""}`}>
-            {t.generation < 6 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
-            <Clock time={t.time} />
             {/*t.items && t.items.items && <div className="candy-counts">
                 <h5>Candy Haul</h5>
                 {t.items.items.filter(i => i.id != escapeRope).map(i => <div className="candy" key={i.id}>
@@ -28,7 +26,9 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                     {t.items.key.map(i => <li key={i.id}>{i.name}</li>)}
                 </ul>
             </div>*/}
-            {!t.time && t.badges < 9 && t.options && displayOpts.length > 1 && <div className="options">
+            {config.generation < 6 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
+            {t.time && <Clock time={t.time} />}
+            {!t.time && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
             </div>}
             <FitToWidth className="bottom-row">
@@ -37,7 +37,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 {(t.stickers || t.stickers === 0) && <span className="stickers">{t.stickers}</span>}
                 {t.generation < 3 && <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>}
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
-                {t.generation > 2 && (t.time || t.badges > 8) && t.options && displayOpts.length >= 1 && <div className="options">
+                {t.generation > 2 && (t.time || config.badgeCount > 8) && t.options && displayOpts.length >= 1 && <div className="options">
                     {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
                 </div>}
                 {t.items && t.items.z_crystals && <ZCrystals items={t.items} />}

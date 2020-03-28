@@ -16,6 +16,14 @@ namespace RomReader {
 
     const timeThresholdHours = [4, 10, 20];
 
+    // The original slot each of the 20 "alternate" slots is mapped to
+    // swarmx2, dayx2, nightx2, pokeradarx4, GBAx10
+    // NOTE: in the game data there are 6 fillers between pokeradar and GBA
+    const dpptAlternateSlots = [0, 1, 2, 3, 2, 3, 4, 5, 10, 11, 8, 9, 8, 9, 8, 9, 8, 9, 8, 9];
+
+    const dpptAlternateSlotsItems = [undefined, undefined, undefined, undefined, undefined, undefined, 431, 431, 431, 431];
+    const dpptAlternateSlotCategory = [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "cartruby", "cartruby", "cartsapphire", "cartsapphire", "cartemerald", "cartemerald", "cartfirered", "cartfirered", "cartleafgreen", "cartleafgreen"];
+
     const encounterRatesGrass = [20, 20, 10, 10, 10, 10, 5, 5, 4, 4, 1, 1];
     const encounterRatesRockSmash = [90, 10];
     const encounterRatesWater = [60, 30, 5, 4, 1];
@@ -25,7 +33,7 @@ namespace RomReader {
 
 
     const dpptTMDataPrefix = "D100D200D300D400", hgssTMDataPrefix = "1E003200";
-    const tmCount = 92, hmCount = 8;
+    const tmCount = 92, hmCount = 8, pokemonCount = 493;
 
     interface Gen4Item extends Pokemon.Item {
         bagPocket: string;
@@ -38,10 +46,10 @@ namespace RomReader {
         public CheckIfCanSurf(runState: TPP.RunStatus) {
             if (TPP.Server.getConfig().mainRegion == "Johto")
                 return (runState.badges & 8) == 8; //Fog Badge
-            if (TPP.Server.getConfig().runName.indexOf("Platinum")>=0)
+            if (TPP.Server.getConfig().runName.indexOf("Platinum") >= 0)
                 return (runState.badges & 16) == 16; //Fen Badge
             return (runState.badges & 32) == 32; //Relic Badge
-            
+
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
@@ -62,10 +70,6 @@ namespace RomReader {
 
         GetItemSprite(id: number) {
             return `./img/items/blackwhite/${id}.png`;
-        }
-
-        ConvertText(text: string) {
-            return text || '';
         }
 
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData) {
@@ -94,19 +98,25 @@ namespace RomReader {
             const moveNarc = this.readNARC(config.MoveData);
             const itemNarc = this.readNARC(config.ItemData);
             const encounterNarc = this.readNARC(config.WildPokemon);
+            const trDataNarc = this.readNARC(config.TrainerData);
+            const trPokeNarc = this.readNARC(config.TrainerPokemon);
+            const moveLearnNarc = this.readNARC(config.PokemonMovesets);
+            const evoNarc = this.readNARC(config.PokemonEvolutions);
+
+
             // const pokegrNarc = this.readNARC(config.PokemonGraphics);
             // const badgesgrNarc = this.readNARC(config.BadgeGraphics);
             // const itemgrNarc = this.readNARC(config.ItemGraphics);
 
-            function getStrings(index: number) {
-                return Tools.PokeText.GetStrings(stringsNarc.files[index]);
-            }
+            const getStrings = (index: number) => Tools.PokeText.GetStrings(stringsNarc.files[index]).map(str => this.FixAllCaps(str));
 
             const moveNames = getStrings(parseInt(config.MoveNamesTextOffset));
             const pokemonNames = getStrings(parseInt(config.PokemonNamesTextOffset));
             const abilityNames = getStrings(parseInt(config.AbilityNamesTextOffset));
             const itemNames = getStrings(parseInt(config.ItemNamesTextOffset));
             const mapNames = getStrings(parseInt(config.MapNamesTextOffset));
+            const trClassNames = getStrings(parseInt(config.TrainerClassesTextOffset));
+            const trNames = getStrings(parseInt(config.TrainerNamesTextOffset));
 
             this.abilities = abilityNames;
 
@@ -155,8 +165,9 @@ namespace RomReader {
             pokemon.unshift(missingNo);
             this.pokemon = pokemon;
 
-            let tmHmMoves: number[] = (function GetTMHMMapping(tmDataPrefix = hgssTMDataPrefix) {
+            let tmHmMoves: number[] = (function GetTMHMMapping() {
                 let tmhm: number[] = [];
+                const tmDataPrefix = config.Type == "HGSS" ? hgssTMDataPrefix : dpptTMDataPrefix;
                 let offset = arm9.indexOf(tmDataPrefix, 0, 'hex');
                 offset += tmDataPrefix.length / 2; //skip the prefix
                 if (offset > 0) {
@@ -186,71 +197,233 @@ namespace RomReader {
             const speciesToEncounter = (id: number, rate = 1, requiredItem = null) => (<Pokemon.EncounterMon>{ rate: rate, speciesId: id, species: this.GetSpecies(id) || missingNo, requiredItem: requiredItem && this.GetItem(requiredItem) });
             const rodExp = /.* Rod$/;
 
-            //HGSS
-            const encounters = encounterNarc.files.map(data => {
-                const rates = data.slice(0, 5).map(i => i);
-                const surfMons = rates[1] ? this.CombineDuplicateEncounters(
-                    this.ReadStridedData(data, 100, 4, 5).map((s, r) => speciesToEncounter(s.readUInt16LE(2), encounterRatesWater[r]))
-                ) : new Array<Pokemon.EncounterMon>();
-                const fishMons = new Array<Pokemon.EncounterMon>().concat(
-                    ...this.items.filter(i => rodExp.test(i.name))
-                        .map((rod, i) => rates[2 + i] ? this.CombineDuplicateEncounters(
-                            this.ReadStridedData(data, 128 + (4 * 5 * i), 4, 5).map((s, r) => speciesToEncounter(s.readInt16LE(2), encounterRatesWater[r], rod.id))
-                        ) : [])
-                );
-                const hiddenMons = this.CombineDuplicateEncounters(new Array<Pokemon.EncounterMon>().concat(
-                    //radio encounters
-                    this.ReadStridedData(data, 92, 2, 4).map(s => s.readUInt16LE(0)).filter(s => s > 0).map(s => speciesToEncounter(s)),
-                    //rock smash (also stores level)
-                    rates[2] ? this.ReadStridedData(data, 120, 4, 2).map((s, r) => speciesToEncounter(s.readUInt16LE(2), encounterRatesRockSmash[r])) : [],
-                    //swarm
-                    this.ReadStridedData(data, 188, 2, 4).map(s => s.readUInt16LE(0)).filter(s => s > 0).map(s => speciesToEncounter(s)),
-                ));
-                return <Pokemon.Encounters>{
-                    morn: <Pokemon.EncounterSet>{
-                        grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadStridedData(data, 20, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
-                        hidden_grass: hiddenMons,
-                        surfing: surfMons,
-                        fishing: fishMons
-                    },
-                    day: <Pokemon.EncounterSet>{
-                        grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadStridedData(data, 44, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
-                        hidden_grass: hiddenMons,
-                        surfing: surfMons,
-                        fishing: fishMons
-                    },
-                    nite: <Pokemon.EncounterSet>{
-                        grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadStridedData(data, 68, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
-                        hidden_grass: hiddenMons,
-                        surfing: surfMons,
-                        fishing: fishMons
-                    }
-                };
-            });
+            let encounters: Pokemon.Encounters[];
 
-            const numMapHeaders = this.readDataFile(config.MapTableFile).byteLength / 16;
-            for (let m = 0; m < numMapHeaders; m++) {
-                const baseOffset = parseInt(config.MapTableARM9Offset,16) + m * 24;
-                const mapNameIndex = (parseInt(config.MapTableNameIndexSize) == 2)
-                    ? arm9.readUInt16LE(baseOffset + 18)
-                    : arm9[baseOffset + 18];
-                const wildSet = arm9[baseOffset]; //HGSS
-                this.maps.push(<Pokemon.Map>{
-                    id: m,
-                    name: mapNames[mapNameIndex],
-                    encounters: wildSet < 0xFF ? encounters[wildSet] : emptyEncounters
+            if (config.Type == "HGSS") {
+                encounters = encounterNarc.files.map(data => {
+                    const rates = data.slice(0, 5).map(i => i);
+                    const surfMons = rates[1] ? this.CombineDuplicateEncounters(
+                        this.ReadStridedData(data, 100, 4, 5).map((s, r) => speciesToEncounter(s.readUInt16LE(2), encounterRatesWater[r]))
+                    ) : new Array<Pokemon.EncounterMon>();
+                    const fishMons = new Array<Pokemon.EncounterMon>().concat(
+                        ...this.items.filter(i => rodExp.test(i.name))
+                            .map((rod, i) => rates[2 + i] ? this.CombineDuplicateEncounters(
+                                this.ReadStridedData(data, 128 + (4 * 5 * i), 4, 5).map((s, r) => speciesToEncounter(s.readInt16LE(2), encounterRatesWater[r], rod.id))
+                            ) : [])
+                    );
+                    const hiddenMons = this.CombineDuplicateEncounters(new Array<Pokemon.EncounterMon>().concat(
+                        //radio encounters
+                        this.ReadStridedData(data, 92, 2, 4).map(s => s.readUInt16LE(0)).filter(s => s > 0).map(s => speciesToEncounter(s)),
+                        //rock smash (also stores level)
+                        rates[2] ? this.ReadStridedData(data, 120, 4, 2).map((s, r) => speciesToEncounter(s.readUInt16LE(2), encounterRatesRockSmash[r])) : [],
+                        //swarm
+                        this.ReadStridedData(data, 188, 2, 4).map(s => s.readUInt16LE(0)).filter(s => s > 0).map(s => speciesToEncounter(s)),
+                    ));
+                    return <Pokemon.Encounters>{
+                        morn: <Pokemon.EncounterSet>{
+                            grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadStridedData(data, 20, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
+                            hidden_grass: hiddenMons,
+                            surfing: surfMons,
+                            fishing: fishMons
+                        },
+                        day: <Pokemon.EncounterSet>{
+                            grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadStridedData(data, 44, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
+                            hidden_grass: hiddenMons,
+                            surfing: surfMons,
+                            fishing: fishMons
+                        },
+                        nite: <Pokemon.EncounterSet>{
+                            grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadStridedData(data, 68, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
+                            hidden_grass: hiddenMons,
+                            surfing: surfMons,
+                            fishing: fishMons
+                        }
+                    };
+                });
+
+            }
+            else {
+                //DPPt
+                const readEncountersDPPt = (data: Buffer, offset: number, rates: number[]) => this.ReadStridedData(data, offset, 8, rates.length).map((e, i) => (<Pokemon.EncounterMon>{
+                    level: e.readUInt32LE(0),
+                    speciesId: e.readUInt32LE(4),
+                    rate: rates[i],
+                    species: this.GetSpecies(e.readUInt32LE(4))
+                }));
+
+                const readWaterEncountersDPPt = (data: Buffer, offset: number, rates: number[], requiredItem?: Pokemon.Item) => this.ReadStridedData(data, offset, 8, rates.length).map((e, i) => ({
+                    level: e.readUInt32LE(0) >> 8,
+                    maxLevel: e.readUInt16LE(0) % 0x100,
+                    speciesId: e.readUInt32LE(4),
+                    rate: rates[i],
+                    species: this.GetSpecies(e.readUInt32LE(4)),
+                    requiredItem
+                } as Pokemon.EncounterMon));
+
+                encounters = encounterNarc.files.map(f => {
+                    const encounterSet: Pokemon.Encounters = { morn: {}, day: {}, nite: {} };
+                    const grassRate = f.readUInt32LE(0);
+                    if (grassRate > 0) {
+                        const mornGrassEncounters = readEncountersDPPt(f, 4, encounterRatesGrass);
+                        const dayGrassEncounters = mornGrassEncounters.map(e => ({ ...e }));
+                        const niteGrassEncounters = mornGrassEncounters.map(e => ({ ...e }));
+                        const hiddenGrassEncounters = new Array<Pokemon.EncounterMon>();
+
+                        // Time of day replacements
+                        for (let i = 0; i < 4; i++) {
+                            const pknum = f.readUInt32LE(108 + 4 * i);
+                            if (pknum >= 1 && pknum <= pokemonCount) {
+                                (i < 2 ? dayGrassEncounters : niteGrassEncounters)[dpptAlternateSlots[i + 2]].speciesId = pknum;
+                                (i < 2 ? dayGrassEncounters : niteGrassEncounters)[dpptAlternateSlots[i + 2]].species = this.GetSpecies(pknum);
+                            }
+                        }
+
+                        // Other conditional replacements (swarm, radar, GBA)
+                        for (let i = 0; i < 20; i++) {
+                            if (i >= 2 && i <= 5) {
+                                // Time of day slot, handled already
+                                continue;
+                            }
+                            const pknum = f.readUInt32LE(100 + i * 4 + (i >= 10 ? 24 : 0));
+                            if (pknum >= 1 && pknum <= pokemonCount) {
+                                hiddenGrassEncounters.push({
+                                    ...mornGrassEncounters[dpptAlternateSlots[i]],
+                                    speciesId: pknum,
+                                    species: this.GetSpecies(pknum),
+                                    categoryIcon: dpptAlternateSlotCategory[i],
+                                    requiredItem: dpptAlternateSlotsItems[i] && this.GetItem(dpptAlternateSlotsItems[i]) || undefined
+                                });
+                            }
+                        }
+                        encounterSet.morn.grass = this.CombineDuplicateEncounters(mornGrassEncounters);
+                        encounterSet.day.grass = this.CombineDuplicateEncounters(dayGrassEncounters);
+                        encounterSet.nite.grass = this.CombineDuplicateEncounters(niteGrassEncounters);
+                        encounterSet.morn.hidden_grass = encounterSet.day.hidden_grass = encounterSet.nite.hidden_grass = this.CombineDuplicateEncounters(hiddenGrassEncounters);
+                    }
+
+                    // surf, filler, old rod, good rod, super rod
+                    const waterNeededItems = [undefined, undefined, ...this.items.filter(i => rodExp.test(i.name)).map(r => r.id)];
+                    const waterEncounters = this.ReadStridedData(f, 204, 44, 5).map((water, i) => water.readInt32LE(0) > 0 ? readWaterEncountersDPPt(water, 4, encounterRatesWater, waterNeededItems[i] && this.GetItem(waterNeededItems[i])) : undefined);
+                    encounterSet.morn.surfing = encounterSet.day.surfing = encounterSet.nite.surfing = this.CombineDuplicateEncounters(waterEncounters[0]);
+                    encounterSet.morn.fishing = encounterSet.day.fishing = encounterSet.nite.fishing = this.CombineDuplicateEncounters([...(waterEncounters[2] || []), ...(waterEncounters[3] || []), ...(waterEncounters[4] || [])]);
+                    return encounterSet;
                 });
             }
 
+            const numMapHeaders = this.readDataFile(config.MapTableFile).byteLength / 16;
+            for (let m = 0; m < numMapHeaders; m++) {
+                const baseOffset = parseInt(config.MapTableARM9Offset, 16) + m * 24;
+                const mapNameIndex = (parseInt(config.MapTableNameIndexSize) == 2)
+                    ? arm9.readUInt16LE(baseOffset + 18)
+                    : arm9[baseOffset + 18];
+                let wildSet: number;
+                let wildSetReject = 0xFFFF;
+                if (config.Type == "HGSS") {
+                    wildSet = arm9[baseOffset];
+                    wildSetReject = 0xFF;
+                }
+                else
+                    wildSet = arm9.readUInt16LE(baseOffset + 14);
+                this.maps.push(<Pokemon.Map>{
+                    id: m,
+                    name: mapNames[mapNameIndex],
+                    encounters: wildSet != wildSetReject ? encounters[wildSet] : emptyEncounters
+                });
+            }
+
+
             this.areas = mapNames;
 
-            //this.ballIds = this.items.filter((i: Gen4Item) => i.bagPocket == "Balls").map(i => i.id); //too many false positives
+            this.trainers = trDataNarc.files.map((trData, i) => {
+                const pokeType = trData[0];
+                let party: { level: number, ability: string, aiLevel: number, species: Pokemon.Species, moves?: Pokemon.Move[], item?: Pokemon.Item }[]
+                    = this.ReadStridedData(trPokeNarc.files[i], 0, 6 + (pokeType & 2 ? 2 : 0) + (pokeType & 1 ? 8 : 0) + (config.Type != 'DP' ? 2 : 0), trData[3]).map(trPoke => ({
+                        aiLevel: trPoke[0],
+                        ability: abilityNames[trPoke[1]],
+                        level: trPoke[2],
+                        species: this.GetSpecies(trPoke.readUInt16LE(4) & 0x1FF),
+                        item: pokeType & 2 ? this.GetItem(trPoke.readUInt16LE(6)) : undefined,
+                        moves: pokeType & 1 ? this.ReadStridedData(trPoke, pokeType & 2 ? 8 : 6, 2, 4).map(m => this.GetMove(m.readUInt16LE(0))) : undefined
+                    }));
+                return {
+                    spriteId: trData[1],
+                    classId: trData[1],
+                    className: trClassNames[trData[1]],
+                    id: i,
+                    name: trNames[i],
+                    party
+                } as Pokemon.Trainer;
+            });
 
-            // console.log(`Loaded ${this.moves.length} moves with ${moveNames.length} names.`);
-            // console.log(`Loaded ${this.pokemon.length} pokemon with ${pokemonNames.length} names.`);
-            // console.log(`Loaded ${this.abilities.length} abilites with ${abilityNames.length} names.`);
-            // console.log(`Loaded ${this.items.length} items with ${itemNames.length} names.`);
-            // console.log(`Loaded ${this.maps.length} maps with ${mapNames.length} names.`);
+            this.moveLearns = {};
+            moveLearnNarc.files.forEach((file, i) => this.moveLearns[i] = this.ReadStridedData(file, 0, 2).map(data => (<Pokemon.MoveLearn>{
+                level: (data[1] & 0xFE) >> 1,
+                ...this.GetMove(data.readUInt16LE(0) & 0x1FF)
+            })));
+
+
+            evoNarc.files.forEach((file, i) => this.GetSpecies(i).evolutions = this.ReadStridedData(file, 0, 6, 7).map((data): Pokemon.Evolution => {
+                const method = data.readUInt16LE(0);
+                const evoParam = data.readUInt16LE(2);
+                const speciesId = (this.GetSpecies(data.readUInt16LE(4)) || { dexNumber: data.readUInt16LE(4) }).dexNumber;
+                switch (method) {
+                    case 1: // HAPPINESS
+                        return { speciesId, happiness: evoParam || 220 };
+                    case 2: // HAPPINESS_DAY
+                        return { speciesId, happiness: evoParam || 220, timeOfDay: "MornDay" };
+                    case 3: // HAPPINESS_NIGHT
+                        return { speciesId, happiness: evoParam || 220, timeOfDay: "Night" };
+                    case 4: // LEVEL
+                        return { speciesId, level: evoParam };
+                    case 5: // TRADE,
+                        return { speciesId, isTrade: true };
+                    case 6: // TRADE_ITEM
+                        return { speciesId, isTrade: true, item: this.GetItem(evoParam) };
+                    case 7: // STONE
+                        return { speciesId, item: this.GetItem(evoParam) };
+                    case 8: // LEVEL_ATTACK_HIGHER
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Attack > Defense" };
+                    case 9: // LEVEL_ATK_DEF_SAME
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Attack = Defense" };
+                    case 10:// LEVEL_DEFENSE_HIGHER
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Attack < Defense" };
+                    case 11:// LEVEL_LOW_PV
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Low PV" };
+                    case 12:// LEVEL_HIGH_PV
+                        return { speciesId, level: evoParam || undefined, specialCondition: "High PV" };
+                    case 13:// LEVEL_CREATE_EXTRA
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Create Extra Pokemon" };
+                    case 14:// LEVEL_IS_EXTRA
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Created Pokemon" };
+                    case 15:// LEVEL_HIGH_BEAUTY
+                        return { speciesId, level: evoParam || undefined, specialCondition: "High Beauty" };
+                    case 16:// STONE_MALE_ONLY
+                        return { speciesId, item: this.GetItem(evoParam), specialCondition: "Male Only" };
+                    case 17:// STONE_FEMALE_ONLY,
+                        return { speciesId, item: this.GetItem(evoParam), specialCondition: "Female Only" };
+                    case 18:// LEVEL_ITEM_DAY
+                        return { speciesId, item: this.GetItem(evoParam), timeOfDay: "MornDay", specialCondition: "Level While Holding" };
+                    case 19:// LEVEL_ITEM_NIGHT
+                        return { speciesId, item: this.GetItem(evoParam), timeOfDay: "Night", specialCondition: "Level While Holding" };
+                    case 20:// LEVEL_WITH_MOVE
+                        return { speciesId, move: this.GetMove(evoParam) };
+                    case 21:// LEVEL_WITH_OTHER
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Level With Other" };
+                    case 22:// LEVEL_MALE_ONLY
+                        return { speciesId, level: evoParam, specialCondition: "Male Only" };
+                    case 23:// LEVEL_FEMALE_ONLY
+                        return { speciesId, level: evoParam, specialCondition: "Female Only" };
+                    case 24:// LEVEL_ELECTRIFIED_AREA
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Electrified Area" };
+                    case 25:// LEVEL_MOSS_ROCK
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Moss Rock" };
+                    case 26:// LEVEL_ICY_ROCK
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Icy Rock" };
+                    default:// NONE
+                        return null;
+                }
+            }).filter(e => !!e));
+
         }
     }
 }

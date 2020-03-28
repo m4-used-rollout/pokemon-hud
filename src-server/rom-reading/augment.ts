@@ -67,6 +67,8 @@ namespace RomReader {
                 calculatePokemonAbilityNatureCharacteristic(p);
                 CensorEgg(p);
                 romData.CalculateUnownForm(p);
+                if (p.name && p.species && p.species.name && p.name.toLowerCase() == p.species.name.toLowerCase())
+                    p.name = p.species.name; //use correctly-capsed version of pokemon name from rom data
             }
             catch (e) {
                 console.error(e);

@@ -2,7 +2,7 @@
 class Badges extends React.PureComponent<{ bitfield: number, rematch?: number }, {}> {
     render() {
         if (!config.badgeCount)
-            return null; //<div className="badges">Badges Go Here</div>;
+            return <div className="badges">Badges Go Here</div>;//null;
         let badgeFolder = config.spriteFolder;
         let badgeStr = (this.props.bitfield || 0).toString(2);
         while (badgeStr.length < config.badgeCount)

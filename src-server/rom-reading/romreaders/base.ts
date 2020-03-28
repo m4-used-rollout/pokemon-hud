@@ -8,6 +8,10 @@
 
 
 namespace RomReader {
+    const fixCaps = /(\b[a-z])/g;
+    const fixWronglyCapped = /(['’][A-Z]|okéMon|onéKa|okéTch)/g;
+    const fixWronglyLowercased = /(^[T|H]m|\bTv\b)/g;
+
     export abstract class RomReaderBase {
         protected pokemon: Pokemon.Species[] = [];
         protected moves: Pokemon.Move[] = [];
@@ -66,6 +70,13 @@ namespace RomReader {
                 return root;
             }
             return resolve(`./resources/app/${path}`);
+        }
+
+        protected shouldFixCaps = true;
+        public FixAllCaps(str: string) {
+            if (!this.shouldFixCaps)
+                return str;
+            return str.toLowerCase().replace(fixCaps, c => c.toUpperCase()).replace(fixWronglyCapped, c => c.toLowerCase()).replace(fixWronglyLowercased, c => c.toUpperCase());
         }
 
         GetForm(pokemon: TPP.Pokemon) {
@@ -230,7 +241,7 @@ namespace RomReader {
             return this.types[typeId] || typeId.toString();
         }
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]) {
-            return mons.filter(m => m && m.species && m.species.name).filter(thisMon => {
+            return mons && mons.filter(m => m && m.species && m.species.name).filter(thisMon => {
                 let firstMon = mons.filter(m => m.species.name == thisMon.species.name && m.form == thisMon.form && (m.requiredItem || { id: 0 }).id == (thisMon.requiredItem || { id: 0 }).id && m.categoryIcon == thisMon.categoryIcon).shift();
                 if (firstMon != thisMon) {
                     firstMon.rate += thisMon.rate;

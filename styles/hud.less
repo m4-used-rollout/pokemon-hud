@@ -413,13 +413,15 @@ body {
                     
                 }
 
-                &.ball-capsule .ability:before {
+                &.ball-capsule .extra-info > div:before {
                     content:'';
+                    flex: 0 0 16px;
                     height: 16px;
                     width: 16px;
-                    position: absolute;
-                    left: 0;
-                    bottom: 0;
+                    align-self: center;
+                    // position: absolute;
+                    // left: 0;
+                    // bottom: 0;
                     background-image: url('./img/capsule.png');
                     background-size: contain;
                     background-repeat: no-repeat;
@@ -956,5 +958,6 @@ body {
 // @import 'themes/dualgb.less';
 // @import 'themes/gcn.less';
 @import 'themes/touhou.less';
+@import 'themes/gen4-5.less';
 
 @import 'animations/glitch.less';

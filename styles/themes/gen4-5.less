@@ -1,0 +1,16 @@
+.gen4-5-theme {
+    @party-member-height: 14.5vh;
+    
+    &.pokemon-hud {
+        ul.party {
+            height: (@party-member-height * 6);
+            > li {
+                height:@party-member-height;
+                .pokemon-image {
+                    height: @party-member-height;
+                }
+            }
+        }
+    }
+
+}

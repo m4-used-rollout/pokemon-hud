@@ -54,8 +54,8 @@ namespace SplitDisplay {
                 estimate.TotalSeconds = splits[i - 1].EstimatedRunTime.TotalSeconds + (splits[i].CompletedDuration || splits[i].Duration).TotalSeconds;
                 splits[i].EstimatedRunTime = estimate;
             }
-            console.dir(this.props.events);
-            console.dir(splits);
+            //console.dir(this.props.events);
+            //console.dir(splits);
             return <div className="live-split-display">
                 {splits.map(s => <SingleSplit key={s.Time} split={s} />)}
                 <style dangerouslySetInnerHTML={{ __html: `.live-split-display .split {width: ${100 / splits.length}vw;}` }} />
