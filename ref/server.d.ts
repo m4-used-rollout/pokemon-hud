@@ -84,6 +84,8 @@ declare namespace Pokemon {
     interface Evolution {
         level?: number;
         item?: Item;
+        move?: Move;
+        otherSpeciesId?: number;
         isTrade?: boolean;
         happiness?: number;
         mapId?: number;
@@ -246,6 +248,8 @@ declare namespace RomReader {
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         ConvertText(text: string | Buffer | number[]): string;
         static FindLocalFile(path: string): string;
+        protected shouldFixCaps: boolean;
+        FixAllCaps(str: string): string;
         GetForm(pokemon: TPP.Pokemon): number;
         GetSpecies(id: number, form?: number): Pokemon.Species;
         GetSpeciesByDexNumber(dexNum: number): Pokemon.Species;
@@ -315,8 +319,6 @@ declare namespace RomReader {
         };
         BankAddressToLinear(bank: number, address: number, bankSize?: number): number;
         SameBankPtrToLinear(baseAddr: number, ptr: number): number;
-        protected shouldFixCaps: boolean;
-        FixAllCaps(str: string): string;
         CalculateHiddenPowerType(stats: TPP.Stats): string;
         CalculateHiddenPowerPower(stats: TPP.Stats): number;
         BankSizes: {
@@ -571,7 +573,6 @@ declare namespace RomReader {
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         GetItemSprite(id: number): string;
-        ConvertText(text: string): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         constructor(basePath: string, iniFile?: string);
     }
@@ -1007,6 +1008,7 @@ declare namespace TPP.Server.DexNav {
         owned: boolean;
         categoryIcon: string;
         requiredItemId: number;
+        hidden?: boolean;
     }
     interface KnownEncounters {
         [key: string]: KnownEncounter[];

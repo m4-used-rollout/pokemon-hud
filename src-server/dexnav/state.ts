@@ -15,6 +15,7 @@ namespace TPP.Server.DexNav {
         owned: boolean;
         categoryIcon: string;
         requiredItemId: number;
+        hidden?: boolean;
     }
 
     export interface KnownEncounters {
@@ -218,8 +219,10 @@ namespace TPP.Server.DexNav {
             // console.log(`Known Hidden: ${(this.KnownEncounters.hidden_grass || []).map(e => `${Server.RomData.GetSpecies(e.speciesId).name} (${e.rate.toFixed(0)}%)`).join(', ')}`);
 
             function foldInOwned(mainList: KnownEncounter[], hiddenList: KnownEncounter[]) {
-                hiddenList.forEach(e => e.owned && mainList.filter(m => m.dexNum == e.dexNum).length < 1 && mainList.push(e));
+                hiddenList.forEach(e => e.owned && mainList.every(m => m.dexNum != e.dexNum) && mainList.push(e));
             }
+
+            this.KnownEncounters.hidden_grass.concat(this.KnownEncounters.hidden_surfing || []).concat(this.KnownEncounters.hidden_fishing || []).forEach(e => e && (e.hidden = true));
             foldInOwned(this.KnownEncounters.grass, this.KnownEncounters.hidden_grass);
             foldInOwned(this.KnownEncounters.surfing, this.KnownEncounters.hidden_surfing);
             foldInOwned(this.KnownEncounters.fishing, this.KnownEncounters.hidden_fishing);

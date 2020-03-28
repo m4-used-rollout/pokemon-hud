@@ -618,37 +618,55 @@
     &.ultra-common {
         color:white;
         &:before{
+            border-color: white;
             content: '●';
         }
     }
     &.common {
         color:lime;
         &:before{
+            border-color: lime;
             content: '●';
         }
     }
     &.uncommon {
         color:dodgerblue;
         &:before{
+            border-color: dodgerblue;
             content: '♦';
         }
     }
     &.rare {
         color:violet;
         &:before{
+            border-color: violet;
             content: '★';
         }
     }
     &.ultra-rare {
         color:gold;
         &:before{
+            border-color: gold;
             content: '★';
         }
     }
 }
 
-.hidden > .rarity:after {
-    content:'H';
+.hidden {
+
+    img {
+        opacity: .5;
+    }
+
+    > .rarity:before {
+        border-radius: 2em;
+        border-width: 1px;
+        border-style: solid;
+        display: inline-block;
+        width: 1em;
+        text-align:center;
+        padding-bottom: .1em;
+    }
 }
 
 @keyframes scroll-forever {

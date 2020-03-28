@@ -30,7 +30,7 @@ class EncounterGroup extends React.Component<EncounterProps, {}> {
 class Encounter extends React.PureComponent<{ encounterType: string, encounter: TPP.Server.DexNav.KnownEncounter }, {}> {
     render() {
         let e = this.props.encounter;
-        return <span className={cleanString(this.props.encounterType) + ' ' + (e.owned ? "owned" : "seen")}>
+        return <span className={`${cleanString(this.props.encounterType)} ${e.owned ? "owned" : "seen"} ${e.hidden ? "hidden" : ""}`}>
             <PokeSprite pokemonId={e.speciesId} form={e.form} />
             <Rarity rate={e.rate} />
             {(e.categoryIcon || e.requiredItemId) && <div className="item" style={{ backgroundImage: `url("${e.requiredItemId ? TPP.Server.RomData.GetItemSprite(e.requiredItemId) : `img/dexnav/terrain/${e.categoryIcon}.png`}")` }} />}
