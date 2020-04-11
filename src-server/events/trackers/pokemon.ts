@@ -10,9 +10,10 @@ namespace Events {
     type MissingPokemonAction = { type: "Missing Pokemon", pv: number, dexNum: number, species: string, name: string };
     type RecoveredPokemonAction = { type: "Recovered Pokemon", pv: number, dexNum: number, species: string, name: string };
     type PurifiedPokemonAction = { type: "Purified Pokemon", pv: number, dexNum: number, species: string, name: string };
-    type KnownActions = CaughtPokemonAction | EvolvedPokemonAction | RenamedPokemonAction | MissingPokemonAction | RecoveredPokemonAction | PurifiedPokemonAction;
+    type CaughtPokerusAction = { type: "Caught Pokerus", pv: number, dexNum: number, species: string, name: string };
+    type KnownActions = CaughtPokemonAction | EvolvedPokemonAction | RenamedPokemonAction | MissingPokemonAction | RecoveredPokemonAction | PurifiedPokemonAction | CaughtPokerusAction;
 
-    type KnownPokemon = { pv: number; dexNums: number[]; species: string[]; name: string; status: "Fine" | "Missing"; caught: string; evolved: string[]; isShadow?: boolean; caughtIn?: string; }
+    type KnownPokemon = { pv: number; dexNums: number[]; species: string[]; name: string; status: "Fine" | "Missing"; caught: string; evolved: string[]; pkrs?: boolean; isShadow?: boolean; caughtIn?: string; }
 
     export const AllMons = (state: TPP.RunStatus) => [
         ...(state.party || []),
@@ -25,6 +26,7 @@ namespace Events {
     class PokemonTracker extends Tracker<KnownActions> {
 
         private knownPokemon: { [key: number]: KnownPokemon } = {};
+        private pokerus = new Array<CaughtPokerusAction & Timestamp>();
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
             const seen = new Array<string>();
@@ -51,6 +53,8 @@ namespace Events {
                     dispatch({ type: "Recovered Pokemon", pv, dexNum, species, name });
                 if (known.isShadow && !isShadow)
                     dispatch({ type: "Purified Pokemon", pv, dexNum, species, name });
+                if (mon.pokerus && mon.pokerus.infected && !known.pkrs)
+                    dispatch({ type: "Caught Pokerus", pv, dexNum, species, name });
             });
             if (newState.party && newState.daycare && newState.pc && newState.pc.boxes && newState.pc.boxes.every(b => !!b)) //only alert missing pokemon when all pokemon sinks have reported in
                 Object.keys(this.knownPokemon).filter(k => seen.indexOf(k) < 0).map(k => this.knownPokemon[k] as KnownPokemon)
@@ -83,6 +87,11 @@ namespace Events {
                     break;
                 case "Purified Pokemon":
                     mon.isShadow = false;
+                    break;
+                case "Caught Pokerus":
+                    mon.pkrs = true;
+                    this.pokerus.push(action);
+                    break;
                 default:
                     return;
             }
@@ -117,6 +126,8 @@ namespace Events {
             delete state.game_stats["Pokémon Caught While Fishing"];
             knowns.map(k => k.caughtIn).filter((c, i, arr) => c && arr.indexOf(c) == i)
                 .forEach(ball => state.game_stats[`Pokémon Caught in a ${ball}`] = knowns.filter(k => k.caughtIn == ball).length);
+
+            this.pokerus.forEach(pkrs => state.events.push({ group: "Caught Pokerus", name: pkrs.name, time: pkrs.timestamp }));
 
             // if (state.pc && state.pc.boxes) {
             //     const missingBox = state.pc.boxes.find(b => b.box_number === 0) || { box_contents: [], box_name: "The Lost", box_number: 0 };

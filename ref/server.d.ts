@@ -271,6 +271,7 @@ declare namespace RomReader {
         GetTrainerSprite(id: number): string;
         GetItemSprite(id: number): string;
         IsUnknownTrainerMap(id: number, bank?: number): boolean;
+        TrainerIsRival(id: number, classId: number): boolean;
         GetFrameBorder(id: number): string;
         CachePokemonSprite(id: number, data: string, form?: number, shiny?: boolean): void;
         CacheTrainerSprite(id: number, data: string): void;
@@ -570,10 +571,12 @@ declare namespace Tools.PokeText {
 declare namespace RomReader {
     class Gen4 extends NDSReader {
         private tmHmMoves;
+        private config;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         GetItemSprite(id: number): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        TrainerIsRival(id: number, classId: number): boolean;
         constructor(basePath: string, iniFile?: string);
     }
 }

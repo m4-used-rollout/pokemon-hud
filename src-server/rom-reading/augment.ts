@@ -65,7 +65,7 @@ namespace RomReader {
                 calculateGender(p);
                 calculateShiny(p);
                 calculatePokemonAbilityNatureCharacteristic(p);
-                CensorEgg(p);
+                ConcealEgg(p);
                 romData.CalculateUnownForm(p);
                 if (p.name && p.species && p.species.name && p.name.toLowerCase() == p.species.name.toLowerCase())
                     p.name = p.species.name; //use correctly-capsed version of pokemon name from rom data
@@ -121,7 +121,7 @@ namespace RomReader {
         function augmentPokemonSpeciesAndExp(p: TPP.Pokemon) {
             if (!p || !p.species || !p.species.id) return;
             let romMon = romData.GetSpecies(p.species.id, p.form);
-            augmentSpecies(p.species, romMon);
+            p.species = augmentSpecies(p.species, romMon);
             if (romMon.expFunction) {
                 if (!p.level) {
                     p.level = Pokemon.ExpCurve.ExpToLevel(p.experience.current, romMon.expFunction);
@@ -142,19 +142,10 @@ namespace RomReader {
             }
         }
 
-        function augmentSpecies(s: TPP.PokemonSpecies, romMon: Pokemon.Species = null) {
+        function augmentSpecies(s: TPP.PokemonSpecies, fromRom: Pokemon.Species = null) {
             if (!s || !s.id) return;
-            romMon = romMon || romData.GetSpecies(s.id);
-            s.name = s.name || romMon.name;
-            s.national_dex = s.national_dex || romMon.dexNumber;
-            s.type1 = s.type1 || romMon.type1;
-            s.type2 = s.type2 || romMon.type2;
-            s.egg_cycles = s.egg_cycles || romMon.eggCycles;
-            s.gender_ratio = s.gender_ratio || romMon.genderRatio;
-            s.growth_rate = s.growth_rate || romMon.growthRate;
-            s.catch_rate = s.catch_rate || romMon.catchRate;
-            s.abilities = s.abilities || romMon.abilities;
-            s.do_not_flip_sprite = romMon.doNotFlipSprite;
+            let romMon = Pokemon.Convert.SpeciesToRunStatus(fromRom || romData.GetSpecies(s.id));
+            return Object.assign(s, romMon, s);
         }
 
         function augmentPokemonMet(p: TPP.Pokemon) {
@@ -218,7 +209,7 @@ namespace RomReader {
                 t.name = (t.name || '').trim() || romTrainer.name;
             }
             t.pic_id = t.pic_id || romTrainer.spriteId;
-            if (state.rival_name && t.class_name && t.class_name.toLowerCase() == "rival") {
+            if (state.rival_name && t.class_name && (t.class_name.toLowerCase() == "rival" || romData.TrainerIsRival(t.id, t.class_id))) {
                 t.name = state.rival_name;
             }
         }
@@ -243,7 +234,7 @@ namespace RomReader {
             if (state.enemy_party) {
                 state.enemy_party = state.enemy_party.filter(p => !!p);
                 state.enemy_party.forEach(p => {
-                    augmentSpecies(p.species);
+                    p.species = augmentSpecies(p.species);
                     romData.CalculateUnownForm(p);
                 });
             }
@@ -265,19 +256,21 @@ namespace RomReader {
         }
     }
 
-    function CensorEgg(mon: TPP.Pokemon) {
+    function ConcealEgg(mon: TPP.Pokemon) {
         if (mon.is_egg) {
             //no egg spoilers
-            mon.species.type1 = mon.species.type2 = mon.species.growth_rate = "???";
-            mon.species.id = mon.species.national_dex = 0;
             mon.species.name = mon.name = "Egg";
-            mon.moves = [];
+            mon.species.type1 = mon.species.type2 = mon.species.growth_rate = "???";
+            mon.species.id = mon.species.national_dex = mon.species.catch_rate = mon.species.gender_ratio = 0;
+            mon.species.held_items = mon.species.evolutions = mon.species.abilities = mon.moves = [];
+            delete mon.gender;
             delete mon.ivs;
             delete (<TPP.PartyPokemon>mon).stats;
             delete mon.evs;
             delete mon.condition;
             delete mon.ability;
             delete mon.next_move;
+            delete mon.species.base_stats;
         }
     }
 

@@ -197,6 +197,9 @@ namespace RomReader {
         IsUnknownTrainerMap(id: number, bank?: number) { //Override this on maps like the Battle Frontier where loading the trainer data doesn't work
             return false;
         }
+        TrainerIsRival(id:number, classId:number) {
+            return false;
+        }
         GetFrameBorder(id: number) {
             return this.frameBorders[id % this.frameBorders.length];
         }

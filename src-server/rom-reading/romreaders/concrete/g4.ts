@@ -42,14 +42,12 @@ namespace RomReader {
     export class Gen4 extends NDSReader {
 
         private tmHmMoves: string[];
+        private config:UPRINI;
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
-            if (TPP.Server.getConfig().mainRegion == "Johto")
-                return (runState.badges & 8) == 8; //Fog Badge
-            if (TPP.Server.getConfig().runName.indexOf("Platinum") >= 0)
-                return (runState.badges & 16) == 16; //Fen Badge
-            return (runState.badges & 32) == 32; //Relic Badge
-
+            if (this.config.Type == "DP")
+                return (runState.badges & 16) > 16; //Relic Badge (Diamond/Pearl)
+            return (runState.badges & 8) == 8; //Fog Badge (HGSS) / Fen Badge (Platinum)
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
@@ -87,10 +85,18 @@ namespace RomReader {
             return map.encounters.nite;
         }
 
+        TrainerIsRival(id:number, classId:number) {
+            if (this.config.Type == "HGSS") {
+                return false; //TODO: Find Silver's class id
+            }
+            return classId == 63; //Cedric;
+        }
+
         constructor(basePath: string, iniFile = Gen5.FindLocalFile("./data/gen4/gen4_offsets.ini")) {
             super(basePath);
 
             const config = this.LoadConfig(iniFile);
+            this.config = config;
 
             const arm9 = this.readArm9();
             const stringsNarc = this.readNARC(config.TextStrings || config.Text);
