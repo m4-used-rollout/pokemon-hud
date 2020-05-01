@@ -46,6 +46,8 @@ namespace RomReader {
 
             const config = this.LoadConfig(iniFile);
 
+            this.shouldFixCaps = false;
+
             const arm9 = this.readArm9();
             const stringsNarc = this.readNARC(config.TextStrings);
             const pokeNarc = this.readNARC(config.PokemonStats);
@@ -56,6 +58,7 @@ namespace RomReader {
             const encounterNarc = this.readNARC(config.WildPokemon);
             const trDataNarc = this.readNARC(config.TrainerData);
             const trPokeNarc = this.readNARC(config.TrainerPokemon);
+            const evoNarc = this.readNARC(config.PokemonEvolutions);
             // const pokegrNarc = this.readNARC(config.PokemonGraphics);
             // const badgesgrNarc = this.readNARC(config.BadgeGraphics);
             // const itemgrNarc = this.readNARC(config.ItemGraphics);
@@ -232,6 +235,8 @@ namespace RomReader {
                 }
                 this.maps.push(map);
             }
+
+            this.readEvolutions(evoNarc);
         }
     }
 }

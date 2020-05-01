@@ -118,7 +118,7 @@ namespace TPP.Server.DexNav {
                 this.EnemyTrainers = runState.enemy_trainers;
                 this.EnemyParty = runState.enemy_party;
                 (this.EnemyTrainers || []).forEach(t => {
-                    if (t && t.class_name && t.class_name.toLowerCase() == "rival" && (!t.name || !t.name.trim().length)) {
+                    if (t && t.class_name && runState.rival_name && (t.class_name.toLowerCase() == "rival" || t.name.toLowerCase() == "rival")) {
                         t.name = runState.rival_name;
                     }
                     if (this.IsUnknownArea) {

@@ -137,7 +137,7 @@ namespace Events {
         }
 
         private DispatchInternal(action: Action & Timestamp) {
-            console.log(JSON.stringify(action));
+            //console.log(JSON.stringify(action));
             this.trackers.forEach(s => s.Reducer(action));
         }
 

@@ -537,6 +537,7 @@ declare namespace RomReader {
         protected readArm9(): Buffer;
         protected readFile(path: string): Buffer;
         protected LoadConfig(iniFileLocation: string): UPRINI;
+        protected readEvolutions(evoNarc: Tools.NARChive): void;
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
     }
 }

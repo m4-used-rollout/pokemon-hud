@@ -27,7 +27,7 @@ namespace RomReader {
             return new NARCArchive(this.readDataFile(path));
         }
 
-        protected readDataFile(path:string):Buffer {
+        protected readDataFile(path: string): Buffer {
             return this.readFile(this.dataPath + path);
         }
 
@@ -60,6 +60,70 @@ namespace RomReader {
                 romIni = Object.assign(iniList.filter(i => i.Game == copyFrom).pop() || {} as UPRINI, romIni);
             }
             return romIni;
+        }
+
+        protected readEvolutions(evoNarc: Tools.NARChive) {
+            return evoNarc.files.forEach((file, i) => this.GetSpecies(i).evolutions = this.ReadStridedData(file, 0, 6, 7).map((data): Pokemon.Evolution => {
+                const method = data.readUInt16LE(0);
+                const evoParam = data.readUInt16LE(2);
+                const speciesId = (this.GetSpecies(data.readUInt16LE(4)) || { dexNumber: data.readUInt16LE(4) }).dexNumber;
+                switch (method) {
+                    case 1: // HAPPINESS
+                        return { speciesId, happiness: evoParam || 220 };
+                    case 2: // HAPPINESS_DAY
+                        return { speciesId, happiness: evoParam || 220, timeOfDay: "MornDay" };
+                    case 3: // HAPPINESS_NIGHT
+                        return { speciesId, happiness: evoParam || 220, timeOfDay: "Night" };
+                    case 4: // LEVEL
+                        return { speciesId, level: evoParam };
+                    case 5: // TRADE,
+                        return { speciesId, isTrade: true };
+                    case 6: // TRADE_ITEM
+                        return { speciesId, isTrade: true, item: this.GetItem(evoParam) };
+                    case 7: // STONE
+                        return { speciesId, item: this.GetItem(evoParam) };
+                    case 8: // LEVEL_ATTACK_HIGHER
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Attack > Defense" };
+                    case 9: // LEVEL_ATK_DEF_SAME
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Attack = Defense" };
+                    case 10:// LEVEL_DEFENSE_HIGHER
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Attack < Defense" };
+                    case 11:// LEVEL_LOW_PV
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Low PV" };
+                    case 12:// LEVEL_HIGH_PV
+                        return { speciesId, level: evoParam || undefined, specialCondition: "High PV" };
+                    case 13:// LEVEL_CREATE_EXTRA
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Create Extra Pokemon" };
+                    case 14:// LEVEL_IS_EXTRA
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Created Pokemon" };
+                    case 15:// LEVEL_HIGH_BEAUTY
+                        return { speciesId, level: evoParam || undefined, specialCondition: "High Beauty" };
+                    case 16:// STONE_MALE_ONLY
+                        return { speciesId, item: this.GetItem(evoParam), specialCondition: "Male Only" };
+                    case 17:// STONE_FEMALE_ONLY,
+                        return { speciesId, item: this.GetItem(evoParam), specialCondition: "Female Only" };
+                    case 18:// LEVEL_ITEM_DAY
+                        return { speciesId, item: this.GetItem(evoParam), timeOfDay: "MornDay", specialCondition: "Level While Holding" };
+                    case 19:// LEVEL_ITEM_NIGHT
+                        return { speciesId, item: this.GetItem(evoParam), timeOfDay: "Night", specialCondition: "Level While Holding" };
+                    case 20:// LEVEL_WITH_MOVE
+                        return { speciesId, move: this.GetMove(evoParam) };
+                    case 21:// LEVEL_WITH_OTHER
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Level With Other" };
+                    case 22:// LEVEL_MALE_ONLY
+                        return { speciesId, level: evoParam, specialCondition: "Male Only" };
+                    case 23:// LEVEL_FEMALE_ONLY
+                        return { speciesId, level: evoParam, specialCondition: "Female Only" };
+                    case 24:// LEVEL_ELECTRIFIED_AREA
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Electrified Area" };
+                    case 25:// LEVEL_MOSS_ROCK
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Moss Rock" };
+                    case 26:// LEVEL_ICY_ROCK
+                        return { speciesId, level: evoParam || undefined, specialCondition: "Icy Rock" };
+                    default:// NONE
+                        return null;
+                }
+            }).filter(e => !!e));
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {

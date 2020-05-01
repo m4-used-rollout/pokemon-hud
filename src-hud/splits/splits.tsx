@@ -19,7 +19,7 @@ namespace SplitDisplay {
         }
 
         render() {
-            const splits = this.props.splits.map((s, i, arr) => {
+            const origSplits = this.props.splits.map((s, i, arr) => {
                 const duration = new Duration(0);
                 duration.TotalSeconds = Duration.parse(s.Time).TotalSeconds - (i > 0 ? Duration.parse(arr[i - 1].Time).TotalSeconds : 0);
                 return {
@@ -27,7 +27,8 @@ namespace SplitDisplay {
                     Duration: duration,
                     CompletionEvent: this.findMatchingEvent(s),
                 } as ProcessedSplit;
-            }).sort((s1, s2) =>
+            });
+            const splits = [...origSplits].sort((s1, s2) =>
                 Duration.parse((s1.CompletionEvent || { time: s1.Time }).time, this.props.startTime).TotalSeconds -
                 Duration.parse((s2.CompletionEvent || { time: s2.Time }).time, this.props.startTime).TotalSeconds
             ).map((s, i, arr) => {
@@ -37,10 +38,11 @@ namespace SplitDisplay {
                 const difference = new Duration(0);
                 if (s.CompletionEvent) {
                     completedDuration.TotalSeconds = Duration.parse(s.CompletionEvent.time, this.props.startTime).TotalSeconds - (i > 0 ? Duration.parse((arr[i - 1].CompletionEvent || { time: arr[i - 1].Time }).time, this.props.startTime).TotalSeconds : 0);
-                    difference.TotalSeconds = completedDuration.TotalSeconds - s.Duration.TotalSeconds;
+                    difference.TotalSeconds = completedDuration.TotalSeconds - (origSplits[i]).Duration.TotalSeconds; //if splits change order, use original split's duration
                 }
                 return {
                     ...s,
+                    Duration: origSplits[i].Duration,
                     Active: this.props.startTime.valueOf() < Date.now() && arr.find(ps => !ps.CompletionEvent) == s,
                     StartTime: startTime,
                     CompletedDuration: s.CompletionEvent ? completedDuration : undefined,

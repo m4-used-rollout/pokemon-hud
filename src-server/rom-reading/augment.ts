@@ -3,6 +3,7 @@
 /// <reference path="../../ref/runstatus.d.ts" />
 
 namespace RomReader {
+    const tmHmExp = /(T|H)M\d\d\s/i;
 
     export function AugmentState(romData: RomReaderBase, state: TPP.RunStatus) {
 
@@ -23,6 +24,8 @@ namespace RomReader {
                         if (!item.count)
                             delete item.count;
                     }));
+                // sort Free Space alphabetically
+                state.items && state.items.free_space && (state.items.free_space = state.items.free_space.sort((i1, i2) => (i1.name.replace(tmHmExp, '')).localeCompare(i2.name.replace(tmHmExp, ''))));
             }
             catch (e) {
                 console.error(e);
@@ -143,7 +146,7 @@ namespace RomReader {
         }
 
         function augmentSpecies(s: TPP.PokemonSpecies, fromRom: Pokemon.Species = null) {
-            if (!s || !s.id) return;
+            if (!s || !s.id) return s;
             let romMon = Pokemon.Convert.SpeciesToRunStatus(fromRom || romData.GetSpecies(s.id));
             return Object.assign(s, romMon, s);
         }
