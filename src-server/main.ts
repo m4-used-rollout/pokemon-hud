@@ -12,7 +12,7 @@
 /// <reference path="ram-reading/g1.ts" />
 /// <reference path="ram-reading/g2.ts" />
 /// <reference path="ram-reading/g3.ts" />
-// /// <reference path="ram-reading/g6.ts" />
+/// <reference path="ram-reading/g6.ts" />
 /// <reference path="ram-reading/g7.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/electron/electron.d.ts" />
@@ -149,7 +149,7 @@ module TPP.Server {
     export let RomData: RomReader.RomReaderBase;
     export let RamData: RamReader.RamReaderBase;
     try {
-        let path;
+        let path:string;
         const romFile = (Array.isArray(config.romFile) ? config.romFile[0] : config.romFile) || config.extractedRomFolder;
         if (romFile) {
             path = RomReader.RomReaderBase.FindLocalFile(romFile);
@@ -189,7 +189,7 @@ module TPP.Server {
             case 6: {
                 let rom = new RomReader.Gen6();
                 RomData = rom;
-                //RamData = new RamReader.Gen6(rom, 5340, "localhost", config);
+                RamData = new RamReader.Gen6(rom, 5340, "localhost", config);
                 break;
             }
             case 7: {

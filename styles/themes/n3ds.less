@@ -221,17 +221,47 @@
                         //     text-align: center;
                         //     .outline();
                         // }
-                        // .movelearn {
-                        //     &:before {
-                        //         content:"Next Move: ";
-                        //     }
-                        //     &:after {
-                        //         content: attr(data-level);
-                        //     }
-                        //     &.alert {
-                        //         .health-warning();
-                        //     }
-                        // }
+                        .movelearn {
+                            padding-left: 20px;
+                            background-image: url('img/generic/item/item_tm.png');
+                            background-size: 16px;
+                            background-repeat: no-repeat;
+                            background-position: left;
+                            image-rendering: pixelated;
+                            max-width: 25%;
+
+                            &:before {
+                                display: inline-block;
+                                font-size: .8em;
+                                content:"Lv";
+                            }
+                            &:after {
+                                content: attr(data-level);
+                            }
+                            &.alert {
+                                .health-warning();
+                            }
+
+                            &.Normal {background-image: url('img/generic/item/item_tm.png'); background-size: 15px;}
+                            &.Fighting {background-image: url('img/generic/item/item_904.png');}
+                            &.Flying {background-image: url('img/generic/item/item_905.png');}
+                            &.Poison {background-image: url('img/generic/item/item_906.png');}
+                            &.Ground {background-image: url('img/generic/item/item_907.png');}
+                            &.Rock {background-image: url('img/generic/item/item_908.png');}
+                            &.Bug {background-image: url('img/generic/item/item_909.png');}
+                            &.Ghost {background-image: url('img/generic/item/item_910.png');}
+                            &.Steel {background-image: url('img/generic/item/item_911.png');}
+                            &.Fire {background-image: url('img/generic/item/item_912.png');}
+                            &.Water {background-image: url('img/generic/item/item_913.png');}
+                            &.Grass {background-image: url('img/generic/item/item_914.png');}
+                            &.Electric {background-image: url('img/generic/item/item_915.png');}
+                            &.Psychic {background-image: url('img/generic/item/item_916.png');}
+                            &.Ice {background-image: url('img/generic/item/item_917.png');}
+                            &.Dragon {background-image: url('img/generic/item/item_918.png');}
+                            &.Dark {background-image: url('img/generic/item/item_919.png');}
+                            &.Fairy {background-image: url('img/generic/item/item_920.png');}
+                        }
+
                     }
 
                     .moves {
@@ -588,6 +618,32 @@
                             vertical-align: baseline;
                             margin-right:.1em;
                         }
+                    }
+
+                    .option {
+                        &[data-val=slow], &[data-val=off], &[data-val=manual] {
+                            color:@low-health;
+                            font-weight: bold;
+                        }
+                        &[data-val=med] {
+                            color:@med-health;
+                            font-weight: bold;
+                        }
+                        &[data-val=fast], &[data-val=on], &[data-val=automatic] {
+                            color:@high-health;
+                            font-weight: bold;
+                        }
+                    }
+
+                    .good {
+                        color:@high-health;
+                    }
+                    .med {
+                        color:@med-health;
+                    }
+                    .low {
+                        color:@low-health;
+                        font-weight: bold;
                     }
 
                     .cash {

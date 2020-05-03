@@ -925,6 +925,81 @@ declare namespace RamReader {
     }
 }
 declare namespace RamReader {
+    interface Gen6Pokemon extends TPP.Pokemon {
+        encryption_constant: number;
+        sanity: number;
+        scramble_value: number;
+        checksum: number;
+        is_nicknamed: boolean;
+        affection: number;
+        fullness: number;
+        enjoyment: number;
+    }
+    class Gen6 extends RamReaderBase<RomReader.Gen6> {
+        ReadParty: () => Promise<(TPP.PartyPokemon & Gen6Pokemon)[]>;
+        ReadPC: () => Promise<TPP.CombinedPCData>;
+        ReadBattle: () => Promise<TPP.BattleStatus>;
+        protected TrainerChunkReaders: (() => Promise<Partial<TPP.TrainerData>>)[];
+        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
+        protected OptionsSpec: {
+            text_speed: {
+                2: string;
+                1: string;
+                0: string;
+            };
+            battle_style: {
+                0: string;
+                0x8: string;
+            };
+            battle_scene: {
+                0: string;
+                0x4: string;
+            };
+            button_mode: {
+                0: string;
+                0x2000: string;
+                0x4000: string;
+            };
+            forced_save: {
+                0: string;
+                0x8000: string;
+            };
+            battle_bg: {
+                0: string;
+                0x100: string;
+                0x200: string;
+                0x300: string;
+                0x400: string;
+                0x500: string;
+                0x600: string;
+                0x700: string;
+                0x800: string;
+                0x900: string;
+                0xA00: string;
+                0xB00: string;
+                0xC00: string;
+                0xD00: string;
+                0xE00: string;
+            };
+        };
+        protected ParseBattle(data: Buffer): Promise<TPP.BattleStatus>;
+        protected ParseTrainerMisc(data: Buffer): Partial<TPP.TrainerData>;
+        protected ParseTrainerData(data: Buffer): Partial<TPP.TrainerData>;
+        protected ProcessDex(data: Buffer): Partial<TPP.TrainerData>;
+        protected HandleOptions(data: Buffer): Promise<Partial<TPP.TrainerData>>;
+        protected itemPocketOffsets: number[];
+        protected ParseItems(data: Buffer): Partial<TPP.TrainerData>;
+        protected ParseLocation(data: Buffer): Partial<TPP.TrainerData>;
+        protected ParseDaycare(data: Buffer): Partial<TPP.TrainerData>;
+        protected ParsePC(data: Buffer): Promise<TPP.CombinedPCData>;
+        protected ParsePCBox(data: Buffer): Gen6Pokemon[];
+        protected ParseParty(data: Buffer): (TPP.PartyPokemon & Gen6Pokemon)[];
+        protected ParsePartyMon(data: Buffer, battleDataOffset?: number): TPP.PartyPokemon & Gen6Pokemon;
+        protected ParsePokemon(pkmdata: Buffer, box_slot?: number): Gen6Pokemon;
+        protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
+    }
+}
+declare namespace RamReader {
     interface Gen7Pokemon extends TPP.Pokemon {
         encryption_constant: number;
         sanity: number;

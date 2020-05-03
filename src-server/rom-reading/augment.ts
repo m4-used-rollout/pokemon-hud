@@ -10,8 +10,8 @@ namespace RomReader {
         function normalizeDex() {
             state.caught_list = DeDupe(state.caught_list);
             state.seen_list = DeDupe(state.seen_list);
-            state.caught = state.caught || state.caught_list.length;
-            state.seen = state.seen || state.seen_list.length;
+            state.caught = state.caught_list.length;
+            state.seen = state.seen_list.length;
         }
 
         function augmentItems() {

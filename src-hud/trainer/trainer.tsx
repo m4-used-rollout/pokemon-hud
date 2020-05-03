@@ -28,7 +28,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
             </div>*/}
             {config.generation < 6 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
             {t.time && <Clock time={t.time} />}
-            {!t.time && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
+            {t.generation < 6 && !t.time && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
             </div>}
             <FitToWidth className="bottom-row">
@@ -37,9 +37,9 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 {(t.stickers || t.stickers === 0) && <span className="stickers">{t.stickers}</span>}
                 {t.generation < 3 && <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>}
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
-                {t.generation > 2 && (t.time || config.badgeCount > 8) && t.options && displayOpts.length >= 1 && <div className="options">
-                    {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
-                </div>}
+                {/*(t.generation > 5 || (t.generation > 2 && (t.time || config.badgeCount > 8))) &&*/ t.options && displayOpts.length >= 1 && /*<div className="options">
+                    {*/displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)/*}
+                </div>*/}
                 {t.items && t.items.z_crystals && <ZCrystals items={t.items} />}
                 {t.generation > 5 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
                 {t.party_fitness && <span className="fitness">{t.party_fitness.toLocaleString()}</span>}

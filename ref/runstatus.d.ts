@@ -48,6 +48,7 @@ declare namespace TPP {
         level_cap?: number;
         money?: number;
         name?: string;
+        nickname?: string;
         options?: Options;
         seen?: number;
         seen_list?: number[];

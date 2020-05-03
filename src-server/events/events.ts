@@ -44,6 +44,8 @@ namespace Events {
             Trackers.push(trackerClass);
     }
 
+    const illegalPathChars = /[/\\?%*:|"<>]/g;
+
     export class RunEvents {
 
         private currentState: TPP.RunStatus;
@@ -68,7 +70,7 @@ namespace Events {
 
         public get EventsFileName() {
             const state = this.currentState || { name: undefined, id: undefined };
-            return `${this.savePath}/${this.config.runName}-${state.name}-${state.id}.events`;
+            return `${this.savePath}/${this.config.runName}-${state.name}-${state.id}.events`.replace(illegalPathChars, "_");
         }
 
         private OpenFile() {
