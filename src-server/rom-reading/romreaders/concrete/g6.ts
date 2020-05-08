@@ -31,6 +31,9 @@ namespace RomReader {
                 });
             });
         }
+        ConvertText(text: string | Buffer | number[]): string {
+            return super.ConvertText(text).replace(/\ue08f/g, "♀");
+        }
 
         CheckIfCanSurf(runState: TPP.RunStatus) {
             return (runState.badges & 8) > 0;
