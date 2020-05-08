@@ -92,11 +92,17 @@ namespace Events {
                             this.currentTrainer.endeavors.push(lastTry = { challenged: null, attempts: null, defeated: null });
                         lastTry.defeated = action.timestamp;
                     }
-                //Fallthrough
-                case "Blackout":
+                    return;
+                case "Blackout": {
+                    if (this.currentTrainer) {
+                        const lastTry = LastTry(this.currentTrainer);
+                        if (lastTry && lastTry.defeated && Date.parse(action.timestamp) - Date.parse(lastTry.defeated) < 60000) //we blacked out within a minute of "defeating" a trainer
+                            lastTry.defeated = null; //so we didn't actually defeat them
+                    }
                     this.currentTrainer = null;
                     //this.trainerDebounce = true;
                     return;
+                }
             }
             //this.trainerDebounce = false;
         }
