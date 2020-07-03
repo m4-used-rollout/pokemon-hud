@@ -22,6 +22,8 @@ namespace Events {
                     return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "hoenn":
                     return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
+                case "sirius":
+                    return this._badges = ["Kaitos", "Scheat", "Alya", "Spica", "Deimos", "Regulus", "Dios", "Syrma"];
                 case "sinnoh":
                     return this._badges = ["Coal", "Forest", "Cobble", "Fen", "Relic", "Mine", "Icicle", "Beacon"];
                 case "unova":

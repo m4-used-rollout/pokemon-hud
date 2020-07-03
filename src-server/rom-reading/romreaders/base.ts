@@ -12,6 +12,8 @@ namespace RomReader {
     const fixWronglyCapped = /(['’][A-Z]|okéMon|onéKa|okéTch)/g;
     const fixWronglyLowercased = /(^[T|H]m|\bTv\b)/g;
 
+    export type EvoMethod = (evoParam: number, speciesId: number) => Pokemon.Evolution;
+
     export abstract class RomReaderBase {
         protected pokemon: Pokemon.Species[] = [];
         protected moves: Pokemon.Move[] = [];
@@ -197,7 +199,7 @@ namespace RomReader {
         IsUnknownTrainerMap(id: number, bank?: number) { //Override this on maps like the Battle Frontier where loading the trainer data doesn't work
             return false;
         }
-        TrainerIsRival(id:number, classId:number) {
+        TrainerIsRival(id: number, classId: number) {
             return false;
         }
         GetFrameBorder(id: number) {
@@ -316,6 +318,46 @@ namespace RomReader {
                     ) % 28;
         }
 
+        protected evolutionMethods: EvoMethod[];
+        protected ParseEvolution(method: number, evoParam: number, speciesId: number): Pokemon.Evolution {
+            if (!method)
+                return null;
+            if (this.evolutionMethods[method])
+                return this.evolutionMethods[method](evoParam, speciesId);
+            return { speciesId, specialCondition: `Unknown evolution method: ${method} (${evoParam})` };
+        }
+
+        protected EvolutionMethod = {
+            Level: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam }),
+            LevelAttackHigher: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Attack > Defense" }),
+            LevelAtkDefEqual: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Attack = Defense" }),
+            LevelDefenseHigher: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Attack < Defense" }),
+            LevelLowPV: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Low PV" }),
+            LevelHighPV: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "High PV" }),
+            LevelSpawnPokemon: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Spawn Additional Pokemon" }),
+            LevelIsSpawned: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Was Spawned By Other Evo" }),
+            LevelHighBeauty: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "High Beauty" }),
+            LevelItemDay: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), timeOfDay: "MornDay", specialCondition: "Level While Holding" }),
+            LevelItemNight: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), timeOfDay: "Night", specialCondition: "Level While Holding" }),
+            LevelWithMove: (evoParam: number, speciesId: number) => ({ speciesId, move: this.GetMove(evoParam) }),
+            LevelWithOtherSpecies: (evoParam: number, speciesId: number) => ({ speciesId, otherSpeciesId: evoParam || undefined, specialCondition: `Level With ${(this.GetSpecies(evoParam) || {name:"???"}).name} In Party` }),
+            LevelMale: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam, specialCondition: "Male Only" }),
+            LevelFemale: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam, specialCondition: "Female Only" }),
+            LevelElectifiedArea: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Electrified Area" }),
+            LevelMossRock: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Moss Rock" }),
+            LevelIcyRock: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Icy Rock" }),
+            Trade: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true }),
+            TradeItem: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true, item: this.GetItem(evoParam) }),
+            TradeForOtherSpecies: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true, otherSpeciesId: evoParam, specialCondition: `Trade For ${(this.GetSpecies(evoParam) || {name:"???"}).name}` }),
+            Stone: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam) }),
+            StoneMale: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), specialCondition: "Male Only" }),
+            StoneFemale: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), specialCondition: "Female Only" }),
+            Happiness: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220 }),
+            HappinessDay: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220, timeOfDay: "MornDay" }),
+            HappinessNight: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220, timeOfDay: "Night" }),
+        }
+
         private surfExp = /^surf$/i;
     }
+
 }

@@ -1,9 +1,14 @@
-// Blazed Glazed/RandoWhite 2/Ultra Sun/Red/Y/PBR
-@dex-frame-border: #600;
-@dex-frame-color: #c00;
-@dex-frame-bevel: #600;
-@dex-frame-highlight: #900;
-@dex-label-color: white;
+@screen-on-color: darkolivegreen;
+@screen-off-color: #666;
+@screen-error-color: darkred;
+@screen-foreground-color: black;
+
+// Blazed Glazed/RandoWhite 2/Ultra Sun/Red/Y/PBR/Gauntlet
+// @dex-frame-border: #600;
+// @dex-frame-color: #c00;
+// @dex-frame-bevel: #600;
+// @dex-frame-highlight: #900;
+// @dex-label-color: white;
 
 // Volt White	
 // @dex-frame-border: #ACACAC;
@@ -63,9 +68,16 @@
 // @dex-frame-highlight: #A40;
 // @dex-label-color: white;
 
-@screen-on-color: darkolivegreen;
-@screen-off-color: #666;
-@screen-error-color: darkred;
+// Sirius
+@dex-frame-border: black;
+@dex-frame-color: #303136;
+@dex-frame-bevel: #1E1F24;
+@dex-frame-highlight: #D2D2D4;
+@screen-foreground-color: black;
+@dex-label-color: white;
+@screen-on-color: #1798D2;
+@screen-off-color: #333;
+@screen-error-color: rgb(210, 23, 23);
 
 .dexFrame(@dex-frame-border: @dex-frame-border, @dex-frame-color: @dex-frame-color, @dex-frame-bevel: @dex-frame-bevel) {
     border: 1px outset @dex-frame-border;
@@ -86,7 +98,7 @@
     box-sizing: border-box;
     padding:2px;
     overflow: hidden;
-    color:black;
+    color:@screen-foreground-color;
     position: absolute;
     left:5vw;
     right:5vw;

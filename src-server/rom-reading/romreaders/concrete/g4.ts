@@ -42,7 +42,7 @@ namespace RomReader {
     export class Gen4 extends NDSReader {
 
         private tmHmMoves: string[];
-        private config:UPRINI;
+        private config: UPRINI;
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
             if (this.config.Type == "DP")
@@ -85,7 +85,7 @@ namespace RomReader {
             return map.encounters.nite;
         }
 
-        TrainerIsRival(id:number, classId:number) {
+        TrainerIsRival(id: number, classId: number) {
             if (this.config.Type == "HGSS") {
                 return false; //TODO: Find Silver's class id
             }
@@ -368,6 +368,34 @@ namespace RomReader {
             })));
 
 
+            this.evolutionMethods = [undefined,
+                /* 1*/ this.EvolutionMethod.Happiness,
+                /* 2*/ this.EvolutionMethod.HappinessDay,
+                /* 3*/ this.EvolutionMethod.HappinessNight,
+                /* 4*/ this.EvolutionMethod.Level,
+                /* 5*/ this.EvolutionMethod.Trade,
+                /* 6*/ this.EvolutionMethod.TradeItem,
+                /* 7*/ this.EvolutionMethod.Stone,
+                /* 8*/ this.EvolutionMethod.LevelAttackHigher,
+                /* 9*/ this.EvolutionMethod.LevelAtkDefEqual,
+                /*10*/ this.EvolutionMethod.LevelDefenseHigher,
+                /*11*/ this.EvolutionMethod.LevelLowPV,
+                /*12*/ this.EvolutionMethod.LevelHighPV,
+                /*13*/ this.EvolutionMethod.LevelSpawnPokemon,
+                /*14*/ this.EvolutionMethod.LevelIsSpawned,
+                /*15*/ this.EvolutionMethod.LevelHighBeauty,
+                /*16*/ this.EvolutionMethod.StoneMale,
+                /*17*/ this.EvolutionMethod.StoneFemale,
+                /*18*/ this.EvolutionMethod.LevelItemDay,
+                /*19*/ this.EvolutionMethod.LevelItemNight,
+                /*20*/ this.EvolutionMethod.LevelWithMove,
+                /*21*/ this.EvolutionMethod.LevelWithOtherSpecies,
+                /*22*/ this.EvolutionMethod.LevelMale,
+                /*23*/ this.EvolutionMethod.LevelFemale,
+                /*24*/ this.EvolutionMethod.LevelElectifiedArea,
+                /*25*/ this.EvolutionMethod.LevelMossRock,
+                /*26*/ this.EvolutionMethod.LevelIcyRock
+            ]
             this.readEvolutions(evoNarc);
 
         }

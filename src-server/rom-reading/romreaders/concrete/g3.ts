@@ -35,18 +35,18 @@ namespace RomReader {
     { mapBank: 47, mapId: 58, name: "The Underground" }, { mapBank: 47, mapId: 59, name: "Route 29" }, { mapBank: 47, mapId: 60, name: "New Bark Town" }, { mapBank: 47, mapId: 61, name: "Route 34" },
     { mapBank: 47, mapId: 62, name: "Sprout Tower" }, { mapBank: 47, mapId: 63, name: "Burned Tower" }, { mapBank: 47, mapId: 64, name: "Burned Tower" }, { mapBank: 47, mapId: 68, name: "Ecruteak City" },
     { mapBank: 47, mapId: 69, name: "Bellchime Trail" }, { mapBank: 47, mapId: 70, name: "Tin Tower" }, { mapBank: 47, mapId: 71, name: "Tin Tower" }, { mapBank: 47, mapId: 72, name: "Tin Tower" },
-    { mapBank: 47, mapId: 73, name: "Goldenrod City" }, { mapBank: 47, mapId: 74, name: "Ruins of Alph" },{ mapBank: 47, mapId: 80, name: "The Underground" },
-    { mapBank: 45, mapId: 0, name: "Goldenrod City" }, { mapBank: 45, mapId: 1, name: "Goldenrod City" }, { mapBank: 45, mapId: 2, name: "Goldenrod City" }, { mapBank: 45, mapId: 3, name: "Goldenrod City" }, 
-    { mapBank: 45, mapId: 4, name: "Goldenrod City" }, { mapBank: 45, mapId: 6, name: "Cherrygrove City" }, { mapBank: 45, mapId: 7, name: "Violet City" }, { mapBank: 45, mapId: 8, name: "Azalea Town" }, 
-    { mapBank: 45, mapId: 9, name: "Ecruteak City" }, { mapBank: 45, mapId: 10, name: "Olivine City" }, { mapBank: 45, mapId: 11, name: "Cianwood City" }, { mapBank: 45, mapId: 12, name: "Mahogany Town" }, 
-    { mapBank: 45, mapId: 13, name: "Blackthorn City" }, { mapBank: 45, mapId: 14, name: "The Underground" }, { mapBank: 45, mapId: 15, name: "Goldenrod City" }, { mapBank: 45, mapId: 16, name: "Goldenrod City" }, 
-    { mapBank: 46, mapId: 0, name: "Violet City" }, { mapBank: 46, mapId: 1, name: "Azalea Town" }, { mapBank: 46, mapId: 2, name: "Goldenrod City" }, { mapBank: 46, mapId: 3, name: "Ecruteak City" }, 
-    { mapBank: 46, mapId: 4, name: "Olivine City" }, { mapBank: 46, mapId: 5, name: "Cianwood City" }, { mapBank: 46, mapId: 6, name: "Mahogany Town" }, { mapBank: 46, mapId: 7, name: "Blackthorn City" }, 
-    { mapBank: 44, mapId: 0, name: "Cherrygrove City" }, { mapBank: 44, mapId: 1, name: "Violet City" }, { mapBank: 44, mapId: 2, name: "Azalea Town" }, { mapBank: 44, mapId: 3, name: "Goldenrod City" }, 
-    { mapBank: 44, mapId: 4, name: "Ecruteak City" }, { mapBank: 44, mapId: 5, name: "Olivine City" }, { mapBank: 44, mapId: 6, name: "CIanwood City" }, { mapBank: 44, mapId: 7, name: "Mahogany Town" }, 
-    { mapBank: 44, mapId: 8, name: "Blackthorn City" }, { mapBank: 44, mapId: 9, name: "Route 32" }, { mapBank: 44, mapId: 10, name: "Route 28" }, { mapBank: 44, mapId: 11, name: "Lotus Land" }, 
+    { mapBank: 47, mapId: 73, name: "Goldenrod City" }, { mapBank: 47, mapId: 74, name: "Ruins of Alph" }, { mapBank: 47, mapId: 80, name: "The Underground" },
+    { mapBank: 45, mapId: 0, name: "Goldenrod City" }, { mapBank: 45, mapId: 1, name: "Goldenrod City" }, { mapBank: 45, mapId: 2, name: "Goldenrod City" }, { mapBank: 45, mapId: 3, name: "Goldenrod City" },
+    { mapBank: 45, mapId: 4, name: "Goldenrod City" }, { mapBank: 45, mapId: 6, name: "Cherrygrove City" }, { mapBank: 45, mapId: 7, name: "Violet City" }, { mapBank: 45, mapId: 8, name: "Azalea Town" },
+    { mapBank: 45, mapId: 9, name: "Ecruteak City" }, { mapBank: 45, mapId: 10, name: "Olivine City" }, { mapBank: 45, mapId: 11, name: "Cianwood City" }, { mapBank: 45, mapId: 12, name: "Mahogany Town" },
+    { mapBank: 45, mapId: 13, name: "Blackthorn City" }, { mapBank: 45, mapId: 14, name: "The Underground" }, { mapBank: 45, mapId: 15, name: "Goldenrod City" }, { mapBank: 45, mapId: 16, name: "Goldenrod City" },
+    { mapBank: 46, mapId: 0, name: "Violet City" }, { mapBank: 46, mapId: 1, name: "Azalea Town" }, { mapBank: 46, mapId: 2, name: "Goldenrod City" }, { mapBank: 46, mapId: 3, name: "Ecruteak City" },
+    { mapBank: 46, mapId: 4, name: "Olivine City" }, { mapBank: 46, mapId: 5, name: "Cianwood City" }, { mapBank: 46, mapId: 6, name: "Mahogany Town" }, { mapBank: 46, mapId: 7, name: "Blackthorn City" },
+    { mapBank: 44, mapId: 0, name: "Cherrygrove City" }, { mapBank: 44, mapId: 1, name: "Violet City" }, { mapBank: 44, mapId: 2, name: "Azalea Town" }, { mapBank: 44, mapId: 3, name: "Goldenrod City" },
+    { mapBank: 44, mapId: 4, name: "Ecruteak City" }, { mapBank: 44, mapId: 5, name: "Olivine City" }, { mapBank: 44, mapId: 6, name: "CIanwood City" }, { mapBank: 44, mapId: 7, name: "Mahogany Town" },
+    { mapBank: 44, mapId: 8, name: "Blackthorn City" }, { mapBank: 44, mapId: 9, name: "Route 32" }, { mapBank: 44, mapId: 10, name: "Route 28" }, { mapBank: 44, mapId: 11, name: "Lotus Land" },
 
-];
+    ];
 
     interface Gen3Item extends Pokemon.Item {
         isPokeball: boolean;
@@ -92,9 +92,9 @@ namespace RomReader {
             this.moveLearns = this.ReadMoveLearns(romData, config);
             if (romFileLocation.indexOf("touhoumon.gba") >= 0) {
                 this.shouldFixCaps = false; //Touhoumon is already decapped
-                this.maps.forEach(m=>touhouJohtoMapNames.find(jm=> m.id == jm.mapId &&  m.bank == jm.mapBank) && (m.name = touhouJohtoMapNames.find(jm=> m.id == jm.mapId &&  m.bank == jm.mapBank).name));
+                this.maps.forEach(m => touhouJohtoMapNames.find(jm => m.id == jm.mapId && m.bank == jm.mapBank) && (m.name = touhouJohtoMapNames.find(jm => m.id == jm.mapId && m.bank == jm.mapBank).name));
             }
-
+            this.ReadEvolutions(romData, config);
 
             // console.log("[\n" + this.moves.map(p => JSON.stringify(p)).join(',\n') + "\n]");
         }
@@ -116,6 +116,7 @@ namespace RomReader {
             //return false; //TTH
             switch (this.romHeader) {
                 case "BPEE":
+                    return false; //Sirius
                     return this.CurrentMapIn(id, bank, [
                         [9, 2, 4],      //Slateport Battle Tent
                         [5, 1, 3],      //Fallarbor Battle Tent
@@ -386,6 +387,33 @@ namespace RomReader {
             });
             return movelearns;
         }
+
+        private ReadEvolutions(romData: Buffer, config: PGEINI) {
+            const evoCount = parseInt(config.NumberOfEvolutionsPerPokemon);
+            this.ReadStridedData(romData, parseInt(config.PokemonEvolutions, 16), 8 * evoCount, this.pokemon.length)
+                .map(evoData=> this.ReadStridedData(evoData, 0, 8, evoCount)
+                    .map(e=>this.ParseEvolution(e.readUInt16LE(0), e.readInt16LE(2), e.readUInt16LE(4)))
+                )
+                .forEach((evos, i)=>this.pokemon[i] && (this.pokemon[i].evolutions = evos.filter(e=>!!e)));
+        }
+
+        evolutionMethods = [undefined,
+            /* 1*/ this.EvolutionMethod.Happiness,
+            /* 2*/ this.EvolutionMethod.HappinessDay,
+            /* 3*/ this.EvolutionMethod.HappinessNight,
+            /* 4*/ this.EvolutionMethod.Level,
+            /* 5*/ this.EvolutionMethod.Trade,
+            /* 6*/ this.EvolutionMethod.TradeItem,
+            /* 7*/ this.EvolutionMethod.Stone,
+            /* 8*/ this.EvolutionMethod.LevelAttackHigher,
+            /* 9*/ this.EvolutionMethod.LevelAtkDefEqual,
+            /*10*/ this.EvolutionMethod.LevelDefenseHigher,
+            /*11*/ this.EvolutionMethod.LevelLowPV,
+            /*12*/ this.EvolutionMethod.LevelHighPV,
+            /*13*/ this.EvolutionMethod.LevelSpawnPokemon,
+            /*14*/ this.EvolutionMethod.LevelIsSpawned,
+            /*15*/ this.EvolutionMethod.LevelHighBeauty
+        ]
 
     }
 

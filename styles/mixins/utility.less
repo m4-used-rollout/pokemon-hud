@@ -4,6 +4,10 @@
     filter: drop-shadow(1px 1px 0 @color)drop-shadow(-1px -1px 0 @color)drop-shadow(-1px 1px 0 @color)drop-shadow(1px -1px 0 @color);
 }
 
+.text-outline(@color:black) {
+    text-shadow: 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color;
+}
+
 .crush-text() {
     font-size:.7em;
     transform: scaleY(1.4);

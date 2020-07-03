@@ -30,8 +30,8 @@ class WildBattle extends PersistentComponent<{ wilds: TPP.Server.DexNav.WildPoke
                 </div>}
             {livingWilds.length == 1 &&
                 <div className="types">
-                    <TypeImg type={wild.type1} />
-                    {wild.type1 != wild.type2 ? <TypeImg type={wild.type2} /> : null}
+                    <TypeImg type={wild.type1} filled/>
+                    {wild.type1 != wild.type2 ? <TypeImg type={wild.type2} filled/> : null}
                 </div>
             }
             {(livingWilds.length == 1 ? livingWilds : this.state.wilds).reverse().map((mon, i) =>

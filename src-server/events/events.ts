@@ -70,7 +70,7 @@ namespace Events {
 
         public get EventsFileName() {
             const state = this.currentState || { name: undefined, id: undefined };
-            return `${this.savePath}/${this.config.runName}-${state.name}-${state.id}.events`.replace(illegalPathChars, "_");
+            return `${this.savePath}/${this.config.runName.replace(illegalPathChars, "_")}-${state.name.replace(illegalPathChars, "_")}-${state.id}.events`;
         }
 
         private OpenFile() {

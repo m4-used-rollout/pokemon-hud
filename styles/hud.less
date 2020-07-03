@@ -1,8 +1,10 @@
 @import 'fonts.less';
+@import 'glyphs.less';
 @import 'mixins/all.less';
 @import 'pieces/shakingpokemon.less';
 @import 'pieces/pokedex.less';
 @import 'pieces/fittowidth.less';
+@import 'pieces/typecolors.less';
 @import 'animations/healthwarning.less';
 
 body {
@@ -196,12 +198,18 @@ body {
                             margin-left:auto;
                             white-space: nowrap;
                             .outline();
-                            img {
-                                height: (@party-member-height / 6);
-                                margin: .1em;
-                                border-radius: 50%;
+                            font-size: (@party-member-height / 6);
+                            .skinny-screen({
+                                font-size: (@party-member-height / 7);
+                            });
+                            img, i {
                                 position: relative;
                                 top: .1em;
+                                margin: .1em;
+                            }
+                            img {
+                                height: (@party-member-height / 6);
+                                border-radius: 50%;
                                 .skinny-screen({
                                     height: (@party-member-height / 7);
                                 });
@@ -331,7 +339,7 @@ body {
                         top: 2.4em;
                         display: flex;
                         flex-flow: row wrap;
-                        .outline();
+                        .text-outline();
 
                         li {
                             display: inline-flex;
@@ -352,6 +360,11 @@ body {
                                 border-radius: 50%;
                                 position: relative;
                             }
+                            i.type {
+                                font-size: .7em;
+                                align-self:center;
+                            }
+
                             .move-name {
                                 margin:auto;
                                 text-align: center;
@@ -953,7 +966,7 @@ body {
 @import 'goals/goals.less';
 @import 'splits/splits.less';
 
-@import 'themes/n3ds.less';
+//@import 'themes/n3ds.less';
 @import 'themes/gbc.less';
 // @import 'themes/dualgb.less';
 // @import 'themes/gcn.less';

@@ -210,6 +210,7 @@ declare namespace Tools.File {
     const Exists: (filename: string) => boolean;
 }
 declare namespace RomReader {
+    type EvoMethod = (evoParam: number, speciesId: number) => Pokemon.Evolution;
     abstract class RomReaderBase {
         protected pokemon: Pokemon.Species[];
         protected moves: Pokemon.Move[];
@@ -295,6 +296,143 @@ declare namespace RomReader {
             form?: number;
             personality_value?: number;
         }): void;
+        protected evolutionMethods: EvoMethod[];
+        protected ParseEvolution(method: number, evoParam: number, speciesId: number): Pokemon.Evolution;
+        protected EvolutionMethod: {
+            Level: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+            };
+            LevelAttackHigher: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelAtkDefEqual: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelDefenseHigher: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelLowPV: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelHighPV: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelSpawnPokemon: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelIsSpawned: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelHighBeauty: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelItemDay: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                item: Pokemon.Item;
+                timeOfDay: string;
+                specialCondition: string;
+            };
+            LevelItemNight: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                item: Pokemon.Item;
+                timeOfDay: string;
+                specialCondition: string;
+            };
+            LevelWithMove: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                move: Pokemon.Move;
+            };
+            LevelWithOtherSpecies: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                otherSpeciesId: number;
+                specialCondition: string;
+            };
+            LevelMale: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelFemale: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelElectifiedArea: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelMossRock: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            LevelIcyRock: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                level: number;
+                specialCondition: string;
+            };
+            Trade: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                isTrade: boolean;
+            };
+            TradeItem: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                isTrade: boolean;
+                item: Pokemon.Item;
+            };
+            TradeForOtherSpecies: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                isTrade: boolean;
+                otherSpeciesId: number;
+                specialCondition: string;
+            };
+            Stone: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                item: Pokemon.Item;
+            };
+            StoneMale: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                item: Pokemon.Item;
+                specialCondition: string;
+            };
+            StoneFemale: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                item: Pokemon.Item;
+                specialCondition: string;
+            };
+            Happiness: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                happiness: number;
+            };
+            HappinessDay: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                happiness: number;
+                timeOfDay: string;
+            };
+            HappinessNight: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                happiness: number;
+                timeOfDay: string;
+            };
+        };
         private surfExp;
     }
 }
@@ -490,6 +628,20 @@ declare namespace RomReader {
         private FindMapEncounters;
         private ReadEncounterSet;
         private ReadMoveLearns;
+        private ReadEvolutions;
+        evolutionMethods: (((evoParam: number, speciesId: number) => {
+            speciesId: number;
+            happiness: number;
+        }) | ((evoParam: number, speciesId: number) => {
+            speciesId: number;
+            level: number;
+        }) | ((evoParam: number, speciesId: number) => {
+            speciesId: number;
+            isTrade: boolean;
+        }) | ((evoParam: number, speciesId: number) => {
+            speciesId: number;
+            item: Pokemon.Item;
+        }))[];
     }
 }
 declare const gen4FilesOffsets: {
@@ -624,6 +776,7 @@ declare namespace RomReader {
 declare namespace RomReader {
     class Gen6 extends Generic {
         constructor();
+        ConvertText(text: string | Buffer | number[]): string;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetItemSprite(id: number): string;
     }
@@ -1172,6 +1325,7 @@ declare namespace Events {
         name: string;
         isShadow?: boolean;
         caughtIn?: string;
+        otId?: string;
     };
     const AllMons: (state: TPP.RunStatus) => TPP.Pokemon[];
 }

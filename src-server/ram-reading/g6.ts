@@ -8,19 +8,30 @@ namespace RamReader {
     const DEX_SEEN_FLAG_BYTES = 0x60; //Math.floor((NUM_POKEMON_FORMS + 7) / 8);
     const BOX_STRUCT_BYTES = 0xE8;
 
-    const partyLocation = 0x8CE1C5C; //X
-    const pcMetadataLocation = 0x8C6A7D8; //X
-    const pcDataLocation = 0x8C861B8; //X
+    // const partyLocation = 0x8CE1C5C; //X
+    // const pcMetadataLocation = 0x8C6A7D8; //X
+    // const pcDataLocation = 0x8C861B8; //X
     const battleBlockLocation = 0x81F0000; //X
     const battleBlockSize = 0x20000; //X
     const battleInfoOffset = 0xB280; //X
-    const optionsLocation = 0x8C7B6C4; //X
-    const locationLocation = 0x8C6709E; //X
-    const pokedexLocation = 0x8C7A8D8; //X
-    const itemsLocation = 0x8C67554; //X
-    const trainerDataLocation = 0x8C79C2C; //X
-    const trainerMiscLocation = 0x8C6A69C; //X
-    const daycareLocation = 0x8C7FF34; //X
+    // const optionsLocation = 0x8C7B6C4; //X
+    // const locationLocation = 0x8C6709E; //X
+    // const pokedexLocation = 0x8C7A8D8; //X
+    // const itemsLocation = 0x8C67554; //X
+    // const trainerDataLocation = 0x8C79C2C; //X
+    // const trainerMiscLocation = 0x8C6A69C; //X
+    // const daycareLocation = 0x8C7FF34; //X
+
+    const partyLocation = 0x8CE1C5C + 0x10; //X 1.5
+    const pcMetadataLocation = 0x8C6A7D8 + 0x10; //X 1.5
+    const pcDataLocation = 0x8C861B8 + 0x10; //X 1.5
+    const optionsLocation = 0x8C7B6C4 + 0x10; //X 1.5
+    const locationLocation = 0x8C6709E + 0x10; //X 1.5
+    const pokedexLocation = 0x8C7A8D8 + 0x10; //X 1.5
+    const itemsLocation = 0x8C67554 + 0x10; //X 1.5
+    const trainerDataLocation = 0x8C79C2C + 0x10; //X 1.5
+    const trainerMiscLocation = 0x8C6A69C + 0x10; //X 1.5
+    const daycareLocation = 0x8C7FF34 + 0x10; //X 1.5
 
     const pcBoxSize = BOX_STRUCT_BYTES * 30;
     const pcDataSize = pcBoxSize * 31;
@@ -34,6 +45,10 @@ namespace RamReader {
         affection: number;
         fullness: number;
         enjoyment: number;
+    }
+
+    interface Gen6DaycareMon extends Gen6Pokemon {
+        steps: number;
     }
 
     interface Gen6BattleMon extends Gen6Pokemon, TPP.PartyPokemon {
@@ -56,7 +71,7 @@ namespace RamReader {
             this.CachedEmulatorCaller(`ReadByteRange/${itemsLocation.toString(16)}/C00`, this.WrapBytes(data => this.ParseItems(data))),
             this.CachedEmulatorCaller(`ReadByteRange/${trainerDataLocation.toString(16)}/7C`, this.WrapBytes(data => this.ParseTrainerData(data))),
             this.CachedEmulatorCaller(`ReadByteRange/${trainerMiscLocation.toString(16)}/22`, this.WrapBytes(data => this.ParseTrainerMisc(data))),
-            this.CachedEmulatorCaller(`ReadByteRange/${daycareLocation.toString(16)}/1D8`, this.WrapBytes(data => this.ParseDaycare(data))),
+            this.CachedEmulatorCaller(`ReadByteRange/${daycareLocation.toString(16)}/200`, this.WrapBytes(data => this.ParseDaycare(data))),
         ];
 
         protected readerFunc = this.ReadSync;
@@ -140,7 +155,7 @@ namespace RamReader {
                                 special_defense: btlMon.readUInt16LE(0xFC),
                                 speed: btlMon.readUInt16LE(0xFE)
                             },
-                            status: ["PAR", "SLP", "FRZ", "BRN", "PSN"].filter((_, i) => (btlMon.readUInt32LE((0x28) + 8 * i) & 0x3) > 0).shift(),
+                            status: ["PAR", "SLP", "FRZ", "BRN", "PSN"].filter((_, i) => (btlMon.readUInt32LE((0x20) + 4 * i) & 0x3) > 0).shift(),
                             moves: this.rom.ReadStridedData(btlMon, 0x116, 0xE, 4)
                                 .map(mData => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(mData.readUInt16LE(0x6)), mData[0x8], undefined, mData[0x9])).filter(m => m && m.id > 0),
                             active: battle_kind == "Wild" || i == 0//|| (isDouble && i == 1 && pCount == 0)
@@ -161,7 +176,10 @@ namespace RamReader {
                     }
                 }
             }
-            return { in_battle: false, battle_party: null, enemy_party: null, enemy_trainers: null };
+            let party = this.currentState.party;
+            if (this.currentState.in_battle)
+                party = await this.CallEmulator(`ReadByteRange/${partyLocation.toString(16)}/BA4`, this.WrapBytes(data => this.ParseParty(data)));
+            return { in_battle: false, battle_party: null, enemy_party: null, enemy_trainers: null, party } as TPP.BattleStatus;
         }
 
         protected ParseTrainerMisc(data: Buffer): Partial<TPP.TrainerData> {
@@ -240,11 +258,11 @@ namespace RamReader {
         }
 
         protected ParseDaycare(data: Buffer): Partial<TPP.TrainerData> {
-            const daycare = new Array<Gen6Pokemon>();
+            const daycare = new Array<Gen6DaycareMon>();
             if (data[0] & 1)
-                daycare.push(this.ParsePokemon(data.slice(0x8, 0xD0)));
+                daycare.push({ ...this.ParsePokemon(data.slice(0x8, 0xF0)), steps: data.readUInt32LE(0x4) });
             if (data[0xF0] & 1)
-                daycare.push(this.ParsePokemon(data.slice(0xF1)))
+                daycare.push({ ...this.ParsePokemon(data.slice(0xF8)), steps: data.readUInt32LE(0xF4) });
             return { daycare: daycare.filter(d => !!d) };
         }
 
