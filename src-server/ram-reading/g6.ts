@@ -13,7 +13,7 @@ namespace RamReader {
     // const pcDataLocation = 0x8C861B8; //X
     const battleBlockLocation = 0x81F0000; //X
     const battleBlockSize = 0x20000; //X
-    const battleInfoOffset = 0xB280; //X
+    // const battleInfoOffset = 0xB280; //X
     // const optionsLocation = 0x8C7B6C4; //X
     // const locationLocation = 0x8C6709E; //X
     // const pokedexLocation = 0x8C7A8D8; //X
@@ -22,16 +22,29 @@ namespace RamReader {
     // const trainerMiscLocation = 0x8C6A69C; //X
     // const daycareLocation = 0x8C7FF34; //X
 
-    const partyLocation = 0x8CE1C5C + 0x10; //X 1.5
-    const pcMetadataLocation = 0x8C6A7D8 + 0x10; //X 1.5
-    const pcDataLocation = 0x8C861B8 + 0x10; //X 1.5
-    const optionsLocation = 0x8C7B6C4 + 0x10; //X 1.5
-    const locationLocation = 0x8C6709E + 0x10; //X 1.5
-    const pokedexLocation = 0x8C7A8D8 + 0x10; //X 1.5
-    const itemsLocation = 0x8C67554 + 0x10; //X 1.5
-    const trainerDataLocation = 0x8C79C2C + 0x10; //X 1.5
-    const trainerMiscLocation = 0x8C6A69C + 0x10; //X 1.5
-    const daycareLocation = 0x8C7FF34 + 0x10; //X 1.5
+    const partyLocation = 0x8CF71F0; //Omega Ruby
+    const battleInfoOffset = 0xB588; //Omega Ruby
+    const pcMetadataLocation = 0x8C6DEFC; //Omega Ruby
+    const pcDataLocation = 0x8C9A144; //Omega Ruby
+    const optionsLocation = 0x8C7F914; //Omega Ruby
+    const locationLocation = 0x8C6A7B2; //Omega Ruby
+    const pokedexLocation = 0x8C7DFFC; //Omega Ruby
+    const itemsLocation = 0x8C6AC80; //Omega Ruby
+    const trainerDataLocation = 0x8C7D350; //Omega Ruby
+    const trainerMiscLocation = 0x8C6DDD0; //Omega Ruby
+    const daycareLocation = 0x8C84188; //Omega Ruby
+    const statsLocation = 0x8C87280; //Omega Ruby
+
+    // const partyLocation = 0x8CE1C5C + 0x10; //X 1.5
+    // const pcMetadataLocation = 0x8C6A7D8 + 0x10; //X 1.5
+    // const pcDataLocation = 0x8C861B8 + 0x10; //X 1.5
+    // const optionsLocation = 0x8C7B6C4 + 0x10; //X 1.5
+    // const locationLocation = 0x8C6709E + 0x10; //X 1.5
+    // const pokedexLocation = 0x8C7A8D8 + 0x10; //X 1.5
+    // const itemsLocation = 0x8C67554 + 0x10; //X 1.5
+    // const trainerDataLocation = 0x8C79C2C + 0x10; //X 1.5
+    // const trainerMiscLocation = 0x8C6A69C + 0x10; //X 1.5
+    // const daycareLocation = 0x8C7FF34 + 0x10; //X 1.5
 
     const pcBoxSize = BOX_STRUCT_BYTES * 30;
     const pcDataSize = pcBoxSize * 31;
@@ -70,8 +83,9 @@ namespace RamReader {
             this.CachedEmulatorCaller(`ReadByteRange/${pokedexLocation.toString(16)}/360`, this.WrapBytes(data => this.ProcessDex(data))),
             this.CachedEmulatorCaller(`ReadByteRange/${itemsLocation.toString(16)}/C00`, this.WrapBytes(data => this.ParseItems(data))),
             this.CachedEmulatorCaller(`ReadByteRange/${trainerDataLocation.toString(16)}/7C`, this.WrapBytes(data => this.ParseTrainerData(data))),
-            this.CachedEmulatorCaller(`ReadByteRange/${trainerMiscLocation.toString(16)}/22`, this.WrapBytes(data => this.ParseTrainerMisc(data))),
+            this.CachedEmulatorCaller(`ReadByteRange/${trainerMiscLocation.toString(16)}/30`, this.WrapBytes(data => this.ParseTrainerMisc(data))),
             this.CachedEmulatorCaller(`ReadByteRange/${daycareLocation.toString(16)}/200`, this.WrapBytes(data => this.ParseDaycare(data))),
+            this.CachedEmulatorCaller(`ReadByteRange/${statsLocation.toString(16)}/25C`, this.WrapBytes(data => this.ParseStats(data))),
         ];
 
         protected readerFunc = this.ReadSync;
@@ -129,9 +143,17 @@ namespace RamReader {
             // check to see if all of the parties' pointers point to battle memory
             const in_battle = battlePartiesPointers.every(p => p.every(p => p >= 0 && p < battleBlockSize));
             if (in_battle) {
-                const battleType = data.readUInt32LE(battleInfoOffset + 0x8C18 + 4);
-                let battle_kind: ("Wild" | "Trainer") = battleType == 0x234 ? "Wild" : "Trainer";
+                // const battleType = data.readUInt32LE(battleInfoOffset + 0x8C18 + 4);
+                // let battle_kind: ("Wild" | "Trainer") = battleType == 0x234 ? "Wild" : "Trainer";
                 //const isDouble = this.battleTrainerCache && this.battleTrainerCache.length == 2; //two enemy trainers
+                let battle_kind: "Wild" | "Trainer" = "Wild";
+                const enemyTrainers: TPP.EnemyTrainer[] = [];
+                const enemyTrainerId = data.readUInt16LE(battleInfoOffset + 0x7FC);
+                const enemyTrainerClass = data.readUInt16LE(battleInfoOffset + 0x7FE);
+                if (enemyTrainerId + enemyTrainerClass > 0) {
+                    battle_kind = "Trainer";
+                    enemyTrainers.push(this.rom.GetTrainer(enemyTrainerId, enemyTrainerClass));
+                }
                 const parties = battlePartiesPointers.map(p => p.map(addr => data.slice(addr, addr + 0x200))
                     .map((btlMon, i) => {
                         const baseMonPtrPtr = btlMon.readUInt32LE(0) - battleBlockLocation + 4;
@@ -163,9 +185,6 @@ namespace RamReader {
                     }).filter(p => !!p)).filter(p => p.length > 0);
 
                 if (parties.length > 1) {
-                    const enemyTrainers: TPP.EnemyTrainer[] = [];
-                    if (battle_kind == "Trainer")
-                        enemyTrainers.push(this.rom.GetTrainer(data.readUInt16LE(battleInfoOffset + 0x7FC), data.readUInt16LE(battleInfoOffset + 0x7FE)));
 
                     return {
                         in_battle,
@@ -177,12 +196,17 @@ namespace RamReader {
                 }
             }
             let party = this.currentState.party;
-            if (this.currentState.in_battle)
+            if (this.currentState.in_battle && !in_battle)
                 party = await this.CallEmulator(`ReadByteRange/${partyLocation.toString(16)}/BA4`, this.WrapBytes(data => this.ParseParty(data)));
             return { in_battle: false, battle_party: null, enemy_party: null, enemy_trainers: null, party } as TPP.BattleStatus;
         }
 
         protected ParseTrainerMisc(data: Buffer): Partial<TPP.TrainerData> {
+            if (data[0x24] & 8) { // EXP Share on (ORAS)
+                const emuUrl = `WriteByte/${trainerMiscLocation.toString(16)}+24/${(data[0x24] & 0xF7).toString(16)}`;
+                console.log("Disabling exp share: " + emuUrl);
+                this.CallEmulator(emuUrl); // Shut it off
+            }
             return {
                 money: data.readUInt32LE(0),
                 badges: data[4],
@@ -226,7 +250,8 @@ namespace RamReader {
             return { options };
         }
 
-        protected itemPocketOffsets = [0x0, 0x640, 0x7C0, 0x968, 0xA68];
+        // protected itemPocketOffsets = [0x0, 0x640, 0x7C0, 0x968, 0xA68]; //XY?
+        protected itemPocketOffsets = [0x0, 0x640, 0x7C0, 0x970, 0xA70]; //ORAS
 
         protected ParseItems(data: Buffer): Partial<TPP.TrainerData> {
             const pockets = new Array(5).fill(0).map((_, i) => this.rom.ReadStridedData(data, this.itemPocketOffsets[i], 4, 0, false, item => item.readUInt16LE(0) == 0)
@@ -267,22 +292,26 @@ namespace RamReader {
         }
 
         protected async ParsePC(data: Buffer): Promise<TPP.CombinedPCData> {
-            const metadata = await this.CallEmulator(`ReadByteRange/${pcMetadataLocation.toString(16)}/43F`, this.WrapBytes(data => data));
+            const metadata = await this.CallEmulator(`ReadByteRange/${pcMetadataLocation.toString(16)}/9B3`, this.WrapBytes(data => data));
             const unlockedBoxes = metadata[0x43D];
             const boxNames = this.rom.ReadStridedData(metadata, 0, 0x22, unlockedBoxes).map(b => this.rom.ConvertText(b));
-
+            const battleBox = {
+                box_contents: this.ParsePCBox(metadata.slice(0x444), 6),
+                box_name: "Battle Box",
+                box_number: 32
+            };
             return {
                 current_box_number: metadata[0x43F],
-                boxes: this.rom.ReadStridedData(data, 0, pcBoxSize, unlockedBoxes).map((boxData, i) => (<TPP.BoxData>{
+                boxes: [battleBox, ...this.rom.ReadStridedData(data, 0, pcBoxSize, unlockedBoxes).map((boxData, i) => (<TPP.BoxData>{
                     box_contents: this.ParsePCBox(boxData),
                     box_name: boxNames[i],
                     box_number: i + 1
-                }))
+                }))]
             } as TPP.CombinedPCData;
         }
 
-        protected ParsePCBox(data: Buffer) {
-            return this.rom.ReadStridedData(data, 0, BOX_STRUCT_BYTES, 30).map((p, i) => this.ParsePokemon(p, i + 1)).filter(p => !!p);
+        protected ParsePCBox(data: Buffer, slots = 30) {
+            return this.rom.ReadStridedData(data, 0, BOX_STRUCT_BYTES, slots).map((p, i) => this.ParsePokemon(p, i + 1)).filter(p => !!p);
         }
 
         protected ParseParty(data: Buffer) {
@@ -455,7 +484,11 @@ namespace RamReader {
             };
             pkmn.language = decrypted[0xE3].toString();
 
-            this.rom.CalculateShiny(pkmn);
+            this.rom.CalculateShiny(pkmn, 16);
+
+            if (pkmn.species.national_dex == 292) //Shedinja copies its PV from its Ninjask. Prevent PV collision at all cost!
+                pkmn.personality_value = pkmn.personality_value ^ pkmn.encryption_constant;
+
             return pkmn;
         }
 
@@ -472,6 +505,12 @@ namespace RamReader {
                 return null;
             }
             return data;
+        }
+
+        protected GameStatsMapping = ["Steps Taken", "Times Saved", "Storyline Completed Time", "Times Bicycled", "Total Battles", "Wild Pokémon Battles", "Trainer Battles", "Pokemon Caught", "Pokemon Caught Fishing", "Eggs Hatched", "Pokémon Evolved", "Pokémon Healed at Pokémon Centers", "Link Trades", "Link Battles", "Link Battle Wins", "Link Battle Losses", "WiFi Trades", "WiFi Battles", "WiFi Battle Wins", "WiFi Battle Losses", "IR Trades", "IR Battles", "IR Battle Wins", "IR Battle Losses", "Mart Stack Purchases", "Money Spent", "Times watched TV", "Pokémon deposited at Daycare", "Pokémon Defeated", "Exp. Points Collected (Highest)", "Exp. Points Collected (Today)", "Deposited in the GTS", "Nicknames Given", "Bonus Premier Balls Received", "Battle Points Earned", "Battle Points Spent", null, "Tips at Restaurant: ★☆☆", "Tips at Restaurant: ★★☆", "Tips at Restaurant: ★★★", "Tips at Restaurant: Sushi High Roller", "Tips at Café 1", "Tips at Café 2", "Tips at Café 3", "Tips at Cameraman", "Tips at Drink Vendors", "Tips at Poet", "Tips at Furfrou Trimmer", "Tips at Battle Maison 1", "Tips at Battle Maison 2", "Tips at Battle Maison 3", "Tips at Battle Maison 4", "Tips at Maid", "Tips at Butler", "Tips at Scary House", "Tips at Traveling Minstrel", "Tips at Special BGM 1", "Tips at Special BGM 2", "Tips at Frieser Furfrou", "Nice! Received", "Birthday Wishes", "Total People Met Online", "Total People Passed By", "Current Pokemiles", "Total Pokemiles Received", "Total Pokemiles sent to PGL", "Total Super Training Attempts", "Total Super Training Cleared", "IV Judge Evaluations", "Trash Cans inspected", /*"Inverse Battles" wrong*/null, "Maison Battles", "Times changed character clothing", "Times changed character hairstyle", "Berries harvested", "Berry Field mutations", "PR Videos", "Friend Safari Encounters", "O-Powers Used", "Secret Base Updates", "Secret Base Flags Captured", "Contests Participated Count", "GTS Trades", "Wonder Trades", "Steps Sneaked", "Multiplayer Contests", "Pokeblocks used", "Times AreaNav Used", "Times DexNav Used", "Times BuzzNav Used", "Times PlayNav Used", null, null, null, null, null, null, null, null, null, /*All the rest are 16-bit values*/ "Champion Title Defense", "Times rested at home", "Times Splash used", "Times Struggle used", "Moves used with No Effect", "Own Fainted Pokémon", "Times attacked ally in battle", "Failed Run Attempts", "Wild encounters that fled", "Failed Fishing Attempts", "Pokemon Defeated (Highest)", "Pokemon Defeated (Today)", "Pokemon Caught (Highest)", "Pokemon Caught (Today)", "Trainers Battled (Highest)", "Trainers Battled (Today)", "Pokemon Evolved (Highest)", "Pokemon Evolved (Today)", "Fossils Restored", "Sweet Scent Encounters", "Battle Institute Tests", "Battle Institute Rank", "Battle Institute Score", "Last Tip at Restaurant: ★☆☆", "Last Tip at Restaurant: ★★☆", "Last Tip at Restaurant: ★★★", "Last Tip at Restaurant: Sushi High Roller", "Last Tip at Café 1", "Last Tip at Café 2", "Last Tip at Café 3", "Last Tip at Cameraman", "Last Tip at Drink Vendors", "Last Tip at Poet", "Last Tip at Furfrou Trimmer", "Last Tip at Battle Maison 1", "Last Tip at Battle Maison 2", "Last Tip at Battle Maison 3", "Last Tip at Battle Maison 4", "Last Tip at Maid", "Last Tip at Butler", "Last Tip at Scary House", "Last Tip at Traveling Minstrel", "Last Tip at Special BGM 1", "Last Tip at Special BGM 2", "Last Tip at Frieser Furfrou", "Photos Taken", /*"Sky Wild Battles (?)" nope*/ null, "Battle Maison Streak: Singles", "Battle Maison Streak: Doubles", "Battle Maison Streak: Triples", "Battle Maison Streak: Rotation", "Battle Maison Streak: Multi", "Loto-ID Wins", "PP Ups used", "PSS Passerby Count (Today)", "Amie Used", "Roller Skate Count: Spin Left", "Roller Skate Count: Spin Right", "Roller Skate Count: Running Start", "Roller Skate Count: Parallel Swizzle", "Roller Skate Count: Drift-and-dash", "Roller Skate Count: 360 right", "Roller Skate Count: 360 left", "Roller Skate Count: Flips", "Roller Skate Count: Grind", "Roller Skate Count: Combos", "Fishing Chains", "Secret Base Battles in your base", "Secret Base Battles in another base", "Contest Spectacular Photos taken", "Times used Fly", "Times used Soar", "Times used Dive", "Times used Sky Holes", "Times healed by Mom", "Times used Escape Rope", "Times used Dowsing Machine", "Trainer's Eye Rematches", "FUREAI Interest ???", "Shiny Pokemon Encountered", "Trick House Clears", "Eon Ticket 1 (Spotpass)", "Eon Ticket 2 (Mystery Gift)"];
+
+        protected ParseStats(data: Buffer): Partial<TPP.TrainerData> {
+            return { game_stats: this.ParseGameStats(this.rom.ReadStridedData(data, 0, 4, 100).map(n => n.readUInt32LE(0)).concat(this.rom.ReadStridedData(data, 400, 2, 100).map(n => n.readUInt16LE(0)))) };
         }
     }
 }

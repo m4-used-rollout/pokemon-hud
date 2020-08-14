@@ -538,6 +538,14 @@ namespace RamReader {
             return this.CallEmulator(callUrl);
         }
 
+        protected GameStatsMapping = new Array<string>();
+
+        protected ParseGameStats(statArr: number[]) {
+            const stats: { [key: string]: number } = {};
+            statArr.forEach((stat, i) => stat && this.GameStatsMapping[i] && (stats[this.GameStatsMapping[i]] = stat));
+            return stats;
+        }
+
         protected AissId = (dexNum: number, idByte: number) => ((dexNum - aissIdOffsets[dexNum]) << 8) | idByte;
 
         protected ReadUInt24BE(buffer: Buffer, offset: number) {

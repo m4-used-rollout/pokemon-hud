@@ -290,7 +290,7 @@ declare namespace RomReader {
         ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endValue?: number): Buffer[];
         GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
         CalculateGender(pokemon: TPP.Pokemon): void;
-        CalculateShiny(pokemon: TPP.Pokemon): void;
+        CalculateShiny(pokemon: TPP.Pokemon, threshold?: number): void;
         CalculateUnownForm(pokemon: {
             species?: TPP.PokemonSpecies;
             form?: number;
@@ -917,6 +917,10 @@ declare namespace RamReader {
             [key: string]: Buffer;
         }) => T): () => Promise<T>;
         protected SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress?: number, ifValue?: number, bytes?: number): Promise<{}>;
+        protected GameStatsMapping: string[];
+        protected ParseGameStats(statArr: number[]): {
+            [key: string]: number;
+        };
         protected AissId: (dexNum: number, idByte: number) => number;
         protected ReadUInt24BE(buffer: Buffer, offset: number): number;
     }
@@ -1038,10 +1042,7 @@ declare namespace RamReader {
         protected ParseBattlePokemon(pkmdata: Buffer): TPP.PartyPokemon;
         protected ParseVolatileStatus(status: number): string[];
         protected CalculateGender(genderRatio: number, personalityValue: number): "Male" | "Female";
-        private GameStatsMapping;
-        protected ParseGameStats(statArr: number[]): {
-            [key: string]: number;
-        };
+        protected GameStatsMapping: string[];
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
         protected OptionsSpec: {
             sound: {
@@ -1145,11 +1146,13 @@ declare namespace RamReader {
         protected ParseLocation(data: Buffer): Partial<TPP.TrainerData>;
         protected ParseDaycare(data: Buffer): Partial<TPP.TrainerData>;
         protected ParsePC(data: Buffer): Promise<TPP.CombinedPCData>;
-        protected ParsePCBox(data: Buffer): Gen6Pokemon[];
+        protected ParsePCBox(data: Buffer, slots?: number): Gen6Pokemon[];
         protected ParseParty(data: Buffer): (TPP.PartyPokemon & Gen6Pokemon)[];
         protected ParsePartyMon(data: Buffer, battleDataOffset?: number): TPP.PartyPokemon & Gen6Pokemon;
         protected ParsePokemon(pkmdata: Buffer, box_slot?: number): Gen6Pokemon;
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
+        protected GameStatsMapping: string[];
+        protected ParseStats(data: Buffer): Partial<TPP.TrainerData>;
     }
 }
 declare namespace RamReader {

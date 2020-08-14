@@ -36,7 +36,8 @@ namespace RomReader {
         }
 
         CheckIfCanSurf(runState: TPP.RunStatus) {
-            return (runState.badges & 8) > 0;
+            // return (runState.badges & 8) > 0; //XY
+            return (runState.badges & 16) > 0; //ORAS
         }
 
         GetItemSprite(id: number) {

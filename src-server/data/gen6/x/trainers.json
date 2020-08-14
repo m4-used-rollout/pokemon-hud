@@ -1,0 +1,7067 @@
+[
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 0,
+        "name": "--",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 1,
+        "name": "Aidan",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 2,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 3,
+        "name": "Lise",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 4,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 5,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 4,
+        "className": "Leader",
+        "id": 6,
+        "name": "Viola",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 7,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 8,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 9,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 10,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 11,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 12,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 13,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 14,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 15,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 16,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 17,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 18,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 19,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 6,
+        "className": "Sky Trainer",
+        "id": 20,
+        "name": "Howe",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 21,
+        "name": "Korrina",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 42,
+        "className": "Leader",
+        "id": 22,
+        "name": "Ramos",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 44,
+        "className": "Leader",
+        "id": 23,
+        "name": "Clemont",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 45,
+        "className": "Leader",
+        "id": 24,
+        "name": "Valerie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 40,
+        "className": "Leader",
+        "id": 25,
+        "name": "Olympia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 43,
+        "className": "Leader",
+        "id": 26,
+        "name": "Wulfric",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 27,
+        "name": "Emil",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 28,
+        "name": "Mathis",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 29,
+        "name": "Maxim",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 30,
+        "name": "Rico",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 31,
+        "name": "Theo",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 32,
+        "name": "Viktor",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 33,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 34,
+        "name": "●",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 35,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 36,
+        "name": "Joey",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 37,
+        "name": "Austin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 38,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 39,
+        "name": "David",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 40,
+        "name": "Zachary",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 41,
+        "name": "Keita",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 42,
+        "name": "Anthony",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 43,
+        "name": "Jacob",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 44,
+        "name": "Tyler",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 45,
+        "name": "Anna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 46,
+        "name": "Elin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 47,
+        "name": "Elsa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 48,
+        "name": "Charlotte",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 49,
+        "className": "Schoolboy",
+        "id": 49,
+        "name": "Brighton",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 49,
+        "className": "Schoolboy",
+        "id": 50,
+        "name": "Rabbie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 49,
+        "className": "Schoolboy",
+        "id": 51,
+        "name": "Javier",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 48,
+        "className": "Schoolgirl",
+        "id": 52,
+        "name": "Bridget",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 48,
+        "className": "Schoolgirl",
+        "id": 53,
+        "name": "Mackenzie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 48,
+        "className": "Schoolgirl",
+        "id": 54,
+        "name": "Emily",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 12,
+        "className": "Preschooler",
+        "id": 55,
+        "name": "Oliver",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 12,
+        "className": "Preschooler",
+        "id": 56,
+        "name": "Adrian",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 11,
+        "className": "Preschooler",
+        "id": 57,
+        "name": "Ella",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 11,
+        "className": "Preschooler",
+        "id": 58,
+        "name": "Mia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 85,
+        "className": "Rising Star",
+        "id": 59,
+        "name": "Loïc",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 85,
+        "className": "Rising Star",
+        "id": 60,
+        "name": "Hamish",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 84,
+        "className": "Rising Star",
+        "id": 61,
+        "name": "Louise",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 84,
+        "className": "Rising Star",
+        "id": 62,
+        "name": "Nysa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 84,
+        "className": "Rising Star",
+        "id": 63,
+        "name": "Manon",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 85,
+        "className": "Rising Star",
+        "id": 64,
+        "name": "Didier",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 65,
+        "name": "Adelbert",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 66,
+        "name": "Hilde",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 51,
+        "className": "Poké Fan",
+        "id": 67,
+        "name": "Gabe",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 50,
+        "className": "Poké Fan",
+        "id": 68,
+        "name": "Agnes",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 52,
+        "className": "Poké Fan Family",
+        "id": 69,
+        "name": "Jan & Erin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 60,
+        "className": "Gardener",
+        "id": 70,
+        "name": "Wheaton",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 60,
+        "className": "Gardener",
+        "id": 71,
+        "name": "Fabian",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 60,
+        "className": "Gardener",
+        "id": 72,
+        "name": "Grover",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 60,
+        "className": "Gardener",
+        "id": 73,
+        "name": "●",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 60,
+        "className": "Gardener",
+        "id": 74,
+        "name": "Ashton",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 60,
+        "className": "Gardener",
+        "id": 75,
+        "name": "Barclay",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 39,
+        "className": "Leader",
+        "id": 76,
+        "name": "Grant",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 69,
+        "className": "Tourist",
+        "id": 77,
+        "name": "Takemi",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 68,
+        "className": "Tourist",
+        "id": 78,
+        "name": "Mari",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 79,
+        "name": "Eriko",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 80,
+        "name": "Hiroko",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 81,
+        "name": "Fumiko",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 82,
+        "name": "Tomoko",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 101,
+        "className": "Roller Skater",
+        "id": 83,
+        "name": "Shun",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 100,
+        "className": "Roller Skater",
+        "id": 84,
+        "name": "Rolanda",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 61,
+        "className": "Backpacker",
+        "id": 85,
+        "name": "Heike",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 61,
+        "className": "Backpacker",
+        "id": 86,
+        "name": "Jerome",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 61,
+        "className": "Backpacker",
+        "id": 87,
+        "name": "Roderick",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 72,
+        "className": "Twins",
+        "id": 88,
+        "name": "Faith & Joy",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 15,
+        "className": "Beauty",
+        "id": 89,
+        "name": "Brigitte",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 27,
+        "className": "Artist",
+        "id": 90,
+        "name": "Pierre",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 28,
+        "className": "Artist",
+        "id": 91,
+        "name": "Georgia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 26,
+        "className": "Artist Family",
+        "id": 92,
+        "name": "Mona & Paolo",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 76,
+        "className": "Furisode Girl",
+        "id": 93,
+        "name": "Arianwen",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 87,
+        "className": "Pokémon Breeder",
+        "id": 94,
+        "name": "Boden",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 86,
+        "className": "Pokémon Breeder",
+        "id": 95,
+        "name": "Mercy",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 96,
+        "name": "Wharton",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 97,
+        "name": "Shad",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 98,
+        "name": "Ewan",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 70,
+        "className": "Swimmer ♀",
+        "id": 99,
+        "name": "Genevieve",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 70,
+        "className": "Swimmer ♀",
+        "id": 100,
+        "name": "Marissa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 17,
+        "className": "Swimmer ♂",
+        "id": 101,
+        "name": "Ramses",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 17,
+        "className": "Swimmer ♂",
+        "id": 102,
+        "name": "Estaban",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 92,
+        "className": "Swimmers",
+        "id": 103,
+        "name": "Kai & Lani",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 104,
+        "name": "Cadoc",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 105,
+        "name": "Bernard",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 106,
+        "name": "Craig",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 174,
+        "className": "Team Flare",
+        "id": 107,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 108,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 174,
+        "className": "Team Flare",
+        "id": 109,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 110,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 111,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 112,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 113,
+        "name": "Sayid",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 46,
+        "className": "Brains & Brawn",
+        "id": 114,
+        "name": "Frank & Sly",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 115,
+        "name": "Emanuel",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 116,
+        "name": "Gerardine",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 6,
+        "className": "Sky Trainer",
+        "id": 117,
+        "name": "Colm",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 6,
+        "className": "Sky Trainer",
+        "id": 118,
+        "name": "Orion",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 5,
+        "className": "Sky Trainer",
+        "id": 119,
+        "name": "Aveza",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 5,
+        "className": "Sky Trainer",
+        "id": 120,
+        "name": "Yvette",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 88,
+        "className": "Pokémon Ranger",
+        "id": 121,
+        "name": "Brooke",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 88,
+        "className": "Pokémon Ranger",
+        "id": 122,
+        "name": "Twiggy",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 123,
+        "name": "Chaise",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 124,
+        "name": "Maurice",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 125,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 95,
+        "className": "Fairy Tale Girl",
+        "id": 126,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 95,
+        "className": "Fairy Tale Girl",
+        "id": 127,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 128,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 129,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 130,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 131,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 132,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 14,
+        "className": "Lady",
+        "id": 133,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 134,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 51,
+        "className": "Poké Fan",
+        "id": 135,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 30,
+        "className": "Scientist",
+        "id": 136,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 55,
+        "className": "Pokémon Trainer",
+        "id": 137,
+        "name": "Shauna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 55,
+        "className": "Pokémon Trainer",
+        "id": 138,
+        "name": "Shauna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 55,
+        "className": "Pokémon Trainer",
+        "id": 139,
+        "name": "Shauna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 97,
+        "className": "Honeymooners",
+        "id": 140,
+        "name": "Yuu & Ami",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 69,
+        "className": "Tourist",
+        "id": 141,
+        "name": "Haruto",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 68,
+        "className": "Tourist",
+        "id": 142,
+        "name": "Monami",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 143,
+        "name": "Franz",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 61,
+        "className": "Backpacker",
+        "id": 144,
+        "name": "Lane",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 145,
+        "name": "Dunstan",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 100,
+        "className": "Roller Skater",
+        "id": 146,
+        "name": "Kate",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 101,
+        "className": "Roller Skater",
+        "id": 147,
+        "name": "Dash",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 61,
+        "className": "Backpacker",
+        "id": 148,
+        "name": "Joren",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 149,
+        "name": "Murray",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 87,
+        "className": "Pokémon Breeder",
+        "id": 150,
+        "name": "Foster",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 86,
+        "className": "Pokémon Breeder",
+        "id": 151,
+        "name": "Amala",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 17,
+        "className": "Swimmer ♂",
+        "id": 152,
+        "name": "Alessandro",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 153,
+        "name": "Monique",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 154,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 155,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 95,
+        "className": "Fairy Tale Girl",
+        "id": 156,
+        "name": "Imogen",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 157,
+        "name": "Anina",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 88,
+        "className": "Pokémon Ranger",
+        "id": 158,
+        "name": "Melina",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 88,
+        "className": "Pokémon Ranger",
+        "id": 159,
+        "name": "Alannah",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 160,
+        "name": "Reed",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 161,
+        "name": "Nash",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 162,
+        "name": "Hedvig",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 163,
+        "name": "Igor",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 100,
+        "className": "Roller Skater",
+        "id": 164,
+        "name": "Winnie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 101,
+        "className": "Roller Skater",
+        "id": 165,
+        "name": "Florin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 100,
+        "className": "Roller Skater",
+        "id": 166,
+        "name": "Rinka",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 167,
+        "name": "Inver",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 168,
+        "name": "Shannon",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 169,
+        "name": "Imelda",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 170,
+        "name": "Paschal",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 171,
+        "name": "Harry",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 172,
+        "name": "Arthur",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 173,
+        "name": "Johannes",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 174,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 18,
+        "className": "Team Flare",
+        "id": 175,
+        "name": "Aliana",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 174,
+        "className": "Team Flare",
+        "id": 176,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 177,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 178,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 179,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 180,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 181,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 182,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 174,
+        "className": "Team Flare",
+        "id": 183,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 184,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 185,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 186,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 36,
+        "className": "Elite Four",
+        "id": 187,
+        "name": "Wikstrom",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 176,
+        "className": "Successor",
+        "id": 188,
+        "name": "Korrina",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 114,
+        "className": "Baron",
+        "id": 189,
+        "name": "Moray",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 115,
+        "className": "Viscount",
+        "id": 190,
+        "name": "Ardmore",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 116,
+        "className": "Earl",
+        "id": 191,
+        "name": "Glen",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 117,
+        "className": "Marquis",
+        "id": 192,
+        "name": "Arran",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 118,
+        "className": "Duke",
+        "id": 193,
+        "name": "Turner",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 109,
+        "className": "Baron",
+        "id": 194,
+        "name": "Evran",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 109,
+        "className": "Baron",
+        "id": 195,
+        "name": "Marseille",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 109,
+        "className": "Baron",
+        "id": 196,
+        "name": "Lyon",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 109,
+        "className": "Baron",
+        "id": 197,
+        "name": "Orvault",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 109,
+        "className": "Baron",
+        "id": 198,
+        "name": "Herisson",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 110,
+        "className": "Viscount",
+        "id": 199,
+        "name": "Gourdon",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 110,
+        "className": "Viscount",
+        "id": 200,
+        "name": "Braine",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 110,
+        "className": "Viscount",
+        "id": 201,
+        "name": "Herault",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 111,
+        "className": "Earl",
+        "id": 202,
+        "name": "Royan",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 112,
+        "className": "Marquis",
+        "id": 203,
+        "name": "Caen",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 113,
+        "className": "Duke",
+        "id": 204,
+        "name": "Lormont",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 119,
+        "className": "Baron",
+        "id": 205,
+        "name": "Denis",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 120,
+        "className": "Viscount",
+        "id": 206,
+        "name": "Cullinan",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 120,
+        "className": "Viscount",
+        "id": 207,
+        "name": "Tolkowsky",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 120,
+        "className": "Viscount",
+        "id": 208,
+        "name": "Orloff",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 121,
+        "className": "Earl",
+        "id": 209,
+        "name": "Lesotho",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 121,
+        "className": "Earl",
+        "id": 210,
+        "name": "Gruosi",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 121,
+        "className": "Earl",
+        "id": 211,
+        "name": "Nassak",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 121,
+        "className": "Earl",
+        "id": 212,
+        "name": "Sancy",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 121,
+        "className": "Earl",
+        "id": 213,
+        "name": "Nizam",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 122,
+        "className": "Marquis",
+        "id": 214,
+        "name": "Grisognono",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 123,
+        "className": "Duke",
+        "id": 215,
+        "name": "Hennessy",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 124,
+        "className": "Baroness",
+        "id": 216,
+        "name": "Maryline",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 124,
+        "className": "Baroness",
+        "id": 217,
+        "name": "Estelle",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 124,
+        "className": "Baroness",
+        "id": 218,
+        "name": "Maelys",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 124,
+        "className": "Baroness",
+        "id": 219,
+        "name": "Cadette",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 124,
+        "className": "Baroness",
+        "id": 220,
+        "name": "Francine",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 125,
+        "className": "Viscountess",
+        "id": 221,
+        "name": "Danielle",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 125,
+        "className": "Viscountess",
+        "id": 222,
+        "name": "Anne-Laure",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 125,
+        "className": "Viscountess",
+        "id": 223,
+        "name": "Beatrice",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 126,
+        "className": "Countess",
+        "id": 224,
+        "name": "Anita",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 127,
+        "className": "Marchioness",
+        "id": 225,
+        "name": "Alyssa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 128,
+        "className": "Duchess",
+        "id": 226,
+        "name": "Robin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 134,
+        "className": "Baroness",
+        "id": 227,
+        "name": "Renée",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 135,
+        "className": "Viscountess",
+        "id": 228,
+        "name": "Ayla",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 135,
+        "className": "Viscountess",
+        "id": 229,
+        "name": "Mathilde",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 135,
+        "className": "Viscountess",
+        "id": 230,
+        "name": "Regine",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 136,
+        "className": "Countess",
+        "id": 231,
+        "name": "Mira",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 136,
+        "className": "Countess",
+        "id": 232,
+        "name": "Eliane",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 136,
+        "className": "Countess",
+        "id": 233,
+        "name": "Patricia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 136,
+        "className": "Countess",
+        "id": 234,
+        "name": "Edith",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 136,
+        "className": "Countess",
+        "id": 235,
+        "name": "Adele",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 137,
+        "className": "Marchioness",
+        "id": 236,
+        "name": "Amandine",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 138,
+        "className": "Duchess",
+        "id": 237,
+        "name": "Odele",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 129,
+        "className": "Baroness",
+        "id": 238,
+        "name": "Camille",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 130,
+        "className": "Viscountess",
+        "id": 239,
+        "name": "Julia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 131,
+        "className": "Countess",
+        "id": 240,
+        "name": "Ida",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 132,
+        "className": "Marchioness",
+        "id": 241,
+        "name": "Amelie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 133,
+        "className": "Duchess",
+        "id": 242,
+        "name": "Elise",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 76,
+        "className": "Furisode Girl",
+        "id": 243,
+        "name": "Katherine",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 152,
+        "className": "Marchioness",
+        "id": 244,
+        "name": "Fiona",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 75,
+        "className": "Furisode Girl",
+        "id": 245,
+        "name": "Kali",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 153,
+        "className": "Marchioness",
+        "id": 246,
+        "name": "Keira",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 157,
+        "className": "Duchess",
+        "id": 247,
+        "name": "Sabine",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 73,
+        "className": "Furisode Girl",
+        "id": 248,
+        "name": "Blossom",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 154,
+        "className": "Marchioness",
+        "id": 249,
+        "name": "Yolande",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 74,
+        "className": "Furisode Girl",
+        "id": 250,
+        "name": "Linnea",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 155,
+        "className": "Marchioness",
+        "id": 251,
+        "name": "Meriel",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 158,
+        "className": "Duchess",
+        "id": 252,
+        "name": "Rosalie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 159,
+        "className": "Duchess",
+        "id": 253,
+        "name": "Ione",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 139,
+        "className": "Marchioness",
+        "id": 254,
+        "name": "Viola",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 141,
+        "className": "Marchioness",
+        "id": 255,
+        "name": "Korrina",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 142,
+        "className": "Marquis",
+        "id": 256,
+        "name": "Ramos",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 143,
+        "className": "Marquis",
+        "id": 257,
+        "name": "Clemont",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 144,
+        "className": "Marchioness",
+        "id": 258,
+        "name": "Valerie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 145,
+        "className": "Marchioness",
+        "id": 259,
+        "name": "Olympia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 146,
+        "className": "Marquis",
+        "id": 260,
+        "name": "Wulfric",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 140,
+        "className": "Marquis",
+        "id": 261,
+        "name": "Grant",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 139,
+        "className": "Marchioness",
+        "id": 262,
+        "name": "Viola",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 141,
+        "className": "Marchioness",
+        "id": 263,
+        "name": "Korrina",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 142,
+        "className": "Marquis",
+        "id": 264,
+        "name": "Ramos",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 143,
+        "className": "Marquis",
+        "id": 265,
+        "name": "Clemont",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 144,
+        "className": "Marchioness",
+        "id": 266,
+        "name": "Valerie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 145,
+        "className": "Marchioness",
+        "id": 267,
+        "name": "Olympia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 146,
+        "className": "Marquis",
+        "id": 268,
+        "name": "Wulfric",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 37,
+        "className": "Elite Four",
+        "id": 269,
+        "name": "Malva",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 35,
+        "className": "Elite Four",
+        "id": 270,
+        "name": "Drasna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 38,
+        "className": "Elite Four",
+        "id": 271,
+        "name": "Siebold",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 147,
+        "className": "Duke",
+        "id": 272,
+        "name": "Wikstrom",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 148,
+        "className": "Duchess",
+        "id": 273,
+        "name": "Malva",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 149,
+        "className": "Duchess",
+        "id": 274,
+        "name": "Drasna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 150,
+        "className": "Duke",
+        "id": 275,
+        "name": "Siebold",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 53,
+        "className": "Champion",
+        "id": 276,
+        "name": "Diantha",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 151,
+        "className": "Grand Duchess",
+        "id": 277,
+        "name": "Diantha",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 156,
+        "className": "Duchess",
+        "id": 278,
+        "name": "Nicolette",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 140,
+        "className": "Marquis",
+        "id": 279,
+        "name": "Grant",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 280,
+        "name": "Yannick",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 281,
+        "name": "Kazu",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 282,
+        "name": "Christophe",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 283,
+        "name": "Christophe",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 284,
+        "name": "Christophe",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 285,
+        "name": "Christophe",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 7,
+        "className": "Waitress",
+        "id": 286,
+        "name": "Talia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 7,
+        "className": "Waitress",
+        "id": 287,
+        "name": "Paula",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 7,
+        "className": "Waitress",
+        "id": 288,
+        "name": "Paula",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 7,
+        "className": "Waitress",
+        "id": 289,
+        "name": "Paula",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 290,
+        "name": "Morris",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 291,
+        "name": "Morris",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 292,
+        "name": "Morris",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 293,
+        "name": "Morris",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 75,
+        "className": "Furisode Girl",
+        "id": 294,
+        "name": "Nerissa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 73,
+        "className": "Furisode Girl",
+        "id": 295,
+        "name": "Cliantha",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 74,
+        "className": "Furisode Girl",
+        "id": 296,
+        "name": "Thalassa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 76,
+        "className": "Furisode Girl",
+        "id": 297,
+        "name": "Gwyneth",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 98,
+        "className": "Chef",
+        "id": 298,
+        "name": "Albern",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 98,
+        "className": "Chef",
+        "id": 299,
+        "name": "Roger",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 98,
+        "className": "Chef",
+        "id": 300,
+        "name": "Roger",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 98,
+        "className": "Chef",
+        "id": 301,
+        "name": "Roger",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 302,
+        "name": "Robbie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 81,
+        "className": "Team Flare",
+        "id": 303,
+        "name": "Lysandre",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 77,
+        "className": "Team Flare",
+        "id": 304,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 305,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 306,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 307,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 174,
+        "className": "Team Flare",
+        "id": 308,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 309,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 310,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 311,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 312,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 174,
+        "className": "Team Flare",
+        "id": 313,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 314,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 315,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 316,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 173,
+        "className": "Team Flare",
+        "id": 317,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 318,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 319,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 320,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 55,
+        "className": "Pokémon Trainer",
+        "id": 321,
+        "name": "Shauna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 55,
+        "className": "Pokémon Trainer",
+        "id": 322,
+        "name": "Shauna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 55,
+        "className": "Pokémon Trainer",
+        "id": 323,
+        "name": "Shauna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 56,
+        "className": "Pokémon Trainer",
+        "id": 324,
+        "name": "Tierno",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 57,
+        "className": "Pokémon Trainer",
+        "id": 325,
+        "name": "Trevor",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 107,
+        "className": "Team Flare",
+        "id": 326,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 105,
+        "className": "Pokémon Professor",
+        "id": 327,
+        "name": "Sycamore",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 105,
+        "className": "Pokémon Professor",
+        "id": 328,
+        "name": "Sycamore",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 329,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 330,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 331,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 332,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 333,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 334,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 335,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 336,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 337,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 338,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 339,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 340,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 341,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 342,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 343,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 18,
+        "className": "Team Flare",
+        "id": 344,
+        "name": "Aliana",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 22,
+        "className": "Team Flare",
+        "id": 345,
+        "name": "Xerosic",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 21,
+        "className": "Team Flare",
+        "id": 346,
+        "name": "Mable",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 21,
+        "className": "Team Flare",
+        "id": 347,
+        "name": "Mable",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 20,
+        "className": "Team Flare",
+        "id": 348,
+        "name": "Celosia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 20,
+        "className": "Team Flare",
+        "id": 349,
+        "name": "Celosia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 19,
+        "className": "Team Flare",
+        "id": 350,
+        "name": "Bryony",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 19,
+        "className": "Team Flare",
+        "id": 351,
+        "name": "Bryony",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 108,
+        "className": "Team Flare",
+        "id": 352,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 353,
+        "name": "Cordelia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 354,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 355,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 356,
+        "name": "Mireille",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 357,
+        "name": "Neil",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 358,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 359,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 360,
+        "name": "Evan",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 361,
+        "name": "Josette",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 362,
+        "name": "Luna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 363,
+        "name": "Carrie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 364,
+        "name": "Osanna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 365,
+        "name": "Melanie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 366,
+        "name": "Arachna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 367,
+        "name": "Alonzo",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 368,
+        "name": "Kenji",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 369,
+        "name": "Yanis",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 370,
+        "name": "Ricardo",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 371,
+        "name": "Gunnar",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 27,
+        "className": "Artist",
+        "id": 372,
+        "name": "Salvador",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 373,
+        "name": "Ernest",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 374,
+        "name": "Archibald",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 375,
+        "name": "Andrew",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 32,
+        "className": "Worker",
+        "id": 376,
+        "name": "Dimitri",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 32,
+        "className": "Worker",
+        "id": 377,
+        "name": "Narek",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 33,
+        "className": "Worker",
+        "id": 378,
+        "name": "Yusif",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 46,
+        "className": "Brains & Brawn",
+        "id": 379,
+        "name": "Eoin & Wolf",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 6,
+        "className": "Sky Trainer",
+        "id": 380,
+        "name": "Gavin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 6,
+        "className": "Sky Trainer",
+        "id": 381,
+        "name": "Celso",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 6,
+        "className": "Sky Trainer",
+        "id": 382,
+        "name": "Jeremy",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 6,
+        "className": "Sky Trainer",
+        "id": 383,
+        "name": "Indra",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 5,
+        "className": "Sky Trainer",
+        "id": 384,
+        "name": "Clara",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 5,
+        "className": "Sky Trainer",
+        "id": 385,
+        "name": "Era",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 5,
+        "className": "Sky Trainer",
+        "id": 386,
+        "name": "Anila",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 5,
+        "className": "Sky Trainer",
+        "id": 387,
+        "name": "Sera",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 62,
+        "className": "Punk Girl",
+        "id": 388,
+        "name": "Jeanne",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 47,
+        "className": "Punk Guy",
+        "id": 389,
+        "name": "Sid",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 47,
+        "className": "Punk Guy",
+        "id": 390,
+        "name": "Jacques",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 47,
+        "className": "Punk Guy",
+        "id": 391,
+        "name": "Slater",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 62,
+        "className": "Punk Girl",
+        "id": 392,
+        "name": "Cecile",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 393,
+        "name": "Jayden",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 394,
+        "name": "Finn",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 395,
+        "name": "Seward",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 396,
+        "name": "Wade",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 397,
+        "name": "Kinsey",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 398,
+        "name": "Gabrielle",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 399,
+        "name": "Justine",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 400,
+        "name": "Andrea",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 401,
+        "name": "Hailey",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 70,
+        "className": "Swimmer ♀",
+        "id": 402,
+        "name": "Coral",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 71,
+        "className": "Mysterious Sisters",
+        "id": 403,
+        "name": "Rune & Rime",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 71,
+        "className": "Mysterious Sisters",
+        "id": 404,
+        "name": "Achlys & Eos",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 83,
+        "className": "Veteran",
+        "id": 405,
+        "name": "Guy",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 83,
+        "className": "Veteran",
+        "id": 406,
+        "name": "Louis",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 82,
+        "className": "Veteran",
+        "id": 407,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 82,
+        "className": "Veteran",
+        "id": 408,
+        "name": "Trisha",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 3,
+        "className": "Lass",
+        "id": 409,
+        "name": "Sara",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 95,
+        "className": "Fairy Tale Girl",
+        "id": 410,
+        "name": "Mahalyn",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 95,
+        "className": "Fairy Tale Girl",
+        "id": 411,
+        "name": "Alice",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 95,
+        "className": "Fairy Tale Girl",
+        "id": 412,
+        "name": "Lovelyn",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 413,
+        "name": "Alain",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 414,
+        "name": "Delmon",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 415,
+        "name": "Brent",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 416,
+        "name": "Ross",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 417,
+        "name": "Mason",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 418,
+        "name": "Lorenzo",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 419,
+        "name": "Orestes",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 420,
+        "name": "Aaron",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 421,
+        "name": "Bergin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 101,
+        "className": "Roller Skater",
+        "id": 422,
+        "name": "Olle",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 100,
+        "className": "Roller Skater",
+        "id": 423,
+        "name": "Jet",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 8,
+        "className": "Ace Duo",
+        "id": 424,
+        "name": "Elina & Sean",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 99,
+        "className": "Rangers",
+        "id": 425,
+        "name": "Fern & Lee",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 99,
+        "className": "Rangers",
+        "id": 426,
+        "name": "Ivy & Orrick",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 106,
+        "className": "Punk Couple",
+        "id": 427,
+        "name": "Zoya & Asa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 428,
+        "name": "Pedro",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 429,
+        "name": "Dean",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 430,
+        "name": "Silas",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 431,
+        "name": "Keith",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 432,
+        "name": "Shinobu",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 88,
+        "className": "Pokémon Ranger",
+        "id": 433,
+        "name": "Clementine",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 88,
+        "className": "Pokémon Ranger",
+        "id": 434,
+        "name": "Ambre",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 435,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 436,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 437,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 56,
+        "className": "Pokémon Trainer",
+        "id": 438,
+        "name": "Tierno",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 57,
+        "className": "Pokémon Trainer",
+        "id": 439,
+        "name": "Trevor",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 440,
+        "name": "Kazu",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 441,
+        "name": "Kazu",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 76,
+        "className": "Furisode Girl",
+        "id": 442,
+        "name": "Gwyneth",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 76,
+        "className": "Furisode Girl",
+        "id": 443,
+        "name": "Gwyneth",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 75,
+        "className": "Furisode Girl",
+        "id": 444,
+        "name": "Nerissa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 75,
+        "className": "Furisode Girl",
+        "id": 445,
+        "name": "Nerissa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 73,
+        "className": "Furisode Girl",
+        "id": 446,
+        "name": "Cliantha",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 73,
+        "className": "Furisode Girl",
+        "id": 447,
+        "name": "Cliantha",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 74,
+        "className": "Furisode Girl",
+        "id": 448,
+        "name": "Thalassa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 74,
+        "className": "Furisode Girl",
+        "id": 449,
+        "name": "Thalassa",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 450,
+        "name": "Morris",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 451,
+        "name": "Morris",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 452,
+        "name": "Christophe",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 453,
+        "name": "Christophe",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 454,
+        "name": "Yannick",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 7,
+        "className": "Waitress",
+        "id": 455,
+        "name": "Talia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 456,
+        "name": "Georges",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 457,
+        "name": "Georges",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 98,
+        "className": "Chef",
+        "id": 458,
+        "name": "Albern",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 101,
+        "className": "Roller Skater",
+        "id": 459,
+        "name": "Roland",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 100,
+        "className": "Roller Skater",
+        "id": 460,
+        "name": "Calida",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 49,
+        "className": "Schoolboy",
+        "id": 461,
+        "name": "Arno",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 49,
+        "className": "Schoolboy",
+        "id": 462,
+        "name": "Sherlock",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 49,
+        "className": "Schoolboy",
+        "id": 463,
+        "name": "Finnian",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 84,
+        "className": "Rising Star",
+        "id": 464,
+        "name": "Estel",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 84,
+        "className": "Rising Star",
+        "id": 465,
+        "name": "Nelly",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 84,
+        "className": "Rising Star",
+        "id": 466,
+        "name": "Helene",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 50,
+        "className": "Poké Fan",
+        "id": 467,
+        "name": "Abigail",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 50,
+        "className": "Poké Fan",
+        "id": 468,
+        "name": "Lydie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 50,
+        "className": "Poké Fan",
+        "id": 469,
+        "name": "Tara",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 470,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 471,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 472,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 473,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 77,
+        "className": "Team Flare",
+        "id": 474,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 77,
+        "className": "Team Flare",
+        "id": 475,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 77,
+        "className": "Team Flare",
+        "id": 476,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 77,
+        "className": "Team Flare",
+        "id": 477,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 77,
+        "className": "Team Flare",
+        "id": 478,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 479,
+        "name": "Admin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 85,
+        "className": "Rising Star",
+        "id": 480,
+        "name": "Rhys",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 84,
+        "className": "Rising Star",
+        "id": 481,
+        "name": "Paulette",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 17,
+        "className": "Swimmer ♂",
+        "id": 482,
+        "name": "Kieran",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 70,
+        "className": "Swimmer ♀",
+        "id": 483,
+        "name": "Romy",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 484,
+        "name": "Robert",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 162,
+        "className": "Driver",
+        "id": 485,
+        "name": "Coupe",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 162,
+        "className": "Driver",
+        "id": 486,
+        "name": "Clarence",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 162,
+        "className": "Driver",
+        "id": 487,
+        "name": "Hackney",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 162,
+        "className": "Driver",
+        "id": 488,
+        "name": "Hansom",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 162,
+        "className": "Driver",
+        "id": 489,
+        "name": "Wheeler",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 162,
+        "className": "Driver",
+        "id": 490,
+        "name": "Weaver",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 163,
+        "className": "Driver",
+        "id": 491,
+        "name": "Schaffer",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 163,
+        "className": "Driver",
+        "id": 492,
+        "name": "Wayne",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 163,
+        "className": "Driver",
+        "id": 493,
+        "name": "Cormick",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 163,
+        "className": "Driver",
+        "id": 494,
+        "name": "Cabot",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 164,
+        "className": "Driver",
+        "id": 495,
+        "name": "Carter",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 11,
+        "className": "Preschooler",
+        "id": 496,
+        "name": "Natalie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 11,
+        "className": "Preschooler",
+        "id": 497,
+        "name": "Lily",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 48,
+        "className": "Schoolgirl",
+        "id": 498,
+        "name": "Callie",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 49,
+        "className": "Schoolboy",
+        "id": 499,
+        "name": "Macon",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 165,
+        "className": "Lumiose Gang Member",
+        "id": 500,
+        "name": "Eris",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 165,
+        "className": "Lumiose Gang Member",
+        "id": 501,
+        "name": "Sedna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 166,
+        "className": "Lumiose Gang Member",
+        "id": 502,
+        "name": "Nix",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 168,
+        "className": "Suspicious Woman",
+        "id": 503,
+        "name": "“???”",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 169,
+        "className": "Suspicious Child",
+        "id": 504,
+        "name": "“???”",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 167,
+        "className": "Suspicious Lady",
+        "id": 505,
+        "name": "“???”",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 34,
+        "className": "Butler",
+        "id": 506,
+        "name": "Chalmers",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 170,
+        "className": "Pokémon Trainer",
+        "id": 507,
+        "name": "Malva",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 30,
+        "className": "Scientist",
+        "id": 508,
+        "name": "Justus",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 30,
+        "className": "Scientist",
+        "id": 509,
+        "name": "Ernst",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 29,
+        "className": "Scientist",
+        "id": 510,
+        "name": "Sonia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 171,
+        "className": "Pokémon Trainer",
+        "id": 511,
+        "name": "Essentia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 171,
+        "className": "Pokémon Trainer",
+        "id": 512,
+        "name": "Essentia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 171,
+        "className": "Pokémon Trainer",
+        "id": 513,
+        "name": "Essentia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 171,
+        "className": "Pokémon Trainer",
+        "id": 514,
+        "name": "Essentia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 172,
+        "className": "Pokémon Trainer",
+        "id": 515,
+        "name": "Essentia",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 165,
+        "className": "Lumiose Gang Member",
+        "id": 516,
+        "name": "Eris",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 165,
+        "className": "Lumiose Gang Member",
+        "id": 517,
+        "name": "Sedna",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 166,
+        "className": "Lumiose Gang Member",
+        "id": 518,
+        "name": "Nix",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 519,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 520,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 521,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 5,
+        "className": "Sky Trainer",
+        "id": 522,
+        "name": "Elata",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 17,
+        "className": "Swimmer ♂",
+        "id": 523,
+        "name": "Dirk",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 70,
+        "className": "Swimmer ♀",
+        "id": 524,
+        "name": "Isla",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 81,
+        "className": "Team Flare",
+        "id": 525,
+        "name": "Lysandre",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 175,
+        "className": "Team Flare Boss",
+        "id": 526,
+        "name": "Lysandre",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 527,
+        "name": "Alanza",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 528,
+        "name": "Bence",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 529,
+        "name": "Markus",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 530,
+        "name": "Ander",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 531,
+        "name": "Veronique",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 63,
+        "className": "Battle Girl",
+        "id": 532,
+        "name": "Sigrid",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 61,
+        "className": "Backpacker",
+        "id": 533,
+        "name": "Farid",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 31,
+        "className": "Psychic",
+        "id": 534,
+        "name": "William",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 535,
+        "name": "Raziah",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 95,
+        "className": "Fairy Tale Girl",
+        "id": 536,
+        "name": "Corinne",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 83,
+        "className": "Veteran",
+        "id": 537,
+        "name": "Gerard",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 83,
+        "className": "Veteran",
+        "id": 538,
+        "name": "Timeo",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 82,
+        "className": "Veteran",
+        "id": 539,
+        "name": "Inga",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 82,
+        "className": "Veteran",
+        "id": 540,
+        "name": "Catrina",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 83,
+        "className": "Veteran",
+        "id": 541,
+        "name": "Gilles",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 542,
+        "name": "Ralf",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 88,
+        "className": "Pokémon Ranger",
+        "id": 543,
+        "name": "Petra",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 9,
+        "className": "Ace Trainer",
+        "id": 544,
+        "name": "Michele",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 96,
+        "className": "Hiker",
+        "id": 545,
+        "name": "Corwin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 27,
+        "className": "Artist",
+        "id": 546,
+        "name": "Vincent",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 46,
+        "className": "Brains & Brawn",
+        "id": 547,
+        "name": "Arman & Hugo",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 548,
+        "name": "Bjorn",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 89,
+        "className": "Pokémon Ranger",
+        "id": 549,
+        "name": "Lee",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 550,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 551,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 552,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 553,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 72,
+        "className": "Twins",
+        "id": 554,
+        "name": "Nana & Nina",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 51,
+        "className": "Poké Fan",
+        "id": 555,
+        "name": "Corey",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 50,
+        "className": "Poké Fan",
+        "id": 556,
+        "name": "Roisin",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 95,
+        "className": "Fairy Tale Girl",
+        "id": 557,
+        "name": "Wynne",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 13,
+        "className": "Hex Maniac",
+        "id": 558,
+        "name": "Desdemona",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 64,
+        "className": "Battle Chatelaine",
+        "id": 559,
+        "name": "Nita",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 65,
+        "className": "Battle Chatelaine",
+        "id": 560,
+        "name": "Evelyn",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 66,
+        "className": "Battle Chatelaine",
+        "id": 561,
+        "name": "Dana",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 67,
+        "className": "Battle Chatelaine",
+        "id": 562,
+        "name": "Morgan",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 98,
+        "className": "Chef",
+        "id": 563,
+        "name": "Kamaboko",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 564,
+        "name": "Jacopo",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 7,
+        "className": "Waitress",
+        "id": 565,
+        "name": "Paget",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 90,
+        "className": "Owner",
+        "id": 566,
+        "name": "Toro",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 47,
+        "className": "Punk Guy",
+        "id": 567,
+        "name": "Faust",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 62,
+        "className": "Punk Girl",
+        "id": 568,
+        "name": "Lillian",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 569,
+        "name": "Killian",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 15,
+        "className": "Beauty",
+        "id": 570,
+        "name": "Anais",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 15,
+        "className": "Beauty",
+        "id": 571,
+        "name": "Cassandra",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 15,
+        "className": "Beauty",
+        "id": 572,
+        "name": "Aimee",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 56,
+        "className": "Pokémon Trainer",
+        "id": 573,
+        "name": "Tierno",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 574,
+        "name": "Anton",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 575,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 576,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 577,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 578,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 579,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 580,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 581,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 582,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 583,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 584,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 585,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 586,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 587,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 588,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 589,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 590,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 591,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 592,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 593,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 594,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 595,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 596,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 597,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 598,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 599,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 600,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 601,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 102,
+        "className": "Pokémon Trainer",
+        "id": 602,
+        "name": "AZ",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 85,
+        "className": "Rising Star",
+        "id": 603,
+        "name": "Tyson",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 604,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 605,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 103,
+        "className": "Pokémon Trainer",
+        "id": 606,
+        "name": "Calem",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 607,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 608,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 104,
+        "className": "Pokémon Trainer",
+        "id": 609,
+        "name": "Serena",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 610,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 611,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 80,
+        "className": "Team Flare",
+        "id": 612,
+        "name": "Grunt",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 177,
+        "className": "Leader",
+        "id": 613,
+        "name": "Korrina",
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 108,
+        "className": "Team Flare",
+        "id": 614,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 615,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 616,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 617,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 115,
+        "className": "Viscount",
+        "id": 618,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 68,
+        "className": "Tourist",
+        "id": 619,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 14,
+        "className": "Lady",
+        "id": 620,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 125,
+        "className": "Viscountess",
+        "id": 621,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 622,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 55,
+        "className": "Pokémon Trainer",
+        "id": 623,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 624,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 625,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 626,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 627,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 34,
+        "className": "Butler",
+        "id": 628,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 52,
+        "className": "Poké Fan Family",
+        "id": 629,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 630,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 631,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 33,
+        "className": "Worker",
+        "id": 632,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 34,
+        "className": "Butler",
+        "id": 633,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 634,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 635,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 636,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 42,
+        "className": "Leader",
+        "id": 637,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 638,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 639,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 33,
+        "className": "Worker",
+        "id": 640,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 50,
+        "className": "Poké Fan",
+        "id": 641,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 33,
+        "className": "Worker",
+        "id": 642,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 34,
+        "className": "Butler",
+        "id": 643,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 126,
+        "className": "Countess",
+        "id": 644,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 126,
+        "className": "Countess",
+        "id": 645,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 126,
+        "className": "Countess",
+        "id": 646,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 126,
+        "className": "Countess",
+        "id": 647,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 126,
+        "className": "Countess",
+        "id": 648,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 11,
+        "className": "Preschooler",
+        "id": 649,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 14,
+        "className": "Lady",
+        "id": 650,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 16,
+        "className": "Rich Boy",
+        "id": 651,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 652,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 653,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 654,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 11,
+        "className": "Preschooler",
+        "id": 655,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 10,
+        "className": "Ace Trainer",
+        "id": 656,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 26,
+        "className": "Artist Family",
+        "id": 657,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 27,
+        "className": "Artist",
+        "id": 658,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 62,
+        "className": "Punk Girl",
+        "id": 659,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 117,
+        "className": "Marquis",
+        "id": 660,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 35,
+        "className": "Elite Four",
+        "id": 661,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 36,
+        "className": "Elite Four",
+        "id": 662,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 663,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 664,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 665,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 42,
+        "className": "Leader",
+        "id": 666,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 20,
+        "className": "Team Flare",
+        "id": 667,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 20,
+        "className": "Team Flare",
+        "id": 668,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 21,
+        "className": "Team Flare",
+        "id": 669,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 21,
+        "className": "Team Flare",
+        "id": 670,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 33,
+        "className": "Worker",
+        "id": 671,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 34,
+        "className": "Butler",
+        "id": 672,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 14,
+        "className": "Lady",
+        "id": 673,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 14,
+        "className": "Lady",
+        "id": 674,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 48,
+        "className": "Schoolgirl",
+        "id": 675,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 66,
+        "className": "Battle Chatelaine",
+        "id": 676,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 66,
+        "className": "Battle Chatelaine",
+        "id": 677,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 65,
+        "className": "Battle Chatelaine",
+        "id": 678,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 79,
+        "className": "Team Flare",
+        "id": 679,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 43,
+        "className": "Leader",
+        "id": 680,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 44,
+        "className": "Leader",
+        "id": 681,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 40,
+        "className": "Leader",
+        "id": 682,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 51,
+        "className": "Poké Fan",
+        "id": 683,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 50,
+        "className": "Poké Fan",
+        "id": 684,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 33,
+        "className": "Worker",
+        "id": 685,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 20,
+        "className": "Team Flare",
+        "id": 686,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 21,
+        "className": "Team Flare",
+        "id": 687,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 48,
+        "className": "Schoolgirl",
+        "id": 688,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 27,
+        "className": "Artist",
+        "id": 689,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 51,
+        "className": "Poké Fan",
+        "id": 690,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 51,
+        "className": "Poké Fan",
+        "id": 691,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 50,
+        "className": "Poké Fan",
+        "id": 692,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 50,
+        "className": "Poké Fan",
+        "id": 693,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 20,
+        "className": "Team Flare",
+        "id": 694,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 21,
+        "className": "Team Flare",
+        "id": 695,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 696,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 55,
+        "className": "Pokémon Trainer",
+        "id": 697,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 53,
+        "className": "Champion",
+        "id": 698,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 52,
+        "className": "Poké Fan Family",
+        "id": 699,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 52,
+        "className": "Poké Fan Family",
+        "id": 700,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 53,
+        "className": "Champion",
+        "id": 701,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 64,
+        "className": "Battle Chatelaine",
+        "id": 702,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 42,
+        "className": "Leader",
+        "id": 703,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 42,
+        "className": "Leader",
+        "id": 704,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 705,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 706,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 52,
+        "className": "Poké Fan Family",
+        "id": 707,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 64,
+        "className": "Battle Chatelaine",
+        "id": 708,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 64,
+        "className": "Battle Chatelaine",
+        "id": 709,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 24,
+        "className": "Tourist",
+        "id": 710,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 711,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 712,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 713,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 714,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 113,
+        "className": "Duke",
+        "id": 715,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 113,
+        "className": "Duke",
+        "id": 716,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 113,
+        "className": "Duke",
+        "id": 717,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 107,
+        "className": "Team Flare",
+        "id": 718,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 7,
+        "className": "Waitress",
+        "id": 719,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 17,
+        "className": "Swimmer ♂",
+        "id": 720,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 721,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 722,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 723,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 724,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 725,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 726,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 727,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 728,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 729,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 730,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 78,
+        "className": "Team Flare",
+        "id": 731,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 112,
+        "className": "Marquis",
+        "id": 732,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 107,
+        "className": "Team Flare",
+        "id": 733,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 4,
+        "className": "Leader",
+        "id": 734,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 4,
+        "className": "Leader",
+        "id": 735,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 4,
+        "className": "Leader",
+        "id": 736,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 117,
+        "className": "Marquis",
+        "id": 737,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 117,
+        "className": "Marquis",
+        "id": 738,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 117,
+        "className": "Marquis",
+        "id": 739,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 740,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 741,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 742,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 743,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 744,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 745,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 746,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 747,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 748,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 749,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 750,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 23,
+        "className": "Black Belt",
+        "id": 751,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 107,
+        "className": "Team Flare",
+        "id": 752,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 53,
+        "className": "Champion",
+        "id": 753,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 6,
+        "className": "Sky Trainer",
+        "id": 754,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 755,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 2,
+        "className": "Youngster",
+        "id": 756,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 6,
+        "className": "Sky Trainer",
+        "id": 757,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 64,
+        "className": "Battle Chatelaine",
+        "id": 758,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 16,
+        "className": "Rich Boy",
+        "id": 759,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 7,
+        "className": "Waitress",
+        "id": 760,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 41,
+        "className": "Leader",
+        "id": 761,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 42,
+        "className": "Leader",
+        "id": 762,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 127,
+        "className": "Marchioness",
+        "id": 763,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 128,
+        "className": "Duchess",
+        "id": 764,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 129,
+        "className": "Baroness",
+        "id": 765,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 129,
+        "className": "Baroness",
+        "id": 766,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 129,
+        "className": "Baroness",
+        "id": 767,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 129,
+        "className": "Baroness",
+        "id": 768,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 25,
+        "className": "Garçon",
+        "id": 769,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 35,
+        "className": "Elite Four",
+        "id": 770,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 36,
+        "className": "Elite Four",
+        "id": 771,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 55,
+        "className": "Pokémon Trainer",
+        "id": 772,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 54,
+        "className": "Fisherman",
+        "id": 773,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 40,
+        "className": "Leader",
+        "id": 774,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 39,
+        "className": "Leader",
+        "id": 775,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 14,
+        "className": "Lady",
+        "id": 776,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 14,
+        "className": "Lady",
+        "id": 777,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 35,
+        "className": "Elite Four",
+        "id": 778,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 36,
+        "className": "Elite Four",
+        "id": 779,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 35,
+        "className": "Elite Four",
+        "id": 780,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 36,
+        "className": "Elite Four",
+        "id": 781,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 108,
+        "className": "Team Flare",
+        "id": 782,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 38,
+        "className": "Elite Four",
+        "id": 783,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    },
+    {
+        "classId": 130,
+        "className": "Viscountess",
+        "id": 784,
+        "name": null,
+        "partySize": 0,
+        "partySpecies": null,
+        "partyLevels": null
+    }
+]

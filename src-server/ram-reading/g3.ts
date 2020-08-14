@@ -465,7 +465,7 @@ namespace RamReader {
             }
         }
 
-        private GameStatsMapping = ["Saves Made", "Play Time at First HoF", "Trends Started", "Berries Planted", "Bikes Traded",
+        protected GameStatsMapping = ["Saves Made", "Play Time at First HoF", "Trends Started", "Berries Planted", "Bikes Traded",
             "Steps Taken", "Interviews", "Battles Fought (Total)", "Battles Fought (Wild)", "Battles Fought (Trainer)", "Hall of Fame Entries",
             "Pokémon Caught", "Pokémon Caught While Fishing", "Eggs Hatched", "Pokémon Evolved", "Pokémon Center Uses", "Naps Taken at Home",
             "Safari Zone Trips", "Trees Cut", "Rocks Smashed", "Secret Bases Moved", "Pokémon Traded",
@@ -477,12 +477,6 @@ namespace RamReader {
 
             , "Puzzles Completed"] //
         //, "People Harassed", "Pokémon Lost", "Enemy Pokémon Defeated", "Things Stolen", "Elite Four Attempts"]; //TriHard Emerald
-
-        protected ParseGameStats(statArr: number[]) {
-            const stats: { [key: string]: number } = {};
-            statArr.forEach((stat, i) => stat && this.GameStatsMapping[i] && (stats[this.GameStatsMapping[i]] = stat));
-            return stats;
-        }
 
         protected Decrypt(data: Buffer, key: number, checksum?: number) {
             if (typeof (checksum) == "number" && checksum == this.CalcChecksum(data)) {
