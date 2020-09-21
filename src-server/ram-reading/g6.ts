@@ -202,11 +202,11 @@ namespace RamReader {
         }
 
         protected ParseTrainerMisc(data: Buffer): Partial<TPP.TrainerData> {
-            if (data[0x24] & 8) { // EXP Share on (ORAS)
-                const emuUrl = `WriteByte/${trainerMiscLocation.toString(16)}+24/${(data[0x24] & 0xF7).toString(16)}`;
-                console.log("Disabling exp share: " + emuUrl);
-                this.CallEmulator(emuUrl); // Shut it off
-            }
+            // if (data[0x24] & 8) { // EXP Share on (ORAS)
+            //     const emuUrl = `WriteByte/${trainerMiscLocation.toString(16)}+24/${(data[0x24] & 0xF7).toString(16)}`;
+            //     console.log("Disabling exp share: " + emuUrl);
+            //     this.CallEmulator(emuUrl); // Shut it off
+            // }
             return {
                 money: data.readUInt32LE(0),
                 badges: data[4],
