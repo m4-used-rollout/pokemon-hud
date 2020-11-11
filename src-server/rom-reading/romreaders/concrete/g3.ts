@@ -50,19 +50,22 @@ namespace RomReader {
 
     interface Gen3Item extends Pokemon.Item {
         isPokeball: boolean;
-        //isCandy: boolean; //TTH
+        pluralName: string; //TTH
     }
 
-    // export interface TTHMap extends Pokemon.Map {
-    //     author?: string;
-    //     puzzleNo?: number;
-    //     trainers: Pokemon.Trainer[];
-    // }
+    export interface TTHMap extends Pokemon.Map {
+        author?: string;
+        puzzleNo?: number;
+        trainers: Pokemon.Trainer[];
+    }
 
     export class Gen3 extends GBAReader {
         public config: PGEINI;
 
         private puzzleList: { id: number, bank: number }[]; //TTH
+        public totalPuzzles = 0;
+
+        stringTerminator = 0xFF;
 
         constructor(romFileLocation: string, iniFileLocation: string = "pge.ini") {
             super(romFileLocation, iniFileLocation);
@@ -82,11 +85,13 @@ namespace RomReader {
             this.shouldFixCaps = true;
             this.trainers = this.ReadTrainerData(romData, config);
             this.areas = this.ReadMapLabels(romData, config);
+            this.totalPuzzles = parseInt(config.PuzzleCount, 16); //TTH
             this.puzzleList = [{ id: -1, bank: -1 },
             ...(config.PuzzleList ?
-                this.ReadStridedData(romData, parseInt(config.PuzzleList, 16), 2, parseInt(config.PuzzleCount, 16), true, data => data.readUInt16LE(0) == 0xFFFF)
+                this.ReadStridedData(romData, parseInt(config.PuzzleList, 16), 2, this.totalPuzzles, true, data => data.readUInt16LE(0) == 0xFFFF)
                     .map(m => ({ id: m[0], bank: m[1] }))
                 : [])]; //TTH
+            this.totalPuzzles = this.totalPuzzles || (this.puzzleList.length - 1); //TTH
             this.maps = this.ReadMaps(romData, config);
             this.FindMapEncounters(romData, config);
             this.moveLearns = this.ReadMoveLearns(romData, config);
@@ -113,7 +118,7 @@ namespace RomReader {
             return mapArr.some(m => m[0] == bank && ((m.length == 2 && m[1] == id) || m[1] <= id && m[2] >= id));
         }
         IsUnknownTrainerMap(id: number, bank: number) {
-            //return false; //TTH
+            return false; //TTH
             switch (this.romHeader) {
                 case "BPEE":
                     return false; //Sirius
@@ -193,14 +198,16 @@ namespace RomReader {
         }
 
         private ReadItemData(romData: Buffer, config: PGEINI) {
-            const itemStructExtensionBytes = 0; // 16 for TriHard Emerald and TTH
+            const itemStructExtensionBytes = 0; //16 for TriHard Emerald and TTH2019
             return this.ReadStridedData(romData, parseInt(config.ItemData, 16), 44 + itemStructExtensionBytes, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
-                name: this.FixAllCaps(this.ConvertText(data)),
+                //name: this.FixAllCaps(this.ConvertText(data)),
+                name: this.ConvertText(romData.slice(this.ReadRomPtr(data, 0), 255 + this.ReadRomPtr(data, 0))), //TTH
+                pluralName: this.ConvertText(romData.slice(data.readInt32LE(4) > 0 && !data.readInt32LE(8) ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0), 255 + (data.readInt32LE(4) > 0 ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0)))) + (data.readInt32LE(4) || data.readInt32LE(8) ? "" : "s"), //TTH
                 id: i,
                 // price: data.readInt16LE(16),
                 // holdEffect: data[18],
                 // parameter: data[19],
-                // description: this.ConvertText(romData.slice(this.readRomPtr(data, 20), this.readRomPtr(data, 20) + 255)),
+                // description: this.ConvertText(romData.slice(this.ReadRomPtr(data, 20), this.ReadRomPtr(data, 20) + 255)),
                 // mystery: data.readInt16LE(24),
                 isKeyItem: data.readInt16LE(24 + itemStructExtensionBytes) > 0,
                 // pocket: data[26],
@@ -285,20 +292,20 @@ namespace RomReader {
         }
 
         private ReadMaps(romData: Buffer, config: PGEINI) {
-            let mapBanksPtr = /*parseInt(config.Pointer2PointersToMapBanks || "0", 16) ||*/ this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
+            let mapBanksPtr = parseInt(config.Pointer2PointersToMapBanks || "0", 16) || this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
             const mapLabelOffset = parseInt(config.MapLabelOffset || "0", 16);
             return this.ReadPtrBlock(romData, mapBanksPtr)
                 .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
-                    .map((mapHeader, m) => (<Pokemon.Map>{//(<TTHMap>{
+                    .map((mapHeader, m) => (<TTHMap>{ //(<Pokemon.Map>{
                         bank: b,
                         id: m,
                         areaId: mapHeader[0x14] - mapLabelOffset,
                         areaName: this.areas[mapHeader[0x14] - mapLabelOffset],
-                        name: this.areas[mapHeader[0x14] - mapLabelOffset],
-                        // name: this.GetPuzzleName(romData, mapHeader.readUInt32LE(0x8) - 0x8000000) || this.areas[mapHeader[0x14] - mapLabelOffset],
-                        // author: this.GetPuzzleAuthor(romData, mapHeader.readUInt32LE(0x8) - 0x8000000), //TTH
-                        // trainers: this.GetPuzzleTrainers(romData, mapHeader.readUInt32LE(0x1C) - 0x8000000, config), //TTH
-                        // puzzleNo: this.puzzleList.findIndex(p => p.id == m && p.bank == b), //TTH
+                        // name: this.areas[mapHeader[0x14] - mapLabelOffset],
+                        name: this.GetPuzzleName(romData, mapHeader.readUInt32LE(0x8) - 0x8000000) || this.areas[mapHeader[0x14] - mapLabelOffset], //TTH
+                        author: this.GetPuzzleAuthor(romData, mapHeader.readUInt32LE(0x8) - 0x8000000), //TTH
+                        trainers: this.GetPuzzleTrainers(romData, mapHeader.readUInt32LE(0x1C) - 0x8000000, config), //TTH
+                        puzzleNo: this.puzzleList.findIndex(p => p.id == m && p.bank == b), //TTH
                         encounters: {}
                     }))
                 ).reduce((allMaps, currBank) => Array.prototype.concat.apply(allMaps, currBank), []);
@@ -322,11 +329,11 @@ namespace RomReader {
 
         //Trick or Treat House
         private GetPuzzleName(romData: Buffer, mapScriptPtr: number) {
-            return this.ReadStridedData(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 20).map(data => this.ConvertText(romData.slice(data.readUInt32LE(1) - 0x8000000))).pop();
+            return this.ReadStridedData(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x20).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
         }
 
         private GetPuzzleAuthor(romData: Buffer, mapScriptPtr: number) {
-            return this.ReadStridedData(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 21).map(data => this.ConvertText(romData.slice(data.readUInt32LE(1) - 0x8000000))).pop();
+            return this.ReadStridedData(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x21).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
         }
 
         private FindMapEncounters(romData: Buffer, config: PGEINI) {
@@ -391,10 +398,10 @@ namespace RomReader {
         private ReadEvolutions(romData: Buffer, config: PGEINI) {
             const evoCount = parseInt(config.NumberOfEvolutionsPerPokemon);
             this.ReadStridedData(romData, parseInt(config.PokemonEvolutions, 16), 8 * evoCount, this.pokemon.length)
-                .map(evoData=> this.ReadStridedData(evoData, 0, 8, evoCount)
-                    .map(e=>this.ParseEvolution(e.readUInt16LE(0), e.readInt16LE(2), e.readUInt16LE(4)))
+                .map(evoData => this.ReadStridedData(evoData, 0, 8, evoCount)
+                    .map(e => this.ParseEvolution(e.readUInt16LE(0), e.readInt16LE(2), e.readUInt16LE(4)))
                 )
-                .forEach((evos, i)=>this.pokemon[i] && (this.pokemon[i].evolutions = evos.filter(e=>!!e)));
+                .forEach((evos, i) => this.pokemon[i] && (this.pokemon[i].evolutions = evos.filter(e => !!e)));
         }
 
         evolutionMethods = [undefined,

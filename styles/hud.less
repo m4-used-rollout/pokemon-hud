@@ -115,8 +115,9 @@ body {
             margin:0;
             padding:0;
             margin-bottom: 5px;
-            height: (@party-member-height * 6);
-            //height: (@party-member-height * 3); //TTH
+            //height: (@party-member-height * 6);
+            min-height: 0; //TTH
+            //min-height: (@party-member-height * 3); //TTH
             transition: filter .2s ease-in-out;
             
             > li {
@@ -722,11 +723,11 @@ body {
                 flex-flow: row wrap;
                 justify-content: space-between;
                 margin-bottom: auto;
+                margin-top: -.25em;
 
                 h5 {
-                    display:none;
                     width: 100%;
-                    margin: .25em;
+                    margin: 0;
                     text-align: center;
                 }
                 .candy {
@@ -736,7 +737,7 @@ body {
                     align-items: center;
                     width: 45%;
                     margin: 0;
-                    margin-bottom: -.1em;
+                    margin-bottom: -.25em;
                     img {
                         flex: 0 0 auto;
                         margin-right: .25em
@@ -753,7 +754,18 @@ body {
                         font-size: .8em;
                         margin: 0 auto;
                         white-space: nowrap;
+                        width: 100%;
                      }
+                }
+                &.too-much-candy {
+                    .candy {
+                        margin-top: -.1em;
+                    }
+                }
+                &.way-too-much-candy {
+                    .candy {
+                        margin-top: -.25em;
+                    }
                 }
             }
 
@@ -763,13 +775,14 @@ body {
                 flex-flow: row wrap;
                 justify-content: space-between;
                 h5 {
-                    display:none;
                     width: 100%;
-                    margin: .25em;
+                    margin: 0;
                     text-align: center;
                 }
                 ul {
                     display:flex;
+                    flex-flow: row wrap;
+                    justify-content: space-between;
                     list-style:none;
                     margin: 0;
                     padding: 0;
@@ -780,6 +793,10 @@ body {
                         flex: 0 0 auto;
                         margin: -.1em .5em;
                     }
+                }
+
+                &.too-much-candy {
+                    font-size: .8em;
                 }
             }
             
@@ -883,18 +900,18 @@ body {
                         padding-left:0;
                     }
                     .cash:before {
-                        content:"$";
+                        // content:"$";
                         //TTH
-                        // content:'';
-                        // display: inline-block;
-                        // width:1.75em;
-                        // margin-right: -.25em;
-                        // height:1em;
-                        // background-image:url('img/CandyCorn.svg');
-                        // image-rendering: pixelated;
-                        // background-size: cover;
-                        // background-repeat: no-repeat;
-                        // background-position: top center;
+                        content:'';
+                        display: inline-block;
+                        width:1.75em;
+                        margin-right: -.25em;
+                        height:1em;
+                        background-image:url('img/CandyCorn.svg');
+                        image-rendering: pixelated;
+                        background-size: cover;
+                        background-repeat: no-repeat;
+                        background-position: top center;
                     }
                     .balls:before {
                         content:"\264e";
@@ -966,7 +983,7 @@ body {
 @import 'goals/goals.less';
 @import 'splits/splits.less';
 
-@import 'themes/n3ds.less';
+//@import 'themes/n3ds.less';
 @import 'themes/gbc.less';
 // @import 'themes/dualgb.less';
 // @import 'themes/gcn.less';

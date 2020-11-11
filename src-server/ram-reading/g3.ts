@@ -66,12 +66,12 @@ namespace RamReader {
                 const battle_kind = battleFlags & 8 ? "Trainer" : "Wild";
                 const enemy_trainers = new Array<TPP.EnemyTrainer>();
                 if (battle_kind == "Trainer") {
-                    const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank);// as RomReader.TTHMap; //TTH
-                    enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
-                    //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
+                    const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank) as RomReader.TTHMap; //TTH
+                    // enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
+                    enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
                     if (battleFlags & 0x8000) { //BATTLE_TYPE_TWO_OPPONENTS
-                        enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
-                        //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
+                        // enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
+                        enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
                     }
                 }
                 const partyBytes = parseInt(this.rom.config.PartyBytes, 16);
@@ -132,22 +132,31 @@ namespace RamReader {
                 const key = this.rom.config.EncryptionKeyOffset ? data.readUInt32LE((this.TotalItemSlots() * 4) + 8) : 0;
                 const halfKey = key % 0x10000;
                 const PCCount = parseInt(this.rom.config.ItemPCCount, 16);
+                const CandyCount = parseInt(this.rom.config.ItemCandyCount || "0", 16);
                 const ItemCount = parseInt(this.rom.config.ItemPocketCount, 16);
                 const KeyCount = parseInt(this.rom.config.ItemKeyCount, 16);
                 const BallCount = parseInt(this.rom.config.ItemBallCount, 16);
                 const TMCount = parseInt(this.rom.config.ItemTMCount, 16);
                 const BerriesCount = parseInt(this.rom.config.ItemBerriesCount, 16);
-                const ballPocket = this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount) * 4), BallCount, halfKey);
+                const PCOffset = parseInt(this.rom.config.ItemPCOffset, 16) - 8;
+                const CandyOffset = parseInt(this.rom.config.ItemCandyOffset || "0", 16) - PCOffset;
+                const ItemsOffset = parseInt(this.rom.config.ItemPocketOffset, 16) - PCOffset;
+                const KeyOffset = parseInt(this.rom.config.ItemKeyOffset, 16) - PCOffset;
+                const BallOffset = parseInt(this.rom.config.ItemBallOffset, 16) - PCOffset;
+                const TMOffset = parseInt(this.rom.config.ItemTMOffset, 16) - PCOffset;
+                const BerriesOffset = parseInt(this.rom.config.ItemBerriesOffset, 16) - PCOffset;
+                const ballPocket = this.ParseItemCollection(data.slice(BallOffset), BallCount, halfKey);
                 return {
                     money: data.readUInt32LE(0) ^ key,
                     coins: data.readUInt16LE(4) ^ halfKey,
                     items: {
                         pc: this.ParseItemCollection(data.slice(8), PCCount), //no key //no PC (TriHard)
-                        items: this.ParseItemCollection(data.slice((2 + PCCount) * 4), ItemCount, halfKey),
-                        key: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount) * 4), KeyCount, halfKey),
+                        candy: this.ParseItemCollection(data.slice(CandyOffset), CandyCount, halfKey), //TTH
+                        items: this.ParseItemCollection(data.slice(ItemsOffset), ItemCount, halfKey),
+                        key: this.ParseItemCollection(data.slice(KeyOffset), KeyCount, halfKey),
                         balls: ballPocket,
-                        tms: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount + BallCount) * 4), TMCount, halfKey),
-                        berries: this.ParseItemCollection(data.slice((2 + PCCount + ItemCount + KeyCount + BallCount + TMCount) * 4), BerriesCount, halfKey)
+                        tms: this.ParseItemCollection(data.slice(TMOffset), TMCount, halfKey),
+                        berries: this.ParseItemCollection(data.slice(BerriesOffset), BerriesCount, halfKey)
                     },
                     ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
                 } as TPP.TrainerData
@@ -155,7 +164,7 @@ namespace RamReader {
             //Badges Ruby/Sapphire/FireRed/LeafGreen
             !this.rom.config.GameStatsOffset && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${this.rom.config.BadgesOffset || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
                 return {
-                    badges: (data.readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100
+                    badges: (data.readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100,
                 } as TPP.Goals
             })),
             //Badges Touhoumon
@@ -189,9 +198,10 @@ namespace RamReader {
                 const stats = this.rom.ReadStridedData(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => (s.readUInt32LE(0) ^ key) >>> 0);
                 return {
                     badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
-                    //trick_house: [flags[(0x60 / 8)] & 2 ? "Complete" : flags[(0x60 / 8)] & 1 ? "Found Scroll" : "Incomplete"], //TTH
-                    trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
-                    game_stats: GameStatsBytes > 0 ? this.ParseGameStats(stats) : null
+                    trick_house: [flags[(0x60 / 8)] & 2 ? "Complete" : flags[(0x60 / 8)] & 1 ? "Found Scroll" : "Incomplete"], //TTH
+                    // trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
+                    game_stats: GameStatsBytes > 0 ? this.ParseGameStats(stats) : null,
+                    puzzleTotal: this.rom.totalPuzzles
                 } as TPP.Goals
             }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step
             //Clock
@@ -229,7 +239,7 @@ namespace RamReader {
         ].filter(t => !!t) as Array<() => Promise<TPP.TrainerData>>;
 
         protected TotalItemSlots() {
-            return parseInt(this.rom.config.ItemPCCount, 16) + parseInt(this.rom.config.ItemPocketCount, 16) + parseInt(this.rom.config.ItemKeyCount, 16) + parseInt(this.rom.config.ItemBallCount, 16) + parseInt(this.rom.config.ItemTMCount, 16) + parseInt(this.rom.config.ItemBerriesCount, 16);
+            return parseInt(this.rom.config.ItemPCCount, 16) + parseInt(this.rom.config.ItemCandyCount || "0", 16) + parseInt(this.rom.config.ItemPocketCount, 16) + parseInt(this.rom.config.ItemKeyCount, 16) + parseInt(this.rom.config.ItemBallCount, 16) + parseInt(this.rom.config.ItemTMCount, 16) + parseInt(this.rom.config.ItemBerriesCount, 16);
         }
 
         protected ParseItemCollection(itemData: Buffer, length = itemData.length / 4, key = 0) {
@@ -469,13 +479,13 @@ namespace RamReader {
             "Steps Taken", "Interviews", "Battles Fought (Total)", "Battles Fought (Wild)", "Battles Fought (Trainer)", "Hall of Fame Entries",
             "Pokémon Caught", "Pokémon Caught While Fishing", "Eggs Hatched", "Pokémon Evolved", "Pokémon Center Uses", "Naps Taken at Home",
             "Safari Zone Trips", "Trees Cut", "Rocks Smashed", "Secret Bases Moved", "Pokémon Traded",
-            null /*"Blackouts"*/, "Link Battles Won", "Link Battles Lost", "Link Battles Tied", "Splash Uses", "Struggle Uses",
+            "Blackouts", "Link Battles Won", "Link Battles Lost", "Link Battles Tied", "Splash Uses", "Struggle Uses",
             "Hit the Jackpot", "Consecutive Roulette Wins", "Battle Tower Attempts", null, "Best Battle Tower Streak",
             "Pokéblocks Made", "Pokéblocks Made With Friends", "Link Contests Won", "Contests Entered", "Contests Won",
             "Shopping Trips", "Itemfinder Uses", "Rainstorms Soaked By", "Pokédex Views", "Ribbons Earned", "Ledges Jumped",
             "TVs Watched", "Clocks Checked", "Lottery Wins", "Daycare Uses", "Cable Car Rides", "Hot Spring Baths", "Union Room Battles", "Berries Crushed"//];
 
-            , "Puzzles Completed"] //
+            , "Puzzles Completed"] //TTH
         //, "People Harassed", "Pokémon Lost", "Enemy Pokémon Defeated", "Things Stolen", "Elite Four Attempts"]; //TriHard Emerald
 
         protected Decrypt(data: Buffer, key: number, checksum?: number) {

@@ -86,6 +86,7 @@ declare namespace TPP {
         hall_of_fame_entries?: number;
         game_stats?: { [key: string]: number };
         events?: Event[];
+        puzzleTotal?: number;
     }
 
     export interface PartyData extends Array<PartyPokemon> { }
@@ -225,6 +226,8 @@ declare namespace TPP {
         id: number;
         name: string;
         count?: number;
+        isCandy?: boolean;
+        pluralName?: string;
     }
 
     export interface EnemyParty extends Array<{

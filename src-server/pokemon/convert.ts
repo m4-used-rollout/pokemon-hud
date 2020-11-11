@@ -111,7 +111,9 @@ namespace Pokemon.Convert {
         return {
             count,
             id: item.id,
-            name: item.name
+            name: item.name,
+            pluralName: item.pluralName, //TTH
+            isCandy: item.isCandy, //TTH
         } as TPP.Item;
     }
 

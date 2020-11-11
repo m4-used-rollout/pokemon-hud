@@ -180,6 +180,8 @@ declare namespace Pokemon {
         id: number;
         name: string;
         isKeyItem: boolean;
+        isCandy?: boolean;
+        pluralName?: string;
     }
 }
 declare namespace Pokemon {
@@ -605,9 +607,16 @@ declare namespace RomReader {
     }
 }
 declare namespace RomReader {
+    interface TTHMap extends Pokemon.Map {
+        author?: string;
+        puzzleNo?: number;
+        trainers: Pokemon.Trainer[];
+    }
     class Gen3 extends GBAReader {
         config: PGEINI;
         private puzzleList;
+        totalPuzzles: number;
+        stringTerminator: number;
         constructor(romFileLocation: string, iniFileLocation?: string);
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;

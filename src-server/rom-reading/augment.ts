@@ -211,7 +211,7 @@ namespace RomReader {
             if (t.id || t.id === 0) {
                 t.name = (t.name || '').trim() || romTrainer.name;
             }
-            t.pic_id = t.pic_id || romTrainer.spriteId;
+            t.pic_id = typeof t.pic_id === "number" ? t.pic_id : romTrainer.spriteId;
             if (state.rival_name && t.class_name && (t.class_name.toLowerCase() == "rival" || romData.TrainerIsRival(t.id, t.class_id))) {
                 t.name = state.rival_name;
             }

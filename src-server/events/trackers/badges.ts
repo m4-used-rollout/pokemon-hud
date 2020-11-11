@@ -22,8 +22,6 @@ namespace Events {
                     return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "hoenn":
                     return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
-                case "sirius":
-                    return this._badges = ["Kaitos", "Scheat", "Alya", "Spica", "Deimos", "Regulus", "Dios", "Syrma"];
                 case "sinnoh":
                     return this._badges = ["Coal", "Forest", "Cobble", "Fen", "Relic", "Mine", "Icicle", "Beacon"];
                 case "unova":
@@ -38,6 +36,10 @@ namespace Events {
                     if (this.config.runName.indexOf('Shield') >= 0) //(bad check)
                         return this._badges = ["Grass", "Water", "Fire", "Ghost", "Fairy", "Ice", "Dark", "Dragon"];
                     return this._badges = ["Grass", "Water", "Fire", "Fighting", "Fairy", "Rock", "Dark", "Dragon"];
+                case "sirius":
+                    return this._badges = ["Kaitos", "Scheat", "Alya", "Spica", "Deimos", "Regulus", "Dios", "Syrma"];
+                case "tohoak": // Vega
+                    return this._badges = ["Elnath", "Gemma" , "Hadar", "Arneb", "Phact", "Sarfah", "Prior", "Mirach"];
             }
             return [];
         }

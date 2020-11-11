@@ -23,8 +23,21 @@ function Render(id: string = targetId) {
     </div>, document.getElementById(id));
 }
 
+let oldState: TPP.RunStatus;
 const { ipcRenderer } = require('electron')
 ipcRenderer.on('state-update', (event, state: TPP.RunStatus) => {
+    if (oldState) {
+        //ignore coordinate changes
+        const newState = { ...state };
+        delete newState.x;
+        delete newState.y;
+        delete newState.z;
+        if (newState.game_stats)
+            delete newState.game_stats["Total Steps"];
+        if (JSON.stringify(oldState) == JSON.stringify(newState))
+            return;
+        oldState = newState;
+    }
     data = state;
     Render();
 });

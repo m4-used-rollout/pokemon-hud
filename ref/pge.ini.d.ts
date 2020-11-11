@@ -259,6 +259,8 @@ declare interface PGEINI {
     "EncryptionKeyOffset": string;
     "ItemPCOffset": string;
     "ItemPCCount": string;
+    "ItemCandyOffset"?: string;
+    "ItemCandyCount"?: string;
     "ItemPocketOffset": string;
     "ItemPocketCount": string;
     "ItemKeyOffset": string;
