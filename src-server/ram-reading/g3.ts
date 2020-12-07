@@ -66,12 +66,12 @@ namespace RamReader {
                 const battle_kind = battleFlags & 8 ? "Trainer" : "Wild";
                 const enemy_trainers = new Array<TPP.EnemyTrainer>();
                 if (battle_kind == "Trainer") {
-                    const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank) as RomReader.TTHMap; //TTH
-                    // enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
-                    enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
+                    //const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank) as RomReader.TTHMap; //TTH
+                    enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
+                    //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
                     if (battleFlags & 0x8000) { //BATTLE_TYPE_TWO_OPPONENTS
-                        // enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
-                        enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
+                        enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
+                        //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
                     }
                 }
                 const partyBytes = parseInt(this.rom.config.PartyBytes, 16);
@@ -123,9 +123,11 @@ namespace RamReader {
                 y: data.readUInt16LE(2),
                 map_bank: data.readUInt8(4),
                 map_id: data.readUInt8(5),
-                area_id: data.readUInt8(6),
+                //area_id: data.readUInt8(6),
                 map_name: this.rom.GetMap(data.readUInt8(5), data.readUInt8(4)).name,
-                area_name: this.rom.GetAreaName(data.readUInt8(6) - parseInt(this.rom.config.MapLabelOffset || "0", 16))
+                //area_name: this.rom.GetAreaName(data.readUInt8(6) - parseInt(this.rom.config.MapLabelOffset || "0", 16))
+                area_id: this.rom.GetMap(data.readUInt8(5), data.readUInt8(4)).areaId,
+                area_name: this.rom.GetMap(data.readUInt8(5), data.readUInt8(4)).areaName
             } as TPP.TrainerData))),
             //Inventory
             this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.MoneyOffset}/8/${this.rom.config.SaveBlock1Address}+${this.rom.config.ItemPCOffset}/${(this.TotalItemSlots() * 4).toString(16)}${this.rom.config.EncryptionKeyOffset ? `/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4` : ""}`, this.WrapBytes(data => {
@@ -151,7 +153,7 @@ namespace RamReader {
                     coins: data.readUInt16LE(4) ^ halfKey,
                     items: {
                         pc: this.ParseItemCollection(data.slice(8), PCCount), //no key //no PC (TriHard)
-                        candy: this.ParseItemCollection(data.slice(CandyOffset), CandyCount, halfKey), //TTH
+                        // candy: this.ParseItemCollection(data.slice(CandyOffset), CandyCount, halfKey), //TTH
                         items: this.ParseItemCollection(data.slice(ItemsOffset), ItemCount, halfKey),
                         key: this.ParseItemCollection(data.slice(KeyOffset), KeyCount, halfKey),
                         balls: ballPocket,
@@ -198,8 +200,8 @@ namespace RamReader {
                 const stats = this.rom.ReadStridedData(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => (s.readUInt32LE(0) ^ key) >>> 0);
                 return {
                     badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
-                    trick_house: [flags[(0x60 / 8)] & 2 ? "Complete" : flags[(0x60 / 8)] & 1 ? "Found Scroll" : "Incomplete"], //TTH
-                    // trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
+                    // trick_house: [flags[(0x60 / 8)] & 2 ? "Complete" : flags[(0x60 / 8)] & 1 ? "Found Scroll" : "Incomplete"], //TTH
+                    trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
                     game_stats: GameStatsBytes > 0 ? this.ParseGameStats(stats) : null,
                     puzzleTotal: this.rom.totalPuzzles
                 } as TPP.Goals
@@ -483,9 +485,9 @@ namespace RamReader {
             "Hit the Jackpot", "Consecutive Roulette Wins", "Battle Tower Attempts", null, "Best Battle Tower Streak",
             "Pokéblocks Made", "Pokéblocks Made With Friends", "Link Contests Won", "Contests Entered", "Contests Won",
             "Shopping Trips", "Itemfinder Uses", "Rainstorms Soaked By", "Pokédex Views", "Ribbons Earned", "Ledges Jumped",
-            "TVs Watched", "Clocks Checked", "Lottery Wins", "Daycare Uses", "Cable Car Rides", "Hot Spring Baths", "Union Room Battles", "Berries Crushed"//];
-
-            , "Puzzles Completed"] //TTH
+            "TVs Watched", "Clocks Checked", "Lottery Wins", "Daycare Uses", "Cable Car Rides", "Hot Spring Baths", "Union Room Battles", "Berries Crushed"
+        ];
+        //, "Puzzles Completed"] //TTH
         //, "People Harassed", "Pokémon Lost", "Enemy Pokémon Defeated", "Things Stolen", "Elite Four Attempts"]; //TriHard Emerald
 
         protected Decrypt(data: Buffer, key: number, checksum?: number) {

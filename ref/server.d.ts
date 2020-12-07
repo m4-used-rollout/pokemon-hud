@@ -631,6 +631,7 @@ declare namespace RomReader {
         private GetTMHMNames;
         private ReadMapLabels;
         private ReadMaps;
+        TrainerIsRival(id: number, classId: number): boolean;
         private GetPuzzleTrainers;
         private GetPuzzleName;
         private GetPuzzleAuthor;
@@ -1272,6 +1273,7 @@ declare namespace TPP.Server.DexNav {
         attempts: number;
     }
     class State {
+        PlayerName: string;
         MapName: string;
         MapID: number;
         MapBank: number;

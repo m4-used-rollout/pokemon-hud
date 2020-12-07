@@ -54,6 +54,8 @@ module TPP.Server {
     if (config.runStatusEndpoint)
         stateChangeHandlers.push(s => {
             const data = JSON.stringify(<TPP.OverlayData>{
+                in_battle: s.in_battle,
+                battle_kind: s.battle_kind,
                 area_id: s.area_id,
                 area_name: s.area_name,
                 badges: s.badges,

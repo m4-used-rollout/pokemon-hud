@@ -85,13 +85,13 @@ namespace RomReader {
             this.shouldFixCaps = true;
             this.trainers = this.ReadTrainerData(romData, config);
             this.areas = this.ReadMapLabels(romData, config);
-            this.totalPuzzles = parseInt(config.PuzzleCount, 16); //TTH
-            this.puzzleList = [{ id: -1, bank: -1 },
-            ...(config.PuzzleList ?
-                this.ReadStridedData(romData, parseInt(config.PuzzleList, 16), 2, this.totalPuzzles, true, data => data.readUInt16LE(0) == 0xFFFF)
-                    .map(m => ({ id: m[0], bank: m[1] }))
-                : [])]; //TTH
-            this.totalPuzzles = this.totalPuzzles || (this.puzzleList.length - 1); //TTH
+            // this.totalPuzzles = parseInt(config.PuzzleCount, 16); //TTH
+            // this.puzzleList = [{ id: -1, bank: -1 },
+            // ...(config.PuzzleList ?
+            //     this.ReadStridedData(romData, parseInt(config.PuzzleList, 16), 2, this.totalPuzzles, true, data => data.readUInt16LE(0) == 0xFFFF)
+            //         .map(m => ({ id: m[0], bank: m[1] }))
+            //     : [])]; //TTH
+            // this.totalPuzzles = this.totalPuzzles || (this.puzzleList.length - 1); //TTH
             this.maps = this.ReadMaps(romData, config);
             this.FindMapEncounters(romData, config);
             this.moveLearns = this.ReadMoveLearns(romData, config);
@@ -118,10 +118,10 @@ namespace RomReader {
             return mapArr.some(m => m[0] == bank && ((m.length == 2 && m[1] == id) || m[1] <= id && m[2] >= id));
         }
         IsUnknownTrainerMap(id: number, bank: number) {
-            return false; //TTH
+            //return false; //TTH
             switch (this.romHeader) {
                 case "BPEE":
-                    return false; //Sirius
+                    //return false; //Sirius
                     return this.CurrentMapIn(id, bank, [
                         [9, 2, 4],      //Slateport Battle Tent
                         [5, 1, 3],      //Fallarbor Battle Tent
@@ -200,9 +200,9 @@ namespace RomReader {
         private ReadItemData(romData: Buffer, config: PGEINI) {
             const itemStructExtensionBytes = 0; //16 for TriHard Emerald and TTH2019
             return this.ReadStridedData(romData, parseInt(config.ItemData, 16), 44 + itemStructExtensionBytes, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
-                //name: this.FixAllCaps(this.ConvertText(data)),
-                name: this.ConvertText(romData.slice(this.ReadRomPtr(data, 0), 255 + this.ReadRomPtr(data, 0))), //TTH
-                pluralName: this.ConvertText(romData.slice(data.readInt32LE(4) > 0 && !data.readInt32LE(8) ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0), 255 + (data.readInt32LE(4) > 0 ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0)))) + (data.readInt32LE(4) || data.readInt32LE(8) ? "" : "s"), //TTH
+                name: this.FixAllCaps(this.ConvertText(data)),
+                //name: this.ConvertText(romData.slice(this.ReadRomPtr(data, 0), 255 + this.ReadRomPtr(data, 0))), //TTH
+                //pluralName: this.ConvertText(romData.slice(data.readInt32LE(4) > 0 && !data.readInt32LE(8) ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0), 255 + (data.readInt32LE(4) > 0 ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0)))) + (data.readInt32LE(4) || data.readInt32LE(8) ? "" : "s"), //TTH
                 id: i,
                 // price: data.readInt16LE(16),
                 // holdEffect: data[18],
@@ -292,23 +292,28 @@ namespace RomReader {
         }
 
         private ReadMaps(romData: Buffer, config: PGEINI) {
-            let mapBanksPtr = parseInt(config.Pointer2PointersToMapBanks || "0", 16) || this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
+            let mapBanksPtr = /*parseInt(config.Pointer2PointersToMapBanks || "0", 16) ||*/ this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
             const mapLabelOffset = parseInt(config.MapLabelOffset || "0", 16);
+            this.totalPuzzles = mapLabelOffset;
             return this.ReadPtrBlock(romData, mapBanksPtr)
                 .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
-                    .map((mapHeader, m) => (<TTHMap>{ //(<Pokemon.Map>{
+                    .map((mapHeader, m) => /*(<TTHMap>{*/(<Pokemon.Map>{
                         bank: b,
                         id: m,
                         areaId: mapHeader[0x14] - mapLabelOffset,
                         areaName: this.areas[mapHeader[0x14] - mapLabelOffset],
-                        // name: this.areas[mapHeader[0x14] - mapLabelOffset],
-                        name: this.GetPuzzleName(romData, mapHeader.readUInt32LE(0x8) - 0x8000000) || this.areas[mapHeader[0x14] - mapLabelOffset], //TTH
-                        author: this.GetPuzzleAuthor(romData, mapHeader.readUInt32LE(0x8) - 0x8000000), //TTH
-                        trainers: this.GetPuzzleTrainers(romData, mapHeader.readUInt32LE(0x1C) - 0x8000000, config), //TTH
-                        puzzleNo: this.puzzleList.findIndex(p => p.id == m && p.bank == b), //TTH
+                        name: this.areas[mapHeader[0x14] - mapLabelOffset],
+                        // name: this.GetPuzzleName(romData, mapHeader.readUInt32LE(0x8) - 0x8000000) || this.areas[mapHeader[0x14] - mapLabelOffset], //TTH
+                        // author: this.GetPuzzleAuthor(romData, mapHeader.readUInt32LE(0x8) - 0x8000000), //TTH
+                        // trainers: this.GetPuzzleTrainers(romData, mapHeader.readUInt32LE(0x1C) - 0x8000000, config), //TTH
+                        // puzzleNo: this.puzzleList.findIndex(p => p.id == m && p.bank == b), //TTH
                         encounters: {}
                     }))
                 ).reduce((allMaps, currBank) => Array.prototype.concat.apply(allMaps, currBank), []);
+        }
+
+        TrainerIsRival(id: number, classId: number) {
+            return classId == 89; //Vega
         }
 
         //Trick or Treat House

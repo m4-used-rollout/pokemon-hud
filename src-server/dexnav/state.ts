@@ -39,6 +39,7 @@ namespace TPP.Server.DexNav {
     }
 
     export class State {
+        public PlayerName = "";
         public MapName = "";
         public MapID = 0;
         public MapBank = 0;
@@ -74,6 +75,7 @@ namespace TPP.Server.DexNav {
         public GoalTrainers: GoalTrainer[] = null;
         constructor(map: Pokemon.Map, encounters: Pokemon.EncounterSet, allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {
             if (!map || !runState) return;
+            this.PlayerName = runState.name;
             this.MapName = map.name;
             this.MapID = runState.map_id;
             this.MapBank = runState.map_bank;
