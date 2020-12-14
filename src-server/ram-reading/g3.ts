@@ -164,10 +164,17 @@ namespace RamReader {
                 } as TPP.TrainerData
             })),
             //Badges Ruby/Sapphire/FireRed/LeafGreen
-            !this.rom.config.GameStatsOffset && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${this.rom.config.BadgesOffset || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
+            !this.rom.config.VarsOffset && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${this.rom.config.BadgesOffset || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
                 return {
                     badges: (data.readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100,
                 } as TPP.Goals
+            })),
+            //Stats (FireRed)
+            !this.rom.config.VarsOffset && this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4/${this.rom.config.SaveBlock1Address}+${this.rom.config.GameStatsOffset}/${this.rom.config.GameStatsOffset}`, this.WrapBytes(data => {
+                const key = data.readUInt32LE(0);
+                return {
+                    game_stats: this.ParseGameStats(this.rom.ReadStridedData(data, 4, 4, parseInt(this.rom.config.GameStatsBytes, 16) / 4).map(s => (s.readUInt32LE(0) ^ key) >>> 0))
+                };
             })),
             //Badges Touhoumon
             this.rom.types[0] == "Illusion" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/290`, this.WrapBytes(data => {
@@ -187,7 +194,7 @@ namespace RamReader {
                 } as TPP.Goals
             })),
             ///Flags/Vars/Stats Emerald
-            this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/${(parseInt(this.rom.config.GameStatsOffset || "0", 16) - parseInt(this.rom.config.FlagsOffset, 16) + parseInt(this.rom.config.GameStatsBytes || "0", 16)).toString(16)}/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
+            this.rom.config.VarsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/${(parseInt(this.rom.config.GameStatsOffset || "0", 16) - parseInt(this.rom.config.FlagsOffset, 16) + parseInt(this.rom.config.GameStatsBytes || "0", 16)).toString(16)}/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
                 const GameStatsOffset = parseInt(this.rom.config.GameStatsOffset || "0", 16);
                 const FlagsOffset = parseInt(this.rom.config.FlagsOffset, 16);
                 const GameStatsBytes = parseInt(this.rom.config.GameStatsBytes || "0", 16);
