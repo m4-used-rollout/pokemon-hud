@@ -140,6 +140,7 @@ declare namespace TPP {
 
     export interface Pokemon {
         personality_value: number;
+        encryption_constant?: number;
         original_trainer: Trainer;
         name: string;
         held_item: Item;

@@ -65,6 +65,7 @@ namespace RamReader {
     }
 
     interface Gen6BattleMon extends Gen6Pokemon, TPP.PartyPokemon {
+        encryption_constant: number;
         active: boolean;
     }
 

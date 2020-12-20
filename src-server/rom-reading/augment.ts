@@ -143,12 +143,53 @@ namespace RomReader {
                 delete p.next_move.base_power;
                 delete p.next_move.name;
             }
+            
+            removeInvalidEvos(p);
         }
 
         function augmentSpecies(s: TPP.PokemonSpecies, fromRom: Pokemon.Species = null) {
             if (!s || !s.id) return s;
             let romMon = Pokemon.Convert.SpeciesToRunStatus(fromRom || romData.GetSpecies(s.id));
             return Object.assign(s, romMon, s);
+        }
+
+        function hasSpecialEvo(p: TPP.Pokemon, ...evos: string[]) {
+            if (!p || !p.species || !p.species.evolutions)
+                return false;
+            return p.species.evolutions.some(e => e.special_condition && evos.some(c => c == e.special_condition));
+        }
+
+        function removeEvos(p: TPP.Pokemon, ...evos: string[]) {
+            if (p && p.species && p.species.evolutions)
+                p.species.evolutions = p.species.evolutions.filter(e => !e.special_condition || evos.every(c => c != e.special_condition));
+            return p;
+
+        }
+
+        function removeInvalidEvos(p: TPP.Pokemon) {
+            if (!p || !p.species || !p.species.evolutions)
+                return p;
+
+            // Wurmple
+            if (hasSpecialEvo(p, "Low PV", "High PV")) {
+                if (((p.encryption_constant || p.personality_value) >>> 16) % 10 > 4)
+                    removeEvos(p, "Low PV"); // Remove Silcoon
+                else
+                    removeEvos(p, "High PV"); // Remove Cascoon
+            }
+
+            //Tyrogue
+            const stats = (p as TPP.PartyPokemon).stats;
+            if (stats && typeof stats.attack === "number" && hasSpecialEvo(p, "Attack > Defense", "Attack = Defense", "Attack < Defense")) {
+                if (stats.attack > stats.defense)
+                    removeEvos(p, "Attack = Defense", "Attack < Defense"); // Remove Hitmontop and Hitmonchan
+                else if (stats.attack < stats.defense)
+                    removeEvos(p, "Attack = Defense", "Attack > Defense"); // Remove Hitmontop and Hitmonlee
+                else
+                    removeEvos(p, "Attack > Defense", "Attack < Defense"); // Remove Hitmonlee and Hitmonchan
+            }
+
+            return p;
         }
 
         function augmentPokemonMet(p: TPP.Pokemon) {
@@ -238,6 +279,7 @@ namespace RomReader {
                 state.enemy_party = state.enemy_party.filter(p => !!p);
                 state.enemy_party.forEach(p => {
                     p.species = augmentSpecies(p.species);
+                    removeInvalidEvos(p as any as TPP.Pokemon);
                     romData.CalculateUnownForm(p);
                 });
             }
