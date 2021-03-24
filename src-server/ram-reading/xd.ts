@@ -216,7 +216,7 @@ namespace RamReader {
                 if (!trainerId && !(slot == 1 && this.currentState.battle_kind == "Wild"))
                     return;
                 const trainer = this.rom.GetTrainerByBattle(data.readUInt16BE(0), slot, this.currentBattle.id);
-                const party = this.rom.ReadStridedData(data.slice(0x97C + 4), 0, 0x300, 6).map(this.ParsePokemon).filter(p => !!p);
+                const party = this.rom.ReadArray(data.slice(0x97C + 4), 0, 0x300, 6).map(this.ParsePokemon).filter(p => !!p);
                 (party as TPP.EnemyParty).filter((p, i) => !!p && i < battle.battleStyle).forEach(p => p.active = true);
 
                 if (slot == 0) {
@@ -251,7 +251,7 @@ namespace RamReader {
 
         private shadowData: XDRAMShadowData[];
 
-        public ReadShadowData = (data: Buffer) => this.shadowData = this.rom.ReadStridedData(data, 0, 0x48, this.rom.shadowData.length).map(sData => (<XDRAMShadowData>{
+        public ReadShadowData = (data: Buffer) => this.shadowData = this.rom.ReadArray(data, 0, 0x48, this.rom.shadowData.length).map(sData => (<XDRAMShadowData>{
             snagged: (sData[0] >>> 6 & 1) > 0,
             purified: (sData[0] >>> 7 & 1) > 0,
             shadowExp: sData.readUInt32BE(4),
@@ -280,10 +280,10 @@ namespace RamReader {
             this.currentPC = this.currentPC || [];
             this.currentState.pc = this.currentState.pc || { boxes: [], current_box_number: 0 };
 
-            this.rom.ReadStridedData(data, 0, 0x3D8, 9).map((pData, i) => (<TPP.BoxData>{
+            this.rom.ReadArray(data, 0, 0x3D8, 9).map((pData, i) => (<TPP.BoxData>{
                 box_name: `Purification Chamber ${i + 1}`,
                 box_number: this.pcBoxes + 1 + i,
-                box_contents: this.rom.ReadStridedData(pData, 0, this.partyPokeBytes, 5).map((p, i) => Object.assign(this.ParsePokemon(p) || {}, { box_slot: i + 1 }) as TPP.PartyPokemon & TPP.BoxedPokemon).filter(p => !!p && !!p.species)
+                box_contents: this.rom.ReadArray(pData, 0, this.partyPokeBytes, 5).map((p, i) => Object.assign(this.ParsePokemon(p) || {}, { box_slot: i + 1 }) as TPP.PartyPokemon & TPP.BoxedPokemon).filter(p => !!p && !!p.species)
             })).forEach(pc => this.currentPC[pc.box_number] = pc);
 
             this.currentState.pc.boxes = this.currentPC.filter(b => !!b);

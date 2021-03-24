@@ -5,11 +5,14 @@
 /// <reference path="../node_modules/@types/react-dom/index.d.ts" />
 /// <reference path="../node_modules/electron/electron.d.ts" />
 /// <reference path="../ref/server.d.ts" />
+/// <reference path="./utils/throttle.ts" />
 
 (function () { //add TPP.Server module to global scope
     let scopeInject = require('electron').remote.require('./server');
     Object.keys(scopeInject).forEach(k => window[k] = scopeInject[k]);
 })();
+
+const { ipcRenderer } = require('electron');
 
 var config = TPP.Server.getConfig();
 

@@ -1,7 +1,7 @@
 /// <reference path="../pokesprite.tsx" />
 /// <reference path="../trainersprite.tsx" />
 
-const DEVMODE = false;
+const DEVMODE = true;
 
 type dexProps = { seen: number[], owned: number[], noDisplay?: boolean };
 type dexState = { newEntry: number, scrollTo: number, firstEntry: boolean };
@@ -23,10 +23,10 @@ class Pokedex extends React.Component<dexProps, dexState> {
     }
 
     render() {
-        if (this.props.noDisplay)
+        if (this.props.noDisplay && !DEVMODE)
             return null;
         let state: dexState = { newEntry: this.state.newEntry, scrollTo: this.state.scrollTo, firstEntry: this.state.firstEntry };
-        if (this.props.seen.length + this.props.owned.length < 1) {
+        if ((this.props.seen.length + this.props.owned.length < 1) && !DEVMODE) {
             return null;
         }
         if (state.firstEntry) {

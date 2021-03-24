@@ -1,0 +1,72 @@
+@import "../mixins/utility.less";
+
+.trending-emotes-display {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-around;
+    font-family: "pokeplatinum";
+    height: 100vh;
+    width: 100vw;
+
+    .emote {
+        flex: 1 1 auto;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        text-align: center;
+        justify-content: space-between;
+
+        .name {
+            flex: 0 0 1em;
+            font-size: .8em;
+            transform: scale(1.5);
+            margin-bottom: .25em;
+            .text-outline();
+        }
+
+        .emote-img{
+            flex: 1 1 auto;
+            position:relative;
+            max-width: 64px;
+            height: 64px;
+            display:flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            justify-content: center;
+            .thin-outline(white);
+
+            img {
+                flex: 1 1 auto;
+                max-width:100%;
+                max-height: 100%;
+            }
+        }
+
+        .weight {
+            flex: 0 0 1em;
+            font-size: 1.5em;
+            margin-top: .25em;
+            transform:scale(1.5);
+        }
+
+        &.locked {
+            filter:grayscale(100%);
+            img {
+                filter: contrast(0%)brightness(35%);
+            }
+            .emote-img:after {
+                content:url('./img/lock.png');
+                position:absolute;
+                left:50%;
+                top: 50%;
+                transform:translate(-50%,-50%)scale(.8);
+            }
+            .weight {
+                opacity: 0;
+            }
+        }
+
+    }
+
+}

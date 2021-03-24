@@ -14,12 +14,14 @@ namespace RomReader {
 
     export type EvoMethod = (evoParam: number, speciesId: number) => Pokemon.Evolution;
 
+    export type PokeSprite = { base: string, shiny: string };
+
     export abstract class RomReaderBase {
         protected pokemon: Pokemon.Species[] = [];
         protected moves: Pokemon.Move[] = [];
         protected items: Pokemon.Item[] = [];
         protected maps: Pokemon.Map[] = [];
-        protected pokemonSprites: { base: string, shiny: string }[][] = [];
+        protected pokemonSprites: PokeSprite[][] = [];
         protected trainerSprites: string[] = [];
         protected frameBorders: string[] = [];
         protected trainers: Pokemon.Trainer[] = [];
@@ -256,9 +258,9 @@ namespace RomReader {
             });//.sort((e1, e2) => ((e1.requiredItem || { id: 0 }).id - (e2.requiredItem || { id: 0 }).id) || (e2.rate - e1.rate));
         }
 
-        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endFunc?: (data: Buffer) => boolean): Buffer[];
-        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endValue?: number): Buffer[];
-        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false, endValue?: (((data: Buffer) => boolean) | number)): Buffer[] {
+        ReadArray(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endFunc?: (data: Buffer) => boolean): Buffer[];
+        ReadArray(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endValue?: number): Buffer[];
+        ReadArray(romData: Buffer, startOffset: number, strideBytes: number, length: number = 0, lengthIsMax = false, endValue?: (((data: Buffer) => boolean) | number)): Buffer[] {
             let choppedData = new Array<Buffer>();
             const endFunc = typeof endValue === "undefined"
                 ? ((chunk: Buffer) => chunk[0] == 0xFF)

@@ -134,9 +134,9 @@ namespace RamReader {
         }
 
         protected async ParseBattle(data: Buffer): Promise<TPP.BattleStatus> {
-            const battlePartiesPointers = this.rom.ReadStridedData(data, battleInfoOffset + 4, 0x1C, 4)
+            const battlePartiesPointers = this.rom.ReadArray(data, battleInfoOffset + 4, 0x1C, 4)
                 .map(party => party.readUInt32LE(0x18) > 0
-                    ? this.rom.ReadStridedData(party, 0, 4, party.readUInt32LE(0x18))
+                    ? this.rom.ReadArray(party, 0, 4, party.readUInt32LE(0x18))
                         .map(p => p.readUInt32LE(0) - battleBlockLocation)
                     : [])
                 .filter(p => p.length > 0);
@@ -179,7 +179,7 @@ namespace RamReader {
                                 speed: btlMon.readUInt16LE(0xFE)
                             },
                             status: ["PAR", "SLP", "FRZ", "BRN", "PSN"].filter((_, i) => (btlMon.readUInt32LE((0x20) + 4 * i) & 0x3) > 0).shift(),
-                            moves: this.rom.ReadStridedData(btlMon, 0x116, 0xE, 4)
+                            moves: this.rom.ReadArray(btlMon, 0x116, 0xE, 4)
                                 .map(mData => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(mData.readUInt16LE(0x6)), mData[0x8], undefined, mData[0x9])).filter(m => m && m.id > 0),
                             active: battle_kind == "Wild" || i == 0//|| (isDouble && i == 1 && pCount == 0)
                         });
@@ -255,7 +255,7 @@ namespace RamReader {
         protected itemPocketOffsets = [0x0, 0x640, 0x7C0, 0x970, 0xA70]; //ORAS
 
         protected ParseItems(data: Buffer): Partial<TPP.TrainerData> {
-            const pockets = new Array(5).fill(0).map((_, i) => this.rom.ReadStridedData(data, this.itemPocketOffsets[i], 4, 0, false, item => item.readUInt16LE(0) == 0)
+            const pockets = new Array(5).fill(0).map((_, i) => this.rom.ReadArray(data, this.itemPocketOffsets[i], 4, 0, false, item => item.readUInt16LE(0) == 0)
                 .map(item => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(item.readUInt16LE(0)), item.readUInt16LE(2))));
             return {
                 items: {
@@ -295,7 +295,7 @@ namespace RamReader {
         protected async ParsePC(data: Buffer): Promise<TPP.CombinedPCData> {
             const metadata = await this.CallEmulator(`ReadByteRange/${pcMetadataLocation.toString(16)}/9B3`, this.WrapBytes(data => data));
             const unlockedBoxes = metadata[0x43D];
-            const boxNames = this.rom.ReadStridedData(metadata, 0, 0x22, unlockedBoxes).map(b => this.rom.ConvertText(b));
+            const boxNames = this.rom.ReadArray(metadata, 0, 0x22, unlockedBoxes).map(b => this.rom.ConvertText(b));
             const battleBox = {
                 box_contents: this.ParsePCBox(metadata.slice(0x444), 6),
                 box_name: "Battle Box",
@@ -303,7 +303,7 @@ namespace RamReader {
             };
             return {
                 current_box_number: metadata[0x43F],
-                boxes: [battleBox, ...this.rom.ReadStridedData(data, 0, pcBoxSize, unlockedBoxes).map((boxData, i) => (<TPP.BoxData>{
+                boxes: [battleBox, ...this.rom.ReadArray(data, 0, pcBoxSize, unlockedBoxes).map((boxData, i) => (<TPP.BoxData>{
                     box_contents: this.ParsePCBox(boxData),
                     box_name: boxNames[i],
                     box_number: i + 1
@@ -312,11 +312,11 @@ namespace RamReader {
         }
 
         protected ParsePCBox(data: Buffer, slots = 30) {
-            return this.rom.ReadStridedData(data, 0, BOX_STRUCT_BYTES, slots).map((p, i) => this.ParsePokemon(p, i + 1)).filter(p => !!p);
+            return this.rom.ReadArray(data, 0, BOX_STRUCT_BYTES, slots).map((p, i) => this.ParsePokemon(p, i + 1)).filter(p => !!p);
         }
 
         protected ParseParty(data: Buffer) {
-            return this.rom.ReadStridedData(data, 0, 4, data[0x18]).map(ptr => ptr.readUInt32LE(0) - partyLocation).filter(ptr => ptr > 0)
+            return this.rom.ReadArray(data, 0, 4, data[0x18]).map(ptr => ptr.readUInt32LE(0) - partyLocation).filter(ptr => ptr > 0)
                 .map(ptr => this.ParsePartyMon(data.slice(ptr + 0x40, ptr + 0x1E4), 0x158));
         }
 
@@ -511,7 +511,7 @@ namespace RamReader {
         protected GameStatsMapping = ["Steps Taken", "Times Saved", "Storyline Completed Time", "Times Bicycled", "Total Battles", "Wild Pokémon Battles", "Trainer Battles", "Pokemon Caught", "Pokemon Caught Fishing", "Eggs Hatched", "Pokémon Evolved", "Pokémon Healed at Pokémon Centers", "Link Trades", "Link Battles", "Link Battle Wins", "Link Battle Losses", "WiFi Trades", "WiFi Battles", "WiFi Battle Wins", "WiFi Battle Losses", "IR Trades", "IR Battles", "IR Battle Wins", "IR Battle Losses", "Mart Stack Purchases", "Money Spent", "Times watched TV", "Pokémon deposited at Daycare", "Pokémon Defeated", "Exp. Points Collected (Highest)", "Exp. Points Collected (Today)", "Deposited in the GTS", "Nicknames Given", "Bonus Premier Balls Received", "Battle Points Earned", "Battle Points Spent", null, "Tips at Restaurant: ★☆☆", "Tips at Restaurant: ★★☆", "Tips at Restaurant: ★★★", "Tips at Restaurant: Sushi High Roller", "Tips at Café 1", "Tips at Café 2", "Tips at Café 3", "Tips at Cameraman", "Tips at Drink Vendors", "Tips at Poet", "Tips at Furfrou Trimmer", "Tips at Battle Maison 1", "Tips at Battle Maison 2", "Tips at Battle Maison 3", "Tips at Battle Maison 4", "Tips at Maid", "Tips at Butler", "Tips at Scary House", "Tips at Traveling Minstrel", "Tips at Special BGM 1", "Tips at Special BGM 2", "Tips at Frieser Furfrou", "Nice! Received", "Birthday Wishes", "Total People Met Online", "Total People Passed By", "Current Pokemiles", "Total Pokemiles Received", "Total Pokemiles sent to PGL", "Total Super Training Attempts", "Total Super Training Cleared", "IV Judge Evaluations", "Trash Cans inspected", /*"Inverse Battles" wrong*/null, "Maison Battles", "Times changed character clothing", "Times changed character hairstyle", "Berries harvested", "Berry Field mutations", "PR Videos", "Friend Safari Encounters", "O-Powers Used", "Secret Base Updates", "Secret Base Flags Captured", "Contests Participated Count", "GTS Trades", "Wonder Trades", "Steps Sneaked", "Multiplayer Contests", "Pokeblocks used", "Times AreaNav Used", "Times DexNav Used", "Times BuzzNav Used", "Times PlayNav Used", null, null, null, null, null, null, null, null, null, /*All the rest are 16-bit values*/ "Champion Title Defense", "Times rested at home", "Times Splash used", "Times Struggle used", "Moves used with No Effect", "Own Fainted Pokémon", "Times attacked ally in battle", "Failed Run Attempts", "Wild encounters that fled", "Failed Fishing Attempts", "Pokemon Defeated (Highest)", "Pokemon Defeated (Today)", "Pokemon Caught (Highest)", "Pokemon Caught (Today)", "Trainers Battled (Highest)", "Trainers Battled (Today)", "Pokemon Evolved (Highest)", "Pokemon Evolved (Today)", "Fossils Restored", "Sweet Scent Encounters", "Battle Institute Tests", "Battle Institute Rank", "Battle Institute Score", "Last Tip at Restaurant: ★☆☆", "Last Tip at Restaurant: ★★☆", "Last Tip at Restaurant: ★★★", "Last Tip at Restaurant: Sushi High Roller", "Last Tip at Café 1", "Last Tip at Café 2", "Last Tip at Café 3", "Last Tip at Cameraman", "Last Tip at Drink Vendors", "Last Tip at Poet", "Last Tip at Furfrou Trimmer", "Last Tip at Battle Maison 1", "Last Tip at Battle Maison 2", "Last Tip at Battle Maison 3", "Last Tip at Battle Maison 4", "Last Tip at Maid", "Last Tip at Butler", "Last Tip at Scary House", "Last Tip at Traveling Minstrel", "Last Tip at Special BGM 1", "Last Tip at Special BGM 2", "Last Tip at Frieser Furfrou", "Photos Taken", /*"Sky Wild Battles (?)" nope*/ null, "Battle Maison Streak: Singles", "Battle Maison Streak: Doubles", "Battle Maison Streak: Triples", "Battle Maison Streak: Rotation", "Battle Maison Streak: Multi", "Loto-ID Wins", "PP Ups used", "PSS Passerby Count (Today)", "Amie Used", "Roller Skate Count: Spin Left", "Roller Skate Count: Spin Right", "Roller Skate Count: Running Start", "Roller Skate Count: Parallel Swizzle", "Roller Skate Count: Drift-and-dash", "Roller Skate Count: 360 right", "Roller Skate Count: 360 left", "Roller Skate Count: Flips", "Roller Skate Count: Grind", "Roller Skate Count: Combos", "Fishing Chains", "Secret Base Battles in your base", "Secret Base Battles in another base", "Contest Spectacular Photos taken", "Times used Fly", "Times used Soar", "Times used Dive", "Times used Sky Holes", "Times healed by Mom", "Times used Escape Rope", "Times used Dowsing Machine", "Trainer's Eye Rematches", "FUREAI Interest ???", "Shiny Pokemon Encountered", "Trick House Clears", "Eon Ticket 1 (Spotpass)", "Eon Ticket 2 (Mystery Gift)"];
 
         protected ParseStats(data: Buffer): Partial<TPP.TrainerData> {
-            return { game_stats: this.ParseGameStats(this.rom.ReadStridedData(data, 0, 4, 100).map(n => n.readUInt32LE(0)).concat(this.rom.ReadStridedData(data, 400, 2, 100).map(n => n.readUInt16LE(0)))) };
+            return { game_stats: this.ParseGameStats(this.rom.ReadArray(data, 0, 4, 100).map(n => n.readUInt32LE(0)).concat(this.rom.ReadArray(data, 400, 2, 100).map(n => n.readUInt16LE(0)))) };
         }
     }
 }

@@ -221,6 +221,7 @@ namespace RamReader {
         private CurrentBattleSeenPokemon: number[];
 
         protected ConcealEnemyParty(party: (TPP.PartyPokemon & { active?: boolean })[]): TPP.EnemyParty {
+            // return party; //SPY!
             return party.map((p, i) => p && ({
                 species: this.HasBeenSeenThisBattle(p) ? Object.assign({}, p.species, { abilities: [], tm_moves: [], }) as TPP.PokemonSpecies : { id: 0, name: "???", national_dex: 0 },
                 health: p.health,
@@ -241,13 +242,10 @@ namespace RamReader {
 
         protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
 
-        public CallEmulator<T>(path: string[] | string, callback?: (data: string) => (T | Promise<T>), force = false) {
-            let paths = Array.isArray(path) ? path : [path];
-            return Promise.all(paths.map(path => new Promise<string>((resolve, reject) => {
-                if (!this.running && !force)
-                    reject("Attempted to call emulator from stopped RAM Reader");
+        public HTTPGet(url: string) {
+            return new Promise<string>((resolve, reject) => {
                 try {
-                    http.get(`http://${this.hostname}:${this.port}/${path}`, response => {
+                    http.get(url, response => {
                         let data = '';
                         response.on('data', chunk => data += chunk);
                         response.on('end', () => resolve(data));
@@ -256,6 +254,16 @@ namespace RamReader {
                 catch (e) {
                     reject(e);
                 }
+            })
+        }
+
+        public CallEmulator<T>(path: string[] | string, callback?: (data: string) => (T | Promise<T>), force = false) {
+            let paths = Array.isArray(path) ? path : [path];
+            return Promise.all(paths.map(path => new Promise<string>((resolve, reject) => {
+                if (!this.running && !force)
+                    reject("Attempted to call emulator from stopped RAM Reader");
+                else
+                    this.HTTPGet(`http://${this.hostname}:${this.port}/${path}`).then(resolve, reject);
             }))).then(r => {
                 const allData = r.reduce((str, s) => str + s, "");
                 try {
@@ -519,7 +527,7 @@ namespace RamReader {
             return { current, next_level, this_level, remaining: next_level - current };
         }
 
-        protected StructEmulatorCaller<T>(domain: string, struct: { [key: string]: number }, symbolMapper: (symbol: string) => number, callback: (struct: { [key: string]: Buffer }) => T): () => Promise<T> {
+        protected StructEmulatorCaller<T>(domain: string, struct: { [key: string]: number }, symbolMapper: (symbol: string) => number, callback: (struct: { [key: string]: Buffer }) => (T | Promise<T>)): () => Promise<T> {
             const symbols = Object.keys(struct).map(s => ({ symbol: s, address: symbolMapper(s), length: struct[s] }));
             return this.CachedEmulatorCaller(`${domain}/ReadByteRange/${symbols.map(s => `${s.address.toString(16)}/${s.length.toString(16)}`).join('/')}`, this.WrapBytes(data => {
                 let offset = 0;

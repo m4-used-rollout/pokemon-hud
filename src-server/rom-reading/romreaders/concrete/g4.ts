@@ -209,37 +209,37 @@ namespace RomReader {
                 encounters = encounterNarc.files.map(data => {
                     const rates = data.slice(0, 5).map(i => i);
                     const surfMons = rates[1] ? this.CombineDuplicateEncounters(
-                        this.ReadStridedData(data, 100, 4, 5).map((s, r) => speciesToEncounter(s.readUInt16LE(2), encounterRatesWater[r]))
+                        this.ReadArray(data, 100, 4, 5).map((s, r) => speciesToEncounter(s.readUInt16LE(2), encounterRatesWater[r]))
                     ) : new Array<Pokemon.EncounterMon>();
                     const fishMons = new Array<Pokemon.EncounterMon>().concat(
                         ...this.items.filter(i => rodExp.test(i.name))
                             .map((rod, i) => rates[2 + i] ? this.CombineDuplicateEncounters(
-                                this.ReadStridedData(data, 128 + (4 * 5 * i), 4, 5).map((s, r) => speciesToEncounter(s.readInt16LE(2), encounterRatesWater[r], rod.id))
+                                this.ReadArray(data, 128 + (4 * 5 * i), 4, 5).map((s, r) => speciesToEncounter(s.readInt16LE(2), encounterRatesWater[r], rod.id))
                             ) : [])
                     );
                     const hiddenMons = this.CombineDuplicateEncounters(new Array<Pokemon.EncounterMon>().concat(
                         //radio encounters
-                        this.ReadStridedData(data, 92, 2, 4).map(s => s.readUInt16LE(0)).filter(s => s > 0).map(s => speciesToEncounter(s)),
+                        this.ReadArray(data, 92, 2, 4).map(s => s.readUInt16LE(0)).filter(s => s > 0).map(s => speciesToEncounter(s)),
                         //rock smash (also stores level)
-                        rates[2] ? this.ReadStridedData(data, 120, 4, 2).map((s, r) => speciesToEncounter(s.readUInt16LE(2), encounterRatesRockSmash[r])) : [],
+                        rates[2] ? this.ReadArray(data, 120, 4, 2).map((s, r) => speciesToEncounter(s.readUInt16LE(2), encounterRatesRockSmash[r])) : [],
                         //swarm
-                        this.ReadStridedData(data, 188, 2, 4).map(s => s.readUInt16LE(0)).filter(s => s > 0).map(s => speciesToEncounter(s)),
+                        this.ReadArray(data, 188, 2, 4).map(s => s.readUInt16LE(0)).filter(s => s > 0).map(s => speciesToEncounter(s)),
                     ));
                     return <Pokemon.Encounters>{
                         morn: <Pokemon.EncounterSet>{
-                            grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadStridedData(data, 20, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
+                            grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadArray(data, 20, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
                             hidden_grass: hiddenMons,
                             surfing: surfMons,
                             fishing: fishMons
                         },
                         day: <Pokemon.EncounterSet>{
-                            grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadStridedData(data, 44, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
+                            grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadArray(data, 44, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
                             hidden_grass: hiddenMons,
                             surfing: surfMons,
                             fishing: fishMons
                         },
                         nite: <Pokemon.EncounterSet>{
-                            grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadStridedData(data, 68, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
+                            grass: rates[0] ? this.CombineDuplicateEncounters(this.ReadArray(data, 68, 2, 12).map((s, r) => speciesToEncounter(s.readUInt16LE(0), encounterRatesGrass[r]))) : [],
                             hidden_grass: hiddenMons,
                             surfing: surfMons,
                             fishing: fishMons
@@ -250,14 +250,14 @@ namespace RomReader {
             }
             else {
                 //DPPt
-                const readEncountersDPPt = (data: Buffer, offset: number, rates: number[]) => this.ReadStridedData(data, offset, 8, rates.length).map((e, i) => (<Pokemon.EncounterMon>{
+                const readEncountersDPPt = (data: Buffer, offset: number, rates: number[]) => this.ReadArray(data, offset, 8, rates.length).map((e, i) => (<Pokemon.EncounterMon>{
                     level: e.readUInt32LE(0),
                     speciesId: e.readUInt32LE(4),
                     rate: rates[i],
                     species: this.GetSpecies(e.readUInt32LE(4))
                 }));
 
-                const readWaterEncountersDPPt = (data: Buffer, offset: number, rates: number[], requiredItem?: Pokemon.Item) => this.ReadStridedData(data, offset, 8, rates.length).map((e, i) => ({
+                const readWaterEncountersDPPt = (data: Buffer, offset: number, rates: number[], requiredItem?: Pokemon.Item) => this.ReadArray(data, offset, 8, rates.length).map((e, i) => ({
                     level: e.readUInt32LE(0) >> 8,
                     maxLevel: e.readUInt16LE(0) % 0x100,
                     speciesId: e.readUInt32LE(4),
@@ -309,7 +309,7 @@ namespace RomReader {
 
                     // surf, filler, old rod, good rod, super rod
                     const waterNeededItems = [undefined, undefined, ...this.items.filter(i => rodExp.test(i.name)).map(r => r.id)];
-                    const waterEncounters = this.ReadStridedData(f, 204, 44, 5).map((water, i) => water.readInt32LE(0) > 0 ? readWaterEncountersDPPt(water, 4, encounterRatesWater, waterNeededItems[i] && this.GetItem(waterNeededItems[i])) : undefined);
+                    const waterEncounters = this.ReadArray(f, 204, 44, 5).map((water, i) => water.readInt32LE(0) > 0 ? readWaterEncountersDPPt(water, 4, encounterRatesWater, waterNeededItems[i] && this.GetItem(waterNeededItems[i])) : undefined);
                     encounterSet.morn.surfing = encounterSet.day.surfing = encounterSet.nite.surfing = this.CombineDuplicateEncounters(waterEncounters[0]);
                     encounterSet.morn.fishing = encounterSet.day.fishing = encounterSet.nite.fishing = this.CombineDuplicateEncounters([...(waterEncounters[2] || []), ...(waterEncounters[3] || []), ...(waterEncounters[4] || [])]);
                     return encounterSet;
@@ -343,13 +343,13 @@ namespace RomReader {
             this.trainers = trDataNarc.files.map((trData, i) => {
                 const pokeType = trData[0];
                 let party: { level: number, ability: string, aiLevel: number, species: Pokemon.Species, moves?: Pokemon.Move[], item?: Pokemon.Item }[]
-                    = this.ReadStridedData(trPokeNarc.files[i], 0, 6 + (pokeType & 2 ? 2 : 0) + (pokeType & 1 ? 8 : 0) + (config.Type != 'DP' ? 2 : 0), trData[3]).map(trPoke => ({
+                    = this.ReadArray(trPokeNarc.files[i], 0, 6 + (pokeType & 2 ? 2 : 0) + (pokeType & 1 ? 8 : 0) + (config.Type != 'DP' ? 2 : 0), trData[3]).map(trPoke => ({
                         aiLevel: trPoke[0],
                         ability: abilityNames[trPoke[1]],
                         level: trPoke[2],
                         species: this.GetSpecies(trPoke.readUInt16LE(4) & 0x1FF),
                         item: pokeType & 2 ? this.GetItem(trPoke.readUInt16LE(6)) : undefined,
-                        moves: pokeType & 1 ? this.ReadStridedData(trPoke, pokeType & 2 ? 8 : 6, 2, 4).map(m => this.GetMove(m.readUInt16LE(0))) : undefined
+                        moves: pokeType & 1 ? this.ReadArray(trPoke, pokeType & 2 ? 8 : 6, 2, 4).map(m => this.GetMove(m.readUInt16LE(0))) : undefined
                     }));
                 return {
                     spriteId: trData[1],
@@ -362,7 +362,7 @@ namespace RomReader {
             });
 
             this.moveLearns = {};
-            moveLearnNarc.files.forEach((file, i) => this.moveLearns[i] = this.ReadStridedData(file, 0, 2).map(data => (<Pokemon.MoveLearn>{
+            moveLearnNarc.files.forEach((file, i) => this.moveLearns[i] = this.ReadArray(file, 0, 2).map(data => (<Pokemon.MoveLearn>{
                 level: (data[1] & 0xFE) >> 1,
                 ...this.GetMove(data.readUInt16LE(0) & 0x1FF)
             })));

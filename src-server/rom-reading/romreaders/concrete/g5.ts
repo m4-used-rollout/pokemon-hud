@@ -87,7 +87,7 @@ namespace RomReader {
                 category: moveCategories[data[2] % 255]
             }));
 
-            this.moveLearns = movesetNarc.files.map(moveset => this.ReadStridedData(moveset, 0, 4).map(movelearn => Object.assign(
+            this.moveLearns = movesetNarc.files.map(moveset => this.ReadArray(moveset, 0, 4).map(movelearn => Object.assign(
                 {} as TPP.MoveLearn,
                 this.GetMove(movelearn.readInt16LE(0)),
                 { level: movelearn.readInt16LE(2) }

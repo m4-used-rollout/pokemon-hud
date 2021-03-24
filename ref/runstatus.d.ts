@@ -1,7 +1,7 @@
 declare namespace TPP {
 
     //whole structure
-    export interface RunStatus extends TrainerData, BattleStatus {
+    export interface RunStatus extends TrainerData, BattleStatus, RunSpecificItems {
         party: PartyData;
         pc: CombinedPCData;
         game?: string;
@@ -336,5 +336,11 @@ declare namespace TPP {
         group: "Trainers Defeated" | "Trainers Undefeated";
         id: number;
         class_id: number;
+    }
+
+    export interface RunSpecificItems {
+        //Chatty Crystal
+        chatty_power_type: string;
+        chatty_power: number;
     }
 }

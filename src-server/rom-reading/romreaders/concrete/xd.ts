@@ -142,9 +142,9 @@ namespace RomReader {
         protected ReadDeckTrainers(deck: Deck, deckId: number) {
             if (!deck.TrainerData || !deck.TrainerData.entries)
                 return [];
-            return this.ReadStridedData(deck.TrainerData.data, 0, 0x38, deck.TrainerData.entries).map((data, i) => {
+            return this.ReadArray(deck.TrainerData.data, 0, 0x38, deck.TrainerData.entries).map((data, i) => {
                 const shadowMask = data[4];
-                const partySummary = this.ReadStridedData(data, 0x1C, 2, 6).map((pkId, i) => {
+                const partySummary = this.ReadArray(data, 0x1C, 2, 6).map((pkId, i) => {
                     const isShadowMon = ((shadowMask >> i) % 2) > 0;
                     const id = pkId.readInt16BE(0);
                     if (!id)
@@ -167,7 +167,7 @@ namespace RomReader {
         }
 
         protected ReadTMHMMapping(startDol: Buffer) {
-            return [0, ...this.ReadStridedData(startDol, 0x4023A0, 0x8, 58).map(data => data.readUInt16BE(6))];
+            return [0, ...this.ReadArray(startDol, 0x4023A0, 0x8, 58).map(data => data.readUInt16BE(6))];
         }
 
         protected MapTM(name: string, tmMap: number[]) {
@@ -191,11 +191,11 @@ namespace RomReader {
             const nameIdOffset = abilitiesAreHacked ? 0 : 4
             const descriptionIdOffsetconst = abilitiesAreHacked ? 4 : 8
             const abilityBytes = abilitiesAreHacked ? 8 : 12
-            return this.ReadStridedData(startDol, abilitiesOffset, abilityBytes, numAbilities).map(data => this.strings[data.readUInt32BE(nameIdOffset)]);
+            return this.ReadArray(startDol, abilitiesOffset, abilityBytes, numAbilities).map(data => this.strings[data.readUInt32BE(nameIdOffset)]);
         }
 
         protected ReadBattles(commonRel: RelTable, deckTrainers: Pokemon.Trainer[][]) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Battles), 0, 0x3C, commonRel.GetValueEntry(this.commonIndex.NumberOfBattles)).map((data, i) => (<XDBattle>{
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.Battles), 0, 0x3C, commonRel.GetValueEntry(this.commonIndex.NumberOfBattles)).map((data, i) => (<XDBattle>{
                 id: i,
                 battleType: data[0],
                 battleTypeStr: XDBattleType[data[0]],
@@ -205,7 +205,7 @@ namespace RomReader {
                 isStoryBattle: data[4] == 1,
                 bgm: data.readUInt16BE(0x12),
                 colosseumRound: data[0x1b],
-                participants: this.ReadStridedData(data, 0x1C, 8, 4).map(p => ({
+                participants: this.ReadArray(data, 0x1C, 8, 4).map(p => ({
                     deckId: p.readUInt16BE(0),
                     trainerId: p.readUInt16BE(2),
                     trainer: deckTrainers[p.readUInt16BE(0)][p.readUInt16BE(2)]
@@ -214,8 +214,8 @@ namespace RomReader {
         }
 
         protected ReadPokeData(commonRel: RelTable, names: StringTable = this.strings) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.PokemonStats), 0, 0x124, commonRel.GetValueEntry(this.commonIndex.NumberOfPokemon)).map((data, i) => { //0x12336C
-                this.moveLearns[i] = this.ReadStridedData(data, 0xC4, 4, 20, true, 0)
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.PokemonStats), 0, 0x124, commonRel.GetValueEntry(this.commonIndex.NumberOfPokemon)).map((data, i) => { //0x12336C
+                this.moveLearns[i] = this.ReadArray(data, 0xC4, 4, 20, true, 0)
                     .map(mData => Object.assign({
                         level: mData[0]
                     }, this.GetMove(mData.readUInt16BE(2))) as Pokemon.MoveLearn);
@@ -232,7 +232,7 @@ namespace RomReader {
                     type1: this.typeNames[data[0x30]],
                     type2: this.typeNames[data[0x31]],
                     abilities: [this.abilities[data[0x32]] || data[0x32], this.abilities[data[0x33]] || data[0x33]].filter(a => !!a && a != '-'),
-                    tmCompat: this.ReadStridedData(data, 0x34, 1, 58)
+                    tmCompat: this.ReadArray(data, 0x34, 1, 58)
                         .map((c, i) => c[0] ? i + 1 : 0)
                         .filter(i => !!i)
                         .map(tm => `${tm <= 54 ? "T" : "S"}M${tm > 54 || tm < 10 ? "0" : ""}${tm > 54 ? tm - 54 : tm}`),
@@ -246,7 +246,7 @@ namespace RomReader {
                         spdef: data.readUInt16BE(0x96),
                         speed: data.readUInt16BE(0x98),
                     },
-                    evolutions: this.ReadStridedData(data, 0xA6, 6, 5)
+                    evolutions: this.ReadArray(data, 0xA6, 6, 5)
                         .filter(d => d.readUInt16BE(0) > 0).map(eData => {
                             const type = eData.readUInt16BE(0);
                             return {
@@ -263,7 +263,7 @@ namespace RomReader {
         }
 
         protected ReadRooms(commonRel: RelTable, names: StringTable = this.strings) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Rooms), 0, 0x40, commonRel.GetValueEntry(this.commonIndex.NumberOfRooms)).map(data => (<Pokemon.Map><any>{ //0x8D540
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.Rooms), 0, 0x40, commonRel.GetValueEntry(this.commonIndex.NumberOfRooms)).map(data => (<Pokemon.Map><any>{ //0x8D540
                 id: data.readUInt16BE(0x2),
                 name: names[data.readUInt32BE(0x18)] || unlabeledMaps[data.readUInt16BE(0x2)],
                 areaId: data.readUInt16BE(0x2e),
@@ -272,7 +272,7 @@ namespace RomReader {
         }
 
         protected ReadShadowDataXD(shadowDeck: Deck, storyDeck: Deck) {
-            return this.ReadStridedData(shadowDeck.ShadowPokemonData.data, 0, 0x18, shadowDeck.ShadowPokemonData.entries).map((data, i) => {
+            return this.ReadArray(shadowDeck.ShadowPokemonData.data, 0, 0x18, shadowDeck.ShadowPokemonData.entries).map((data, i) => {
                 const storyId = data.readUInt16BE(6);
                 const baseMon = this.LookUpTrainerPokemon(storyDeck, storyId);
                 return {
@@ -281,7 +281,7 @@ namespace RomReader {
                     shadowLevel: data[2], // the pokemon's level after it's caught. Regular level can be increased so AI shadows are stronger
                     storyId, // dpkm index of pokemon data in deck story
                     purificationStart: data.readUInt16BE(0x08), // the starting value of the heart gauge
-                    shadowMoves: this.ReadStridedData(data, 0xC, 2, 4).map(m => Object.assign({}, this.GetMove(m.readUInt16BE(0)))).filter(m => m && m.id),
+                    shadowMoves: this.ReadArray(data, 0xC, 2, 4).map(m => Object.assign({}, this.GetMove(m.readUInt16BE(0)))).filter(m => m && m.id),
                     aggression: data[0x14], // determines how often it enters reverse mode
                     alwaysFlee: data[0x15], // the shadow pokemon is sent to miror b. even if you lose the battle
                     baseMon,
@@ -324,7 +324,7 @@ namespace RomReader {
         protected ReadEncounters(data: Buffer, entries = 12) {
             return {
                 all: {
-                    grass: this.ReadStridedData(data, 0, 0xC, entries).map(encounterData => (<XDEncounterMon>{
+                    grass: this.ReadArray(data, 0, 0xC, entries).map(encounterData => (<XDEncounterMon>{
                         minLevel: encounterData[0],
                         maxLevel: encounterData[1],
                         speciesId: data.readUInt16BE(2),

@@ -5,8 +5,8 @@ namespace RamReader {
     const NAME_LENGTH = 11;
     const BOX_NAME_LENGTH = 9;
     const MONS_PER_BOX = 20;
-    const NUM_BOXES = 14;
-    const NUM_POKEMON = 251;
+    const NUM_BOXES = 20; //14; Chatty Crystal
+    const NUM_POKEMON = 400; //251; Chatty Crystal
     const DEX_FLAG_BYTES = Math.floor((NUM_POKEMON + 7) / 8);
 
     const dayOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -22,14 +22,55 @@ namespace RamReader {
         protected SymAddr = (symbol: string) => this.rom.symTable[symbol].toString(16);
         protected StructSize = (startSymbol: string, endSymbol: string = startSymbol.replace("Start", '') + "End") => this.rom.symTable[endSymbol] - this.rom.symTable[startSymbol];
 
-        protected PCBoxSize = () => this.StructSize('sBox') + 2;
+        protected PCBoxSize = () => this.StructSize('sBox');// + 2; ??
         protected PartySize = () => this.StructSize('wPokemonData', 'wPartyMonNicknamesEnd');
         protected PartyMonSize = () => this.StructSize('wPartyMon1', 'wPartyMon2');
         protected BattleMonSize = () => this.StructSize('wBattleMon', 'wWildMon') - 2;
+        protected Crystal16PokemonMappingSize = () => this.StructSize("wPokemonIndexTable");
+        protected Crystal16MovesMappingSize = () => this.StructSize("wMoveIndexTable");
+        protected NumPCBoxes = () => Object.keys(this.rom.symTable).filter(s => /^sBox\d+$/.test(s)).length;
 
-        public ReadParty = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wPokemonData')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurPartyMon')}/1/${this.SymAddr('wBattleMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wBattleMon')}/${this.BattleMonSize().toString(16)}`, this.WrapBytes(data => this.ParseParty(data)));
-        public ReadPC = this.CachedEmulatorCaller([`WRAM/ReadByteRange/${this.SymAddr('wCurBox')}/1/${this.SymAddr('wBoxNames')}/${(BOX_NAME_LENGTH * NUM_BOXES).toString(16)}`, `CartRAM/ReadByteRange/${this.SymAddr('sBox')}/${this.PCBoxSize().toString(16)}/${this.SymAddr('sBox1')}/${(this.PCBoxSize() * 7).toString(16)}/${this.SymAddr('sBox8')}/${(this.PCBoxSize() * 7).toString(16)}`], this.WrapBytes(data => this.ParsePC(data)));
-        public ReadBattle = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wEnemyMonCatchRate')}/1/${this.SymAddr('wOtherTrainerClass')}/1/${this.SymAddr('wOtherTrainerID')}/1/${this.SymAddr('wOTPartyCount')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurOTMon')}/1/${this.SymAddr('wEnemyMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wEnemyMon')}/${this.BattleMonSize().toString(16)}/${this.SymAddr('wStringBuffer3')}/${NAME_LENGTH.toString(16)}`, this.WrapBytes(data => this.ParseBattleBundle(data)));
+        public get isCrystal16() {
+            return this.rom.isCrystal16;
+        }
+
+        private crystal16PokemonMapping: number[] = [];
+        private crystal16MovesMapping: number[] = [];
+
+        public Crystal16MapPokemon(shortId: number) {
+            return (this.isCrystal16 && shortId > 0) ? this.crystal16PokemonMapping[shortId] || 0 : shortId;
+        }
+        public Crystal16MapMove(shortId: number) {
+            return (this.isCrystal16 && shortId > 0) ? this.crystal16MovesMapping[shortId] || 0 : shortId;
+        }
+
+        public ReadParty = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wPokemonData')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurPartyMon')}/1/${this.SymAddr('wBattleMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wBattleMon')}/${this.BattleMonSize().toString(16)}` + (this.isCrystal16 ? `/${this.SymAddr('wPokemonIndexTable')}/${this.Crystal16PokemonMappingSize().toString(16)}/${this.SymAddr('wMoveIndexTable')}/${this.Crystal16MovesMappingSize().toString(16)}` : ""), this.WrapBytes(data => this.ParseParty(data)));
+        public ReadPC = this.isCrystal16
+            ? this.StructEmulatorCaller<TPP.CombinedPCData>('CartRAM', (() => {
+                const struct = {
+                    "sBox": this.PCBoxSize(),
+                };
+                Object.keys(this.rom.symTable).filter(s => /^sBox\d+$/.test(s)).forEach(k => struct[k] = this.PCBoxSize());
+                Object.keys(this.rom.symTable).filter(s => /^sBox\d+PokemonIndexes$/.test(s)).forEach(k => struct[k] = 2 * MONS_PER_BOX);
+                return struct;
+            })(), sym => this.rom.symTable[sym], async struct => {
+                const { wCurBox, wBoxNames } = await (this.StructEmulatorCaller('WRAM', { wCurBox: 1, wBoxNames: this.NumPCBoxes() * BOX_NAME_LENGTH },
+                    sym => this.rom.symTable[sym],
+                    s => ({ wCurBox: s.wCurBox[0], wBoxNames: this.rom.ReadArray(s.wBoxNames, 0, BOX_NAME_LENGTH, 0, false, () => false).map(b => this.rom.ConvertText(b)) })))()
+                    || { wCurBox: this.currentState.pc.current_box_number - 1, wBoxNames: this.currentState.pc.boxes.map(b => b.box_name) };
+                const pcData: TPP.CombinedPCData = {
+                    current_box_number: wCurBox + 1,
+                    boxes: Object.keys(struct).map(s => /^sBox(\d+)$/.exec(s)).filter(m => !!m).sort((m1, m2) => parseInt(m1[1]) - parseInt(m2[1])).map(m => m[0]).map((k, i) => (<TPP.BoxData>{
+                        box_number: i + 1,
+                        box_name: wBoxNames[i],
+                        box_contents: this.ParsePCBox(struct[k], this.rom.ReadArray(struct[k + "PokemonIndexes"], 0, 2, 0, false, _ => false).map(n => n.readUInt16LE(0)), true).filter(m => m && m.species)
+                    }))
+                };
+                pcData.boxes[wCurBox].box_contents = this.ParsePCBox(struct.sBox);
+                return pcData;
+            })
+            : this.CachedEmulatorCaller([`WRAM/ReadByteRange/${this.SymAddr('wCurBox')}/1/${this.SymAddr('wBoxNames')}/${(BOX_NAME_LENGTH * NUM_BOXES).toString(16)}`, `CartRAM/ReadByteRange/${this.SymAddr('sBox')}/${this.PCBoxSize().toString(16)}/${this.SymAddr('sBox1')}/${(this.PCBoxSize() * 7).toString(16)}/${this.SymAddr('sBox8')}/${(this.PCBoxSize() * 7).toString(16)}`], this.WrapBytes(data => this.ParsePC(data)));
+        public ReadBattle = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wEnemyMonCatchRate')}/1/${this.SymAddr('wOtherTrainerClass')}/1/${this.SymAddr('wOtherTrainerID')}/1/${this.SymAddr('wOTPartyCount')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurOTMon')}/1/${this.SymAddr('wEnemyMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wEnemyMon')}/${this.BattleMonSize().toString(16)}/${this.SymAddr('wStringBuffer3')}/${NAME_LENGTH.toString(16)}` + (this.isCrystal16 ? `/${this.SymAddr('wPokemonIndexTable')}/${this.Crystal16PokemonMappingSize().toString(16)}/${this.SymAddr('wMoveIndexTable')}/${this.Crystal16MovesMappingSize().toString(16)}` : ""), this.WrapBytes(data => this.ParseBattleBundle(data)));
         protected TrainerChunkReaders = [
             this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
                 wPlayerName: NAME_LENGTH,
@@ -53,6 +94,7 @@ namespace RamReader {
                 wKeyItems: this.StructSize('wKeyItems'),
                 wNumBalls: 1,
                 wBalls: this.StructSize('wBalls'),
+                wNumPCItems: 1,
                 wPCItems: this.StructSize('wPCItems'),
                 wPhoneList: this.StructSize('wPhoneList', 'wLuckyNumberShowFlag') - 23,
                 wCurDay: 1,
@@ -79,8 +121,8 @@ namespace RamReader {
                     id: struct.wPlayerID.readUInt16BE(0),
                     secret: struct.wSecretID.readUInt16BE(0),
                     options,
-                    caught_list: this.GetSetFlags(struct.wPokedexCaught),
-                    seen_list: this.GetSetFlags(struct.wPokedexSeen),
+                    caught_list: this.GetSetFlags(struct.wPokedexCaught).map(id => this.rom.GetSpecies(id).dexNumber),
+                    seen_list: this.GetSetFlags(struct.wPokedexSeen).map(id => this.rom.GetSpecies(id).dexNumber),
                     caught: this.GetSetFlags(struct.wPokedexCaught).length,
                     seen: this.GetSetFlags(struct.wPokedexSeen).length,
                     x: struct.wXCoord[0],
@@ -97,13 +139,13 @@ namespace RamReader {
                     evolution_is_happening: false,
                     badges: struct.wBadges.readUInt16LE(0),
                     items: {
-                        items: this.rom.ReadStridedData(struct.wItems, 0, 2, struct.wNumItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
-                        balls: this.rom.ReadStridedData(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
-                        key: this.rom.ReadStridedData(struct.wKeyItems, 0, 1, struct.wNumKeyItems[0], true, e => e[0] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]))),
-                        tms: this.rom.ReadStridedData(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
-                        pc: this.rom.ReadStridedData(struct.wPCItems, 1, 2, struct.wPCItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])) //wNumPCItems was wPCItems
+                        items: this.rom.ReadArray(struct.wItems, 0, 2, struct.wNumItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
+                        balls: this.rom.ReadArray(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
+                        key: this.rom.ReadArray(struct.wKeyItems, 0, 1, struct.wNumKeyItems[0], true, e => e[0] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]))),
+                        tms: this.rom.ReadArray(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
+                        pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
                     },
-                    phone_book: this.rom.ReadStridedData(struct.wPhoneList, 0, 1, 255).map(data => this.rom.GetPhoneContact(data[0])).filter(p => !!p),
+                    phone_book: this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => this.rom.GetPhoneContact(data[0])).filter(p => !!p),
                     time: { ...((this.currentState || { time: null }).time || { h: 0, m: 0, s: 0 }), d: dayOfWeek[struct.wCurDay[0] % 7] }
                 };
             }),
@@ -178,6 +220,11 @@ namespace RamReader {
         protected BaseOffsetCalc = (baseSymbol: string, extraOffset = 0) => ((symbol: string) => (this.rom.symTable[baseSymbol + symbol] - this.rom.symTable[baseSymbol]) + extraOffset);
 
         protected ParseBattleBundle(data: Buffer): TPP.BattleStatus {
+            if (this.isCrystal16) {
+                this.crystal16MovesMapping = this.rom.ReadArray(data.slice(data.length - this.Crystal16MovesMappingSize()), 0, 2, 255).map(id => id.readUInt16LE(0));
+                this.crystal16PokemonMapping = this.rom.ReadArray(data.slice(data.length - this.Crystal16MovesMappingSize() - this.Crystal16PokemonMappingSize(), data.length - this.Crystal16MovesMappingSize()), 0, 2, 255).map(id => id.readUInt16LE(0));
+            }
+
             //wBattleMode/1
             const in_battle = data[0] > 0;
             const battle_kind = data[0] < 2 ? "Wild" : "Trainer";
@@ -219,10 +266,10 @@ namespace RamReader {
             // wCurrentBoxNum
             const currentBox = (data[0] & 0x1F) + 1;
             // wBoxNames
-            const boxNames = this.rom.ReadStridedData(data, 1, BOX_NAME_LENGTH, NUM_BOXES).map(b => this.rom.ConvertText(b));
+            const boxNames = this.rom.ReadArray(data, 1, BOX_NAME_LENGTH, NUM_BOXES).map(b => this.rom.ConvertText(b));
             // Active Box
             // sBox0-14
-            const pc = this.rom.ReadStridedData(data, 1 + (BOX_NAME_LENGTH * NUM_BOXES), this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
+            const pc = this.rom.ReadArray(data, 1 + (BOX_NAME_LENGTH * NUM_BOXES), this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
             const active = pc.shift();
             pc[currentBox - 1] = active;
             return {
@@ -235,7 +282,7 @@ namespace RamReader {
             };
         }
 
-        protected ParsePCBox(data: Buffer) {
+        protected ParsePCBox(data: Buffer, speciesMap?: number[], movesAre16Bit = false) {
             // sBoxCount::  db
             const boxCount = data[0];
             if (boxCount > MONS_PER_BOX)
@@ -246,8 +293,8 @@ namespace RamReader {
             // sBoxMons::
             // sBoxMon1:: box_struct sBoxMon1
             // sBoxMon2:: ds box_struct_length * (MONS_PER_BOX + -1)
-            const box = boxCount ? this.rom.ReadStridedData(data, this.rom.symTable['sBoxMons'] - this.rom.symTable['sBoxCount'], this.rom.symTable['sBoxMon2'] - this.rom.symTable['sBoxMon1'], boxCount)
-                .map((p, i) => this.ParsePokemon(p, boxSpecies[i])) : [];
+            const box = boxCount ? this.rom.ReadArray(data, this.rom.symTable['sBoxMons'] - this.rom.symTable['sBoxCount'], this.rom.symTable['sBoxMon2'] - this.rom.symTable['sBoxMon1'], boxCount)
+                .map((p, i) => this.ParsePokemon(p, boxSpecies[i], undefined, undefined, speciesMap ? speciesMap[i] : undefined, movesAre16Bit)) : [];
 
             if (boxCount) {
                 // sBoxMonOT::    ds NAME_LENGTH * MONS_PER_BOX
@@ -261,6 +308,11 @@ namespace RamReader {
         }
 
         protected ParseParty(data: Buffer) {
+            if (this.isCrystal16) {
+                this.crystal16MovesMapping = this.rom.ReadArray(data.slice(data.length - this.Crystal16MovesMappingSize()), 0, 2, 255).map(id => id.readUInt16LE(0));
+                this.crystal16PokemonMapping = this.rom.ReadArray(data.slice(data.length - this.Crystal16MovesMappingSize() - this.Crystal16PokemonMappingSize(), data.length - this.Crystal16MovesMappingSize()), 0, 2, 255).map(id => id.readUInt16LE(0));
+            }
+
             // wPartyCount::   ds 1 ; d163
             const partyCount = data[0];
             // wPartySpecies:: ds PARTY_LENGTH ; d164
@@ -274,7 +326,7 @@ namespace RamReader {
             // wPartyMon4:: party_struct wPartyMon4 ; d1ef
             // wPartyMon5:: party_struct wPartyMon5 ; d21b
             // wPartyMon6:: party_struct wPartyMon6 ; d247
-            const party: TPP.PartyData = partyCount ? this.rom.ReadStridedData(data, this.rom.symTable['wPartyMons'] - this.rom.symTable['wPokemonData'], this.PartyMonSize(), partyCount)
+            const party: TPP.PartyData = partyCount ? this.rom.ReadArray(data, this.rom.symTable['wPartyMons'] - this.rom.symTable['wPokemonData'], this.PartyMonSize(), partyCount)
                 .map((p, i) => this.ParsePartyMon(p, partySpecies[i])) : [];
 
             if (partyCount) {
@@ -305,11 +357,11 @@ namespace RamReader {
         }
 
         protected AddOTNames(mons: Gen2BoxedMon[], data: Buffer, monCount: number) {
-            this.rom.ReadStridedData(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].original_trainer ? mons[i].original_trainer.name = this.rom.ConvertText(n) : null);
+            this.rom.ReadArray(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].original_trainer ? mons[i].original_trainer.name = this.rom.ConvertText(n) : null);
         }
 
         protected AddNicknames(mons: Gen2BoxedMon[], data: Buffer, monCount: number) {
-            this.rom.ReadStridedData(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].species ? mons[i].name = this.FixCapsNonNickname(this.rom.ConvertText(n), mons[i].species.name) : null);
+            this.rom.ReadArray(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].species ? mons[i].name = this.FixCapsNonNickname(this.rom.ConvertText(n), mons[i].species.name) : null);
         }
 
         protected FixCapsNonNickname(nick: string, speciesName: string) {
@@ -349,21 +401,22 @@ namespace RamReader {
             return poke;
         }
 
-        protected ParsePokemon(data: Buffer, species?: number, nickname?: Buffer, otName?: Buffer) {
+        protected ParsePokemon(data: Buffer, species?: number, nickname?: Buffer, otName?: Buffer, forceSpecies?: number, movesAre16Bit = false) {
             const poke = {} as Gen2BoxedMon;
             const offset = this.BaseOffsetCalc('wPartyMon1');
             if (data[offset('Species')] == 0)
                 return poke;
 
-            const actualSpecies = data[offset('Species')];
-            poke.is_egg = species != actualSpecies;
+            const actualSpecies = this.Crystal16MapPokemon(data[offset('Species')]);
+            poke.is_egg = species == 0xFD;
 
             // \1Species::    db
-            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(actualSpecies));
+            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(forceSpecies || actualSpecies));
+
             // \1Item::       db
             poke.held_item = data[offset('Item')] > 0 ? Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[offset('Item')])) : null;
             // \1Moves::      ds NUM_MOVES
-            poke.moves = Array.from(data.slice(offset('Moves'), offset('ID'))).map(m => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(m)));
+            poke.moves = Array.from(data.slice(offset('Moves'), offset('ID'))).map((m, i) => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(movesAre16Bit ? (m + ((data[offset('PP') + i] % 64) << 8)) : this.Crystal16MapMove(m))));
             // \1ID::         dw
             poke.original_trainer = { id: data.readUInt16BE(offset('ID')) } as TPP.Trainer;
             // \1Exp::        ds 3
@@ -387,7 +440,7 @@ namespace RamReader {
             // \1PP::         ds NUM_MOVES
             data.slice(offset('PP')).forEach((pp, i) => {
                 if (poke.moves[i]) {
-                    poke.moves[i].pp = pp % 64;
+                    poke.moves[i].pp = movesAre16Bit ? (poke.moves[i] && poke.moves[i].pp || 0) : pp % 64;
                     poke.moves[i].pp_up = pp >>> 6;
                 }
             });
@@ -424,12 +477,12 @@ namespace RamReader {
             if (data[offset('Species')] == 0)
                 return poke;
             // \1Species::    db
-            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(data[offset('Species')]))
+            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(this.Crystal16MapPokemon(data[offset('Species')])))
             poke.name = this.FixCapsNonNickname(this.rom.ConvertText(data), poke.species.name);
             // \1Item::       db
             poke.held_item = data[offset('Item')] > 0 ? Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[offset('Item')])) : null;
             // \1Moves::      ds NUM_MOVES
-            poke.moves = Array.from(data.slice(offset('Moves'), offset('DVs'))).map(m => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(m)));
+            poke.moves = Array.from(data.slice(offset('Moves'), offset('DVs'))).map(m => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(this.Crystal16MapMove(m))));
             // \1DVs::        ds 2
             poke.ivs = this.UnpackDVs(data.readUInt16BE(offset('DVs')));
             // \1PP::         ds NUM_MOVES
@@ -510,10 +563,16 @@ namespace RamReader {
         public Init() {
             const hRomBank = 0xFF9D; // 0xFF9F; //GS
             //Evolution detect
-            const { bank: startBank, address: startAddr } = this.rom.LinearAddressToBanked(this.rom.symTable["EvolutionAnimation"]);
-            const { bank: endBank, address: endAddr } = this.rom.LinearAddressToBanked(this.rom.symTable["EvolutionAnimation.EvolutionAnimation"]);
-            this.SetSelfCallEvent("Evolution Start", "Execute", startAddr, "override/evolution_is_happening/true", hRomBank, startBank);
-            this.SetSelfCallEvent("Evolution End", "Execute", endAddr - 1, "override/evolution_is_happening", hRomBank, endBank);
+            const { bank: evoStartBank, address: evoStartAddr } = this.rom.LinearAddressToBanked(this.rom.symTable["EvolutionAnimation"]);
+            const { bank: evoEndBank, address: evoEndAddr } = this.rom.LinearAddressToBanked(this.rom.symTable["EvolutionAnimation.EvolutionAnimation"]);
+            this.SetSelfCallEvent("Evolution Start", "Execute", evoStartAddr, "override/evolution_is_happening/true", hRomBank, evoStartBank);
+            this.SetSelfCallEvent("Evolution End", "Execute", evoEndAddr - 7, "override/evolution_is_happening/false", hRomBank, evoEndBank); //Set hook before the returns before this symbol
+
+            //Printer detect
+            const { bank: printerStartBank, address: printerStartAddr } = this.rom.LinearAddressToBanked(this.rom.symTable["Printer_StartTransmission"]);
+            const { bank: printerEndBank, address: printerEndAddr } = this.rom.LinearAddressToBanked(this.rom.symTable["Printer_ExitPrinter"]);
+            this.SetSelfCallEvent("Printer Start", "Execute", printerStartAddr, "override/evolution_is_happening/true", hRomBank, printerStartBank);
+            this.SetSelfCallEvent("Printer End", "Execute", printerEndAddr, "override/evolution_is_happening/false", hRomBank, printerEndBank);
         }
     }
 }

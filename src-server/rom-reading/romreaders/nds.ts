@@ -63,7 +63,7 @@ namespace RomReader {
         }
 
         protected readEvolutions(evoNarc: Tools.NARChive) {
-            return evoNarc.files.forEach((file, i) => this.GetSpecies(i).evolutions = this.ReadStridedData(file, 0, 6, 7).map((data): Pokemon.Evolution => {
+            return evoNarc.files.forEach((file, i) => this.GetSpecies(i).evolutions = this.ReadArray(file, 0, 6, 7).map((data): Pokemon.Evolution => {
                 const method = data.readUInt16LE(0);
                 const evoParam = data.readUInt16LE(2);
                 const speciesId = (this.GetSpecies(data.readUInt16LE(4)) || { dexNumber: data.readUInt16LE(4) }).dexNumber;

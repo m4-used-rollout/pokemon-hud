@@ -121,7 +121,7 @@ namespace Events {
             knowns.forEach(k => k.dexNums.forEach((d, i) => firstCaught.push({ dexNum: d, species: k.species[i], time: Date.parse(i ? k.evolved[i - 1] : k.caught), otId:k.otId })));
             firstCaught.sort((c1, c2) => c1.time - c2.time)
                 .filter((c, _, arr) => arr.find(f => f.dexNum == c.dexNum) == c)
-                .forEach(c => state.events.push({ group: "Pokemon", name: c.species, time: new Date(c.time).toISOString(), traded: state.id && c.otId && state.id.toString() == c.otId || undefined } as TPP.Event));
+                .forEach(c => state.events.push({ group: "Pokemon", name: c.species, time: new Date(c.time).toISOString(), traded: state.id && c.otId && state.id.toString() != c.otId || undefined } as TPP.Event));
             state.game_stats = state.game_stats || {};
             state.game_stats["Pokémon Caught"] = knowns.length;
             delete state.game_stats["Pokémon Caught While Fishing"];

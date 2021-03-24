@@ -401,7 +401,7 @@ namespace RamReader {
 
         public FsysWatcher = (data: Buffer) => {
             let changedState = false;
-            this.currentState["fsys"] = this.rom.ReadStridedData(data, 0, this.fsysStructBytes, this.fsysSlots)
+            this.currentState["fsys"] = this.rom.ReadArray(data, 0, this.fsysStructBytes, this.fsysSlots)
                 .map(fData => fData.readUInt32BE(0x34))
                 .map((fsysId, i) => {
                     const map = i == 0 ? this.rom.GetMap(fsysId) : { id: null, name: null };
@@ -430,7 +430,7 @@ namespace RamReader {
         }
 
         public ReadParty: (data?: Buffer, monBytes?: number) => Promise<TPP.PartyData> = (data, monBytes) => new Promise(resolve => resolve(
-            this.rom.ReadStridedData(data, 0, monBytes, 6).map(this.ParsePokemon).filter(p => !!p)));
+            this.rom.ReadArray(data, 0, monBytes, 6).map(this.ParsePokemon).filter(p => !!p)));
 
         public ReadTrainer = (data?: Buffer) => new Promise<TPP.TrainerData>(resolve => resolve({
             name: this.rom.ReadString(data),
@@ -452,14 +452,14 @@ namespace RamReader {
             cologne: this.ReadPocket(data.slice(0x2F4, 0x300))
         });
 
-        public ReadPocket = (data: Buffer) => this.rom.ReadStridedData(data, 0, 4)
+        public ReadPocket = (data: Buffer) => this.rom.ReadArray(data, 0, 4)
             .map(itemData => Object.assign(<TPP.Item>{}, this.rom.GetItem(itemData.readUInt16BE(0)), {
                 count: itemData.readUInt16BE(2)
             })).filter(i => !!(i && i.id));
 
         public ReadPokedex = (data: Buffer) => new Promise<{ owned: number[], seen: number[] }>(resolve => {
             //console.log(`Pokedex Data: ${data.toString('hex')}`);
-            const dex = this.rom.ReadStridedData(data, 0x4, 0xC, data.readUInt16BE(0))
+            const dex = this.rom.ReadArray(data, 0x4, 0xC, data.readUInt16BE(0))
                 .map(data => ({
                     species: (this.rom.GetSpecies(data.readUInt16BE(0) & 0x7FFF) || { dexNumber: 0 }).dexNumber,
                     owned: (data.readUInt16BE(0) & 0xC000) == 0 //|| (data.readUInt16BE(0x6) == this.currentState.id && data.readUInt16BE(0x4) == this.currentState.secret)
@@ -490,7 +490,7 @@ namespace RamReader {
         public ReadPCBox = (data: Buffer, boxNum: number) => (<TPP.BoxData>{
             box_number: boxNum,
             box_name: this.rom.ReadString(data),
-            box_contents: this.rom.ReadStridedData(data, 0x14, this.partyPokeBytes, 30).map((p, i) => Object.assign(this.ParsePokemon(p) || {}, { box_slot: i + 1 }) as TPP.PartyPokemon & TPP.BoxedPokemon).filter(p => !!p && !!p.species)
+            box_contents: this.rom.ReadArray(data, 0x14, this.partyPokeBytes, 30).map((p, i) => Object.assign(this.ParsePokemon(p) || {}, { box_slot: i + 1 }) as TPP.PartyPokemon & TPP.BoxedPokemon).filter(p => !!p && !!p.species)
         });
 
         public ReadDaycare = (data: Buffer) => new Promise<TPP.PartyPokemon>(resolve => resolve(

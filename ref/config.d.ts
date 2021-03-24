@@ -1,6 +1,6 @@
 /// <reference path="./runstatus.d.ts" />
 
-declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig, SplitsConfig {
+declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig, SplitsConfig, EmotesConfig {
     generation: number;
     runName: string;
     badgeCount?: number;
@@ -56,10 +56,20 @@ declare interface EmuCtlConfig {
 declare interface SplitsConfig {
     runStartTime?: string;
     splitFile?: string;
-    splitsX?:number;
-    splitsY?:number;
-    splitsWidth?:number;
-    splitsHeight?:number;
+    splitsX?: number;
+    splitsY?: number;
+    splitsWidth?: number;
+    splitsHeight?: number;
+}
+
+declare interface EmotesConfig {
+    emoteEndpoint?: string;
+    emoteEffectsFile?: string;
+    emotePollIntervalSeconds?: number;
+    emotesX?: number;
+    emotesY?: number;
+    emotesWidth?: number;
+    emotesHeight?: number;
 }
 
 declare interface GoalConfig {

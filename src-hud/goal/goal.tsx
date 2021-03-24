@@ -3,7 +3,7 @@
 /// <reference path="parts/trickhouse.tsx" />
 namespace Goal {
     var targetId: string;
-    export function Render(id: string = targetId) {
+    export const Render = throttle((id: string = targetId) => {
         targetId = id;
         if (!id || !data) return;
         try {
@@ -23,7 +23,7 @@ namespace Goal {
         catch (e) {
 
         }
-    }
+    }, 250);
     ipcRenderer.on('state-update', (event, state: TPP.RunStatus) => {
         data = state;
         Render();

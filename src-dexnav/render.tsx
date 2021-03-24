@@ -3,7 +3,7 @@
 var data: TPP.Server.DexNav.State = null;
 
 var targetId: string;
-function Render(id: string = targetId) {
+const Render = throttle((id: string = targetId) => {
     targetId = id;
     if (!id || !data) return;
     try {
@@ -11,11 +11,12 @@ function Render(id: string = targetId) {
     } catch (e) {
         console.error(e);
     }
-}
+}, 25);
 
-const { ipcRenderer } = require('electron')
-ipcRenderer.on('dexnav-update', (event, state: TPP.Server.DexNav.State) => {
-    data = state;
-    Render();
-});
-ipcRenderer.send('register-dexnav');
+function Register() {
+    ipcRenderer.on('dexnav-update', (event, state: TPP.Server.DexNav.State) => {
+        data = state;
+        Render();
+    });
+    ipcRenderer.send('register-dexnav');
+}

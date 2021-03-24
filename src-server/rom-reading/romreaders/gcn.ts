@@ -90,7 +90,7 @@ namespace RomReader {
             if (address > 0)
                 table = table.slice(address);
             const totalEntries = table.readInt16BE(0x4);
-            return this.ReadStridedData(table, 0x10, 0x8, totalEntries)
+            return this.ReadArray(table, 0x10, 0x8, totalEntries)
                 .map(data => ({ id: data.readInt32BE(0), addr: data.readInt32BE(0x4) }))
                 .map(addr => ({ id: addr.id, addr: addr.addr.toString(16), string: this.FixAllCaps(this.ReadString(table, addr.addr)) }));
         }
@@ -110,7 +110,7 @@ namespace RomReader {
         public ReadStringSloppy(data: Buffer, address = 0, length = 0) {
             length = length || (data.indexOf("\u0000", address + 2, "utf16le") - address);
             if (length)
-                return String.fromCodePoint(...this.ReadStridedData(data, address, 2, length / 2)
+                return String.fromCodePoint(...this.ReadArray(data, address, 2, length / 2)
                     .map(chr => chr.readUInt16BE(0) % 0xFFFF)
                     .filter((c, i, arr) => c > 0 || i < arr.indexOf(0, 1))
                     .filter(c => !!c));
@@ -168,8 +168,8 @@ namespace RomReader {
             const tmMap = this.ReadTMHMMapping(startDol);
             return (
                 this.commonIndex.Items
-                    ? this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Items), 0, 0x28, commonRel.GetValueEntry(this.commonIndex.NumberOfItems))
-                    : this.ReadStridedData(startDol, 0x360CE8, 0x28, 397)
+                    ? this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.Items), 0, 0x28, commonRel.GetValueEntry(this.commonIndex.NumberOfItems))
+                    : this.ReadArray(startDol, 0x360CE8, 0x28, 397)
             ).map((data, i) => (<Pokemon.Item>{
                 id: i,
                 name: this.MapTM(names[data.readUInt32BE(0x10)], tmMap),
@@ -178,7 +178,7 @@ namespace RomReader {
         }
 
         protected ReadTMHMMapping(startDol: Buffer) {
-            return [0, ...this.ReadStridedData(startDol, 0x365018, 0x8, 58).map(data => data.readUInt32BE(4))];
+            return [0, ...this.ReadArray(startDol, 0x365018, 0x8, 58).map(data => data.readUInt32BE(4))];
         }
 
         protected tmExp = /^TM([0-9]+)$/i;
@@ -192,7 +192,7 @@ namespace RomReader {
         }
 
         protected ReadMoveData(commonRel: RelTable, names: StringTable = this.strings) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Moves), 0, 0x38, commonRel.GetValueEntry(this.commonIndex.NumberOfMoves)).map((data, i) => (<Pokemon.Move>{ //0x11E048
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.Moves), 0, 0x38, commonRel.GetValueEntry(this.commonIndex.NumberOfMoves)).map((data, i) => (<Pokemon.Move>{ //0x11E048
                 id: i,
                 basePP: data[1],
                 type: this.typeNames[data[2]],
@@ -203,7 +203,7 @@ namespace RomReader {
         }
 
         protected ReadShadowData(commonRel: RelTable) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.ShadowData), 0, 0x38, commonRel.GetValueEntry(this.commonIndex.NumberOfShadowPokemon)).map((data, i) => (<ShadowData>{ //0x145224
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.ShadowData), 0, 0x38, commonRel.GetValueEntry(this.commonIndex.NumberOfShadowPokemon)).map((data, i) => (<ShadowData>{ //0x145224
                 id: i,
                 catchRate: data[0],
                 species: data.readUInt16BE(2),
@@ -212,7 +212,7 @@ namespace RomReader {
         }
 
         protected ReadTrainerData(commonRel: RelTable, names: StringTable = this.strings, classes: Pokemon.Trainer[] = this.trainerClasses) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Trainers), 0, 0x34, commonRel.GetValueEntry(this.commonIndex.NumberOfTrainers)).map((data, i) => (<Pokemon.Trainer>{ //0x92ED0
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.Trainers), 0, 0x34, commonRel.GetValueEntry(this.commonIndex.NumberOfTrainers)).map((data, i) => (<Pokemon.Trainer>{ //0x92ED0
                 id: i,
                 gender: data[0x0] ? "Female" : "Male",
                 classId: data[0x3],
@@ -224,7 +224,7 @@ namespace RomReader {
         }
 
         protected ReadTrainerClasses(commonRel: RelTable, names: StringTable = this.strings) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.TrainerClasses), 0, 0xC, commonRel.GetValueEntry(this.commonIndex.NumberOfTrainerClasses)).map((data, i) => (<Pokemon.Trainer>{ //0x90F70
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.TrainerClasses), 0, 0xC, commonRel.GetValueEntry(this.commonIndex.NumberOfTrainerClasses)).map((data, i) => (<Pokemon.Trainer>{ //0x90F70
                 classId: i,
                 className: names[data.readUInt32BE(0x4)] || data.readUInt32BE(0x4),
             }));

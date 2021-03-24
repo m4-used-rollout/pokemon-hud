@@ -48,7 +48,7 @@ namespace RomReader {
         }
 
         protected DecompressPointerCollection(romData: Buffer, startAddr: number, numPtrs: number, strideBytes = 8) {
-            return this.ReadStridedData(romData, startAddr, strideBytes, numPtrs).map(ptr => this.ReadRomPtr(ptr)).filter(addr => addr >= 0).map(addr => Tools.LZ77.Decompress(romData, addr));
+            return this.ReadArray(romData, startAddr, strideBytes, numPtrs).map(ptr => this.ReadRomPtr(ptr)).filter(addr => addr >= 0).map(addr => Tools.LZ77.Decompress(romData, addr));
         }
 
         CalculateHiddenPowerType(stats: TPP.Stats) {

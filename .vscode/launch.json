@@ -12,6 +12,7 @@
             "cwd": "${workspaceRoot}/bin/",
             "protocol": "inspector",
             "console": "integratedTerminal",
+            "outFiles": ["${workspaceRoot}/bin/"],
             "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
             "windows": {
                 "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"

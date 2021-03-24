@@ -76,8 +76,8 @@ namespace RamReader {
                     evolution_is_happening: false,
                     badges: struct.wObtainedBadges[0],
                     items: {
-                        items: this.rom.ReadStridedData(struct.wBagItems, 0, 2, struct.wNumBagItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
-                        pc: this.rom.ReadStridedData(struct.wBoxItems, 0, 2, struct.wNumBoxItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
+                        items: this.rom.ReadArray(struct.wBagItems, 0, 2, struct.wNumBagItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
+                        pc: this.rom.ReadArray(struct.wBoxItems, 0, 2, struct.wNumBoxItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
                     },
                     daycare: struct.wDayCareInUse[0] > 0 ? [this.ParsePokemon(struct.wDayCareMon, struct.wDayCareMon[0], struct.wDayCareMonName, struct.wDayCareMonOT)] : []
                 };
@@ -148,7 +148,7 @@ namespace RamReader {
             const currentBox = (data[0] & 0x1F) + 1;// + 15; //pbr
             // Active Box
             // sBox1-12
-            const pc = this.rom.ReadStridedData(data.slice(1), 0, this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
+            const pc = this.rom.ReadArray(data.slice(1), 0, this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
             const active = pc.shift();
             pc[currentBox - 1] = active;
             //pc[currentBox - 15] = active; //pbr
@@ -176,7 +176,7 @@ namespace RamReader {
             // wBoxMons::
             // wBoxMon1:: box_struct wBoxMon1
             // wBoxMon2:: ds box_struct_length * (MONS_PER_BOX + -1)
-            const box = numInBox ? this.rom.ReadStridedData(data, this.rom.symTable['wBoxMons'] - this.rom.symTable['wBoxDataStart'], this.rom.symTable['wBoxMon2'] - this.rom.symTable['wBoxMon1'], numInBox)
+            const box = numInBox ? this.rom.ReadArray(data, this.rom.symTable['wBoxMons'] - this.rom.symTable['wBoxDataStart'], this.rom.symTable['wBoxMon2'] - this.rom.symTable['wBoxMon1'], numInBox)
                 .map((p, i) => this.ParsePokemon(p, boxSpecies[i])) : [];
 
             if (numInBox) {
@@ -204,7 +204,7 @@ namespace RamReader {
             // wPartyMon4:: party_struct wPartyMon4 ; d1ef
             // wPartyMon5:: party_struct wPartyMon5 ; d21b
             // wPartyMon6:: party_struct wPartyMon6 ; d247
-            const party: TPP.PartyData = partyCount ? this.rom.ReadStridedData(data, this.rom.symTable['wPartyMons'] - this.rom.symTable['wPartyDataStart'], this.PartyMonSize(), partyCount)
+            const party: TPP.PartyData = partyCount ? this.rom.ReadArray(data, this.rom.symTable['wPartyMons'] - this.rom.symTable['wPartyDataStart'], this.PartyMonSize(), partyCount)
                 .map((p, i) => this.ParsePartyMon(p, partySpecies[i])) : [];
 
             if (partyCount) {
@@ -228,11 +228,11 @@ namespace RamReader {
         }
 
         protected AddOTNames(mons: Gen1BoxedMon[], data: Buffer, monCount: number) {
-            this.rom.ReadStridedData(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].original_trainer ? mons[i].original_trainer.name = this.rom.ConvertText(n) : null);
+            this.rom.ReadArray(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].original_trainer ? mons[i].original_trainer.name = this.rom.ConvertText(n) : null);
         }
 
         protected AddNicknames(mons: Gen1BoxedMon[], data: Buffer, monCount: number) {
-            this.rom.ReadStridedData(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].species ? mons[i].name = this.FixCapsNonNickname(this.rom.ConvertText(n), mons[i].species.name) : null);
+            this.rom.ReadArray(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].species ? mons[i].name = this.FixCapsNonNickname(this.rom.ConvertText(n), mons[i].species.name) : null);
         }
 
         protected FixCapsNonNickname(nick: string, speciesName: string) {

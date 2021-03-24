@@ -10,6 +10,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
         let displayOpts = config.displayOptions || ["text_speed", "battle_style", "battle_scene"];
         let pc: TPP.CombinedPCData = t.pc || { current_box_number: 0, boxes: [] };
         let pcBoxCount = (pc.boxes || []).filter(b => !!b && b.box_contents && b.box_number == pc.current_box_number).map(b => b.box_contents.length).shift() || 0;
+        let maxDex = (config.totalInDex || 0) + (t.seen_list || []).filter(i=>i > (config.totalInDex || 0) || i <= 0).length;
 
         return <div className={`trainer-info ${t.transitioning ? "glitch" : ""}`}>
             {/* {t.party.length <= 3 && t.items && t.items.candy && t.items.candy.length > 0 && <div className={`candy-counts ${((t.items.candy.length >= 40 || t.party.length > 3) && t.party.length >= 3) ? "way-too-much-candy" : t.items.candy.length >= 34 ? "too-much-candy" : ""}`}>
@@ -46,7 +47,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>
                     <span className="seen">{t.seen || 0}</span>
-                    <span className="total">{config.totalInDex || "???"}</span>
+                    <span className="total">{maxDex || "???"}</span>
                 </div>
                 {/* <div className="dex-counts">
                     <span className="owned">{t.game_stats && t.game_stats["Puzzles Completed"] || 0}</span>

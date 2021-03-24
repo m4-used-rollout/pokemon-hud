@@ -226,6 +226,11 @@
                                     height: (@party-member-height / 7);
                                 });
                             }
+
+                            i {
+                                margin: .1em .2em;
+                                top: .15em;
+                            }
                         }
 
                         .level {
@@ -367,6 +372,7 @@
                         width:100%;
                         padding:0;
                         margin:0;
+                        margin-top: .1em;
                         position: relative;
                         display: flex;
                         flex-flow: row wrap;
@@ -386,17 +392,47 @@
                                 margin-left:4%;
                             }
 
+                            &.chatty-hidden-power {
+                                width: 100%;
+                                font-size: 1.5em;
+                                margin-right: .1em;
+                                margin-left: -.1em;
+                                align-items: center;
+
+                                img {
+                                    border-radius: 0;
+                                    height: auto;
+                                    flex: 0 1 .7em;
+                                    width: 1em;
+                                    position: relative;
+                                    animation: hidden-power-reveal 20s ease 1 forwards;
+                                }
+                                .move-pp {
+                                    font-size: .8em;
+                                }
+                            }
+
                             img {
                                 height: .7em;
                                 align-self: center;
                                 border-radius: 50%;
                                 position: relative;
                             }
+                            i {
+                                font-size: .7em;
+                            }
                             .move-name {
                                 margin:auto;
                                 text-align: center;
                                 text-transform: capitalize;
                             }
+
+                            .move-power {
+                                margin: .25em;
+                                text-align: center;
+                                transform:scale(1.2);
+                            }
+
                             span:last-of-type {
                                 margin-left:auto;
                             }
@@ -1009,4 +1045,23 @@
             opacity: 0;
         }
     }
+}
+
+@keyframes hidden-power-reveal {
+    0%, 100% {
+        filter: contrast(0)brightness(20%);
+        // opacity: 0;
+        // margin-right: -.5em;
+    }
+    5%, 70% {
+        // margin-right: .1em;
+        // opacity: 1;
+        filter: none;
+    }
+
+    // 5%, 85% {
+    //     filter: brightness(0%);
+    //     opacity: 0;
+    //     transform: rotateY(90deg);
+    // }
 }

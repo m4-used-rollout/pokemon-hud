@@ -82,13 +82,13 @@ namespace RomReader {
             this.ballIds = this.items.filter((i: Gen3Item) => i.isPokeball).map(i => i.id);
             this.moves = this.ReadMoveData(romData, config);
             this.GetTMHMNames(romData, config);
-            this.shouldFixCaps = true;
+            this.shouldFixCaps = false; // Vega
             this.trainers = this.ReadTrainerData(romData, config);
             this.areas = this.ReadMapLabels(romData, config);
             // this.totalPuzzles = parseInt(config.PuzzleCount, 16); //TTH
             // this.puzzleList = [{ id: -1, bank: -1 },
             // ...(config.PuzzleList ?
-            //     this.ReadStridedData(romData, parseInt(config.PuzzleList, 16), 2, this.totalPuzzles, true, data => data.readUInt16LE(0) == 0xFFFF)
+            //     this.ReadArray(romData, parseInt(config.PuzzleList, 16), 2, this.totalPuzzles, true, data => data.readUInt16LE(0) == 0xFFFF)
             //         .map(m => ({ id: m[0], bank: m[1] }))
             //     : [])]; //TTH
             // this.totalPuzzles = this.totalPuzzles || (this.puzzleList.length - 1); //TTH
@@ -145,14 +145,14 @@ namespace RomReader {
         }
 
         private ReadAbilities(romData: Buffer, config: PGEINI) {
-            return this.ReadStridedData(romData, parseInt(config.AbilityNames, 16), 13, parseInt(config.NumberOfAbilities)).map(a => this.FixAllCaps(this.ConvertText(a)));
+            return this.ReadArray(romData, parseInt(config.AbilityNames, 16), 13, parseInt(config.NumberOfAbilities)).map(a => this.FixAllCaps(this.ConvertText(a)));
         }
 
         private ReadPokeData(romData: Buffer, config: PGEINI) {
-            let pokemonNames = this.ReadStridedData(romData, parseInt(config.PokemonNames, 16), 11, parseInt(config.NumberOfPokemon)).map(p => this.FixAllCaps(this.ConvertText(p)));
-            let dexMapping = this.ReadStridedData(romData, parseInt(config.NationalDexTable, 16), 2, parseInt(config.NumberOfPokemon)).map(n => n.readInt16LE(0));
+            let pokemonNames = this.ReadArray(romData, parseInt(config.PokemonNames, 16), 11, parseInt(config.NumberOfPokemon)).map(p => this.FixAllCaps(this.ConvertText(p)));
+            let dexMapping = this.ReadArray(romData, parseInt(config.NationalDexTable, 16), 2, parseInt(config.NumberOfPokemon)).map(n => n.readInt16LE(0));
             dexMapping.unshift(0);
-            return this.ReadStridedData(romData, parseInt(config.PokemonData, 16), 28, parseInt(config.NumberOfPokemon)).map((data, i) => (<Pokemon.Species>{
+            return this.ReadArray(romData, parseInt(config.PokemonData, 16), 28, parseInt(config.NumberOfPokemon)).map((data, i) => (<Pokemon.Species>{
                 name: pokemonNames[i],
                 id: i,
                 dexNumber: dexMapping[i],
@@ -186,8 +186,8 @@ namespace RomReader {
         }
 
         private ReadTrainerData(romData: Buffer, config: PGEINI) {
-            let trainerClasses = this.ReadStridedData(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ConvertText(tc)));
-            return this.ReadStridedData(romData, parseInt(config.TrainerTable, 16), 40, parseInt(config.NumberOfTrainers)).map((data, i) => (<Pokemon.Trainer>{
+            let trainerClasses = this.ReadArray(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ConvertText(tc)));
+            return this.ReadArray(romData, parseInt(config.TrainerTable, 16), 40, parseInt(config.NumberOfTrainers)).map((data, i) => (<Pokemon.Trainer>{
                 classId: data[1],
                 className: trainerClasses[data[1]],
                 id: i,
@@ -199,7 +199,7 @@ namespace RomReader {
 
         private ReadItemData(romData: Buffer, config: PGEINI) {
             const itemStructExtensionBytes = 0; //16 for TriHard Emerald and TTH2019
-            return this.ReadStridedData(romData, parseInt(config.ItemData, 16), 44 + itemStructExtensionBytes, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
+            return this.ReadArray(romData, parseInt(config.ItemData, 16), 44 + itemStructExtensionBytes, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
                 name: this.FixAllCaps(this.ConvertText(data)),
                 //name: this.ConvertText(romData.slice(this.ReadRomPtr(data, 0), 255 + this.ReadRomPtr(data, 0))), //TTH
                 //pluralName: this.ConvertText(romData.slice(data.readInt32LE(4) > 0 && !data.readInt32LE(8) ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0), 255 + (data.readInt32LE(4) > 0 ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0)))) + (data.readInt32LE(4) || data.readInt32LE(8) ? "" : "s"), //TTH
@@ -221,14 +221,14 @@ namespace RomReader {
         }
 
         private ReadMoveData(romData: Buffer, config: PGEINI) {
-            let moveNames = this.ReadStridedData(romData, parseInt(config.AttackNames, 16), 13, parseInt(config.NumberOfAttacks) + 1).map(p => this.FixAllCaps(this.ConvertText(p)));
-            let contestData = this.ReadStridedData(romData, parseInt(config.ContestMoveEffectData, 16), 4, parseInt(config.NumberOfAttacks)).map(data => ({
+            let moveNames = this.ReadArray(romData, parseInt(config.AttackNames, 16), 13, parseInt(config.NumberOfAttacks) + 1).map(p => this.FixAllCaps(this.ConvertText(p)));
+            let contestData = this.ReadArray(romData, parseInt(config.ContestMoveEffectData, 16), 4, parseInt(config.NumberOfAttacks)).map(data => ({
                 effect: contestEffects[data[0]],
                 appeal: new Array(Math.floor(data[1] / 10)).fill('♡').join(''),
                 jamming: new Array(Math.floor(data[2] / 10)).fill('♥').join('')
                 // Padding 1 byte
             }));
-            let contestMoveData = this.ReadStridedData(romData, parseInt(config.ContestMoveData, 16), 8, parseInt(config.NumberOfAttacks) + 1).map(data => ({
+            let contestMoveData = this.ReadArray(romData, parseInt(config.ContestMoveData, 16), 8, parseInt(config.NumberOfAttacks) + 1).map(data => ({
                 descriptionId: data[0],
                 contestType: contestTypes[data[1]],
                 effect: contestData[data[0]].effect,
@@ -238,7 +238,7 @@ namespace RomReader {
                 // Combos	3 bytes
                 // Padding	2 bytes
             }));
-            return this.ReadStridedData(romData, parseInt(config.AttackData, 16), 12, parseInt(config.NumberOfAttacks) + 1).map((data, i) => (<Pokemon.Move>{
+            return this.ReadArray(romData, parseInt(config.AttackData, 16), 12, parseInt(config.NumberOfAttacks) + 1).map((data, i) => (<Pokemon.Move>{
                 id: i,
                 name: moveNames[i],
                 // effect: data[0],
@@ -269,7 +269,7 @@ namespace RomReader {
 
         private GetTMHMNames(romData: Buffer, config: PGEINI) {
             const tmHmExp = /^(T|H)M(\d+)/i;
-            let moveMap = this.ReadStridedData(romData, parseInt(config.TMData, 16), 2, parseInt(config.TotalTMsPlusHMs)).map(m => m.readUInt16LE(0));
+            let moveMap = this.ReadArray(romData, parseInt(config.TMData, 16), 2, parseInt(config.TotalTMsPlusHMs)).map(m => m.readUInt16LE(0));
             let TMs = this.items.filter(i => tmHmExp.test(i.name));
             TMs.forEach(tm => {
                 let tmParse = tmHmExp.exec(tm.name);
@@ -280,11 +280,11 @@ namespace RomReader {
 
         private ReadMapLabels(romData: Buffer, config: PGEINI) {
             if (romData.readUInt32LE(parseInt(config.MapLabelData, 16)) < 0x8000000)
-                return this.ReadStridedData(romData, parseInt(config.MapLabelData, 16), 8, parseInt(config.NumberOfMapLabels)).map(data => {
+                return this.ReadArray(romData, parseInt(config.MapLabelData, 16), 8, parseInt(config.NumberOfMapLabels)).map(data => {
                     const addr = this.ReadRomPtr(data, 4);
                     return this.FixAllCaps(this.ConvertText(romData.slice(addr, addr + 20))).replace('ë', "Aqua"); //Sapphire
                 });
-            return this.ReadStridedData(romData, parseInt(config.MapLabelData, 16), this.isFRLG(config) ? 4 : 8, parseInt(config.NumberOfMapLabels))
+            return this.ReadArray(romData, parseInt(config.MapLabelData, 16), this.isFRLG(config) ? 4 : 8, parseInt(config.NumberOfMapLabels))
                 .map(ptr => {
                     const addr = this.ReadRomPtr(ptr, 0);
                     return this.FixAllCaps(this.ConvertText(romData.slice(addr, addr + 20)));
@@ -321,8 +321,8 @@ namespace RomReader {
             if (mapTrainerTableAddr < 0)
                 return [];
 
-            const trainerClasses = this.ReadStridedData(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ConvertText(tc)));
-            return this.ReadStridedData(romData, mapTrainerTableAddr, 36, 32, true, data => data.readUInt16LE(0) == 0).map((data, i) => (<Pokemon.Trainer>{
+            const trainerClasses = this.ReadArray(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ConvertText(tc)));
+            return this.ReadArray(romData, mapTrainerTableAddr, 36, 32, true, data => data.readUInt16LE(0) == 0).map((data, i) => (<Pokemon.Trainer>{
                 classId: data[1],
                 className: trainerClasses[data[1]],
                 id: i + 1,
@@ -334,16 +334,16 @@ namespace RomReader {
 
         //Trick or Treat House
         private GetPuzzleName(romData: Buffer, mapScriptPtr: number) {
-            return this.ReadStridedData(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x20).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
+            return this.ReadArray(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x20).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
         }
 
         private GetPuzzleAuthor(romData: Buffer, mapScriptPtr: number) {
-            return this.ReadStridedData(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x21).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
+            return this.ReadArray(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x21).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
         }
 
         private FindMapEncounters(romData: Buffer, config: PGEINI) {
             let wildPokemonPtr = this.FindPtrFromPreceedingData(romData, wildPokemonPtrMarker);
-            this.ReadStridedData(romData, wildPokemonPtr, 20).forEach(data => {
+            this.ReadArray(romData, wildPokemonPtr, 20).forEach(data => {
                 let mapBank = data[0], mapId = data[1];
                 if (mapBank == 0xFF && mapId == 0xFF)
                     return;
@@ -367,7 +367,7 @@ namespace RomReader {
             let setPtr = this.ReadRomPtr(romData, setAddr + 4);
             let groupRate = romData.readInt32LE(setAddr) / 100;
             try {
-                return this.CombineDuplicateEncounters(this.ReadStridedData(romData, setPtr, 4, encounterRates.length).map((data, i) => (<Pokemon.EncounterMon>{
+                return this.CombineDuplicateEncounters(this.ReadArray(romData, setPtr, 4, encounterRates.length).map((data, i) => (<Pokemon.EncounterMon>{
                     species: this.GetSpecies(data.readInt16LE(2)),
                     rate: encounterRates[i] * (includeGroupRate ? groupRate : 1),
                     requiredItem: this.GetItem(requiredItems[i])
@@ -382,7 +382,7 @@ namespace RomReader {
         private ReadMoveLearns(romData: Buffer, config: PGEINI) {
             const movelearns = {} as { [key: number]: Pokemon.MoveLearn[] };
             this.ReadPtrBlock(romData, parseInt(config.PokemonAttackTable, 16)).forEach((addr, i) => {
-                movelearns[i] = this.ReadStridedData(romData, addr, 2).map(data => {
+                movelearns[i] = this.ReadArray(romData, addr, 2).map(data => {
                     const raw = data.readUInt16LE(0);
                     const move = this.GetMove(raw % 0x200);
                     return {
@@ -402,8 +402,8 @@ namespace RomReader {
 
         private ReadEvolutions(romData: Buffer, config: PGEINI) {
             const evoCount = parseInt(config.NumberOfEvolutionsPerPokemon);
-            this.ReadStridedData(romData, parseInt(config.PokemonEvolutions, 16), 8 * evoCount, this.pokemon.length)
-                .map(evoData => this.ReadStridedData(evoData, 0, 8, evoCount)
+            this.ReadArray(romData, parseInt(config.PokemonEvolutions, 16), 8 * evoCount, this.pokemon.length)
+                .map(evoData => this.ReadArray(evoData, 0, 8, evoCount)
                     .map(e => this.ParseEvolution(e.readUInt16LE(0), e.readInt16LE(2), e.readUInt16LE(4)))
                 )
                 .forEach((evos, i) => this.pokemon[i] && (this.pokemon[i].evolutions = evos.filter(e => !!e)));

@@ -175,5 +175,11 @@ namespace RomReader {
             }
             return -1;
         }
+
+        protected GetSymbolSize(symbol:string) {
+            const addr = this.symTable[symbol];
+            const nextSymAddr = this.symTable[Object.keys(this.symTable).find((s,i,arr)=>i && arr[i-1] == symbol)];
+            return nextSymAddr - addr;
+        }
     }
 }

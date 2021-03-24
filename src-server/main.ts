@@ -17,6 +17,8 @@
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/electron/electron.d.ts" />
 /// <reference path="../ref/splits.d.ts" />
+/// <reference path="emotes.tsx" />
+
 
 
 module TPP.Server {
@@ -382,6 +384,12 @@ module TPP.Server {
     };
 
     export const fileExists = (path: string) => require('fs').existsSync(path);
+    
+    export let emotePuller:TrendingEmotesPuller.TrendingEmotesPuller = null;
+    if (config.emoteEffectsFile && config.emoteEndpoint) {
+        emotePuller = new TrendingEmotesPuller.TrendingEmotesPuller(config.emoteEndpoint, require(config.emoteEffectsFile), config.emotePollIntervalSeconds || 5, state);
+        MainProcessRegisterStateHandler(state=>emotePuller.updateBadgeCount(state));
+    }
 
 }
 

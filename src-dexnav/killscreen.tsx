@@ -5,7 +5,7 @@
 
 let ksMsgIndex = 0;
 
-const PartyIsFainted = (party: { health: number[] }[]) => !(party || []).some(p => p && p.health && p.health[0] > 0);
+const PartyIsFainted = (party: { health: number[], is_egg?: boolean }[]) => !(party || []).some(p => p && p.health && p.health[0] > 0) && !(party || []).every(p=>p && p.is_egg);
 
 class KillScreen extends PersistentComponent<{ party: TPP.PartyData, enemyParty: TPP.EnemyParty, playerName:string }> {
     render() {

@@ -17,8 +17,8 @@ namespace RomReader {
         }
 
         protected ReadPokeData(commonRel: RelTable, names: StringTable = this.strings) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.PokemonStats), 0, 0x11C, commonRel.GetValueEntry(this.commonIndex.NumberOfPokemon)).map((data, i) => { //0x12336C
-                this.moveLearns[i] = this.ReadStridedData(data, 0xBA, 4, 20, true, 0)
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.PokemonStats), 0, 0x11C, commonRel.GetValueEntry(this.commonIndex.NumberOfPokemon)).map((data, i) => { //0x12336C
+                this.moveLearns[i] = this.ReadArray(data, 0xBA, 4, 20, true, 0)
                     .map(mData => Object.assign({
                         level: mData[0]
                     }, this.GetMove(mData.readUInt16BE(2))) as Pokemon.MoveLearn);
@@ -35,7 +35,7 @@ namespace RomReader {
                     type1: this.typeNames[data[0x30]],
                     type2: this.typeNames[data[0x31]],
                     abilities: [this.abilities[data[0x32]], this.abilities[data[0x33]]].filter(a => a != '-'),
-                    tmCompat: this.ReadStridedData(data, 0x34, 1, 58)
+                    tmCompat: this.ReadArray(data, 0x34, 1, 58)
                         .map((c, i) => c[0] ? i + 1 : 0)
                         .filter(i => !!i)
                         .map(tm => `${tm < 51 ? "T" : "H"}M${tm > 50 || tm < 10 ? "0" : ""}${tm > 50 ? tm - 50 : tm}`),
@@ -49,7 +49,7 @@ namespace RomReader {
                         spdef: data.readUInt16BE(0x8C),
                         speed: data.readUInt16BE(0x8E),
                     },
-                    evolutions: this.ReadStridedData(data, 0x9C, 6, 5)
+                    evolutions: this.ReadArray(data, 0x9C, 6, 5)
                         .filter(d => d.readUInt16BE(0) > 0).map(eData => {
                             const type = eData.readUInt16BE(0);
                             return {
@@ -66,7 +66,7 @@ namespace RomReader {
         }
 
         protected ReadRooms(commonRel: RelTable, names: StringTable = this.strings) {
-            return this.ReadStridedData(commonRel.GetRecordEntry(this.commonIndex.Rooms), 0, 0x4C, commonRel.GetValueEntry(this.commonIndex.NumberOfRooms)).map(data => (<Pokemon.Map>{ //0x8D540
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.Rooms), 0, 0x4C, commonRel.GetValueEntry(this.commonIndex.NumberOfRooms)).map(data => (<Pokemon.Map>{ //0x8D540
                 id: data.readUInt32BE(0x4),
                 name: names[data.readUInt32BE(0x24)] || this.unlabeledMaps[data.readUInt32BE(0x4)]
             }));

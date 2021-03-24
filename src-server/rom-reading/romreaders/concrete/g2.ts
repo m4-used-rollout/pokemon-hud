@@ -6,7 +6,7 @@ namespace RomReader {
 
     const config = gen2Offsets;
 
-    const types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bird", "Bug", "Ghost", "Steel", "", "", "", "", "", "", "", "", "", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
+    const types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bird", "Bug", "Ghost", "Steel", "", "", "", "", "", "", "", "", "", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy"];
     const eggGroups = ["???", "Monster", "Water 1", "Bug", "Flying", "Ground", "Fairy", "Plant", "Humanshape", "Water 3", "Mineral", "Indeterminate", "Water 2", "Ditto", "Dragon", "Undiscovered"];
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.SlightlyFast, Pokemon.ExpCurve.SlightlySlow, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
     const expCurveNames = ["Medium Fast", "Slightly Fast", "Slightly Slow", "Medium Slow", "Fast", "Slow"];
@@ -20,7 +20,7 @@ namespace RomReader {
     const fishingRods = ['oldRod', 'goodRod', 'superRod'];
     const fishingRodIds = { oldRod: 58, goodRod: 59, superRod: 61 };
 
-    const tmCount = 50, hmCount = 7, moveTutor = 3, itemCount = 256, dexCount = 256, moveCount = 251, mapBanks = 26, trainerClasses = 67;
+    const tmCount = 50, hmCount = 7, moveTutor = 3, itemCount = 256, dexCount = 256, moveCount = 251;
 
     interface ClearFix { [key: number]: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } };
     const pokeSpriteClearFix: ClearFix = {};
@@ -207,7 +207,7 @@ namespace RomReader {
     // pokeSpriteClearFix[207] = { start: [[35, 37], [17, 18], [18, 17]] }; //Gligala
     // pokeSpriteClearFix[204] = { start: [[40, 33]] }; //Pinehoot
     // pokeSpriteClearFix[198] = { start: [[11, 16], [8, 25], [12, 34], [21, 29], [22, 30], [21, 27], [22, 26], [43, 33], [45, 46], [45, 15]] }; //Murfish
-    // pokeSpriteClearFix[194] = { start: [[35, 37]] }; //Woochum   
+    // pokeSpriteClearFix[194] = { start: [[35, 37]] }; //Woochum
     // pokeSpriteClearFix[193] = { start: [[26, 26], [11, 32], [17, 37], [14, 34], [15, 33]] }; //Yamnasola
     // pokeSpriteClearFix[192] = { start: [[16, 34], [23, 34], [37, 33]] }; //Sunfersian
     // pokeSpriteClearFix[191] = { start: [[30, 21], [31, 20], [26, 19]] }; //Sunowth
@@ -241,8 +241,8 @@ namespace RomReader {
     // pokeSpriteClearFix[126] = { start: [[18, 31]] }; //Magmastar
     // pokeSpriteClearFix[125] = { start: [[13, 23], [42, 23], [42, 30], [31, 42]] }; //Electadian
     // pokeSpriteClearFix[123] = { start: [[32, 32], [34, 31], [39, 34], [40, 35]] }; //Scythemite
-    // pokeSpriteClearFix[122] = { start: [[16, 30], [17, 29], [35, 42]] }; //Mr. Tank	
-    // pokeSpriteClearFix[116] = { start: [[31, 27]] }; //Seaodude	
+    // pokeSpriteClearFix[122] = { start: [[16, 30], [17, 29], [35, 42]] }; //Mr. Tank
+    // pokeSpriteClearFix[116] = { start: [[31, 27]] }; //Seaodude
     // pokeSpriteClearFix[110] = { start: [[30, 37]] }; //Weezomoth
     // pokeSpriteClearFix[107] = { start: [[25, 41]] }; //Hitmoneon
     // pokeSpriteClearFix[107] = { start: [[44, 40]] }; //Hitmonossom
@@ -352,10 +352,10 @@ namespace RomReader {
     trainerSpriteClearFix[56] = { start: [[21, 18], [20, 19]] }; //Trainer Guy
     trainerSpriteClearFix[57] = { start: [[21, 18], [33, 17]] }; //Trainer Gal
     trainerSpriteClearFix[59] = { start: [[19, 39], [20, 38]] }; //Pokefan
-    trainerSpriteClearFix[61] = { start: [[8, 29], [10, 35], [22, 37], [23, 38], [42, 37], [27, 23]] }; //Twins
+    trainerSpriteClearFix[/*61*/36] = { start: [[8, 29], [10, 35], [22, 37], [23, 38], [42, 37], [27, 23]] }; //Twins /*Chatty Crystal*/
     // trainerSpriteClearFix[63] = { start: [[18, 23], [19, 22], [35, 29], [36, 28], [28, 43]] }; //Azure (TPP Red replacement for Pyrite)
     trainerSpriteClearFix[64] = { start: [[19, 21], [20, 20]] }; //Blue
-    trainerSpriteClearFix[65] = { stop: [[19, 33], [19, 34], [20, 34]] }; //Officer
+    trainerSpriteClearFix[/*65*/39] = { stop: [[19, 33], [19, 34], [20, 34]] }; //Officer /*Chatty Crystal*/
 
 
     interface Gen2Item extends Pokemon.Item {
@@ -389,7 +389,7 @@ namespace RomReader {
         private treeSummary = new Array<TreeSummary>();
         private fishingSummary = { fishGroups: new Array<FishingSummary>(), timeFishGroups: new Array<{ day: EncounterSummary, night: EncounterSummary }>() };
         private trainerSummary = new Array<TrainerSummary[]>();
-        private phoneContacts = new Array<string>();
+        private phoneContacts = new Array<string>()
 
         constructor(romFileLocation: string) {
             super(romFileLocation, config.charmap);
@@ -398,12 +398,15 @@ namespace RomReader {
             let romData = this.loadROM();
             this.symTable = this.LoadSymbolFile(romFileLocation.replace(/\.[^.]*$/, '.sym'));
 
+            if (this.isCrystal16)
+                this.types = types; //append Fairy
+
             this.CalculateTimesOfDay(romData);
             this.items = this.ReadItemData(romData);
             this.moves = this.ReadMoveData(romData);
             this.tmMapping = this.GetTMHMNames(romData);
             this.pokemon = this.ReadPokeData(romData);
-            this.trainers = this.ReadTrainerData(romData);
+            this.trainers = this.isCrystal16 ? this.ReadCrystal16TrainerData(romData) : this.ReadTrainerData(romData);
             this.ballIds = this.items.filter((i: Gen2Item) => i.pocket == "Ball").map(i => i.id);
             this.areas = this.ReadAreaNames(romData);
             this.maps = this.ReadMaps(romData);
@@ -416,7 +419,51 @@ namespace RomReader {
             this.trainerSprites = this.ReadTrainerSprites(romData);
             this.frameBorders = this.ReadFrameBorders(romData);
             this.phoneContacts = this.ReadPhoneContacts(romData);
-            //this.levelCaps = this.ReadPyriteLevelCaps(romData);
+            // this.levelCaps = this.ReadPyriteLevelCaps(romData);
+        }
+
+        public get isCrystal16() {
+            return !!this.symTable["wPokemonIndexTable"];
+        }
+
+        private NearToFarPointer(ptrAddress: number, nearPtr: Buffer) {
+            const bank = this.LinearAddressToBanked(ptrAddress).bank;
+            const farAddr = this.BankAddressToLinear(bank, nearPtr.readUInt16LE(0));
+            const farBuf = Buffer.alloc(4);
+            farBuf.writeUInt32LE(farAddr, 0);
+            return farBuf;
+        }
+
+        public ReadCrystal16IndirectionTable(romData: Buffer, address: number, skipEmptyZero = false) {
+            let entryBytes = romData.readInt16LE(address);
+            const noZeroRecord = (entryBytes & 0x8000) == 0x8000;
+            entryBytes &= 0x7FFF;
+            const entries = new Array<Buffer>();
+            if (noZeroRecord && !skipEmptyZero)
+                entries.push(Buffer.alloc(entryBytes == 2 ? 4 : entryBytes, 0));
+            for (let i = address + 2; i < romData.length; i += 4) {
+                let batchCount = romData[i];
+                if (!batchCount) // Table terminator
+                    return entries;
+                let batchAddress = this.BankAddressToLinear(romData[i + 1], romData.readUInt16LE(i + 2));
+                if (!batchAddress) // Batch does not exist (table is sparse)
+                    for (let e = 0; e < batchCount; e++)
+                        entries.push(Buffer.alloc(entryBytes == 2 ? 4 : entryBytes, 0));
+                else
+                    this.ReadArray(romData, batchAddress, entryBytes, batchCount).forEach((e, i) => entryBytes == 2
+                        ? entries.push(this.NearToFarPointer(batchAddress + (i * entryBytes), e)) // double indirection table (table points to near pointers that need to be converted to far pointers)
+                        : entries.push(e) // single indirection table (table points to data)
+                    );
+            }
+            return entries;
+        }
+
+        public ReadCrystal16ListItems(romData: Buffer, address: number) {
+            const entries = new Array<Buffer>();
+            for (let a = address; romData[a] != 0; a += romData[a])
+                entries.push(romData.slice(a + 1, a + romData[a])); //remove List Item byte
+            //TODO: There is no terminator for list items. Need to find a way to figure out when a list has ended.
+            return entries;
         }
 
         public GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData) {
@@ -439,14 +486,18 @@ namespace RomReader {
         }
 
         private ReadPyriteLevelCaps(romData: Buffer) {
-            return this.ReadStridedData(romData, 0x3fef, 1, 17).map(l => l[0]).filter(l => l > 0);
+            return this.ReadArray(romData, 0x3fef, 1, 17).map(l => l[0]).filter(l => l > 0);
+        }
+
+        public get NumPokemon() {
+            return this.pokemon.length;
         }
 
         private ReadPhoneContacts(romData: Buffer) {
             const contactNameBank = this.LinearAddressToBanked(this.symTable['NonTrainerCallerNames']).bank;
-            const nonTrainerContactNames = this.ReadStridedData(romData.slice(this.symTable['NonTrainerCallerNames'], this.symTable['NonTrainerCallerNames.none']), 0, 2, 255)
+            const nonTrainerContactNames = this.ReadArray(romData.slice(this.symTable['NonTrainerCallerNames'], this.symTable['NonTrainerCallerNames.none']), 0, 2, 255)
                 .map(ptr => this.FixAllCaps(this.ConvertText(romData.slice(this.BankAddressToLinear(contactNameBank, ptr.readUInt16LE(0))))));
-            return this.ReadStridedData(romData.slice(this.symTable['PhoneContacts'], this.symTable['SpecialPhoneCallList']), 0, 12, 255).map((data) => {
+            return this.ReadArray(romData.slice(this.symTable['PhoneContacts'], this.symTable['SpecialPhoneCallList']), 0, 12, 255).map((data) => {
                 const trainerClass = data[0];
                 if (trainerClass == 0)
                     return (nonTrainerContactNames[data[1]] || "").replace(':', '').replace('\n', ':').replace(/\s+/g, ' ');
@@ -458,24 +509,24 @@ namespace RomReader {
         }
 
         private FindFishingEncounters(romData: Buffer) {
-            let switchFish = this.ReadStridedData(romData, this.symTable[config.TimeFishGroups], 4, 255, true).map(fish => ({ day: fish[0], night: fish[2] }));
-            this.fishingSummary.timeFishGroups = this.ReadStridedData(romData, this.symTable[config.TimeFishGroups], 4, 22, true).map(fish => ({ day: { species: fish[0], level: fish[1] }, night: { species: fish[2], level: fish[3] } }));
+            let switchFish = this.ReadArray(romData, this.symTable[config.TimeFishGroups], this.isCrystal16 ? 6 : 4, 255, true).map(fish => ({ day: this.isCrystal16 ? fish.readUInt16LE(1) : fish[0], night: this.isCrystal16 ? fish.readUInt16LE(4) : fish[2] }));
+            this.fishingSummary.timeFishGroups = this.ReadArray(romData, this.symTable[config.TimeFishGroups], this.isCrystal16 ? 6 : 4, 22, true).map(fish => ({ day: { species: this.isCrystal16 ? fish.readUInt16LE(1) : fish[0], level: this.isCrystal16 ? fish[0] : fish[1] }, night: { species: this.isCrystal16 ? fish.readUInt16LE(4) : fish[2], level: fish[3] } }));
             // switchFish.unshift({ day: 0, night: 0 });
             const fishBank = this.LinearAddressToBanked(this.symTable[config.FishingWildsOffset]).bank, fishEncounterGroupsStartAddr = this.BankAddressToLinear(fishBank, romData.readUInt16LE(this.symTable[config.FishingWildsOffset] + 1));
-            let fishEncounterGroups = this.ReadStridedData(romData.slice(this.symTable[config.FishingWildsOffset], fishEncounterGroupsStartAddr), 0, 7).map((header, i, arr) => {
+            let fishEncounterGroups = this.ReadArray(romData.slice(this.symTable[config.FishingWildsOffset], fishEncounterGroupsStartAddr), 0, 7).map((header, i, arr) => {
                 let nibbleRate = header[0] / 255;
                 let fishEncs = Array<{ id: number; rate: number; level: number, rodType: string; }>();
                 let summary = { fishGroup: i, encounters: { oldRod: [], goodRod: [], superRod: [] } } as FishingSummary;
                 let processFishEncs = (addr: number, nextAddr: number, rodType: string) => {
-                    this.ReadStridedData(romData.slice(addr, nextAddr < addr ? addr + 255 : nextAddr), 0, 3, 4)
-                        .map(enc => ({ rate: Math.round(enc[0] * 100 / 255), id: enc[1], level: enc[2], rodType: rodType }))
+                    this.ReadArray(romData.slice(addr, nextAddr < addr ? addr + 255 : nextAddr), 0, this.isCrystal16 ? 4 : 3, 4)
+                        .map(enc => ({ rate: Math.round(enc[0] * 100 / 255), id: this.isCrystal16 ? enc.readUInt16LE(2) : enc[1], level: enc[this.isCrystal16 ? 1 : 2], rodType: rodType }))
                         .reverse().map((enc, i, arr) => {
                             enc.rate -= (arr[i + 1] || { rate: 0 }).rate; //fishing rate is progressive, needs to be calculated based on previous encounters
                             enc.rate = Math.round(nibbleRate * enc.rate); //also make fishing encounters take into account how likely it is to get a nibble at all
                             return enc;
                         }).reverse().forEach(e => fishEncs.push(e));
-                    summary.encounters[rodType] = this.ReadStridedData(romData.slice(addr, nextAddr < addr ? addr + 255 : nextAddr), 0, 3, 4)
-                        .map(enc => ({ rate: Math.round(enc[0] * 100 / 255), species: enc[1], level: enc[2] }));
+                    summary.encounters[rodType] = this.ReadArray(romData.slice(addr, nextAddr < addr ? addr + 255 : nextAddr), 0, this.isCrystal16 ? 4 : 3, 4)
+                        .map(enc => ({ rate: Math.round(enc[0] * 100 / 255), species: this.isCrystal16 ? enc.readUInt16LE(2) : enc[1], level: enc[this.isCrystal16 ? 1 : 2] }));
                 }
                 let oldRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(1)),
                     goodRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(3)),
@@ -509,30 +560,30 @@ namespace RomReader {
             const treeMapAddr = this.symTable["TreeMonMaps"];
             const rockMapAddr = this.symTable["RockMonMaps"];
             const bank = this.LinearAddressToBanked(startAddr).bank;
-            this.treeSummary = this.ReadStridedData(romData, startAddr, 2, 9).map(ptr => {
+            const structBytes = this.isCrystal16 ? 4 : 3;
+            this.treeSummary = this.ReadArray(romData, startAddr, 2, 9).map(ptr => {
                 const summary = {} as TreeSummary;
                 let addr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
-                summary.common = this.ReadStridedData(romData, addr, 3).map(data => ({ rate: data[0], species: data[1], level: data[2] }));
-                addr += summary.common.length * 3 + 1;
+                summary.common = this.ReadArray(romData, addr, structBytes).map(data => ({ rate: data[0], species: this.isCrystal16 ? data.readUInt16LE(2) : data[1], level: data[this.isCrystal16 ? 1 : 2] }));
+                addr += summary.common.length * structBytes + 1;
                 if (addr < endAddr)
-                    summary.rare = this.ReadStridedData(romData, addr, 3).map(data => ({ rate: data[0], species: data[1], level: data[2] }));
+                    summary.rare = this.ReadArray(romData, addr, structBytes).map(data => ({ rate: data[0], species: this.isCrystal16 ? data.readUInt16LE(2) : data[1], level: data[this.isCrystal16 ? 1 : 2] }));
                 return summary;
             });
         }
 
         private FindMapEncounters(romData: Buffer) {
-            const grassBytes = 47;
-            const surfBytes = 9;
-            // const johtoGrassGroups = this.ReadStridedData(romData, this.symTable[config.WildPokemonOffset], grassBytes);
-            // const johtoSurfGroups = this.ReadStridedData(romData, this.symTable[config.WildPokemonOffset] + (johtoGrassGroups.length * grassBytes) + 1, surfBytes);
-            // const kantoGrassGroups = this.ReadStridedData(romData, this.symTable[config.WildPokemonOffset] + (johtoGrassGroups.length * grassBytes) + (johtoSurfGroups.length * surfBytes) + 2, grassBytes);
-            // const kantoSurfGroups = this.ReadStridedData(romData, this.symTable[config.WildPokemonOffset] + (johtoGrassGroups.length * grassBytes) + (kantoGrassGroups.length * grassBytes) + (johtoSurfGroups.length * surfBytes) + 3, surfBytes);
-            const johtoGrassGroups = this.ReadStridedData(romData, this.symTable["JohtoGrassWildMons"], grassBytes);
-            const johtoSurfGroups = this.ReadStridedData(romData, this.symTable["JohtoWaterWildMons"], surfBytes);
-            const kantoGrassGroups = this.ReadStridedData(romData, this.symTable["KantoGrassWildMons"], grassBytes);
-            const kantoSurfGroups = this.ReadStridedData(romData, this.symTable["KantoWaterWildMons"], surfBytes);
-            const grassGroups = johtoGrassGroups.concat(...kantoGrassGroups);
-            const surfGroups = johtoSurfGroups.concat(...kantoSurfGroups);
+            const encounterBytes = this.isCrystal16 ? 3 : 2;
+            const grassBytes = 2 + 3 + (encounterBytes * 7 * 3); // Map + Rates + Morn/Day/Night (7 encounters each)
+            const surfBytes = 2 + 1 + (encounterBytes * 3); // Map + Rate + 3 encounters
+            const johtoGrassGroups = this.ReadArray(romData, this.symTable["JohtoGrassWildMons"], grassBytes);
+            const johtoSurfGroups = this.ReadArray(romData, this.symTable["JohtoWaterWildMons"], surfBytes);
+            const kantoGrassGroups = this.ReadArray(romData, this.symTable["KantoGrassWildMons"], grassBytes);
+            const kantoSurfGroups = this.ReadArray(romData, this.symTable["KantoWaterWildMons"], surfBytes);
+            const grassGroups = [...johtoGrassGroups, ...kantoGrassGroups];
+            const surfGroups = [...johtoSurfGroups, ...kantoSurfGroups];
+
+            const species = (data: Buffer, offset: number) => (this.isCrystal16 ? data.readUInt16LE(offset) : data[offset]);
 
             function summarizeEncounters(raw: Buffer[]): GrassSummary[];
             function summarizeEncounters(raw: Buffer[], surfing: true): SurfSummary[];
@@ -544,15 +595,15 @@ namespace RomReader {
                     if (surfing) {
                         const surfSummary = summary as SurfSummary;
                         surfSummary.rate = Math.round(data[2] * 100 / 255);
-                        surfSummary.encounters = surfEncounterRates.map((rate, r) => ({ level: data[3 + (r * 2)], species: data[4 + (r * 2)], rate }));
+                        surfSummary.encounters = surfEncounterRates.map((rate, r) => ({ level: data[3 + (r * encounterBytes)], species: species(data, 4 + (r * encounterBytes)), rate }));
                     }
                     else {
                         const grassSummary = summary as GrassSummary;
                         grassSummary.rates = [Math.round(data[2] * 100 / 255), Math.round(data[3] * 100 / 255), Math.round(data[4] * 100 / 255)];
                         grassSummary.encounters = { morning: [], day: [], night: [] };
-                        const grassStride = grassEncounterRates.length * 2;
+                        const grassStride = grassEncounterRates.length * encounterBytes;
                         encounterTimesOfDay.forEach((time, t) => {
-                            grassSummary.encounters[time] = grassEncounterRates.map((rate, r) => ({ level: data[5 + (t * grassStride) + (r * 2)], species: data[6 + (t * grassStride) + (r * 2)], rate }));
+                            grassSummary.encounters[time] = grassEncounterRates.map((rate, r) => ({ level: data[5 + (t * grassStride) + (r * encounterBytes)], species: species(data, 6 + (t * grassStride) + (r * encounterBytes)), rate }));
                         });
                     }
                     return summary;
@@ -576,7 +627,7 @@ namespace RomReader {
                     let areaRate = data[2 + t];
                     map.encounters[time].grass = this.CombineDuplicateEncounters(
                         grassEncounterRates.map((rate, r) => (<Pokemon.EncounterMon>{
-                            species: this.GetSpecies(data[3 + encounterTimesOfDay.length + (t * grassEncounterRates.length * 2) + (r * 2)]),
+                            species: this.GetSpecies(species(data, 3 + encounterTimesOfDay.length + (t * grassEncounterRates.length * encounterBytes) + (r * encounterBytes))),
                             rate: rate
                         }))
                     );
@@ -588,7 +639,7 @@ namespace RomReader {
                 let areaRate = data[2];
                 let encounters = this.CombineDuplicateEncounters(
                     surfEncounterRates.map((rate, r) => (<Pokemon.EncounterMon>{
-                        species: this.GetSpecies(data[4 + (r * 2)]),
+                        species: this.GetSpecies(species(data, 4 + (r * encounterBytes))),
                         rate: rate
                     }))
 
@@ -596,19 +647,23 @@ namespace RomReader {
                 encounterTimesOfDay.forEach(time => map.encounters[time].surfing = encounters);
             });
             let bugCatchingContest = prepMap(0x10, 3);
-            let bugCatchingEncounters = this.CombineDuplicateEncounters(this.ReadStridedData(romData, this.symTable[config.BugContestWilds], 4, 11).filter(data => data[0] <= 100).map(data => (<Pokemon.EncounterMon>{
+            let bugCatchingEncounters = this.CombineDuplicateEncounters(this.ReadArray(romData, this.symTable[config.BugContestWilds], this.isCrystal16 ? 5 : 4, 11).filter(data => data[0] <= 100).map(data => (<Pokemon.EncounterMon>{
                 rate: data[0],
-                species: this.GetSpecies(data[1])
+                species: this.GetSpecies(species(data, 1))
             })));
             encounterTimesOfDay.forEach(time => bugCatchingContest.encounters[time].grass = bugCatchingContest.encounters[time].grass || bugCatchingEncounters)
             //Not present: Headbutt/Rock Smash (another function), Swarms (unhandled), Fishing (another function)
         }
 
+        private get NumMapGroups() {
+            return (this.symTable["Roofs"] - this.symTable["MapGroupRoofs"]) - 1
+        }
+
         private ReadMaps(romData: Buffer) {
             const mapHeaderBytes = 9;
-            return this.ReadStridedData(romData, this.symTable[config.MapHeaders], 2, mapBanks)
+            return this.ReadArray(romData, this.symTable[config.MapHeaders], 2, this.NumMapGroups)
                 .map(bankPtr => this.SameBankPtrToLinear(this.symTable[config.MapHeaders], bankPtr.readUInt16LE(0)))
-                .map((ptr, b, arr) => this.ReadStridedData(romData, ptr, mapHeaderBytes, ((arr[b + 1] - ptr) / mapHeaderBytes) || 12)
+                .map((ptr, b, arr) => this.ReadArray(romData, ptr, mapHeaderBytes, ((arr[b + 1] - ptr) / mapHeaderBytes) || 12)
                     .map((mapHeader, m) => (<Gen2Map>{
                         bank: b + 1,
                         id: m + 1,
@@ -622,14 +677,14 @@ namespace RomReader {
         }
 
         private ReadAreaNames(romData: Buffer) {
-            return this.ReadStridedData(romData, this.symTable[config.AreaNamesOffset], 4, 97)
+            return this.ReadArray(romData, this.symTable[config.AreaNamesOffset], 4, this.GetSymbolSize(config.AreaNamesOffset) / 4)
                 .map(data => this.FixAllCaps(this.ConvertText(romData.slice(this.SameBankPtrToLinear(this.symTable[config.AreaNamesOffset], data.readUInt16LE(2)))) || ''));
         }
 
         private GetTMHMNames(romData: Buffer) {
             let tmExp = /^[TH]M\d\d$/i;
             let tms = this.items.filter(i => tmExp.test(i.name));
-            const mapping = this.ReadStridedData(romData, this.symTable[config.TMMovesOffset], 1, null, null, 0).map(m => this.moves[m[0]]);
+            const mapping = this.ReadArray(romData, this.symTable[config.TMMovesOffset], this.isCrystal16 ? 2 : 1, null, null, 0).map(m => this.moves[this.isCrystal16 ? m.readUInt16LE(0) : m[0]]);
             mapping.forEach((m, i) => tms[i] && (tms[i].name = tms[i].name.toUpperCase() + ' ' + m.name));
             mapping.unshift(null);
             return mapping;
@@ -637,16 +692,17 @@ namespace RomReader {
 
         private ReadMoveData(romData: Buffer) {
             const dataBytes = 7;
-            let movesOffset = this.symTable[config.MoveDataOffset] - dataBytes; //include 00
-            let moveNames = this.ReadStringBundle(romData, this.symTable[config.MoveNamesOffset], moveCount).map(m => this.FixAllCaps(m));
+            const movesOffset = this.symTable[config.MoveDataOffset] - (this.isCrystal16 ? 0 : dataBytes); //include 00
+            const moveData = this.isCrystal16 ? this.ReadCrystal16IndirectionTable(romData, movesOffset) : this.ReadArray(romData, movesOffset, dataBytes, moveCount + 1)
+            const moveNames = this.ReadStringBundle(romData, this.symTable[config.MoveNamesOffset], moveData.length - 1).map(m => this.FixAllCaps(m));
             moveNames.unshift(''); //move 0
-            return this.ReadStridedData(romData, movesOffset, dataBytes, moveCount + 1).map((data, i) => (<Pokemon.Move>{
+            return moveData.map((data, i) => (<Pokemon.Move>{
                 id: i,
                 name: moveNames[i],
-                basePower: data[0x02],
-                type: types[data[0x03]],
-                accuracy: data[0x04],
-                basePP: data[0x05]
+                basePower: data[this.isCrystal16 ? 1 : 2],
+                type: types[data[this.isCrystal16 ? 2 : 3]],
+                accuracy: data[this.isCrystal16 ? 3 : 4],
+                basePP: data[this.isCrystal16 ? 4 : 5]
             }));
         }
 
@@ -655,7 +711,7 @@ namespace RomReader {
             let itemsOffset = this.symTable[config.ItemAttributesOffset] - dataBytes; //include 00
             let itemNames = this.ReadStringBundle(romData, this.symTable[config.ItemNamesOffset], itemCount - 1).map(i => this.FixAllCaps(i));
             itemNames.unshift(''); //item 0
-            return this.ReadStridedData(romData, itemsOffset, dataBytes, itemCount).map((data, i) => (<Gen2Item>{
+            return this.ReadArray(romData, itemsOffset, dataBytes, itemCount).map((data, i) => (<Gen2Item>{
                 id: i,
                 name: itemNames[i],
                 price: data.readUInt16BE(0x00),
@@ -664,32 +720,70 @@ namespace RomReader {
             }));
         }
 
+        private ReadCrystal16TrainerData(romData: Buffer) {
+            const trainerClasses = this.TrainerClassCount(romData);
+            let classNames = this.ReadStringBundle(romData, this.symTable[config.TrainerClassNamesOffset], trainerClasses).map(n => this.FixAllCaps(n));
+            classNames.unshift(""); //trainer class 0
+            let trainers: Pokemon.Trainer[] = [];
+            this.ReadArray(romData, this.symTable[config.TrainerGroupsOffset], 3, trainerClasses).forEach((ptr, cId) => {
+                cId++;
+                const addr = this.BankAddressToLinear(ptr[0], ptr.readUInt16LE(1));
+                //const trainerGroup = new Array<TrainerSummary>();
+                this.ReadCrystal16ListItems(romData, addr).forEach((tData, tId) => {
+                    const partyStart = this.FindTerminator(tData) + 2;
+                    const trainerType = tData[partyStart - 1] || 0;
+
+                    const name = this.ConvertText(tData);
+
+                    //TODO: Party
+
+                    //trainerGroup.push({ name: name, type: trainerType, party: (party || []).map(p => ({ level: p.level, species: p.species.id, moves: p.moves ? p.moves.map(m => (m || { id: 0 }).id) : undefined, item: (p.item || { id: undefined }).id })) });
+                    trainers.push({
+                        classId: cId,
+                        spriteId: cId,
+                        id: tId + 1,
+                        className: classNames[cId],
+                        name: this.FixAllCaps(name),
+                        trainerType: trainerTypes[trainerType] || trainerType.toString(),
+                        //party: party
+                    } as Gen2Trainer);
+                });
+                //this.trainerSummary.push(trainerGroup);
+            });
+            return trainers;
+        }
+
+        private TrainerClassCount(romData:Buffer) {
+            return this.GetSymbolSize("TrainerPicPointers") / 3;
+        }
+
         private ReadTrainerData(romData: Buffer) {
+            const trainerClasses = this.TrainerClassCount(romData);
             let classNames = this.ReadStringBundle(romData, this.symTable[config.TrainerClassNamesOffset], trainerClasses).map(n => this.FixAllCaps(n));
             classNames.unshift(""); //trainer class 0
             let trainers: Pokemon.Trainer[] = [];
             let bank = this.LinearAddressToBanked(this.symTable[config.TrainerGroupsOffset]).bank;
-            this.ReadStridedData(romData, this.symTable[config.TrainerGroupsOffset], 2, trainerClasses).forEach((ptr, cId, ptrArr) => {
+            this.ReadArray(romData, this.symTable[config.TrainerGroupsOffset], 2, trainerClasses).forEach((ptr, cId, ptrArr) => {
                 cId++;
                 let thisAddr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
                 let nextAddr = ptrArr[cId] ? this.BankAddressToLinear(bank, ptrArr[cId].readUInt16LE(0)) : 0;
                 const trainerGroup = new Array<TrainerSummary>();
                 this.ReadBundledData(romData, thisAddr, 0xFF, nextAddr || 1, nextAddr).forEach((tData, tId) => {
                     const partyStart = this.FindTerminator(tData) + 2;
-                    const trainerType = tData[partyStart - 1];
+                    const trainerType = tData[partyStart - 1] || 0;
                     let party: { level: number, species: Pokemon.Species, moves?: Pokemon.Move[], item?: Pokemon.Item }[] = undefined;
                     switch (trainerType & 3) {
                         case 0: //TRAINERTYPE_NORMAL:     db level, species
-                            party = this.ReadStridedData(tData, partyStart, 2).map(p => ({ level: p[0], species: this.GetSpecies(p[1]) }));
+                            party = this.ReadArray(tData, partyStart, 2).map(p => ({ level: p[0], species: this.GetSpecies(p[1]) }));
                             break;
                         case 1: //TRAINERTYPE_MOVES:      db level, species, 4 moves
-                            party = this.ReadStridedData(tData, partyStart, 6).map(p => ({ level: p[0], species: this.GetSpecies(p[1]), moves: [this.GetMove(p[2]), this.GetMove(p[3]), this.GetMove(p[4]), this.GetMove(p[5])] }));
+                            party = this.ReadArray(tData, partyStart, 6).map(p => ({ level: p[0], species: this.GetSpecies(p[1]), moves: [this.GetMove(p[2]), this.GetMove(p[3]), this.GetMove(p[4]), this.GetMove(p[5])] }));
                             break;
                         case 2: //TRAINERTYPE_ITEM:       db level, species, item
-                            party = this.ReadStridedData(tData, partyStart, 3).map(p => ({ level: p[0], species: this.GetSpecies(p[1]), item: p[2] ? this.GetItem(p[2]) : undefined }));
+                            party = this.ReadArray(tData, partyStart, 3).map(p => ({ level: p[0], species: this.GetSpecies(p[1]), item: p[2] ? this.GetItem(p[2]) : undefined }));
                             break;
                         case 3: //TRAINERTYPE_ITEM_MOVES: db level, species, item, 4 moves
-                            party = this.ReadStridedData(tData, partyStart, 7).map(p => ({ level: p[0], species: this.GetSpecies(p[1]), item: p[2] ? this.GetItem(p[2]) : undefined, moves: [this.GetMove(p[3]), this.GetMove(p[4]), this.GetMove(p[5]), this.GetMove(p[6])].filter(m => m && m.id) }));
+                            party = this.ReadArray(tData, partyStart, 7).map(p => ({ level: p[0], species: this.GetSpecies(p[1]), item: p[2] ? this.GetItem(p[2]) : undefined, moves: [this.GetMove(p[3]), this.GetMove(p[4]), this.GetMove(p[5]), this.GetMove(p[6])].filter(m => m && m.id) }));
                             break;
                     }
                     const name = this.ConvertText(tData);
@@ -712,12 +806,16 @@ namespace RomReader {
         private ReadPokeData(romData: Buffer) {
             const nameBytes = 10;
             const dataBytes = 32;
-            let namesOffset = this.symTable[config.PokemonNamesOffset] - nameBytes; //include 00
-            let statsOffset = this.symTable[config.PokemonStatsOffset] - dataBytes; //include 00
-            let pokeNames = this.ReadStridedData(romData, namesOffset, nameBytes, dexCount).map(b => this.FixAllCaps(this.ConvertText(b)));
-            return this.ReadStridedData(romData, statsOffset, dataBytes, dexCount).map((data, i) => (<Pokemon.Species>{
+            const namesOffset = this.symTable[config.PokemonNamesOffset] - nameBytes; //include 00
+            const statsOffset = this.symTable[config.PokemonStatsOffset] - (this.isCrystal16 ? 0 : dataBytes); //include 00
+            const baseData = this.isCrystal16 ? this.ReadCrystal16IndirectionTable(romData, statsOffset) : this.ReadArray(romData, statsOffset, dataBytes, dexCount);
+            const pokeNames = this.ReadArray(romData, namesOffset, nameBytes, baseData.length).map(b => this.FixAllCaps(this.ConvertText(b)));
+
+            const getCrystal16DexNum = (id: number) => (this.symTable["HOFNationalDexNumbers"] && id > 0) ? romData.readInt16LE(this.symTable["HOFNationalDexNumbers"] + ((id - 1) * 2)) : id;
+
+            return baseData.map((data, i) => (<Pokemon.Species>{
                 id: i,
-                dexNumber: i > 0 ? data[0x00] : 0,
+                dexNumber: this.isCrystal16 ? (getCrystal16DexNum(i) || 2001 /*TPP Phancero for Chatty Crystal*/) : (i > 0 ? data[0x00] : 0),
                 name: pokeNames[i],
                 baseStats: {
                     hp: data[0x01],
@@ -746,38 +844,42 @@ namespace RomReader {
 
         private ReadMoveLearns(romData: Buffer) {
             this.moveLearns = {};
-            const bank = this.LinearAddressToBanked(this.symTable["EvosAttacksPointers"]).bank;
-            this.ReadStridedData(romData, this.symTable["EvosAttacksPointers"], 2, dexCount).forEach((ptr, i) => {
-                let addr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
+            const eaPointers = this.isCrystal16
+                ? this.ReadCrystal16IndirectionTable(romData, this.symTable["EvosAttacksPointers"], true)
+                : this.ReadArray(romData, this.symTable["EvosAttacksPointers"], 2, dexCount)
+                    .map((addr, i) => this.NearToFarPointer(this.symTable["EvosAttacksPointers"] + (i * 2), addr));
+
+            eaPointers.forEach((ptr, i) => {
+                let addr = ptr.readUInt32LE(0);
                 const moves = new Array<Pokemon.MoveLearn>();
                 const evos = new Array<Pokemon.Evolution>();
                 for (addr = addr; romData[addr] != 0; addr++) { //evolution data
                     switch (romData[addr]) {
                         case 1: //db EVOLVE_LEVEL, level, species
-                            evos.push({ speciesId: romData[addr + 2], level: romData[addr + 1] });
-                            addr += 2;
+                            evos.push({ speciesId: this.isCrystal16 ? romData.readUInt16LE(addr + 2) : romData[addr + 2], level: romData[addr + 1] });
+                            addr += this.isCrystal16 ? 3 : 2;
                             break;
                         case 2: //db EVOLVE_ITEM, used item, species
-                            evos.push({ speciesId: romData[addr + 2], item: this.GetItem(romData[addr + 1]) });
-                            addr += 2;
+                            evos.push({ speciesId: this.isCrystal16 ? romData.readUInt16LE(addr + 2) : romData[addr + 2], item: this.GetItem(romData[addr + 1]) });
+                            addr += this.isCrystal16 ? 3 : 2;
                             break;
                         case 3: //db EVOLVE_TRADE, held item (or -1 for none), species
-                            evos.push({ speciesId: romData[addr + 2], isTrade: true, item: romData[addr + 1] < 0 ? undefined : this.GetItem(romData[addr + 1]) });
-                            addr += 2;
+                            evos.push({ speciesId: this.isCrystal16 ? romData.readUInt16LE(addr + 2) : romData[addr + 2], isTrade: true, item: romData[addr + 1] < 0 ? undefined : this.GetItem(romData[addr + 1]) });
+                            addr += this.isCrystal16 ? 3 : 2;
                             break;
                         case 4: //db EVOLVE_HAPPINESS, TR_* constant (ANYTIME, MORNDAY, NITE), species
-                            evos.push({ speciesId: romData[addr + 2], happiness: 220, timeOfDay: [undefined, undefined, "MornDay", "Night"][romData[addr + 1]] as any });
-                            addr += 2;
+                            evos.push({ speciesId: this.isCrystal16 ? romData.readUInt16LE(addr + 2) : romData[addr + 2], happiness: 220, timeOfDay: [undefined, undefined, "MornDay", "Night"][romData[addr + 1]] as any });
+                            addr += this.isCrystal16 ? 3 : 2;
                             break;
                         case 5: //EVOLVE_STAT 5, level, ATK_*_DEF constant (LT, GT, EQ), species
-                            evos.push({ speciesId: romData[addr + 3], level: romData[addr + 1], specialCondition: ["Attack > Defense", "Attack < Defense", "Attack = Defense"][romData[addr + 2]] });
-                            addr += 3;
+                            evos.push({ speciesId: this.isCrystal16 ? romData.readUInt16LE(addr + 3) : romData[addr + 3], level: romData[addr + 1], specialCondition: ["Attack > Defense", "Attack < Defense", "Attack = Defense"][romData[addr + 2]] });
+                            addr += this.isCrystal16 ? 4 : 3;
                             break;
                     }
                 }
                 this.GetSpecies(i + 1).evolutions = evos;
-                for (addr++; romData[addr] != 0; addr += 2) {
-                    const move = this.GetMove(romData[addr + 1]);
+                for (addr++; romData[addr] != 0; addr += this.isCrystal16 ? 3 : 2) {
+                    const move = this.GetMove(this.isCrystal16 ? romData.readUInt16LE(addr + 1) : romData[addr + 1]);
                     if (move && romData[addr]) {
                         moves.push({
                             level: romData[addr],
@@ -797,7 +899,7 @@ namespace RomReader {
 
         private ReadFrameBorders(romData: Buffer) {
             let framePal = ["white", "black"];
-            return this.ReadStridedData(romData, this.symTable[config.FrameBordersOffset], 48, 9).map(frameData =>
+            return this.ReadArray(romData, this.symTable[config.FrameBordersOffset], 48, 9).map(frameData =>
                 JSON.stringify(
                     Sprites.FloodClear(
                         Sprites.ParseTilesToLayout(frameData, framePal, 6, [
@@ -816,7 +918,7 @@ namespace RomReader {
 
         private TranslatePicBank(bank: number) {
             //Crystal
-            return bank + config.CrystalPicBankOffset
+            return bank + (this.isCrystal16 ? 0 : config.CrystalPicBankOffset);
             //Gold/Silver
             // if (bank == 0x13) {
             //     return 0x1F;
@@ -835,7 +937,8 @@ namespace RomReader {
         }
 
         private ReadTrainerSprites(romData: Buffer) {
-            let palettes = this.ReadStridedData(romData, this.symTable[config.TrainerPalettes], 4, trainerClasses).map(data => this.ProcessPalette(data));
+            const trainerClasses = this.TrainerClassCount(romData);
+            let palettes = this.ReadArray(romData, this.symTable[config.TrainerPalettes], 4, trainerClasses).map(data => this.ProcessPalette(data));
             return new Array(trainerClasses + 1).fill(0).map((x, classId) => {
                 if (classId < 1)
                     return ""
@@ -849,10 +952,10 @@ namespace RomReader {
             });
         }
 
-        private ReadPokemonSprites(romData: Buffer) {
-            let palettes = this.ReadStridedData(romData, this.symTable[config.PokemonPalettes], 8, this.pokemon.length)
+        private ReadPokemonSprites(romData: Buffer): PokeSprite[][] {
+            let palettes = this.ReadArray(romData, this.symTable[config.PokemonPalettes], 8, this.pokemon.length)
                 .map(data => ({ base: this.ProcessPalette(data), shiny: this.ProcessPalette(data.slice(4)) }));
-            const readPokeSprite = (ptrAddr: number, mon: Pokemon.Species, clearFix: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } = {}) => {
+            const readPokeSprite = (ptrAddr: number, mon: Pokemon.Species, clearFix: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } = {}): PokeSprite => {
                 let spriteAddr = this.BankAddressToLinear(this.TranslatePicBank(romData[ptrAddr]), romData.readInt16LE(ptrAddr + 1));
                 let spriteData = Tools.LZGSC.Decompress(romData.slice(spriteAddr));
                 let imgData = Sprites.ParseTilesToImageMap(spriteData, palettes[mon.id].base, mon.spriteSize, mon.spriteSize);
@@ -862,20 +965,31 @@ namespace RomReader {
                     shiny: JSON.stringify({ palette: palettes[mon.id].shiny, pixels: imgData.pixels })
                 };
             }
+            const forms: { [key: number]: PokeSprite[] } = {};
+
+            // if (this.isCrystal16 && this.symTable["Formes"])
+            //     this.ReadArray(romData, this.symTable["Formes"], 104, 0, false, 0xFF).forEach(entry=>
+            //         forms[entry.readUInt16LE(0)] = this.ReadArray(entry, 2, 17, 6)
+            //             .filter((f,i,arr)=>arr.findIndex(g=>g.slice(0,7).toString('hex') == f.slice(0,7).toString('hex')) == i) //remove duplicate forms
+            //             .map(f=>Sprites.ParseTilesToImageMap(Tools.LZGSC.Decompress(romData.slice(this.BankAddressToLinear(f[0], f.readUInt16LE(1))), this.ProcessPalette(romData.slice()) )
+            //             .map(imgData=>)
+
             return this.pokemon.map(mon => {
-                let ptrAddr = this.symTable[config.PokemonPicPointers] + ((mon.id - 1) * 6); //front and back pointer, 3 bytes each
-                if (mon.id < 1 || mon.id > 251) return;
+                let ptrAddr = this.symTable[config.PokemonPicPointers] + ((mon.id - (this.isCrystal16 ? 0 : 1)) * 6); //front and back pointer, 3 bytes each
+                if (mon.id < 1 || (!this.isCrystal16 && mon.id > 251)) return;
                 if (mon.id == 201) { //Unown
                     ptrAddr = this.symTable[config.UnownPicPointers];
                     return new Array(26).fill(0).map((x, unown) => readPokeSprite.call(this, ptrAddr + (unown * 6), mon, unownSpriteClearFix[unown] || {}));
                 }
+                if (forms[mon.id])
+                    return forms[mon.id];
                 return [readPokeSprite.call(this, ptrAddr, mon, pokeSpriteClearFix[mon.id] || {})];
             });
         }
 
         private CalculateTimesOfDay(romData: Buffer) {
             let hour = 0;
-            this.ReadStridedData(romData, this.symTable[config.TimeOfDayOffset], 2).forEach(tod => {
+            this.ReadArray(romData, this.symTable[config.TimeOfDayOffset], 2).forEach(tod => {
                 let until = tod[0], todStr = encounterTimesOfDay[tod[1]];
                 for (hour = hour; hour < until && hour < 24; hour++) {
                     this.timeOfDay[hour] = todStr;

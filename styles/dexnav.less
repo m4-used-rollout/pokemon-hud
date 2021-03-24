@@ -3,7 +3,7 @@
 @import 'mixins/utility.less';
 @import 'mixins/dexframe.less';
 @import 'animations/gbfade.less';
-//@import 'pieces/typecolors.less';
+@import 'pieces/typecolors.less';
 
 @female-color:deeppink;
 @male-color: dodgerblue;
@@ -72,29 +72,29 @@
     h3 {
         top:0;
         font-family: pokered;
-        font-family: 'Avant Garde BT', Arial, Helvetica, sans-serif; //Sirius
-        font-weight: bold; //Sirius
-        font-size: 1.5em; //Sirius
+        // font-family: 'Avant Garde BT', Arial, Helvetica, sans-serif; //Sirius
+        // font-weight: bold; //Sirius
+        // font-size: 1.5em; //Sirius
         background-image: radial-gradient(farthest-side at top left,black 0%, rgba(0,0,0,.5) 60%, rgba(0,0,0,0) 100%);
-        // padding-bottom:.5em; //Removed for Sirius
-        padding-top: 0; //Sirius
+        padding-bottom:.5em; //Removed for Sirius
+        // padding-top: 0; //Sirius
 
         &:before {
             content:'{';
-            content: '★'; //Sirius
+            // content: '★'; //Sirius
             margin-right:.5em;
-            margin-right:.1em; //Sirius
+            // margin-right:.1em; //Sirius
         }
     }
 
     h4 {
         bottom:0;
         font-family: pokeplatinum;
-        font-family: 'Avant Garde BT', Arial, Helvetica, sans-serif; //Sirius
+        // font-family: 'Avant Garde BT', Arial, Helvetica, sans-serif; //Sirius
         background-image: radial-gradient(farthest-side at bottom right,black 0%, rgba(0,0,0,.5) 60%, rgba(0,0,0,0) 100%);
         text-align: right;
         font-size: 2em;
-        font-size: 1.5em; //Sirius
+        // font-size: 1.5em; //Sirius
         padding-bottom: 0;
     }
 
@@ -332,12 +332,12 @@
 
                     &.female:after {
                         content:'♀';
-                        // color: darken(@female-color, 30%); //Removed for Sirius
+                        color: darken(@female-color, 30%); //Removed for Sirius
                     }
 
                     &.male:after {
                         content:'♂';
-                        // color: darken(@male-color, 30%); //Removed for Sirius
+                        color: darken(@male-color, 30%); //Removed for Sirius
                     }
 
                     + .name { 

@@ -12,6 +12,10 @@
     box-shadow: 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color, 0 0 1px @color;
 }
 
+.thin-outline(@color:black) {
+    filter: drop-shadow(0 0 0 @color)drop-shadow(0 0 0 @color)drop-shadow(0 0 1px @color)drop-shadow(0 0 1px @color);
+}
+
 .crush-text() {
     font-size:.7em;
     transform: scaleY(1.4);

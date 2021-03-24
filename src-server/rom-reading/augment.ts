@@ -103,8 +103,14 @@ namespace RomReader {
                     m.base_power = m.base_power || romMove.basePower;
                     m.type = m.type || romMove.type || "???";
                     if (m.name && m.name.toLowerCase() == "hidden power") {
-                        m.type = romData.CalculateHiddenPowerType(p.ivs);
-                        m.base_power = romData.CalculateHiddenPowerPower(p.ivs);
+                        if (m.id == 352) { //Chatty Hidden Power
+                            m.type = state.chatty_power_type || "None";
+                            m.base_power = state.chatty_power;
+                        }
+                        else {
+                            m.type = romData.CalculateHiddenPowerType(p.ivs);
+                            m.base_power = romData.CalculateHiddenPowerPower(p.ivs);
+                        }
                     }
                     else if (m.name && m.name.toLowerCase() == "curse") {
                         if ((p.species.type1 || '').toLowerCase() == "ghost" || (p.species.type2 || '').toLowerCase() == "ghost") {
@@ -143,7 +149,7 @@ namespace RomReader {
                 delete p.next_move.base_power;
                 delete p.next_move.name;
             }
-            
+
             removeInvalidEvos(p);
         }
 
@@ -253,9 +259,9 @@ namespace RomReader {
                 t.name = (t.name || '').trim() || romTrainer.name;
             }
             t.pic_id = typeof t.pic_id === "number" ? t.pic_id : romTrainer.spriteId;
-            if (state.rival_name && t.class_name && (t.class_name.toLowerCase() == "rival" || romData.TrainerIsRival(t.id, t.class_id))) {
-                t.name = state.rival_name;
-            }
+            // if (state.rival_name && t.class_name && (t.class_name.toLowerCase() == "rival" || romData.TrainerIsRival(t.id, t.class_id))) {
+            //     t.name = state.rival_name;
+            // } //removed for Chatty Crystal
         }
 
         // AugmentState
@@ -316,6 +322,8 @@ namespace RomReader {
             delete mon.ability;
             delete mon.next_move;
             delete mon.species.base_stats;
+            delete mon.species.egg_type1;
+            delete mon.species.egg_type2;
         }
     }
 

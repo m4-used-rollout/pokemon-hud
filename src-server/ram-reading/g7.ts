@@ -110,8 +110,8 @@ namespace RamReader {
                 }
                 const isDouble = this.battleTrainerCache && this.battleTrainerCache.length == 2; //two enemy trainers
                 const baseAddr = parseInt(battleLocation, 16);
-                const battleParties = this.rom.ReadStridedData(data, 0x404, 0x1C, 4).filter(p => p.readUInt32LE(0x18) > 0)
-                    .map((party, pCount) => this.rom.ReadStridedData(party, 0, 0x4, party.readUInt32LE(0x18))
+                const battleParties = this.rom.ReadArray(data, 0x404, 0x1C, 4).filter(p => p.readUInt32LE(0x18) > 0)
+                    .map((party, pCount) => this.rom.ReadArray(party, 0, 0x4, party.readUInt32LE(0x18))
                         .map(p => p.readUInt32LE(0) - baseAddr).map(addr => data.slice(addr, addr + 0x330))
                         .map((btlMon, i) => (<Gen7BattleMon>{
                             baseMonPtr: btlMon.readUInt32LE(0x0),
@@ -122,7 +122,7 @@ namespace RamReader {
                             ability: this.rom.GetAbility(btlMon[0x16]),
                             experience: { current: btlMon.readUInt32LE(0x8) },
                             status: ["PAR", "SLP", "FRZ", "BRN", "PSN"].filter((_, i) => (btlMon.readUInt32LE((0x28) + 8 * i) & 0x3) > 0).shift(),
-                            moves: this.rom.ReadStridedData(btlMon, 0x1FC, 0xE, 4)
+                            moves: this.rom.ReadArray(btlMon, 0x1FC, 0xE, 4)
                                 .map(mData => Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(mData.readUInt16LE(0x6)), mData[0x8], undefined, mData[0x9])).filter(m => m && m.id > 0),
                             active: i == 0 || (isDouble && i == 1 && pCount == 0)
                         })));
@@ -211,7 +211,7 @@ namespace RamReader {
             const free_space = new Array<TPP.Item>();
 
             const pockets = new Array(7).fill(0).map((_, i) => {
-                const itemData = this.rom.ReadStridedData(data, this.itemPocketOffsets[i], 4, 0, false, item => (item.readUInt32LE(0) >> 10 & 0x3FF) == 0).map(i => i.readUInt32LE(0));
+                const itemData = this.rom.ReadArray(data, this.itemPocketOffsets[i], 4, 0, false, item => (item.readUInt32LE(0) >> 10 & 0x3FF) == 0).map(i => i.readUInt32LE(0));
                 itemData.filter(i => (i >> 20 & 0x3FF) > 0)
                     .forEach(i => free_space.push(Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(i & 0x3FF), i >> 10 & 0x3FF)));
                 return itemData.filter(i => (i >> 20 & 0x3FF) == 0).map(i => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(i & 0x3FF), i >> 10 & 0x3FF))
@@ -249,11 +249,11 @@ namespace RamReader {
         }
 
         protected ParsePC(data: Buffer): TPP.CombinedPCData {
-            const boxNames = this.rom.ReadStridedData(data, 0xBC, 0x22, 32).map(b => this.rom.ConvertText(b));
+            const boxNames = this.rom.ReadArray(data, 0xBC, 0x22, 32).map(b => this.rom.ConvertText(b));
 
             return {
                 current_box_number: data.readUInt32LE(0x69F),
-                boxes: this.rom.ReadStridedData(data, 0x6A8, 0x1B30, 32).map((boxData, i) => (<TPP.BoxData>{
+                boxes: this.rom.ReadArray(data, 0x6A8, 0x1B30, 32).map((boxData, i) => (<TPP.BoxData>{
                     box_contents: this.ParsePCBox(boxData),
                     box_name: boxNames[i],
                     box_number: i + 1
@@ -262,11 +262,11 @@ namespace RamReader {
         }
 
         protected ParsePCBox(data: Buffer) {
-            return this.rom.ReadStridedData(data, 0, 0xE8, 30).map((p, i) => this.ParsePokemon(p, i + 1)).filter(p => !!p);
+            return this.rom.ReadArray(data, 0, 0xE8, 30).map((p, i) => this.ParsePokemon(p, i + 1)).filter(p => !!p);
         }
 
         protected ParseParty(data: Buffer) {
-            return this.rom.ReadStridedData(data, 0, 4, data[0x18]).map(ptr => ptr.readUInt32LE(0) - parseInt(partyLocation, 16)).filter(ptr => ptr > 0)
+            return this.rom.ReadArray(data, 0, 4, data[0x18]).map(ptr => ptr.readUInt32LE(0) - parseInt(partyLocation, 16)).filter(ptr => ptr > 0)
                 .map(ptr => this.ParsePartyMon(data.slice(ptr + 0x40, ptr + 0x1E4), 0x158));
         }
 

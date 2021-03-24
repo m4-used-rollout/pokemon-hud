@@ -52,10 +52,10 @@ namespace RamReader {
 
         public ReadPC = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.PCBlockAddress}/${this.rom.config.PCBytes}`, this.WrapBytes(data => ({
             current_box_number: data.readUInt32LE(0),
-            boxes: this.rom.ReadStridedData(data.slice(4, 0x8344), 0, 30 * 80, 14).map((box, i) => ({
+            boxes: this.rom.ReadArray(data.slice(4, 0x8344), 0, 30 * 80, 14).map((box, i) => ({
                 box_number: i + 1,
                 box_name: /*["The Fallen", "The Forgiven", "The Innocent", "The Lost", "The Remembered", "The Loved", "The Mourned", "The Troubled", "The Faithful", "The Forlorn"][i] ||*/ this.rom.ConvertText(data.slice(0x8344 + (i * 9), 0x8344 + ((i + 1) * 9))), //TriHard Names
-                box_contents: this.rom.ReadStridedData(box, 0, 80, 30).map((pkmdata, b) => this.ParsePokemon(pkmdata, b + 1)).filter(p => !!p)
+                box_contents: this.rom.ReadArray(box, 0, 80, 30).map((pkmdata, b) => this.ParsePokemon(pkmdata, b + 1)).filter(p => !!p)
             } as TPP.BoxData))//.filter(b => b.box_contents.length > 0) // TriHard Filter
         } as TPP.CombinedPCData)));
 
@@ -173,7 +173,7 @@ namespace RamReader {
             !this.rom.config.VarsOffset && this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4/${this.rom.config.SaveBlock1Address}+${this.rom.config.GameStatsOffset}/${this.rom.config.GameStatsOffset}`, this.WrapBytes(data => {
                 const key = data.readUInt32LE(0);
                 return {
-                    game_stats: this.ParseGameStats(this.rom.ReadStridedData(data, 4, 4, parseInt(this.rom.config.GameStatsBytes, 16) / 4).map(s => (s.readUInt32LE(0) ^ key) >>> 0))
+                    game_stats: this.ParseGameStats(this.rom.ReadArray(data, 4, 4, parseInt(this.rom.config.GameStatsBytes, 16) / 4).map(s => (s.readUInt32LE(0) ^ key) >>> 0))
                 };
             })),
             //Badges Touhoumon
@@ -203,8 +203,8 @@ namespace RamReader {
                 const VarsBytes = parseInt(this.rom.config.VarsBytes || "0", 16);
                 const key = data.readUInt32LE((GameStatsOffset - FlagsOffset) + GameStatsBytes);
                 const flags = data.slice(0, FlagsBytes);
-                const vars = this.rom.ReadStridedData(data.slice(VarsOffset - FlagsOffset), 0, 2, 256).map(v => v.readUInt16LE(0));
-                const stats = this.rom.ReadStridedData(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => (s.readUInt32LE(0) ^ key) >>> 0);
+                const vars = this.rom.ReadArray(data.slice(VarsOffset - FlagsOffset), 0, 2, 256).map(v => v.readUInt16LE(0));
+                const stats = this.rom.ReadArray(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => (s.readUInt32LE(0) ^ key) >>> 0);
                 return {
                     badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
                     // trick_house: [flags[(0x60 / 8)] & 2 ? "Complete" : flags[(0x60 / 8)] & 1 ? "Found Scroll" : "Incomplete"], //TTH
@@ -252,7 +252,7 @@ namespace RamReader {
         }
 
         protected ParseItemCollection(itemData: Buffer, length = itemData.length / 4, key = 0) {
-            return this.rom.ReadStridedData(itemData, 0, 4, length, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data.readUInt16LE(0)), data.readUInt16LE(2) ^ key)).filter(i => i.id);
+            return this.rom.ReadArray(itemData, 0, 4, length, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data.readUInt16LE(0)), data.readUInt16LE(2) ^ key)).filter(i => i.id);
         }
 
         protected ParseParty(partyData: Buffer) {

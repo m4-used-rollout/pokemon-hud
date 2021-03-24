@@ -4,6 +4,7 @@
 /// <reference path="../ref/ini.d.ts" />
 /// <reference path="../ref/pge.ini.d.ts" />
 /// <reference path="../ref/upr.ini.d.ts" />
+/// <reference path="../ref/emotes.d.ts" />
 /// <reference path="../node_modules/electron/electron.d.ts" />
 /// <reference path="../ref/splits.d.ts" />
 /// <reference path="../ref/joypad.d.ts" />
@@ -213,15 +214,16 @@ declare namespace Tools.File {
 }
 declare namespace RomReader {
     type EvoMethod = (evoParam: number, speciesId: number) => Pokemon.Evolution;
+    type PokeSprite = {
+        base: string;
+        shiny: string;
+    };
     abstract class RomReaderBase {
         protected pokemon: Pokemon.Species[];
         protected moves: Pokemon.Move[];
         protected items: Pokemon.Item[];
         protected maps: Pokemon.Map[];
-        protected pokemonSprites: {
-            base: string;
-            shiny: string;
-        }[][];
+        protected pokemonSprites: PokeSprite[][];
         protected trainerSprites: string[];
         protected frameBorders: string[];
         protected trainers: Pokemon.Trainer[];
@@ -288,8 +290,8 @@ declare namespace RomReader {
         ShinyThreshold(): number;
         GetType(typeId: number): string;
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]): Pokemon.EncounterMon[];
-        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endFunc?: (data: Buffer) => boolean): Buffer[];
-        ReadStridedData(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endValue?: number): Buffer[];
+        ReadArray(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endFunc?: (data: Buffer) => boolean): Buffer[];
+        ReadArray(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endValue?: number): Buffer[];
         GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
         CalculateGender(pokemon: TPP.Pokemon): void;
         CalculateShiny(pokemon: TPP.Pokemon, threshold?: number): void;
@@ -478,6 +480,7 @@ declare namespace RomReader {
         IsFlagSet(romData: Buffer, flagStartOffset: number, flagIndex: number): boolean;
         ParseBCD(bcd: Buffer): number;
         FindTerminator(data: Buffer): number;
+        protected GetSymbolSize(symbol: string): number;
     }
 }
 declare namespace RomReader {
@@ -560,20 +563,28 @@ declare namespace RomReader {
         private trainerSummary;
         private phoneContacts;
         constructor(romFileLocation: string);
+        readonly isCrystal16: boolean;
+        private NearToFarPointer;
+        ReadCrystal16IndirectionTable(romData: Buffer, address: number, skipEmptyZero?: boolean): Buffer[];
+        ReadCrystal16ListItems(romData: Buffer, address: number): Buffer[];
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetTMsHMs(): Pokemon.Item[];
         GetPhoneContact(id: number): string | undefined;
         private ReadPyriteLevelCaps;
+        readonly NumPokemon: number;
         private ReadPhoneContacts;
         private FindFishingEncounters;
         private FindTreeEncounters;
         private FindMapEncounters;
+        private readonly NumMapGroups;
         private ReadMaps;
         private ReadAreaNames;
         private GetTMHMNames;
         private ReadMoveData;
         private ReadItemData;
+        private ReadCrystal16TrainerData;
+        private TrainerClassCount;
         private ReadTrainerData;
         private ReadPokeData;
         private ReadMoveLearns;
@@ -876,6 +887,7 @@ declare namespace RamReader {
             active?: boolean;
         })[]): TPP.EnemyParty;
         protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
+        HTTPGet(url: string): Promise<string>;
         CallEmulator<T>(path: string[] | string, callback?: (data: string) => (T | Promise<T>), force?: boolean): Promise<T>;
         CachedEmulatorCaller<T>(path: string[] | string, callback: (data: string) => (T | Promise<T>), ignoreCharStart?: number, ignoreCharEnd?: number): () => Promise<T>;
         ReadLinkedList(data: Buffer, baseAddr: number): Buffer[];
@@ -925,7 +937,7 @@ declare namespace RamReader {
             [key: string]: number;
         }, symbolMapper: (symbol: string) => number, callback: (struct: {
             [key: string]: Buffer;
-        }) => T): () => Promise<T>;
+        }) => (T | Promise<T>)): () => Promise<T>;
         protected SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress?: number, ifValue?: number, bytes?: number): Promise<{}>;
         protected GameStatsMapping: string[];
         protected ParseGameStats(statArr: number[]): {
@@ -996,6 +1008,14 @@ declare namespace RamReader {
         protected PartySize: () => number;
         protected PartyMonSize: () => number;
         protected BattleMonSize: () => number;
+        protected Crystal16PokemonMappingSize: () => number;
+        protected Crystal16MovesMappingSize: () => number;
+        protected NumPCBoxes: () => number;
+        readonly isCrystal16: boolean;
+        private crystal16PokemonMapping;
+        private crystal16MovesMapping;
+        Crystal16MapPokemon(shortId: number): number;
+        Crystal16MapMove(shortId: number): number;
         ReadParty: () => Promise<TPP.PartyPokemon[]>;
         ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadBattle: () => Promise<TPP.BattleStatus>;
@@ -1007,13 +1027,13 @@ declare namespace RamReader {
         protected BaseOffsetCalc: (baseSymbol: string, extraOffset?: number) => (symbol: string) => number;
         protected ParseBattleBundle(data: Buffer): TPP.BattleStatus;
         protected ParsePC(data: Buffer): TPP.CombinedPCData;
-        protected ParsePCBox(data: Buffer): Gen2BoxedMon[];
+        protected ParsePCBox(data: Buffer, speciesMap?: number[], movesAre16Bit?: boolean): Gen2BoxedMon[];
         protected ParseParty(data: Buffer): TPP.PartyPokemon[];
         protected AddOTNames(mons: Gen2BoxedMon[], data: Buffer, monCount: number): void;
         protected AddNicknames(mons: Gen2BoxedMon[], data: Buffer, monCount: number): void;
         protected FixCapsNonNickname(nick: string, speciesName: string): string;
         protected ParsePartyMon(data: Buffer, species?: number): TPP.PartyPokemon;
-        protected ParsePokemon(data: Buffer, species?: number, nickname?: Buffer, otName?: Buffer): Gen2BoxedMon;
+        protected ParsePokemon(data: Buffer, species?: number, nickname?: Buffer, otName?: Buffer, forceSpecies?: number, movesAre16Bit?: boolean): Gen2BoxedMon;
         protected ParseBattlePokemon(data: Buffer): TPP.PartyPokemon & {
             active: boolean;
         };
@@ -1222,6 +1242,19 @@ declare namespace RamReader {
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
     }
 }
+declare module TrendingEmotesPuller {
+    class TrendingEmotesPuller {
+        private url;
+        private effects;
+        private badges;
+        private totalBadges;
+        private transmit;
+        private pullerInterval;
+        constructor(url: string, effects: EmoteEffects, updateInterval: number, state: TPP.RunStatus);
+        updateBadgeCount(state: TPP.RunStatus): void;
+        private update;
+    }
+}
 declare module TPP.Server {
     function getConfig(): Config;
     function getSplits(): Splits;
@@ -1241,6 +1274,7 @@ declare module TPP.Server {
     function setState(dataJson: string): void;
     function NewCatch(dexNum: number): void;
     const fileExists: (path: string) => any;
+    let emotePuller: TrendingEmotesPuller.TrendingEmotesPuller;
 }
 declare module TPP.Server {
 }
