@@ -29,20 +29,20 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
             </div>} */}
             {config.generation < 6 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
             {t.time && <Clock time={t.time} />}
-            {t.generation < 6 && !t.time && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
+            {config.generation < 6 && !t.time && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
             </div>}
             <FitToWidth className="bottom-row">
                 <span className={`cash ${t.money < 1000 ? t.money < 200 ? 'low' : 'med' : 'good'}`}>{(t.money || 0).toLocaleString()}</span>
                 {<span className={`balls ${(t.ball_count || 0) < 10 ? (t.ball_count || 0) < 1 ? 'low' : 'med' : 'good'}`}>{(t.ball_count || 0).toLocaleString()}</span>}
                 {(t.stickers || t.stickers === 0) && <span className="stickers">{t.stickers}</span>}
-                {t.generation < 3 && <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>}
+                {config.generation < 3 && <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>}
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
-                {(t.generation > 5 || (t.generation > 2 && (t.time || config.badgeCount > 8)) || (t.items && t.items.candy)) && t.options && displayOpts.length >= 1 && /*<div className="options">}
+                {(config.generation > 5 || (config.generation > 2 && (t.time || config.badgeCount > 8)) || (t.items && t.items.candy)) && t.options && displayOpts.length >= 1 && /*<div className="options">}
                     {*/displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)/*}
                 {</div>*/}
                 {t.items && t.items.z_crystals && <ZCrystals items={t.items} />}
-                {t.generation > 5 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
+                {config.generation > 5 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
                 {t.party_fitness && <span className="fitness">{t.party_fitness.toLocaleString()}</span>}
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>

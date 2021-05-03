@@ -35,6 +35,21 @@ namespace RomReader {
     const dpptTMDataPrefix = "D100D200D300D400", hgssTMDataPrefix = "1E003200";
     const tmCount = 92, hmCount = 8, pokemonCount = 493;
 
+    const baseSpeciesIdMapping: { [dexnum: number]: { baseSpeciesId: number, formNumber: number } } = {
+        496: { baseSpeciesId: 386, formNumber: 1 }, //Deoxys Attack
+        497: { baseSpeciesId: 386, formNumber: 2 }, //Deoxys Defense
+        498: { baseSpeciesId: 386, formNumber: 3 }, //Deoxys Speed
+        499: { baseSpeciesId: 413, formNumber: 1 }, //Wormadam Sandy
+        500: { baseSpeciesId: 413, formNumber: 2 }, //Wormadam Trash
+        501: { baseSpeciesId: 487, formNumber: 1 }, //Giratina Origin
+        502: { baseSpeciesId: 492, formNumber: 1 }, //Shaymin Sky
+        503: { baseSpeciesId: 479, formNumber: 1 }, //Rotom Heat
+        504: { baseSpeciesId: 479, formNumber: 2 }, //Rotom Wash
+        505: { baseSpeciesId: 479, formNumber: 3 }, //Rotom Frost
+        506: { baseSpeciesId: 479, formNumber: 4 }, //Rotom Fan
+        507: { baseSpeciesId: 479, formNumber: 5 }, //Rotom Mow
+    }
+
     interface Gen4Item extends Pokemon.Item {
         bagPocket: string;
     }
@@ -159,6 +174,7 @@ namespace RomReader {
                 eggGroup2: eggGroups[stats[21] & 0xFF],
                 abilities: [abilityNames[stats[22] & 0xFF], abilityNames[stats[23] & 0xFF]],
                 baseExp: stats[9] & 0xFF,
+                ... (baseSpeciesIdMapping[i] || {})
             }));
 
             const missingNo: Pokemon.Species = {

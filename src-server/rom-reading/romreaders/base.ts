@@ -87,7 +87,7 @@ namespace RomReader {
             return pokemon.form;
         }
         GetSpecies(id: number, form = 0) {
-            return this.pokemon.filter(p => p && (p.id === id || (p.baseSpeciesId && p.baseSpeciesId === id && p.formNumber && p.formNumber === form))).pop() || <Pokemon.Species>{};
+            return this.pokemon.filter(p => p && (p.id === id || (p.baseSpeciesId && p.baseSpeciesId === id && p.formNumber && p.formNumber === form))).reduce((merged, cur) => ({ ...merged, ...cur, id: merged.id || cur.id, dexNumber: merged.dexNumber || cur.dexNumber, name: merged.name || cur.name }), <Pokemon.Species>{}) || <Pokemon.Species>{};
         }
         GetSpeciesByDexNumber(dexNum: number) {
             return this.pokemon.filter(p => p && p.dexNumber == dexNum).shift() || <Pokemon.Species>{};
@@ -342,7 +342,7 @@ namespace RomReader {
             LevelItemDay: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), timeOfDay: "MornDay", specialCondition: "Level While Holding" }),
             LevelItemNight: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), timeOfDay: "Night", specialCondition: "Level While Holding" }),
             LevelWithMove: (evoParam: number, speciesId: number) => ({ speciesId, move: this.GetMove(evoParam) }),
-            LevelWithOtherSpecies: (evoParam: number, speciesId: number) => ({ speciesId, otherSpeciesId: evoParam || undefined, specialCondition: `Level With ${(this.GetSpecies(evoParam) || {name:"???"}).name} In Party` }),
+            LevelWithOtherSpecies: (evoParam: number, speciesId: number) => ({ speciesId, otherSpeciesId: evoParam || undefined, specialCondition: `Level With ${(this.GetSpecies(evoParam) || { name: "???" }).name} In Party` }),
             LevelMale: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam, specialCondition: "Male Only" }),
             LevelFemale: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam, specialCondition: "Female Only" }),
             LevelElectifiedArea: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Electrified Area" }),
@@ -350,7 +350,7 @@ namespace RomReader {
             LevelIcyRock: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Icy Rock" }),
             Trade: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true }),
             TradeItem: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true, item: this.GetItem(evoParam) }),
-            TradeForOtherSpecies: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true, otherSpeciesId: evoParam, specialCondition: `Trade For ${(this.GetSpecies(evoParam) || {name:"???"}).name}` }),
+            TradeForOtherSpecies: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true, otherSpeciesId: evoParam, specialCondition: `Trade For ${(this.GetSpecies(evoParam) || { name: "???" }).name}` }),
             Stone: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam) }),
             StoneMale: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), specialCondition: "Male Only" }),
             StoneFemale: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), specialCondition: "Female Only" }),
