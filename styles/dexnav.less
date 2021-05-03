@@ -23,19 +23,28 @@
     user-select: none;
     .gbfade(10s);
 
-    &:after {
+    &:before, &:after {
         content:'';
         position: absolute;
         top: -7vh;
         right: -2vh;
-        width: 50vw;
-        height: 40vh;
+        width: 40px;
+        height: 40px;
+        transform-origin: top right;
         background-position: top right;
         background-repeat: no-repeat;
         background-size: contain;
         opacity: 0;
         transition: opacity 1s ease-in-out;
         z-index: 6;
+    }
+
+    &:before {
+        right: calc(-2vh + 30px);
+        transform: scale(.75);
+        // right: calc(-2vh + 30px);
+        // transform: scale(.7)rotateZ(-50deg);
+        // z-index: 7;
     }
 
     &[data-completed="1"]:after {
@@ -50,7 +59,7 @@
         background-image: url("img/dexnav/gold.png");
         opacity: 1;
     }
-    &.caught-them-all:after {
+    &.caught-them-all:before {
         background-image: url("img/dexnav/platinum.png");
         opacity: 1;
     }
@@ -106,10 +115,10 @@
         right: 1em!important;
     }
 
-    &:before {
-        content:'';
-        .dexnav-screen();
-    }
+    // &:before {
+    //     content:'';
+    //     .dexnav-screen();
+    // }
 
     .encounters {
         .dexnav-screen();
@@ -117,7 +126,7 @@
         flex-flow: row nowrap;
         align-items: center;
         transition: opacity 1s ease-in-out;
-        
+
         &.glitch {
             background-image:url('img/static2.png');
             background-blend-mode: color-burn;
@@ -180,7 +189,7 @@
                 padding:0;
                 //transform: translateX(50%);
                 height:100%;
-                
+
                 &.seen img {
                     filter:contrast(0%) brightness(0%);
                     // animation: stretch-in 10s 1;
@@ -209,7 +218,7 @@
                     background-repeat: no-repeat;
                     filter: drop-shadow(1px -1px 0 black)
                 }
-                
+
                 &.surfing, &.fishing {
                     perspective: 100vh;
                     perspective-origin: top;
@@ -231,7 +240,7 @@
                 }
 
                 // &.surfing:before {
-                    
+
                 // }
 
                 &.fishing{
@@ -293,7 +302,7 @@
         &.wild-battle, &.enemy-trainer {
             justify-content: space-between;
 
-            > * { 
+            > * {
                 animation: slide-in 4s 1;
                 animation-timing-function: ease-in;
             }
@@ -340,7 +349,7 @@
                         color: darken(@male-color, 30%); //Removed for Sirius
                     }
 
-                    + .name { 
+                    + .name {
                         margin-top:-.1em;
                     }
                 }
@@ -459,7 +468,7 @@
                     height:70vh;
                     transition: filter 1s ease-in-out;
                     position: relative;
-                    
+
                 }
                 &.seen img {
                     filter:brightness(0%) contrast(200%);
@@ -527,7 +536,7 @@
             }
 
             &:after {
-                position: absolute; 
+                position: absolute;
                 left: 0;
                 right: 0;
                 top: 0;
@@ -547,7 +556,7 @@
             &:not(.unmet):after {
                 content: attr(data-attempts);
             }
-            &.defeated { 
+            &.defeated {
                 background-color: @screen-on-color;
                 img {
                     filter: grayscale(100%);
@@ -566,7 +575,7 @@
 
     .shadow {
         filter: drop-shadow(2px 2px 2px @shadow-color) drop-shadow(-2px -2px 2px @shadow-color) drop-shadow(-2px 2px 2px @shadow-color) drop-shadow(2px -2px 2px @shadow-color)!important;
-            //.outline(@shadow-color);        
+            //.outline(@shadow-color);
             //background:radial-gradient(closest-side, @shadow-color, 20%, transparent 80%);
     }
 
@@ -586,7 +595,7 @@
 
     &.blue {
         .dexFrame(@blue-frame-border, @blue-frame-color, @blue-frame-bevel);
-        &:before, .encounters {
+        /*&:before,*/ .encounters {
             .dexContent(@blue-frame-border, @blue-frame-color, @blue-frame-bevel);
         }
     }
@@ -706,7 +715,7 @@
 }
 
 @keyframes scroll-forever-backwards {
-    0% { 
+    0% {
         transform: translateX(-150%);
     }
     100% {
