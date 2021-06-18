@@ -145,7 +145,7 @@ namespace RamReader {
 
         protected ParsePC(data: Buffer): TPP.CombinedPCData {
             // wCurrentBoxNum
-            const currentBox = (data[0] & 0x1F) + 1;// + 15; //pbr
+            const currentBox = (data[0] + 1) & 0x1F;// + 15; //pbr
             // Active Box
             // sBox1-12
             const pc = this.rom.ReadArray(data.slice(1), 0, this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));

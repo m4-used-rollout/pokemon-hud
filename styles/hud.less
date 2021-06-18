@@ -50,7 +50,7 @@ body {
         * {
             box-sizing: border-box;
         }
-        
+
         .health-info(@color) {
             .pokemon-image {
                 // background-image:linear-gradient(46deg, @color 0%, @color 47.6%, rgba(0,0,0,0) 47.7%);
@@ -59,9 +59,9 @@ body {
                 background-position: top right;
                 background-repeat: no-repeat;
 
-                //img {
-                    //.outline(@color);
-                //}
+                img {
+                    .thin-outline(@color);
+                }
             }
             .health {
                 background-color:@color;
@@ -118,7 +118,7 @@ body {
             height: (@party-member-height * 6);
             //min-height: 0; //TTH
             transition: filter .2s ease-in-out;
-            
+
             > li {
                 display:flex;
                 position: relative;
@@ -417,13 +417,13 @@ body {
                                 vertical-align: baseline;
                             }
                         }
-                        
+
                         .health {
                             .bar-fill();
                             min-width:2%;
                         }
                     }
-                    
+
                 }
 
                 &.ball-capsule .extra-info > div:before {
@@ -441,7 +441,7 @@ body {
                     image-rendering: pixelated;
                 }
 
-                
+
                 div.held-item {
                     position:absolute;
                     left:-1px;
@@ -667,6 +667,8 @@ body {
                 font-size: 10vw;
                 width:100%;
                 text-align: center;
+                padding: 4px;
+                padding-bottom: 0;
 
                 // margin-bottom: -18vw; //PBR
 
@@ -680,19 +682,19 @@ body {
 
                     // background-size: contain; //PBR
                     // background-position: top; //PBR
-                    width: 12.5vw;
-                    height: 12.5vw;
+                    width: 11.5vw;
+                    height: 11.5vw;
 
                     img {
                         vertical-align: middle;
                         transition: filter (@transition-time * 3) ease-in, opacity @transition-time ease-out, transform (@transition-time * 2) ease-out;
                         .outline(@bar-chrome);
-                        width: 12.5vw;
+                        width: 11.5vw;
                         position: absolute;
                         top: 0;
                         left: 0;
                         transform-origin: center center;
-                        image-rendering: pixelated;
+                        //image-rendering: pixelated;
 
                         &.unowned {
                             filter: contrast(0%) brightness(50%);
@@ -798,7 +800,7 @@ body {
                     font-size: .8em;
                 }
             }
-            
+
             .rtc {
                 //margin-top: .25em;
                 text-align: center;
@@ -837,7 +839,7 @@ body {
                 font-size: 1.25em;
                 line-height: .75em;
                 margin-top: -2vw;
-                
+
                 span {
                     flex: 1 1 auto;
                 }
@@ -862,7 +864,7 @@ body {
                 position: absolute!important;
                 bottom:-.1em;
                 left:0;
-                right:0; 
+                right:0;
                 font-size:1.5em;
 
                 //bottom: 1em; //Unregistered HyperCam 2
@@ -873,6 +875,14 @@ body {
                     justify-content: space-between;
                     white-space: nowrap;
                     min-width: 100%;
+
+                    &:first-child {
+                        margin-left: 4px;
+                    }
+
+                    &:last-child {
+                        margin-left: 4px;
+                    }
 
                     > span, > div {
                         vertical-align: baseline;
@@ -888,7 +898,7 @@ body {
                     }
 
                     .options {
-                        width: auto;   
+                        width: auto;
                         font-size: 1em;
                         line-height: normal;
                     }

@@ -59,15 +59,15 @@ namespace RomReader {
             return `./img/trainers/redblue/${id}.png`
         }
         GetItemSprite(id: number) {
-            switch (id) {
-                case this.fishingRodIds.oldRod:
-                    return `./img/items/firered/262.png`;
-                case this.fishingRodIds.goodRod:
-                    return `./img/items/firered/263.png`;
-                case this.fishingRodIds.superRod:
-                    return `./img/items/firered/264.png`;
-            }
-            return `./img/items/firered/${id}.png`;
+            // switch (id) {
+            //     case this.fishingRodIds.oldRod:
+            //         return `./img/items/firered/262.png`;
+            //     case this.fishingRodIds.goodRod:
+            //         return `./img/items/firered/263.png`;
+            //     case this.fishingRodIds.superRod:
+            //         return `./img/items/firered/264.png`;
+            // }
+            return `./img/items/redblue/${id}.png`;
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
@@ -184,7 +184,7 @@ namespace RomReader {
         }
 
         private ReadItemData(romData: Buffer) {
-            return [''].concat(this.ReadStringBundle(romData, this.symTable['ItemNames'], 255, this.symTable['UnusedNames']).map(i => this.FixAllCaps(i))).map((item, i) => (<Pokemon.Item>{
+            return [''].concat(this.ReadStringBundle(romData, this.symTable['ItemNames'], 255, this.symTable['UnusedNames']  || this.symTable['UnusedBadgeNames']).map(i => this.FixAllCaps(i))).map((item, i) => (<Pokemon.Item>{
                 id: i,
                 name: item,
                 price: i ? this.ParseBCD(romData.slice(this.symTable['ItemPrices'] + ((i - 1) * 3), this.symTable['ItemPrices'] + (i * 3))) : 0,
