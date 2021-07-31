@@ -89,17 +89,20 @@ namespace RomReader {
         GetSpecies(id: number, form = 0) {
             return this.pokemon.filter(p => p && (p.id === id || (p.baseSpeciesId && p.baseSpeciesId === id && p.formNumber && p.formNumber === form))).reduce((merged, cur) => ({ ...merged, ...cur, id: merged.id || cur.id, dexNumber: merged.dexNumber || cur.dexNumber, name: merged.name || cur.name }), <Pokemon.Species>{}) || <Pokemon.Species>{};
         }
+        GetSpeciesById(id:number) {
+            return this.pokemon.find(p=>p && p.id == id) || <Pokemon.Species>{};
+        }
         GetSpeciesByDexNumber(dexNum: number) {
-            return this.pokemon.filter(p => p && p.dexNumber == dexNum).shift() || <Pokemon.Species>{};
+            return this.pokemon.find(p => p && p.dexNumber == dexNum)|| <Pokemon.Species>{};
         }
         GetMove(id: number) {
-            return this.moves.filter(m => m && m.id === id).shift() || <Pokemon.Move>{};
+            return this.moves.find(m => m && m.id === id)|| <Pokemon.Move>{};
         }
         GetMap(id: number, bank: number = null) {
-            return this.maps.filter(m => m && id === m.id && (bank === null || bank === m.bank)).shift() || <Pokemon.Map>{};
+            return this.maps.find(m => m && id === m.id && (bank === null || bank === m.bank)) || <Pokemon.Map>{};
         }
         GetItem(id: number) {
-            return this.items.filter(i => i && i.id === id).shift() || <Pokemon.Item>{};
+            return this.items.find(i => i && i.id === id) || <Pokemon.Item>{};
         }
         GetAbility(id: number) {
             return this.abilities[id] || '';

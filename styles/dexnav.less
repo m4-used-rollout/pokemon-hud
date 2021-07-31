@@ -302,6 +302,19 @@
         &.wild-battle, &.enemy-trainer {
             justify-content: space-between;
 
+            @media (min-width: 800vh) {
+                max-width: 400vh;
+                animation: slide-in-right 1s 1;
+                width: 100%;
+                left: auto !important;
+                border-left: solid 3px @screen-foreground-color;
+                z-index: 2;
+                box-shadow: none !important;
+                ~ .encounters:last-of-type {
+                    opacity: 1;
+                }
+            }
+
             > * {
                 animation: slide-in 4s 1;
                 animation-timing-function: ease-in;
@@ -726,6 +739,15 @@
 @keyframes slide-in {
     0% {
         transform: translateX(-100vw);
+    }
+    100% {
+        transform: none;
+    }
+}
+
+@keyframes slide-in-right {
+    0% {
+        transform: translateX(100vw);
     }
     100% {
         transform: none;

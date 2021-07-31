@@ -23,6 +23,7 @@ namespace RomReader {
     const categoryIconOfEachType = [null, "darkgrass", null, null, "ripplewater", null, "ripplewater"];
     const requiredItemEachType = [null, null, null, null, null, 447, 447];
     const seasons = ["spring", "summer", "fall", "winter"];
+    const battleTypes = ["Single", "Double", "Triple", "Rotation"];
 
     const tmDataPrefix = "87038803";
     const tmCount = 95, hmCount = 6, tmBlockOneCount = 92, tmBlockOneOffset = 328, tmBlockTwoOffset = 618;
@@ -75,6 +76,7 @@ namespace RomReader {
             const trainerClassNames = getStrings(parseInt(config.TrainerClassesTextOffset)).map(tc => tc.replace(/₧₦/g, "πµ")); //PkMn
             const trainerNames = getStrings(parseInt(config.TrainerNamesTextOffset));
 
+            this.areas = mapNames;
             this.abilities = abilityNames;
 
             this.moves = moveNarc.files.map((data, i) => (<Pokemon.Move>{
@@ -126,6 +128,7 @@ namespace RomReader {
                 id: i,
                 name: trainerNames[i],
                 spriteId: t[1],
+                battleType: battleTypes[t[2]] || t[2],
                 data: t.toString("hex")
             }));
 
@@ -263,7 +266,7 @@ namespace RomReader {
             // LEVEL_MOSS_ROCK(-1, -1, -1, 25, 26),
             // LEVEL_ICY_ROCK(-1, -1, -1, 26, 27),
             // TRADE_SPECIAL(-1, -1, -1, -1, 7),
-            // NONE(-1, -1, -1, -1, -1);      
+            // NONE(-1, -1, -1, -1, -1);
 
             this.evolutionMethods = [undefined,
                 /* 1*/ this.EvolutionMethod.Happiness,

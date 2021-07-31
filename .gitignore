@@ -14,3 +14,4 @@ release/
 !config.default.json
 !**/data/**/*.ini
 ksMessages.ts
+ksmessages.txt

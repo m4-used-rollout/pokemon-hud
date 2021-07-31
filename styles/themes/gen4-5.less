@@ -1,6 +1,6 @@
 .gen4-5-theme {
     @party-member-height: 14.5vh;
-    
+
     &.pokemon-hud {
         ul.party {
             height: (@party-member-height * 6);
@@ -13,4 +13,19 @@
         }
     }
 
+}
+
+.gen5-theme.pokemon-hud   {
+    .trainer-info{
+        .badges {
+            span {
+                img {
+                    transform: rotate(-45deg)scale(1.3);
+                    &:not(.unowned) {
+                        filter: none;
+                    }
+                }
+            }
+        }
+    }
 }

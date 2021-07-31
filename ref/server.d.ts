@@ -257,6 +257,7 @@ declare namespace RomReader {
         FixAllCaps(str: string): string;
         GetForm(pokemon: TPP.Pokemon): number;
         GetSpecies(id: number, form?: number): Pokemon.Species;
+        GetSpeciesById(id: number): Pokemon.Species;
         GetSpeciesByDexNumber(dexNum: number): Pokemon.Species;
         GetMove(id: number): Pokemon.Move;
         GetMap(id: number, bank?: number): Pokemon.Map;

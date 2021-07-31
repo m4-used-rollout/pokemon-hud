@@ -59,9 +59,9 @@ body {
                 background-position: top right;
                 background-repeat: no-repeat;
 
-                img {
-                    .thin-outline(@color);
-                }
+                // img {
+                //     .thin-outline(@color);
+                // }
             }
             .health {
                 background-color:@color;
@@ -363,6 +363,13 @@ body {
                             i.type {
                                 font-size: .7em;
                                 align-self:center;
+                                border-radius: 50%;
+                                overflow: hidden;
+                                &:before {
+                                    transform: scale(1.3);
+                                    display: inline-block;
+                                    transform-origin: center;
+                                }
                             }
 
                             .move-name {
@@ -863,8 +870,8 @@ body {
             .bottom-row {
                 position: absolute!important;
                 bottom:-.1em;
-                left:0;
-                right:0;
+                left:4px;
+                right:4px;
                 font-size:1.5em;
 
                 //bottom: 1em; //Unregistered HyperCam 2
@@ -876,13 +883,13 @@ body {
                     white-space: nowrap;
                     min-width: 100%;
 
-                    &:first-child {
-                        margin-left: 4px;
-                    }
+                    // &:first-child {
+                    //     margin-left: 4px;
+                    // }
 
-                    &:last-child {
-                        margin-left: 4px;
-                    }
+                    // &:last-child {
+                    //     margin-left: 4px;
+                    // }
 
                     > span, > div {
                         vertical-align: baseline;

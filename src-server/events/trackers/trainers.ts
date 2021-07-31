@@ -33,7 +33,7 @@ namespace Events {
                     className: newState.enemy_trainers[0].class_name || newState.enemy_trainers[1].class_name,
                     name: newState.enemy_trainers.map(t => `${t.class_name == t.name ? "" : (t.class_name || "")} ${t.name}`.trim()).join(' & ')
                 });
-            else if (oldState.in_battle && !newState.in_battle
+                else if (((oldState.in_battle && !newState.in_battle) || (oldState.battle_kind == "Trainer" && newState.battle_kind != "Trainer")) //Gen 5 scripts lose battle_kind before they lose in_battle
                 && oldState.battle_kind == "Trainer"
                 && this.currentTrainer)
                 dispatch({ type: "Defeated Trainer", id: this.currentTrainer.id, classId: this.currentTrainer.classId, name: this.currentTrainer.name, trainerString: this.currentTrainer.trainerString });

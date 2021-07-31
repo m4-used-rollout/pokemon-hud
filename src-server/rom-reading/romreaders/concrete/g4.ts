@@ -139,6 +139,7 @@ namespace RomReader {
             const trClassNames = getStrings(parseInt(config.TrainerClassesTextOffset));
             const trNames = getStrings(parseInt(config.TrainerNamesTextOffset));
 
+            this.areas = mapNames;
             this.abilities = abilityNames;
 
             this.moves = moveNarc.files.map((data, i) => (<Pokemon.Move>{
