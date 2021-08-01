@@ -527,9 +527,9 @@ namespace RamReader {
             return { current, next_level, this_level, remaining: next_level - current };
         }
 
-        protected StructEmulatorCaller<T>(domain: string, struct: { [key: string]: number }, symbolMapper: (symbol: string) => number, callback: (struct: { [key: string]: Buffer }) => (T | Promise<T>)): () => Promise<T> {
-            const symbols = Object.keys(struct).map(s => ({ symbol: s, address: symbolMapper(s), length: struct[s] }));
-            return this.CachedEmulatorCaller(`${domain}/ReadByteRange/${symbols.map(s => `${s.address.toString(16)}/${s.length.toString(16)}`).join('/')}`, this.WrapBytes(data => {
+        protected StructEmulatorCaller<T>(domain: string, struct: { [key: string]: number }, symbolMapper: (symbol: string) => string | number, callback: (struct: { [key: string]: Buffer }) => (T | Promise<T>)): () => Promise<T> {
+            const symbols = Object.keys(struct).map(s => ({ symbol: s, address: symbolMapper(s), length: struct[s] })).filter(s => !!s.address);
+            return this.CachedEmulatorCaller(`${domain}/ReadByteRange/${symbols.map(s => `${typeof s.address === "number" ? s.address.toString(16) : s.address}/${s.length.toString(16)}`).join('/')}`, this.WrapBytes(data => {
                 let offset = 0;
                 const outStruct: { [key: string]: Buffer } = {};
                 symbols.forEach(s => {
