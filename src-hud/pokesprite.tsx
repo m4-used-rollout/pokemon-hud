@@ -30,9 +30,9 @@ type PokeSpriteProps = {
 
 class PokeSprite extends React.PureComponent<PokeSpriteProps, {}> {
     render() {
-        // let pokemonId = this.props.dexNum || TPP.Server.RomData.GetSpecies(this.props.pokemonId).dexNumber;
-        // if (config.generation == 1 || config.generation == 3) //Not if using emerald sprite folder
-        let pokemonId = this.props.pokemonId || TPP.Server.RomData.GetSpeciesByDexNumber(this.props.dexNum).id;
+        let pokemonId = this.props.dexNum || TPP.Server.RomData.GetSpecies(this.props.pokemonId).dexNumber;
+        if (config.generation == 1)
+            pokemonId = this.props.pokemonId || TPP.Server.RomData.GetSpeciesByDexNumber(this.props.dexNum).id;
         let src = TPP.Server.RomData.GetPokemonSprite(pokemonId, this.props.form || 0, this.props.gender, this.props.shiny, this.props.generic);
         if (src.charAt(0) == "{") {
             src = RenderImageMap(JSON.parse(src));

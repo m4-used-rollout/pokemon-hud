@@ -606,6 +606,7 @@ declare namespace RomReader {
         private iniFileLocation;
         protected stringTerminator: number;
         protected romHeader: string;
+        shinyChance: number;
         constructor(romFileLocation: string, iniFileLocation: string);
         protected LoadConfig(romData: Buffer): PGEINI;
         protected ReadRomPtr(romData: Buffer, addr?: number): number;
@@ -936,7 +937,7 @@ declare namespace RamReader {
         };
         protected StructEmulatorCaller<T>(domain: string, struct: {
             [key: string]: number;
-        }, symbolMapper: (symbol: string) => number, callback: (struct: {
+        }, symbolMapper: (symbol: string) => string | number, callback: (struct: {
             [key: string]: Buffer;
         }) => (T | Promise<T>)): () => Promise<T>;
         protected SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress?: number, ifValue?: number, bytes?: number): Promise<{}>;
