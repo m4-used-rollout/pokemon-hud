@@ -50,6 +50,8 @@ namespace RomReader {
 
     interface Gen3Item extends Pokemon.Item {
         isPokeball: boolean;
+        data?: string;
+        pocket?: string | number;
         pluralName: string; //TTH
     }
 
@@ -100,6 +102,8 @@ namespace RomReader {
                 this.maps.forEach(m => touhouJohtoMapNames.find(jm => m.id == jm.mapId && m.bank == jm.mapBank) && (m.name = touhouJohtoMapNames.find(jm => m.id == jm.mapId && m.bank == jm.mapBank).name));
             }
             this.ReadEvolutions(romData, config);
+            if (config.ShinyOdds && romData.readUInt32BE(parseInt(config.ShinyOdds, 16) - 4) == 0x13405840) //if we have an address for Shiny value and it looks like it hasn't moved
+                this.shinyChance = romData[parseInt(config.ShinyOdds, 16)] + 1;
 
             // console.log("[\n" + this.moves.map(p => JSON.stringify(p)).join(',\n') + "\n]");
         }
@@ -144,8 +148,8 @@ namespace RomReader {
             return ['BPR', 'BPG'].indexOf(config.Header.substring(0, 3)) >= 0;
         }
 
-        private ReadAbilities(romData: Buffer, config: PGEINI) {
-            return this.ReadArray(romData, parseInt(config.AbilityNames, 16), 13, parseInt(config.NumberOfAbilities)).map(a => this.FixAllCaps(this.ConvertText(a)));
+        private ReadAbilities(romData: Buffer, config: PGEINI, numAbilities = parseInt(config.NumberOfAbilities)) {
+            return this.ReadArray(romData, parseInt(config.AbilityNames, 16), 13, numAbilities).map(a => this.FixAllCaps(this.ConvertText(a)));
         }
 
         private ReadPokeData(romData: Buffer, config: PGEINI) {
@@ -179,6 +183,7 @@ namespace RomReader {
                 eggGroup1: eggGroups[data[20]],
                 eggGroup2: eggGroups[data[21]],
                 abilities: [this.abilities[data[22]], this.abilities[data[23]]],
+                //abilities: [this.ReadAbilities(romData, config, data[22] + 1).pop(), this.ReadAbilities(romData, config, data[23] + 1).pop()], //Allow for ROMs with an unknown number of abilities
                 //safariZoneRate: data[24],
                 //dexColor: data[25] % 128,
                 doNotflipSprite: !!(data[25] & 128)
@@ -216,7 +221,8 @@ namespace RomReader {
                 // battleUsage: data.readInt32LE(32),
                 // battleUsagePtr: data.readInt32LE(36),
                 // extraParameter: data.readInt32LE(40),
-                isPokeball: data.readInt32LE(32 + itemStructExtensionBytes) == 2 && data.readInt32LE(40) == data[27]
+                isPokeball: data[26 + itemStructExtensionBytes] == 2// && data.readInt32LE(40) == data[27],
+                //data: data.toString("hex")
             }));
         }
 

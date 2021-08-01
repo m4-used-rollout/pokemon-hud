@@ -240,6 +240,7 @@ declare interface PGEINI {
     "PokedexLightestTable": string;
     "PokedexSmallestTable": string;
     "PokedexTypeTable": string;
+    "ShinyOdds"?: string;
 
     //RAM locations
     "gPlayerParty": string;

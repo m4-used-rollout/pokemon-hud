@@ -13,6 +13,7 @@ namespace RomReader {
     export abstract class GBAReader extends GBReader {
         protected stringTerminator = 0xFF;
         protected romHeader = "";
+        public shinyChance = 8;
 
         constructor(romFileLocation: string, private iniFileLocation: string) {
             super(romFileLocation, gen3Charmap);
@@ -77,7 +78,7 @@ namespace RomReader {
         }
         CalculateShiny(pokemon: TPP.Pokemon) {
             if (typeof pokemon.shiny !== "boolean" && pokemon.original_trainer) {
-                pokemon.shiny = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536))) < 8;
+                pokemon.shiny = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536))) < this.shinyChance;
             }
         }
 
