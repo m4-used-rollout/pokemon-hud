@@ -126,6 +126,7 @@
         flex-flow: row nowrap;
         align-items: center;
         transition: opacity 1s ease-in-out;
+        //z-index: 1;
 
         &.glitch {
             background-image:url('img/static2.png');
@@ -137,7 +138,12 @@
 
         &.encounters:not(.hidden) ~ .encounters, &.hidden {
             opacity: 0;
+            //z-index: 0;
         }
+
+        // &:last-of-type {
+        //     opacity: 1!important;
+        // }
 
         &.puzzle-display {
             display:flex;

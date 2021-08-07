@@ -1066,7 +1066,6 @@ declare namespace RamReader {
         ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadBattle: () => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
-        protected TotalItemSlots(): number;
         protected ParseItemCollection(itemData: Buffer, length?: number, key?: number): TPP.Item[];
         protected ParseParty(partyData: Buffer): TPP.PartyPokemon[];
         protected ParseBattleMons(battleData: Buffer, numBattlers: number): TPP.PartyPokemon[];

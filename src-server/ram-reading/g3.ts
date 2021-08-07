@@ -277,12 +277,12 @@ namespace RamReader {
             } as TPP.TrainerData))),
         ].filter(t => !!t) as Array<() => Promise<TPP.TrainerData>>;
 
-        protected TotalItemSlots() {
-            return parseInt(this.rom.config.ItemPCCount, 16) + parseInt(this.rom.config.ItemCandyCount || "0", 16) + parseInt(this.rom.config.ItemPocketCount, 16) + parseInt(this.rom.config.ItemKeyCount, 16) + parseInt(this.rom.config.ItemBallCount, 16) + parseInt(this.rom.config.ItemTMCount, 16) + parseInt(this.rom.config.ItemBerriesCount, 16);
-        }
+        // protected TotalItemSlots() {
+        //     return parseInt(this.rom.config.ItemPCCount, 16) + parseInt(this.rom.config.ItemCandyCount || "0", 16) + parseInt(this.rom.config.ItemPocketCount, 16) + parseInt(this.rom.config.ItemKeyCount, 16) + parseInt(this.rom.config.ItemBallCount, 16) + parseInt(this.rom.config.ItemTMCount, 16) + parseInt(this.rom.config.ItemBerriesCount, 16);
+        // }
 
         protected ParseItemCollection(itemData: Buffer, length = itemData.length / 4, key = 0) {
-            return this.rom.ReadArray(itemData, 0, 4, length, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data.readUInt16LE(0)), data.readUInt16LE(2) ^ key)).filter(i => i.id);
+            return this.rom.ReadArray(itemData, 0, 4, length, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data.readUInt16LE(0)), (data.readUInt16LE(2) >>> 0) ^ (key >>> 0))).filter(i => i.id);
         }
 
         protected ParseParty(partyData: Buffer) {
