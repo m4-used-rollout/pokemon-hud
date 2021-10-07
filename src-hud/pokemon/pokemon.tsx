@@ -18,8 +18,9 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
         let eggPercent = mon.species ? 100 - ((mon.friendship - 1) / (mon.species.egg_cycles - 1) * 100) : 0;
         let hpPixels = Math.floor(mon.health[0] * 48 / mon.health[1]);
         let classes = [
-            Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) >= 50 ? "health-high" : "health-med",
-            //hpPixels < 10 ? "health-low" : hpPixels >= 24 ? "health-high" : "health-med",
+            this.props.gameState.generation > 3 && (Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) >= 50 ? "health-high" : "health-med"),
+            this.props.gameState.generation == 3 && (Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) > 50 ? "health-high" : "health-med"),
+            this.props.gameState.generation < 3 && (hpPixels < 10 ? "health-low" : hpPixels >= 24 ? "health-high" : "health-med"),
             this.props.gameState.transitioning && 'glitch',
             this.props.gameState.transitioning && `glitch-effect-${Math.ceil(Math.random() * 6)}`,
             mon.gender,

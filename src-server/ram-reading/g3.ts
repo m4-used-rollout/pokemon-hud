@@ -142,7 +142,7 @@ namespace RamReader {
                 ItemBerriesOffset: parseInt(this.rom.config.ItemBerriesCount, 16) * 4
             }, sym => (this.rom.config[sym] ? `${sym == "EncryptionKeyOffset" ? this.rom.config.SaveBlock2Address : this.rom.config.SaveBlock1Address}+${this.rom.config[sym]}` : 0), struct => {
                 const key = struct.EncryptionKeyOffset ? struct.EncryptionKeyOffset.readInt32LE(0) : 0;
-                const halfKey = key % 0x10000;
+                const halfKey = key & 0xFFFF;
                 const items: TPP.TrainerData["items"] = {
                     pc: this.ParseItemCollection(struct.ItemPCOffset, struct.ItemPCOffset.length / 4), //no key
                     items: this.ParseItemCollection(struct.ItemPocketOffset, struct.ItemPocketOffset.length / 4, halfKey),
@@ -235,13 +235,18 @@ namespace RamReader {
                 const flags = data.slice(0, FlagsBytes);
                 const vars = this.rom.ReadArray(data.slice(VarsOffset - FlagsOffset), 0, 2, 256).map(v => v.readUInt16LE(0));
                 const stats = this.rom.ReadArray(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => (s.readUInt32LE(0) ^ key) >>> 0);
+                const badges = (flags.readUInt16LE(0x10C) >>> 7) & 0xFF;
+                const frontier = flags.readUInt32LE(0x118) >>> 4 & 0x3FFF;
+                const gameClear = this.GetFlag(flags, 0x864); //FLAG_SYS_GAME_CLEAR
                 return {
-                    badges: (flags.readUInt16LE(0x10C) >>> 7) % 0x100,
+                    badges,
+                    frontier_symbols: this.GetFlag(flags, 0x8D2) ? frontier : undefined, //FLAG_SYS_FRONTIER_PASS
                     // trick_house: [flags[(0x60 / 8)] & 2 ? "Complete" : flags[(0x60 / 8)] & 1 ? "Found Scroll" : "Incomplete"], //TTH
                     trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
                     game_stats: GameStatsBytes > 0 ? this.ParseGameStats(stats) : null,
-                    puzzleTotal: this.rom.totalPuzzles
-                } as TPP.Goals
+                    puzzleTotal: this.rom.totalPuzzles,
+                    level_cap: this.rom.GetCurrentLevelCap(badges, gameClear)
+                } as TPP.TrainerData
             }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step
             //Clock
             this.rom.config.IwramClockAddr && this.CachedEmulatorCaller<TPP.TrainerData>(`${parseInt(this.rom.config.IwramClockAddr, 16) < 0x8000 ? 'IWRAM/' : ""}ReadByteRange/${this.rom.config.IwramClockAddr}/6`, this.WrapBytes(data => ({
@@ -302,6 +307,7 @@ namespace RamReader {
             return battleMons;
         }
 
+        private pkmCache: { [key: number]: TPP.PartyPokemon & TPP.BoxedPokemon } = {};
         protected ParsePokemon(pkmdata: Buffer, boxSlot?: number): TPP.PartyPokemon & TPP.BoxedPokemon {
             const pkmn = {} as Gen3PartyPokemon;
             pkmn.personality_value = pkmdata.readUInt32LE(0);
@@ -322,7 +328,7 @@ namespace RamReader {
             pkmn.shiny = this.CalculateShiny(pkmn);
             const sections = this.Descramble(this.Decrypt(pkmdata.slice(32, 80), pkmn.encryption_key, pkmn.checksum), pkmn.personality_value);
             if (!sections) {
-                return null;
+                return this.pkmCache[pkmn.personality_value] || null;
             }
 
             //Growth Section
@@ -362,15 +368,22 @@ namespace RamReader {
             //Miscellaneous
             pkmn.pokerus = this.ParsePokerus(sections.D.readUInt8(0));
             const met = sections.D.readUInt16LE(2);
-            const metMap = this.rom.GetMap(sections.D.readUInt8(1));
+            //const metMap = this.rom.GetMap(sections.D.readUInt8(1));
+            const metArea = sections.D.readUInt8(1) & 0xFF; // Blazing Emerald
+            const bgCaughtIn = (met >>> 10) & 0x1F;
             pkmn.met = {
-                map_id: metMap.id,
-                area_id: metMap.areaId,
-                area_name: metMap.areaName,
+                // map_id: metMap.id,
+                // area_id: metMap.areaId,
+                // area_name: metMap.areaName,
+                area_id: metArea,
+                area_name: this.rom.GetAreaName(metArea),
                 level: met % 128,
-                game: ((met >>> 7) % 16).toString(),
-                caught_in: this.rom.GetItem(this.rom.MapCaughtBallId((met >>> 11) % 16)).name
-            }
+                // game: this.ParseOriginalGame((met >>> 7) % 16),
+                // caught_in: this.rom.GetItem(this.rom.MapCaughtBallId((met >>> 11) % 16)).name || ((met >>> 11) % 16).toString(),
+                game: this.ParseOriginalGame((met >>> 7) & 0x7), //Blazing Emerald
+                caught_in: `${this.rom.GetItem(this.rom.MapCaughtBallId(bgCaughtIn + 1)).name}`// (${bgCaughtIn.toString(16)})`,
+                //data: sections.D.slice(1, 4).toString('hex')
+            }; // as TPP.Pokemon["met"];
             pkmn.original_trainer.gender = this.ParseGender(met >>> 15);
             const ivs = sections.D.readUInt32LE(4);
             pkmn.ivs = {
@@ -420,11 +433,18 @@ namespace RamReader {
                     pkmn.name = pkmn.species.name;
             }
 
+            // pkmn["sections"] = {
+            //     A: sections.A.toString('hex'),
+            //     B: sections.B.toString('hex'),
+            //     C: sections.C.toString('hex'),
+            //     D: sections.D.toString('hex')
+            // }
+
             if (boxSlot)
                 pkmn.box_slot = boxSlot;
 
-            //PBR
-            (pkmn as any).aiss_id = this.AissId(pkmn.species.national_dex, pkmn.condition.coolness);
+            // //PBR
+            // (pkmn as any).aiss_id = this.AissId(pkmn.species.national_dex, pkmn.condition.coolness);
             return pkmn;
         }
 
@@ -542,13 +562,21 @@ namespace RamReader {
         }
 
         protected OptionsSpec = {
-            sound: {
-                0: "Mono",
-                0x10000: "Stereo"
-            },
+            // sound: {
+            //     0: "Mono",
+            //     0x10000: "Stereo"
+            // },
+            // battle_style: {
+            //     0: "Shift",
+            //     0x20000: "Set"
+            // },
             battle_style: {
-                0: "Shift",
-                0x20000: "Set"
+                0: "Normal",
+                0x20000: "Hard"
+            },
+            experience: {
+                0: "Party",
+                0x10000: "Single"
             },
             battle_scene: {
                 0: "On",

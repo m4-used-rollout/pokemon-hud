@@ -390,7 +390,7 @@ namespace RamReader {
             //pkmn.pelago_event_status = decrypted[0x2A];
             pkmn.pokerus = this.ParsePokerus(decrypted[0x2B]);
             pkmn.ribbons = this.ParseAlolanRibbons(pkmdata.slice(0x30, 0x38));
-            //Super Training 
+            //Super Training
             {
                 // private byte ST1 { get => Data[0x2C]; set => Data[0x2C] = value; }
                 // public bool Unused0 { get => (ST1 & (1 << 0)) == 1 << 0; set => ST1 = (byte)(ST1 & ~(1 << 0) | (value ? 1 << 0 : 0)); }
@@ -475,7 +475,7 @@ namespace RamReader {
 
             //Block D
             pkmn.met = {
-                game: decrypted[0xDF].toString(),
+                game: this.ParseOriginalGame(decrypted[0xDF]),
                 date_egg_received: decrypted[0xD1] ? `20${decrypted[0xD1]}-${decrypted[0xD2]}-${decrypted[0xD3]}` : undefined,
                 date: decrypted[0xD4] ? `20${decrypted[0xD4]}-${decrypted[0xD5]}-${decrypted[0xD6]}` : undefined,
                 area_id_egg: decrypted.readUInt16LE(0xD8) || undefined,

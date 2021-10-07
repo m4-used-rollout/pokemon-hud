@@ -437,6 +437,10 @@ declare namespace RomReader {
                 happiness: number;
                 timeOfDay: string;
             };
+            LevelSpecificMap: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                specialCondition: string;
+            };
         };
         private surfExp;
     }
@@ -617,6 +621,7 @@ declare namespace RomReader {
         CalculateHiddenPowerPower(stats: TPP.Stats): number;
         CalculateGender(pokemon: TPP.Pokemon): void;
         CalculateShiny(pokemon: TPP.Pokemon): void;
+        ShinyThreshold(): number;
     }
 }
 declare namespace RomReader {
@@ -633,6 +638,7 @@ declare namespace RomReader {
         constructor(romFileLocation: string, iniFileLocation?: string);
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        GetCurrentLevelCap(badges: number, champion?: boolean): number;
         private CurrentMapIn;
         IsUnknownTrainerMap(id: number, bank: number): boolean;
         private isFRLG;
@@ -652,6 +658,7 @@ declare namespace RomReader {
         private ReadEncounterSet;
         private ReadMoveLearns;
         private ReadEvolutions;
+        private ReadLevelCaps;
         evolutionMethods: (((evoParam: number, speciesId: number) => {
             speciesId: number;
             happiness: number;
@@ -664,6 +671,12 @@ declare namespace RomReader {
         }) | ((evoParam: number, speciesId: number) => {
             speciesId: number;
             item: Pokemon.Item;
+        }) | ((evoParam: number, speciesId: number) => {
+            speciesId: number;
+            move: Pokemon.Move;
+        }) | ((evoParam: number, speciesId: number) => {
+            speciesId: number;
+            specialCondition: string;
         }))[];
     }
 }
@@ -908,6 +921,7 @@ declare namespace RamReader {
         };
         protected DataScrambleOrders: string[];
         protected ParseStatus(status: number): "SLP" | "PSN" | "BRN" | "FRZ" | "PAR" | "TOX";
+        protected ParseOriginalGame(game: number): string;
         protected ParsePokerus(pokerus: number): {
             infected: boolean;
             days_left: number;
@@ -1069,6 +1083,7 @@ declare namespace RamReader {
         protected ParseItemCollection(itemData: Buffer, length?: number, key?: number): TPP.Item[];
         protected ParseParty(partyData: Buffer): TPP.PartyPokemon[];
         protected ParseBattleMons(battleData: Buffer, numBattlers: number): TPP.PartyPokemon[];
+        private pkmCache;
         protected ParsePokemon(pkmdata: Buffer, boxSlot?: number): TPP.PartyPokemon & TPP.BoxedPokemon;
         protected ParseBattlePokemon(pkmdata: Buffer): TPP.PartyPokemon;
         protected ParseVolatileStatus(status: number): string[];
@@ -1076,13 +1091,13 @@ declare namespace RamReader {
         protected GameStatsMapping: string[];
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
         protected OptionsSpec: {
-            sound: {
-                0: string;
-                0x10000: string;
-            };
             battle_style: {
                 0: string;
                 0x20000: string;
+            };
+            experience: {
+                0: string;
+                0x10000: string;
             };
             battle_scene: {
                 0: string;

@@ -81,6 +81,8 @@ namespace RomReader {
                 pokemon.shiny = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536))) < this.shinyChance;
             }
         }
-
+        ShinyThreshold() {
+            return this.shinyChance;
+        }
     }
 }

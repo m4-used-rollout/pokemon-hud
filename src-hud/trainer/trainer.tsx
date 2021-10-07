@@ -1,4 +1,5 @@
 /// <reference path="z-crystals.tsx" />
+/// <reference path="frontier.tsx" />
 /// <reference path="../utils/fittowidth.tsx" />
 /// <reference path="../itemsprite.tsx" />
 
@@ -10,7 +11,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
         let displayOpts = config.displayOptions || ["text_speed", "battle_style", "battle_scene"];
         let pc: TPP.CombinedPCData = t.pc || { current_box_number: 0, boxes: [] };
         let pcBoxCount = (pc.boxes || []).filter(b => !!b && b.box_contents && b.box_number == pc.current_box_number).map(b => b.box_contents.length).shift() || 0;
-        let maxDex = (config.totalInDex || 0) + (t.seen_list || []).filter(i=>i > (config.totalInDex || 0) || i <= 0).length;
+        let maxDex = (config.totalInDex || 0) + (t.seen_list || []).filter(i => i > (config.totalInDex || 0) || i <= 0).length;
 
         return <div className={`trainer-info ${t.transitioning ? "glitch" : ""}`}>
             {/* {t.party.length <= 3 && t.items && t.items.candy && t.items.candy.length > 0 && <div className={`candy-counts ${((t.items.candy.length >= 40 || t.party.length > 3) && t.party.length >= 3) ? "way-too-much-candy" : t.items.candy.length >= 34 ? "too-much-candy" : ""}`}>
@@ -27,7 +28,8 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                     {t.items.key.map(i => <li key={i.id}>{i.name}</li>)}
                 </ul>
             </div>} */}
-            {config.generation < 6 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
+            {config.generation < 6 && typeof t.frontier_symbols === "undefined" && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
+            {config.generation < 6 && typeof t.frontier_symbols === "number" && <BattleFrontier bitfield={t.frontier_symbols} />}
             {t.time && <Clock time={t.time} />}
             {config.generation < 6 && !t.time && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}

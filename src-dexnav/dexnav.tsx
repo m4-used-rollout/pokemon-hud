@@ -25,6 +25,7 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
             {/* <h3>AltairXD Satellite Pokédex</h3> */}
             {/* <h3>T★DA</h3> */}
             {map.MapName && !glitchOut ? <h4>{map.MapName}</h4> : null}
+            <div className="backstop" />
             {glitchOut && <div className="encounters glitch" />}
             <KillScreen party={map.FriendlyParty} enemyParty={map.EnemyParty} playerName={map.PlayerName} />
             <WildBattle wilds={map.WildBattle} />

@@ -2,7 +2,7 @@
 
 namespace RomReader {
 
-    const typeNames = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
+    const typeNames = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy", "Fairy", "Fairy", "Fairy", "Fairy", "Fairy"];
     const eggGroups = ["???", "Monster", "Water 1", "Bug", "Flying", "Field", "Fairy", "Grass", "Human-Like", "Water 3", "Mineral", "Amorphous", "Water 2", "Ditto", "Dragon", "Undiscovered"];
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
     const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
@@ -82,9 +82,17 @@ namespace RomReader {
             this.pokemon = this.ReadPokeData(romData, config);
             this.items = this.ReadItemData(romData, config);
             this.ballIds = this.items.filter((i: Gen3Item) => i.isPokeball).map(i => i.id);
+
+            //Blazing Emerald
+            this.ballIds[0] = 4;
+            this.ballIds[1] = 3;
+            this.ballIds[2] = 5;
+            this.ballIds[3] = 2;
+            this.ballIds[4] = 1;
+
             this.moves = this.ReadMoveData(romData, config);
             this.GetTMHMNames(romData, config);
-            this.shouldFixCaps = false; // Vega
+            this.shouldFixCaps = false; // Vega/Blazing Emerald
             this.trainers = this.ReadTrainerData(romData, config);
             this.areas = this.ReadMapLabels(romData, config);
             // this.totalPuzzles = parseInt(config.PuzzleCount, 16); //TTH
@@ -106,6 +114,9 @@ namespace RomReader {
                 this.shinyChance = romData[parseInt(config.ShinyOdds, 16)] + 1;
 
             // console.log("[\n" + this.moves.map(p => JSON.stringify(p)).join(',\n') + "\n]");
+
+            if (config.LevelCaps)
+                this.ReadLevelCaps(romData, config);
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
@@ -116,6 +127,21 @@ namespace RomReader {
             if (!map.encounters)
                 return {};
             return map.encounters.all;
+        }
+
+        GetCurrentLevelCap(badges: number, champion?: boolean) {
+            if (this.levelCaps.length < 2) {
+                return this.levelCaps.map(l => l).pop() || 100;
+            }
+            let badgeCount = 0, i = 1;
+            // Stop checking as soon as a badge is not earned (Blazing Emerald)
+            while (badges & i && badgeCount < (this.levelCaps.length - 1)) {
+                badgeCount++;
+                i = i << 1;
+            }
+            if (champion && badgeCount < (this.levelCaps.length - 1))
+                badgeCount++;
+            return this.levelCaps[badgeCount];
         }
 
         private CurrentMapIn(id: number, bank: number, mapArr: number[][]) {
@@ -132,8 +158,8 @@ namespace RomReader {
                         [6, 0, 2],      //Verdanturf Battle Tent
                         [26, 4, 8],     //Battle Frontier
                         [26, 14, 55],   //Battle Frontier
-                        [26, 60, 65],   //Trainer Hill
-                        [26, 88]        //Trainer Hill
+                        // [26, 60, 65],   //Trainer Hill //Blazing Emerald
+                        // [26, 88]        //Trainer Hill //Blazing Emerald
                     ]);
                 case "BPRE":
                     return this.CurrentMapIn(id, bank, [
@@ -168,8 +194,8 @@ namespace RomReader {
                     spatk: data[4],
                     spdef: data[5]
                 },
-                type1: this.types[data[6]],
-                type2: this.types[data[7]],
+                type1: this.types[data[6]] || data[6].toString(),
+                type2: this.types[data[7]] || data[7].toString(),
                 catchRate: data[8],
                 baseExp: data[9],
                 //effortYield: data.readInt16LE(10),
@@ -214,15 +240,16 @@ namespace RomReader {
                 // parameter: data[19],
                 // description: this.ConvertText(romData.slice(this.ReadRomPtr(data, 20), this.ReadRomPtr(data, 20) + 255)),
                 // mystery: data.readInt16LE(24),
-                isKeyItem: data.readInt16LE(24 + itemStructExtensionBytes) > 0,
+                // isKeyItem: data.readInt16LE(24 + itemStructExtensionBytes) > 0,
+                isKeyItem: data[26] == (this.isFRLG(config) ? 1 : 4) || data.readInt16LE(24 + itemStructExtensionBytes) > 0,
                 // pocket: data[26],
                 // type: data[27],
                 // fieldUsePtr: data.readInt32LE(28),
                 // battleUsage: data.readInt32LE(32),
                 // battleUsagePtr: data.readInt32LE(36),
                 // extraParameter: data.readInt32LE(40),
-                isPokeball: data[26 + itemStructExtensionBytes] == 2// && data.readInt32LE(40) == data[27],
-                //data: data.toString("hex")
+                isPokeball: data[26 + itemStructExtensionBytes] == 2, // && data.readInt32LE(40) == data[27],
+                // data: data.toString("hex")
             }));
         }
 
@@ -415,6 +442,17 @@ namespace RomReader {
                 .forEach((evos, i) => this.pokemon[i] && (this.pokemon[i].evolutions = evos.filter(e => !!e)));
         }
 
+        // For Blazing Emerald (and any future Skeli hack possibly?)
+        private ReadLevelCaps(romData: Buffer, config: PGEINI) {
+            const capAddr = parseInt(config.LevelCaps || '0', 16);
+            const capCount = parseInt(config.LevelCapCount || '9', 16);
+            this.levelCaps = capAddr > 0 ?
+                this.ReadArray(romData, capAddr, 0xC, capCount)
+                    .map(data => data[1] == 0x23 ? data[0] : data.indexOf(0x3B) >= 0 ? 100 - data[data.indexOf(0x3B) - 1] : 0)
+                    .filter(l => l > 0) : [];
+            this.levelCaps.push(100);
+        }
+
         evolutionMethods = [undefined,
             /* 1*/ this.EvolutionMethod.Happiness,
             /* 2*/ this.EvolutionMethod.HappinessDay,
@@ -430,7 +468,21 @@ namespace RomReader {
             /*12*/ this.EvolutionMethod.LevelHighPV,
             /*13*/ this.EvolutionMethod.LevelSpawnPokemon,
             /*14*/ this.EvolutionMethod.LevelIsSpawned,
-            /*15*/ this.EvolutionMethod.LevelHighBeauty
+            /*15*/ this.EvolutionMethod.LevelHighBeauty,
+            // Blazing Emerald
+            /*16*/ this.EvolutionMethod.LevelWithMove,
+            /*17*/ this.EvolutionMethod.LevelSpecificMap,
+            /*18*/ undefined,
+            /*19*/ undefined,
+            /*20*/ undefined,
+            /*21*/ undefined,
+            /*22*/ this.EvolutionMethod.LevelMale,
+            /*23*/ this.EvolutionMethod.LevelFemale, //Probably
+            /*24*/ undefined,
+            /*25*/ this.EvolutionMethod.LevelWithOtherSpecies,
+            /*26*/ undefined,
+            /*27*/ this.EvolutionMethod.StoneMale,
+            /*28*/ this.EvolutionMethod.StoneFemale,
         ]
 
     }

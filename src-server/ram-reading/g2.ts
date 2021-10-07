@@ -551,7 +551,7 @@ namespace RamReader {
                 const met: TPP.Pokemon['met'] = {
                     area_id: caught % 0x80,
                     level: caught >> 8 % 0x40,
-                    game: "Pokémon Crystal", //Crystal is the only one that sets CatchData
+                    game: "Crystal", //Crystal is the only one that sets CatchData
                     time_of_day: timeOfDay[caught >> 14]
                 }
                 ot && (ot.gender = (caught & 0x80) ? "Female" : "Male");

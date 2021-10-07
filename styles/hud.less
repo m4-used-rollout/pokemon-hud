@@ -155,10 +155,10 @@ body {
                         position: absolute;
                         left:50%;
                         top: 50%;
-                        transform:translateX(-50%)translateY(-50%)rotateY(180deg)scale(2);
+                        transform:translateX(-50%)translateY(-50%)rotateY(180deg);//scale(2);
                         //height:(@party-member-height * .9);
-                        // height: 160px; //HGSS
-                        //height: 128px; //Gen 3, Generic
+                        //height: 160px; //HGSS
+                        height: 128px; //Gen 3, Generic
                         image-rendering: pixelated;
                     }
 
@@ -722,6 +722,26 @@ body {
                     //         bottom: 0;
                     //     }
                     // }
+                }
+
+                &.frontier {
+                    // display:flex;
+                    // flex-flow: row nowrap;
+                    // // margin-left: 5vw;
+                    // // margin-right: 5vw;
+                    // justify-content: space-between;
+
+                    img {
+                        &.unearned {
+                            filter: grayscale(100%) invert(100%) brightness(80%) contrast(280%);
+                        }
+                        &.silver {
+                            filter: grayscale(100%) invert(0%) brightness(80%) contrast(150%);
+                        }
+                        &.gold {
+                            filter: none;
+                        }
+                    }
                 }
             }
 

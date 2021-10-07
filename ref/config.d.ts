@@ -4,6 +4,7 @@ declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig, SplitsC
     generation: number;
     runName: string;
     badgeCount?: number;
+    frontierFacilities?: number;
     dexName?: string;
     mainRegion?: string;
     totalInDex?: number;

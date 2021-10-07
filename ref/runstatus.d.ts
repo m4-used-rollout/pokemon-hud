@@ -82,6 +82,7 @@ declare namespace TPP {
 
     export interface Goals {
         badges?: number;
+        frontier_symbols?: number;
         trick_house?: ("Incomplete" | "Found Scroll" | "Complete")[];
         hall_of_fame_entries?: number;
         game_stats?: { [key: string]: number };

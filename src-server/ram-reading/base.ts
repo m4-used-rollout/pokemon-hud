@@ -7,6 +7,8 @@ namespace RamReader {
 
     const http = require('http') as typeof import('http');
 
+    const gameStrings = ["Unknown", "Sapphire", "Ruby", "Emerald", "FireRed", "LeafGreen", /*""*/ "Blazing Emerald", "HeartGold", "SoulSilver", "", "Diamond", "Pearl", "Platinum", "", "", "Colosseum/XD", "", "", "", "", "White", "Black", "White 2", "Black 2", "X", "Y", "Alpha Sapphire", "Omega Ruby", "", "", "Sun", "Moon", "Ultra Sun", "Ultra Moon", "GO", "Red", "Green/Blue", "JP Blue", "Yellow", "Gold", "Silver", "Crystal", "Let's Go, Pikachu!", "Let's Go, Eevee!", "Sword", "Shield"];
+
     const aissIdOffsets = [
         /*      0x00  0x01  0x02  0x03  0x04  0x05  0x06  0x07  0x08  0x09  0x0A  0x0B  0x0C  0x0D  0x0E  0x0F*/
         /*0x00*/0x00, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02,
@@ -381,6 +383,10 @@ namespace RamReader {
             if (status & 128)
                 return "TOX";
             return null;
+        }
+
+        protected ParseOriginalGame(game: number) {
+            return gameStrings[game] || (game || "???").toString();
         }
 
         protected ParsePokerus(pokerus: number) {

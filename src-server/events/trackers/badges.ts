@@ -11,6 +11,7 @@ namespace Events {
         private earnedZCrystals: number[] = [];
         private canEarnBadges: boolean = false;
         private _badges: string[];
+        private _frontierSymbols: string[];
 
         protected get badges() {
             if (this._badges)
@@ -21,7 +22,8 @@ namespace Events {
                 case "johto":
                     return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "hoenn":
-                    return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
+                    return this._badges = ["Stone", "Shadow", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rime"]; // Blazing Emerald
+                //return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
                 case "sinnoh":
                     return this._badges = ["Coal", "Forest", "Cobble", "Fen", "Relic", "Mine", "Icicle", "Beacon"];
                 case "unova":
@@ -31,7 +33,7 @@ namespace Events {
                 case "kalos":
                     return this._badges = ["Bug", "Cliff", "Rumble", "Plant", "Voltage", "Fairy", "Psychic", "Iceberg"];
                 case "alola":
-                    return this._badges = []; //Surge Badge? 
+                    return this._badges = []; //Surge Badge?
                 case "galar":
                     if (this.config.runName.indexOf('Shield') >= 0) //(bad check)
                         return this._badges = ["Grass", "Water", "Fire", "Ghost", "Fairy", "Ice", "Dark", "Dragon"];
@@ -39,7 +41,20 @@ namespace Events {
                 case "sirius":
                     return this._badges = ["Kaitos", "Scheat", "Alya", "Spica", "Deimos", "Regulus", "Dios", "Syrma"];
                 case "tohoak": // Vega
-                    return this._badges = ["Elnath", "Gemma" , "Hadar", "Arneb", "Phact", "Sarfah", "Prior", "Mirach"];
+                    return this._badges = ["Elnath", "Gemma", "Hadar", "Arneb", "Phact", "Sarfah", "Prior", "Mirach"];
+            }
+            return [];
+        }
+
+        protected get frontierSymbols() {
+            if (this._frontierSymbols)
+                return this._frontierSymbols;
+            switch ((this.config.mainRegion || "").toLowerCase()) {
+                case "hoenn":
+                    return this._frontierSymbols = ["Ability", "Tactics", "Spirits", "Guts", "Knowledge", "Luck", "Brave"];
+                case "johto":
+                case "sinnoh":
+                    break; //TODO
             }
             return [];
         }
@@ -60,10 +75,25 @@ namespace Events {
             return earnedBadges.map(b => this.badges[b]).filter(b => !!b);
         }
 
+        private ParseFrontier(frontierBytes: number) {
+            const earnedSymbols = new Array<string>();
+            for (let s = 0; s < this.frontierSymbols.length; s++) {
+                if (frontierBytes & (1 << (s * 2)))
+                    earnedSymbols.push(`Silver ${this.frontierSymbols[s]} Symbol`);
+                if (frontierBytes & (2 << (s * 2)))
+                    earnedSymbols.push(`Gold ${this.frontierSymbols[s]} Symbol`);
+            }
+            return earnedSymbols;
+        }
+
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
             if (this.badges.length && newState.badges != oldState.badges) {
                 const oldBadges = this.ParseBadges(oldState.badges);
                 this.ParseBadges(newState.badges).filter(b => oldBadges.indexOf(b) < 0).forEach(b => dispatch({ type: "Earned Badge", name: `${b} Badge` }));
+            }
+            if (this.frontierSymbols.length && newState.frontier_symbols != oldState.frontier_symbols) {
+                const oldSymbols = this.ParseFrontier(oldState.frontier_symbols);
+                this.ParseFrontier(newState.frontier_symbols).filter(s => oldSymbols.indexOf(s) < 0).forEach(name => dispatch({ type: "Earned Badge", name }));
             }
         }
         public Reducer(action: KnownActions & Timestamp): void {

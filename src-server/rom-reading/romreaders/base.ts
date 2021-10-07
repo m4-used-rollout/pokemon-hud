@@ -360,6 +360,9 @@ namespace RomReader {
             Happiness: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220 }),
             HappinessDay: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220, timeOfDay: "MornDay" }),
             HappinessNight: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220, timeOfDay: "Night" }),
+
+            //Romhacks
+            LevelSpecificMap: (evoParam:number, speciesId: number) => ({ speciesId, specialCondition: `Level At ${this.GetAreaName(evoParam)}`}), // Blazing Emerald
         }
 
         private surfExp = /^surf$/i;
