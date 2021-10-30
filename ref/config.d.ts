@@ -16,6 +16,7 @@ declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig, SplitsC
     iniFile?: string;
     useGPU?: boolean;
     forceNoHighDPIScaling?: boolean;
+    typeTable?: string[];
     extractedRomFolder?: string;
     spriteFolder?: string;
     trainerSpriteFolder?: string;

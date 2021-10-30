@@ -5,8 +5,8 @@ namespace RamReader {
     const NAME_LENGTH = 11;
     const BOX_NAME_LENGTH = 9;
     const MONS_PER_BOX = 20;
-    const NUM_BOXES = 20; //14; Chatty Crystal
-    const NUM_POKEMON = 400; //251; Chatty Crystal
+    const NUM_BOXES = 14; //20; Chatty Crystal
+    const NUM_POKEMON = 251; //400; Chatty Crystal
     const DEX_FLAG_BYTES = Math.floor((NUM_POKEMON + 7) / 8);
 
     const dayOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -22,7 +22,7 @@ namespace RamReader {
         protected SymAddr = (symbol: string) => this.rom.symTable[symbol].toString(16);
         protected StructSize = (startSymbol: string, endSymbol: string = startSymbol.replace("Start", '') + "End") => this.rom.symTable[endSymbol] - this.rom.symTable[startSymbol];
 
-        protected PCBoxSize = () => this.StructSize('sBox');// + 2; ??
+        protected PCBoxSize = () => this.StructSize('sBox') + 2; //??
         protected PartySize = () => this.StructSize('wPokemonData', 'wPartyMonNicknamesEnd');
         protected PartyMonSize = () => this.StructSize('wPartyMon1', 'wPartyMon2');
         protected BattleMonSize = () => this.StructSize('wBattleMon', 'wWildMon') - 2;
@@ -74,6 +74,7 @@ namespace RamReader {
         protected TrainerChunkReaders = [
             this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
                 wPlayerName: NAME_LENGTH,
+                wMomsName: NAME_LENGTH,
                 wRivalName: NAME_LENGTH,
                 wPlayerID: 2,
                 wSecretID: 2,
@@ -116,15 +117,18 @@ namespace RamReader {
                     this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wOptions2')}/${this.SetOptions(struct.wOptions[5], this.config.forceOptions, this.Options2Spec).toString(16)}`);
                 options.frame = (parseInt(options.frame || "0") + 1).toFixed(0);
                 const tms = this.rom.GetTMsHMs();
+                const seenMons = this.GetSetFlags(struct.wPokedexSeen).map(id => this.rom.GetSpecies(id).dexNumber);
+                // All Owned mons must also be Seen to count (workaround for Crystal GiveEgg flag bug)
+                const ownedMons = this.GetSetFlags(struct.wPokedexCaught).map(id => this.rom.GetSpecies(id).dexNumber).filter(m => seenMons.indexOf(m) >= 0);
                 return {
                     name: this.rom.ConvertText(struct.wPlayerName),
                     id: struct.wPlayerID.readUInt16BE(0),
                     secret: struct.wSecretID.readUInt16BE(0),
                     options,
-                    caught_list: this.GetSetFlags(struct.wPokedexCaught).map(id => this.rom.GetSpecies(id).dexNumber),
-                    seen_list: this.GetSetFlags(struct.wPokedexSeen).map(id => this.rom.GetSpecies(id).dexNumber),
-                    caught: this.GetSetFlags(struct.wPokedexCaught).length,
-                    seen: this.GetSetFlags(struct.wPokedexSeen).length,
+                    caught_list: ownedMons,
+                    seen_list: seenMons,
+                    caught: ownedMons.length,
+                    seen: seenMons.length,
                     x: struct.wXCoord[0],
                     y: struct.wYCoord[0],
                     map_id: struct.wMapGroup[1],
@@ -135,6 +139,7 @@ namespace RamReader {
                     money: this.ReadUInt24BE(struct.wMoney, 0),
                     momsMoney: this.ReadUInt24BE(struct.wMomsMoney, 0),
                     coins: struct.wCoins.readUInt16BE(0),
+                    mom_name: struct.wMomsName ? this.rom.ConvertText(struct.wMomsName) : undefined,
                     rival_name: this.rom.ConvertText(struct.wRivalName),
                     evolution_is_happening: false,
                     badges: struct.wBadges.readUInt16LE(0),
@@ -143,9 +148,10 @@ namespace RamReader {
                         balls: this.rom.ReadArray(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         key: this.rom.ReadArray(struct.wKeyItems, 0, 1, struct.wNumKeyItems[0], true, e => e[0] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]))),
                         tms: this.rom.ReadArray(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
-                        pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
+                        // pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
+                        pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255, true, data => data[1] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[1]), data[0]))
                     },
-                    phone_book: this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => this.rom.GetPhoneContact(data[0])).filter(p => !!p),
+                    phone_book: this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => (data[0] == 1 && struct.wMomsName) ? this.rom.ConvertText(struct.wMomsName) : this.rom.GetPhoneContact(data[0])).filter(p => !!p),
                     time: { ...((this.currentState || { time: null }).time || { h: 0, m: 0, s: 0 }), d: dayOfWeek[struct.wCurDay[0] % 7] }
                 };
             }),
@@ -202,12 +208,16 @@ namespace RamReader {
             frame: { bitmask: 0x7 }
         }
         protected PrinterSpec: OptionsSpec = {
-            print: {
-                0: 'Lightest',
-                0x20: 'Lighter',
-                0x40: 'Normal',
-                0x60: 'Darker',
-                0x7F: 'Darkest'
+            // print: { // removed for Gold97
+            //     0: 'Lightest',
+            //     0x20: 'Lighter',
+            //     0x40: 'Normal',
+            //     0x60: 'Darker',
+            //     0x7F: 'Darkest'
+            // },
+            type_chart: { // added for Gold97
+                0: "SW97",
+                0x20: "Final"
             }
         }
         protected Options2Spec: OptionsSpec = {
@@ -408,7 +418,7 @@ namespace RamReader {
                 return poke;
 
             const actualSpecies = this.Crystal16MapPokemon(data[offset('Species')]);
-            poke.is_egg = species == 0xFD;
+            poke.is_egg = species > 253;// this.rom.NumPokemon; // gold97
 
             // \1Species::    db
             poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(forceSpecies || actualSpecies));

@@ -56,6 +56,7 @@ declare namespace TPP {
         stickers?: number;
         rival_name?: string;
         partner_name?: string;
+        mom_name?: string;
         party_fitness?: number;
         phone_book?: string[];
         rematch_available?: number;
