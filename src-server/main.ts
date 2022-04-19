@@ -149,11 +149,10 @@ module TPP.Server {
         return json.replace(/\\\\u/g, '\\u');
     }
 
-    export const events = new Events.RunEvents(config);
     export let RomData: RomReader.RomReaderBase;
     export let RamData: RamReader.RamReaderBase;
     try {
-        let path:string;
+        let path: string;
         const romFile = (Array.isArray(config.romFile) ? config.romFile[0] : config.romFile) || config.extractedRomFolder;
         if (romFile) {
             path = RomReader.RomReaderBase.FindLocalFile(romFile);
@@ -163,19 +162,22 @@ module TPP.Server {
             case 1: {
                 let rom = new RomReader.Gen1(path);
                 RomData = rom;
-                RamData = new RamReader.Gen1(rom, 5337, "localhost", config);
+                if (!config.listenOnly)
+                    RamData = new RamReader.Gen1(rom, 5337, "localhost", config);
                 break;
             }
             case 2: {
                 let rom = new RomReader.Gen2(path);
                 RomData = rom;
-                RamData = new RamReader.Gen2(rom, 5337, "localhost", config);
+                if (!config.listenOnly)
+                    RamData = new RamReader.Gen2(rom, 5337, "localhost", config);
                 break;
             }
             case 3: {
                 let rom = new RomReader.Gen3(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
                 RomData = rom;
-                RamData = new RamReader.Gen3(rom, 5337, "localhost", config);
+                if (!config.listenOnly)
+                    RamData = new RamReader.Gen3(rom, 5337, "localhost", config);
                 break;
             }
             case 4: {
@@ -193,13 +195,15 @@ module TPP.Server {
             case 6: {
                 let rom = new RomReader.Gen6();
                 RomData = rom;
-                RamData = new RamReader.Gen6(rom, 5340, "localhost", config);
+                if (!config.listenOnly)
+                    RamData = new RamReader.Gen6(rom, 5340, "localhost", config);
                 break;
             }
             case 7: {
                 let rom = new RomReader.Gen7();
                 RomData = rom;
-                RamData = new RamReader.Gen7(rom, 5340, "localhost", config);
+                if (!config.listenOnly)
+                    RamData = new RamReader.Gen7(rom, 5340, "localhost", config);
                 break;
             }
         }
@@ -208,11 +212,12 @@ module TPP.Server {
         console.error(e);
         RomData = new RomReader.Generic();
     }
+    export const events = new Events.RunEvents(config, RomData);
 
     let transitionTimeout: NodeJS.Timer;
 
     export function StartRamReading() {
-        if (RamData) {
+        if (!config.listenOnly && RamData) {
             RamData.Read(state, () => {
                 MergeOverrides();
                 RomReader.AugmentState(RomData, state);
@@ -384,11 +389,11 @@ module TPP.Server {
     };
 
     export const fileExists = (path: string) => require('fs').existsSync(path);
-    
-    export let emotePuller:TrendingEmotesPuller.TrendingEmotesPuller = null;
+
+    export let emotePuller: TrendingEmotesPuller.TrendingEmotesPuller = null;
     if (config.emoteEffectsFile && config.emoteEndpoint) {
         emotePuller = new TrendingEmotesPuller.TrendingEmotesPuller(config.emoteEndpoint, require(config.emoteEffectsFile), config.emotePollIntervalSeconds || 5, state);
-        MainProcessRegisterStateHandler(state=>emotePuller.updateBadgeCount(state));
+        MainProcessRegisterStateHandler(state => emotePuller.updateBadgeCount(state));
     }
 
 }

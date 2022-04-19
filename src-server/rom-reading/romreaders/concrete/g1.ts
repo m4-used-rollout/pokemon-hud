@@ -55,8 +55,8 @@ namespace RomReader {
             return `./img/sprites/redblue/${this.GetSpecies(id).dexNumber || "../../missingno"}.png`;
         }
         GetTrainerSprite(id: number) {
-            //return `./img/trainers/${TPP.Server.getConfig().trainerSpriteFolder || TPP.Server.getConfig().spriteFolder}/${id}.png`
-            return `./img/trainers/redblue/${id}.png`
+            return `./img/trainers/${TPP.Server.getConfig().trainerSpriteFolder || TPP.Server.getConfig().spriteFolder}/${id}.png`
+            // return `./img/trainers/redblue/${id}.png`
         }
         GetItemSprite(id: number) {
             // switch (id) {
@@ -152,9 +152,9 @@ namespace RomReader {
         }
 
         private ReadMoveData(romData: Buffer) {
-            const dataBytes = this.symTable['MoveEnd'] - this.symTable['Moves'];
-            const movesOffset = this.symTable['Moves'] - dataBytes; //include 00
-            const moveCount = (this.symTable['BaseStats'] - this.symTable['Moves']) / dataBytes;
+            const dataBytes = this.symTable['MoveEnd'] ? this.symTable['MoveEnd'] - this.symTable['Moves'] : 6; //Sanqui
+            const movesOffset = (this.symTable['Gen6Moves'] || this.symTable['Moves']) - dataBytes; //include 00
+            const moveCount = (this.symTable[this.symTable['MoveEnd'] ? 'BaseStats' : 'CryData'] - (this.symTable['Gen6Moves'] || this.symTable['Moves'])) / dataBytes; //Sanqui
             const moveNames = this.ReadStringBundle(romData, this.symTable['MoveNames'], moveCount).map(m => this.FixAllCaps(m));
             moveNames.unshift(''); //move 0
             return this.ReadArray(romData, movesOffset, dataBytes, moveCount + 1).map((data, i) => (<Pokemon.Move>{
@@ -184,7 +184,7 @@ namespace RomReader {
         }
 
         private ReadItemData(romData: Buffer) {
-            return [''].concat(this.ReadStringBundle(romData, this.symTable['ItemNames'], 255, this.symTable['UnusedNames']  || this.symTable['UnusedBadgeNames']).map(i => this.FixAllCaps(i))).map((item, i) => (<Pokemon.Item>{
+            return [''].concat(this.ReadStringBundle(romData, this.symTable['ItemNames'], 255, this.symTable['UnusedNames'] || this.symTable['UnusedBadgeNames']).map(i => this.FixAllCaps(i))).map((item, i) => (<Pokemon.Item>{
                 id: i,
                 name: item,
                 price: i ? this.ParseBCD(romData.slice(this.symTable['ItemPrices'] + ((i - 1) * 3), this.symTable['ItemPrices'] + (i * 3))) : 0,
@@ -231,16 +231,18 @@ namespace RomReader {
 
 
         private PokedexToIndex(romData: Buffer, dexNum: number) {
+            if (!this.symTable['PokedexOrder'])
+                return dexNum - 1; // Sanqui
             for (var c = 0; romData.readUInt8(this.symTable['PokedexOrder'] + c) != dexNum; c++);
             return c;
         }
 
-        private IndexToPokedex = (romData: Buffer, id: number) => romData.readUInt8(this.symTable['PokedexOrder'] + id);
+        private IndexToPokedex = (romData: Buffer, id: number) => this.symTable['PokedexOrder'] ? romData.readUInt8(this.symTable['PokedexOrder'] + id) : id; // Sanqui
 
         private ReadPokeData(romData: Buffer) {
             const nameBytes = 10;
-            const dataBytes = this.symTable['MonBaseStatsEnd'] - this.symTable['MonBaseStats'];
-            const contiguousMons = Math.floor((this.symTable['CryData'] - this.symTable['BaseStats']) / dataBytes);
+            const dataBytes = (this.symTable['MonBaseStatsEnd'] - this.symTable['MonBaseStats']) || 28; // Sanqui
+            const contiguousMons = this.symTable['MonBaseStatsEnd'] ? Math.floor((this.symTable['CryData'] - this.symTable['BaseStats']) / dataBytes) : 251; // Sanqui
             return this.ReadArray(romData, this.symTable['BaseStats'], dataBytes, contiguousMons).concat(this.ReadArray(romData, this.symTable['MewBaseStats'], dataBytes, dexCount - contiguousMons))
                 .map(data => {
                     const speciesOffset = this.PokedexToIndex(romData, data[0x00]);

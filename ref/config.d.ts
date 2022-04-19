@@ -21,6 +21,7 @@ declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig, SplitsC
     spriteFolder?: string;
     trainerSpriteFolder?: string;
     listenPort: number;
+    listenOnly?: boolean;
     runStatusEndpoint?: string;
     newCatchEndpoint?: string;
     forceNewCatch?: boolean;
