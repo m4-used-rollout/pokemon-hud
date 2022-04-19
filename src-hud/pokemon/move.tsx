@@ -17,9 +17,12 @@ class Move extends React.PureComponent<{ move: TPP.Move }, {}> {
         return <li className={classes}>
             {!isShadow && !isChattyHiddenPower && <TypeImg type={m.type} />}
             {isChattyHiddenPower && m.type != "None" && <img key={`${m.type}${m.pp}`} src={`https://static-cdn.jtvnw.net/emoticons/v1/${m.type}/2.0`} />}
-            <span className="move-name">{m.name}</span>
+            <FitToWidth className="move-name">{m.name}</FitToWidth>
             {isChattyHiddenPower && m.base_power && <span className="move-power">({m.base_power})</span>}
-            {!isShadow && <span className="move-pp">{m.pp}</span>}
+            {!isShadow && <span className="move-pp">
+                {(m.max_pp || 10) > 9 && m.pp < 10 && <span className="empty-digit">0</span>}
+                {m.pp}
+            </span>}
         </li>;
     }
 }

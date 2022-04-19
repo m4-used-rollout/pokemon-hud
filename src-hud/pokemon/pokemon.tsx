@@ -60,7 +60,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
                 </div> :
                 <div className="pokemon-info">
                     <div className="top-line">
-                        <div className="name">{mon.name}</div>
+                        <FitToWidth className="name">{mon.name}</FitToWidth>
                         <div className="types">
                             <TypeImg type={mon.species.type1} filled />
                             {mon.species.type2 != mon.species.type1 ?

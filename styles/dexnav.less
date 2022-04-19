@@ -404,7 +404,8 @@
                 }
 
                 .cp, .fitness {
-                    display: block;
+                    //display: block;
+                    display: none;
                     text-align:center;
                     &:before {
                         content:"CP:";
@@ -621,15 +622,18 @@
         .encounters {
             .pokemon, .trainer {
                 img {
-                    .outline(white);
+                    .thin-outline(white);
                 }
             }
             img.item {
-                .outline();
+                .thin-outline();
             }
             &.enemy-trainer {
-                .name, .cp, .fitness {
-                    text-align: right;
+                // .name, .cp, .fitness {
+                //     text-align: right;
+                // }
+                .cp, .fitness {
+                    display: none;
                 }
                 .fitness:before {
                     content:"Party Fitness:";
