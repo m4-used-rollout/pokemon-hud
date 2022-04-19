@@ -36,13 +36,17 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
             backgroundThrottling: false,
             nodeIntegration: true
         },
+        autoHideMenuBar: true,
         useContentSize: true,
         frame: !frameless,
+        enableLargerThanScreen: true,
         resizable: resize,
         x: x,
         y: y,
         show: false
     });
+
+    win.setMenuBarVisibility(false);
 
     win.once('ready-to-show', () => {
         const title = win.getTitle();
