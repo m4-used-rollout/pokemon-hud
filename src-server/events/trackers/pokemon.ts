@@ -4,16 +4,35 @@
 
 namespace Events {
 
-    export type CaughtPokemonAction = { type: "Caught Pokemon", pv: number, dexNum: number, species: string, name: string, isShadow?: boolean; caughtIn?: string; otId?: string };
-    type EvolvedPokemonAction = { type: "Evolved Pokemon", pv: number, dexNum: number, species: string, name: string };
-    type RenamedPokemonAction = { type: "Renamed Pokemon", pv: number, dexNum: number, species: string, newName: string, oldName: string };
+    export type CaughtPokemonAction = { type: "Caught Pokemon", pv: number, dexNum: number, species: string, name: string, level: number, isShadow?: boolean, caughtIn?: string, otId?: string, mon: TPP.Pokemon };
+    type EvolvedPokemonAction = { type: "Evolved Pokemon", pv: number, dexNum: number, species: string, name: string, level: number, mon: TPP.Pokemon };
+    type RenamedPokemonAction = { type: "Renamed Pokemon", pv: number, dexNum: number, species: string, newName: string, oldName: string, mon: TPP.Pokemon };
     type MissingPokemonAction = { type: "Missing Pokemon", pv: number, dexNum: number, species: string, name: string };
-    type RecoveredPokemonAction = { type: "Recovered Pokemon", pv: number, dexNum: number, species: string, name: string };
-    type PurifiedPokemonAction = { type: "Purified Pokemon", pv: number, dexNum: number, species: string, name: string };
-    type CaughtPokerusAction = { type: "Caught Pokerus", pv: number, dexNum: number, species: string, name: string };
-    type KnownActions = CaughtPokemonAction | EvolvedPokemonAction | RenamedPokemonAction | MissingPokemonAction | RecoveredPokemonAction | PurifiedPokemonAction | CaughtPokerusAction;
+    type RecoveredPokemonAction = { type: "Recovered Pokemon", pv: number, dexNum: number, species: string, name: string, level: number, mon: TPP.Pokemon };
+    type PurifiedPokemonAction = { type: "Purified Pokemon", pv: number, dexNum: number, species: string, name: string, level: number, mon: TPP.Pokemon };
+    type CaughtPokerusAction = { type: "Caught Pokerus", pv: number, dexNum: number, species: string, name: string, mon: TPP.Pokemon };
+    type PokerusCuredAction = { type: "Cured of Pokerus", pv: number, dexNum: number, species: string, name: string, mon: TPP.Pokemon };
+    type LevelUpAction = { type: "Pokemon Leveled Up", pv: number, dexNum: number, species: string, name: string, level: number, mon: TPP.Pokemon };
+    type KnownActions = CaughtPokemonAction | EvolvedPokemonAction | RenamedPokemonAction | MissingPokemonAction | RecoveredPokemonAction | PurifiedPokemonAction | CaughtPokerusAction | PokerusCuredAction | LevelUpAction;
 
-    type KnownPokemon = { pv: number; dexNums: number[]; species: string[]; name: string; status: "Fine" | "Missing"; caught: string; evolved: string[]; pkrs?: boolean; isShadow?: boolean; caughtIn?: string; otId?:string }
+    interface KnownPokemon {
+        pv: number;
+        dexNums: number[];
+        species: string[];
+        name: string;
+        status: "Fine" | "Missing";
+        caught: string;
+        evolved: string[];
+        level: number;
+        caughtAt: number;
+        missingSince?: string;
+        pkrs?: boolean;
+        cured?: boolean;
+        isShadow?: boolean;
+        caughtIn?: string;
+        otId?: string;
+        data: TPP.Pokemon;
+    }
 
     export const AllMons = (state: TPP.RunStatus) => [
         ...(state.party || []),
@@ -23,82 +42,99 @@ namespace Events {
 
     const DexNum = (mon: TPP.Pokemon) => ((mon || { species: null as typeof mon.species }).species || { national_dex: null as number }).national_dex;
 
-    class PokemonTracker extends Tracker<KnownActions> {
+    export class PokemonTracker extends Tracker<KnownActions> {
 
-        private knownPokemon: { [key: number]: KnownPokemon } = {};
+        public static knownPokemon: { [key: number]: KnownPokemon } = {};
         private pokerus = new Array<CaughtPokerusAction & Timestamp>();
+
+        constructor(config: Config, romData: RomReader.RomReaderBase) {
+            super(config, romData);
+            PokemonTracker.knownPokemon = {};
+        }
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
             const seen = new Array<string>();
             AllMons(oldState).filter(mon => mon && mon.personality_value).forEach(mon => {
                 const pv = mon.personality_value;
-                const known = this.knownPokemon[pv]
+                const known = PokemonTracker.knownPokemon[pv]
                 const dexNum = DexNum(mon);
                 const species = (mon.species || { name: "???" }).name;
                 const name = mon.name;
+                const level = mon.level;
                 const isShadow = (mon as TPP.ShadowPokemon).is_shadow;
                 const caughtIn = (mon.met || {} as typeof mon.met).caught_in;
                 const otId = (mon.original_trainer && mon.original_trainer.id || newState.id || "?????").toString();
                 seen.push(pv.toString());
                 if (!known) {
                     // this.PotentialNewCatch(dexNum, oldState); //trigger it here so it doesn't trigger on replays
-                    return dispatch({ type: "Caught Pokemon", pv, dexNum, species, name, isShadow, caughtIn, otId });
+                    return dispatch({ type: "Caught Pokemon", pv, dexNum, species, name, level, isShadow, caughtIn, otId, mon });
                 }
                 else if (known.dexNums.indexOf(dexNum) < 0) {
                     // this.PotentialNewCatch(dexNum, oldState); //trigger it here so it doesn't trigger on replays
-                    dispatch({ type: "Evolved Pokemon", pv, dexNum, species, name });
+                    dispatch({ type: "Evolved Pokemon", pv, dexNum, species, name, level, mon });
                 }
+                else if (known.level != mon.level)
+                    dispatch({ type: "Pokemon Leveled Up", pv, dexNum, species, name, level, mon })
                 else if (known.name != name)
-                    dispatch({ type: "Renamed Pokemon", pv, dexNum, species, newName: name, oldName: known.name });
+                    dispatch({ type: "Renamed Pokemon", pv, dexNum, species, newName: name, oldName: known.name, mon });
                 if (known.status == "Missing")
-                    dispatch({ type: "Recovered Pokemon", pv, dexNum, species, name });
+                    dispatch({ type: "Recovered Pokemon", pv, dexNum, species, name, level, mon });
                 if (known.isShadow && !isShadow)
-                    dispatch({ type: "Purified Pokemon", pv, dexNum, species, name });
+                    dispatch({ type: "Purified Pokemon", pv, dexNum, species, name, level, mon });
                 if (mon.pokerus && mon.pokerus.infected && !known.pkrs)
-                    dispatch({ type: "Caught Pokerus", pv, dexNum, species, name });
+                    dispatch({ type: "Caught Pokerus", pv, dexNum, species, name, mon });
+                if (mon.pokerus && mon.pokerus.cured && !known.cured)
+                    dispatch({ type: "Caught Pokerus", pv, dexNum, species, name, mon });
             });
             if (newState.party && newState.daycare && newState.pc && newState.pc.boxes && newState.pc.boxes.every(b => !!b)) //only alert missing pokemon when all pokemon sinks have reported in
-                Object.keys(this.knownPokemon).filter(k => seen.indexOf(k) < 0).map(k => this.knownPokemon[k] as KnownPokemon)
+                Object.keys(PokemonTracker.knownPokemon).filter(k => seen.indexOf(k) < 0).map(k => PokemonTracker.knownPokemon[k] as KnownPokemon)
                     .forEach(p => p.status == "Fine" && dispatch({ type: "Missing Pokemon", pv: p.pv, dexNum: p.dexNums.map(d => d).pop(), species: p.species.map(s => s).pop(), name: p.name }));
         }
         public Reducer(action: KnownActions & Timestamp): void {
             if (!action.pv || action.species == "??????????")
                 return;
-            const { pv, dexNum, species, isShadow, caughtIn, otId } = (action as CaughtPokemonAction);
+            const { pv, dexNum, species, level, isShadow, caughtIn, otId } = (action as CaughtPokemonAction);
             const name = (action as RenamedPokemonAction).oldName || (action as CaughtPokemonAction).name;
             const time = action.timestamp;
-            const mon = this.knownPokemon[pv] = this.knownPokemon[pv] || { pv, dexNums: [dexNum], species: [species], name, caught: null, evolved: [], status: "Fine", isShadow, caughtIn, otId };
+            const mon = PokemonTracker.knownPokemon[pv] = PokemonTracker.knownPokemon[pv] || { pv, dexNums: [dexNum], species: [species], name, caught: null, evolved: [], status: "Fine", level, caughtAt: level, isShadow, caughtIn, otId, data: (action as CaughtPokemonAction).mon };
+            mon.data = (action as CaughtPokemonAction).mon || mon.data;
+            mon.level = typeof (action as CaughtPokemonAction).level === "number" ? (action as CaughtPokemonAction).level : mon.level;
             switch (action.type) {
                 case "Caught Pokemon":
                     mon.caught = time;
-                    break;
+                    return;
                 case "Evolved Pokemon":
                     mon.dexNums.push(dexNum);
                     mon.species.push(species);
                     mon.evolved.push(time);
-                    break;
+                    return;
                 case "Renamed Pokemon":
                     mon.name = action.newName;
-                    break;
+                    return;
                 case "Missing Pokemon":
                     mon.status = "Missing";
-                    break;
+                    mon.missingSince = time;
+                    return;
                 case "Recovered Pokemon":
+                    delete mon.missingSince;
                     mon.status = "Fine";
-                    break;
+                    return;
                 case "Purified Pokemon":
                     mon.isShadow = false;
-                    break;
+                    return;
                 case "Caught Pokerus":
                     mon.pkrs = true;
                     this.pokerus.push(action);
-                    break;
+                    return;
+                case "Cured of Pokerus":
+                    mon.cured = true;
+                    return;
                 default:
                     return;
             }
         }
         public Reporter(state: TPP.RunStatus): TPP.RunStatus {
-            const knowns = Object.keys(this.knownPokemon).map(k => this.knownPokemon[k] as KnownPokemon)
+            const knowns = Object.keys(PokemonTracker.knownPokemon).map(k => PokemonTracker.knownPokemon[k] as KnownPokemon)
             // state.caught_list = knowns
             //     .reduce((dex, mon) => [...dex, ...mon.dexNums], new Array<number>())
             //     .filter((d, i, arr) => arr.indexOf(d) == i) // de-dupe
@@ -109,7 +145,7 @@ namespace Events {
             // state.seen = state.seen_list.length;
             AllMons(state).forEach(mon => {
                 if (mon) {
-                    const known = this.knownPokemon[mon.personality_value];
+                    const known = PokemonTracker.knownPokemon[mon.personality_value];
                     if (known) {
                         mon.met = mon.met || {} as typeof mon.met;
                         mon.met.caught = known.caught;
@@ -117,8 +153,8 @@ namespace Events {
                     }
                 }
             });
-            const firstCaught = new Array<{ time: number, dexNum: number, species: string, otId?:string }>();
-            knowns.forEach(k => k.dexNums.forEach((d, i) => firstCaught.push({ dexNum: d, species: k.species[i], time: Date.parse(i ? k.evolved[i - 1] : k.caught), otId:k.otId })));
+            const firstCaught = new Array<{ time: number, dexNum: number, species: string, otId?: string }>();
+            knowns.forEach(k => k.dexNums.forEach((d, i) => firstCaught.push({ dexNum: d, species: k.species[i], time: Date.parse(i ? k.evolved[i - 1] : k.caught), otId: k.otId })));
             firstCaught.sort((c1, c2) => c1.time - c2.time)
                 .filter((c, _, arr) => arr.find(f => f.dexNum == c.dexNum) == c)
                 .forEach(c => state.events.push({ group: "Pokemon", name: c.species, time: new Date(c.time).toISOString(), traded: state.id && c.otId && state.id.toString() != c.otId || undefined } as TPP.Event));
@@ -146,10 +182,10 @@ namespace Events {
             return state;
         }
 
-        private PotentialNewCatch(dexNum: number, state: TPP.RunStatus) {
-            if (state.caught_list.indexOf(dexNum) < 0)
-                TPP.Server.NewCatch(dexNum);
-        }
+        // private PotentialNewCatch(dexNum: number, state: TPP.RunStatus) {
+        //     if (state.caught_list.indexOf(dexNum) < 0)
+        //         TPP.Server.NewCatch(dexNum);
+        // }
 
     }
     RegisterTracker(PokemonTracker);

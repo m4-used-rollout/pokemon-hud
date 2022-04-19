@@ -82,6 +82,12 @@ module TPP.Server {
             case "raw":
                 setJSONHeaders(response);
                 return JSON.stringify(rawState());
+            case "pokemon": {
+                const pokemon = Object.values(Events.PokemonTracker.knownPokemon)
+                    .sort((p1, p2) => Date.parse(p1.evolved.filter(_ => true).pop() || p1.caught) - Date.parse(p2.evolved.filter(_ => true).pop() || p2.caught))
+                    .map(p => ({ ...p, badgeNums: p.dexNums.map(d => ((config.romDexToNatDex || [])[d] || d).toString().padStart(3, '0')) }));
+                return JSON.stringify(pokemon);
+            }
             case "romdata":
                 setJSONHeaders(response);
                 let outObj = {}
