@@ -46,7 +46,7 @@ gulp.task('build-hud', gulp.series('build-backend', () => hudProject.src().pipe(
 
 gulp.task('build-dexnav', gulp.series('build-backend', () => dexNavProject.src().pipe(sourcemaps.init()).pipe(dexNavProject()).js.pipe(sourcemaps.write()).pipe(gulp.dest("bin/"))));
 
-gulp.task('build-frontend', gulp.series('build-backend', 'build-hud', 'build-dexnav', 'copy-html', 'copy-img', 'copy-data', 'compile-less'));
+gulp.task('build-frontend', gulp.series('build-backend', 'build-hud', 'build-dexnav', 'copy-html', 'copy-data', 'compile-less', 'copy-img'));
 
 gulp.task('build-app', gulp.series('build-frontend', 'copy-config', 'copy-deps', 'copy-package', () => appProject.src().pipe(appProject()).js.pipe(gulp.dest("bin/"))));
 
