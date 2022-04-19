@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es6",
+		"target": "ESNext",
 		"removeComments": true,
         "jsx": "react",
         "outFile": "hud.js"
