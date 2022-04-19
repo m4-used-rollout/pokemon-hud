@@ -727,7 +727,7 @@ namespace RomReader {
         }
 
         private get NumMapGroups() {
-            return (this.symTable["Roofs"] - this.symTable["MapGroupRoofs"]) - 1
+            return ((this.symTable["Roofs"] || this.symTable["MapGroup_Olivine"]) - (this.symTable["MapGroupRoofs"] || this.symTable["MapGroupPointers"])) - 1
         }
 
         private ReadMaps(romData: Buffer) {
@@ -749,7 +749,7 @@ namespace RomReader {
 
         private ReadAreaNames(romData: Buffer) {
             return this.ReadArray(romData, this.symTable[config.AreaNamesOffset], 4, this.GetSymbolSize(config.AreaNamesOffset) / 4)
-                .map(data => this.FixAllCaps(this.ConvertText(romData.slice(this.SameBankPtrToLinear(this.symTable[config.AreaNamesOffset], data.readUInt16LE(2)))) || ''));
+                .map(data => this.FixAllCaps(this.ConvertText(romData.slice(this.SameBankPtrToLinear(this.symTable[config.AreaNamesOffset], data.readUInt16LE(2)), this.SameBankPtrToLinear(this.symTable[config.AreaNamesOffset], data.readUInt16LE(2)) + 20)) || ''));
         }
 
         private GetTMHMNames(romData: Buffer) {
@@ -839,7 +839,7 @@ namespace RomReader {
                 let thisAddr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
                 let nextAddr = ptrArr[cId] ? this.BankAddressToLinear(bank, ptrArr[cId].readUInt16LE(0)) : 0;
                 const trainerGroup = new Array<TrainerSummary>();
-                this.ReadBundledData(romData, thisAddr, 0xFF, nextAddr || 1, nextAddr).forEach((tData, tId) => {
+                this.ReadBundledData(romData, thisAddr, 0xFF, Math.min(255, nextAddr || 1), nextAddr).forEach((tData, tId) => {
                     const partyStart = this.FindTerminator(tData) + 2;
                     const trainerType = tData[partyStart - 1] || 0;
                     let party: { level: number, species: Pokemon.Species, moves?: Pokemon.Move[], item?: Pokemon.Item }[] = undefined;
@@ -1013,13 +1013,18 @@ namespace RomReader {
             return new Array(trainerClasses + 1).fill(0).map((x, classId) => {
                 if (classId < 1)
                     return ""
-                let ptrAddr = this.symTable[config.TrainerPicPointers] + ((classId - 1) * 3);
-                let spriteAddr = this.BankAddressToLinear(this.TranslatePicBank(romData[ptrAddr]), romData.readInt16LE(ptrAddr + 1));
-                let spriteData = Tools.LZGSC.Decompress(romData.slice(spriteAddr));
-                let imgData = Sprites.ParseTilesToImageMap(spriteData, palettes[classId], 7, 7);
-                let clearFix = trainerSpriteClearFix[classId] || {};
-                Sprites.FloodClear(imgData, 0, clearFix.stop, clearFix.start, clearFix.clearDiagonal);
-                return JSON.stringify(imgData);
+                try {
+                    let ptrAddr = this.symTable[config.TrainerPicPointers] + ((classId - 1) * 3);
+                    let spriteAddr = this.BankAddressToLinear(this.TranslatePicBank(romData[ptrAddr]), romData.readInt16LE(ptrAddr + 1));
+                    let spriteData = Tools.LZGSC.Decompress(romData.slice(spriteAddr));
+                    let imgData = Sprites.ParseTilesToImageMap(spriteData, palettes[classId], 7, 7);
+                    let clearFix = trainerSpriteClearFix[classId] || {};
+                    Sprites.FloodClear(imgData, 0, clearFix.stop, clearFix.start, clearFix.clearDiagonal);
+                    return JSON.stringify(imgData);
+                }
+                catch {
+                    return null;
+                }
             });
         }
 
