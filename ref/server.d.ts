@@ -25,20 +25,22 @@ declare namespace Events {
     }
     abstract class Tracker<T extends Action = Action> {
         protected config: Config;
-        constructor(config: Config);
+        protected romData: RomReader.RomReaderBase;
+        constructor(config: Config, romData: RomReader.RomReaderBase);
         abstract Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: T) => void): void;
         abstract Reducer(action: T & Timestamp): void;
         abstract Reporter(state: TPP.RunStatus): TPP.RunStatus;
     }
-    function RegisterTracker(trackerClass: new (config: Config) => Tracker): void;
+    function RegisterTracker(trackerClass: new (config: Config, romData: RomReader.RomReaderBase) => Tracker): void;
     class RunEvents {
         private config;
+        protected romData: RomReader.RomReaderBase;
         private currentState;
         private trackers;
         private ready;
         private saveStream;
         private savePath;
-        constructor(config: Config);
+        constructor(config: Config, romData: RomReader.RomReaderBase);
         Init(): void;
         readonly EventsFileName: string;
         private OpenFile;
@@ -1276,9 +1278,9 @@ declare module TPP.Server {
     function getSplits(): Splits;
     function MainProcessRegisterStateHandler(stateFunc: (state: TPP.RunStatus) => void): void;
     function getState(): RunStatus;
-    const events: Events.RunEvents;
     let RomData: RomReader.RomReaderBase;
     let RamData: RamReader.RamReaderBase;
+    const events: Events.RunEvents;
     function StartRamReading(): void;
     function StopRamReading(): void;
     function rawState(): RunStatus;
@@ -1371,6 +1373,8 @@ declare namespace Events {
     }[]) => boolean;
 }
 declare namespace Events {
+}
+declare namespace Events {
     type GotItemAction = {
         type: "Got Item";
         id: number;
@@ -1387,11 +1391,110 @@ declare namespace Events {
         dexNum: number;
         species: string;
         name: string;
+        level: number;
         isShadow?: boolean;
         caughtIn?: string;
         otId?: string;
+        mon: TPP.Pokemon;
     };
+    type EvolvedPokemonAction = {
+        type: "Evolved Pokemon";
+        pv: number;
+        dexNum: number;
+        species: string;
+        name: string;
+        level: number;
+        mon: TPP.Pokemon;
+    };
+    type RenamedPokemonAction = {
+        type: "Renamed Pokemon";
+        pv: number;
+        dexNum: number;
+        species: string;
+        newName: string;
+        oldName: string;
+        mon: TPP.Pokemon;
+    };
+    type MissingPokemonAction = {
+        type: "Missing Pokemon";
+        pv: number;
+        dexNum: number;
+        species: string;
+        name: string;
+    };
+    type RecoveredPokemonAction = {
+        type: "Recovered Pokemon";
+        pv: number;
+        dexNum: number;
+        species: string;
+        name: string;
+        level: number;
+        mon: TPP.Pokemon;
+    };
+    type PurifiedPokemonAction = {
+        type: "Purified Pokemon";
+        pv: number;
+        dexNum: number;
+        species: string;
+        name: string;
+        level: number;
+        mon: TPP.Pokemon;
+    };
+    type CaughtPokerusAction = {
+        type: "Caught Pokerus";
+        pv: number;
+        dexNum: number;
+        species: string;
+        name: string;
+        mon: TPP.Pokemon;
+    };
+    type PokerusCuredAction = {
+        type: "Cured of Pokerus";
+        pv: number;
+        dexNum: number;
+        species: string;
+        name: string;
+        mon: TPP.Pokemon;
+    };
+    type LevelUpAction = {
+        type: "Pokemon Leveled Up";
+        pv: number;
+        dexNum: number;
+        species: string;
+        name: string;
+        level: number;
+        mon: TPP.Pokemon;
+    };
+    type KnownActions = CaughtPokemonAction | EvolvedPokemonAction | RenamedPokemonAction | MissingPokemonAction | RecoveredPokemonAction | PurifiedPokemonAction | CaughtPokerusAction | PokerusCuredAction | LevelUpAction;
+    interface KnownPokemon {
+        pv: number;
+        dexNums: number[];
+        species: string[];
+        name: string;
+        status: "Fine" | "Missing";
+        caught: string;
+        evolved: string[];
+        level: number;
+        caughtAt: number;
+        missingSince?: string;
+        pkrs?: boolean;
+        cured?: boolean;
+        isShadow?: boolean;
+        caughtIn?: string;
+        otId?: string;
+        data: TPP.Pokemon;
+    }
     const AllMons: (state: TPP.RunStatus) => TPP.Pokemon[];
+    class PokemonTracker extends Tracker<KnownActions> {
+        static knownPokemon: {
+            [key: number]: KnownPokemon;
+        };
+        private pokerus;
+        constructor(config: Config, romData: RomReader.RomReaderBase);
+        Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void;
+        Reducer(action: KnownActions & Timestamp): void;
+        Reporter(state: TPP.RunStatus): TPP.RunStatus;
+    }
 }
 declare namespace Events {
     type ChallengedTrainerAction = {

@@ -14,7 +14,7 @@ namespace Events {
     }
 
     export abstract class Tracker<T extends Action = Action> {
-        constructor(protected config: Config) { }
+        constructor(protected config: Config, protected romData: RomReader.RomReaderBase) { }
 
         /**
          * Dispatches any actions based on the contents of or change in state. DO NOT mutate any state in here.
@@ -37,9 +37,9 @@ namespace Events {
         public abstract Reporter(state: TPP.RunStatus): TPP.RunStatus;
     }
 
-    const Trackers = new Array<new (config: Config) => Tracker>();
+    const Trackers = new Array<new (config: Config, romData: RomReader.RomReaderBase) => Tracker>();
 
-    export function RegisterTracker(trackerClass: new (config: Config) => Tracker) {
+    export function RegisterTracker(trackerClass: new (config: Config, romData: RomReader.RomReaderBase) => Tracker) {
         if (Trackers.indexOf(trackerClass) < 0)
             Trackers.push(trackerClass);
     }
@@ -56,7 +56,7 @@ namespace Events {
         private saveStream: import('fs').WriteStream;
         private savePath: string;
 
-        constructor(private config: Config) {
+        constructor(private config: Config, protected romData: RomReader.RomReaderBase) {
             this.savePath = config.eventBackupFolder || "./";
             fs.promises.mkdir(this.savePath, { recursive: true }).catch(err => console.error(`Couldn't create Events folder: ${err}`));
             //setTimeout(() => this.Init(), 0); //wait for state to initialize
@@ -64,7 +64,7 @@ namespace Events {
         }
 
         public Init() {
-            this.trackers = Trackers.map(s => new s(this.config));
+            this.trackers = Trackers.map(s => new s(this.config, this.romData));
             this.ready = true;
         }
 
