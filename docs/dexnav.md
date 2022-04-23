@@ -27,7 +27,7 @@ DexNav is also able to determine the relative chances of encountering each of th
 
 - Ultra Common: More than 50% of encounters will be this Pokémon.
 - Common: 50% to 21% of encounters will be this Pokémon.
-- Uncommon: 20% - 10% of encounters will be this Pokémon.
+- Uncommon: 20% to 10% of encounters will be this Pokémon.
 - Rare: 9% to 2% of encounters will be this Pokémon.
 - Ultra Rare: This Pokémon only has a 1% chance of appearing.
 
