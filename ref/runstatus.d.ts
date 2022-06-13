@@ -243,7 +243,9 @@ declare namespace TPP {
         cp?: number;
         fitness?: number;
         personality_value?: number;
-        is_shadow?: boolean;
+        is_shadow?: ShadowPokemon["is_shadow"];
+        shadow_id?: ShadowPokemon["shadow_id"];
+        purification?: ShadowPokemon["purification"];
         name?: string;
         buffs?: {
             accuracy: number;

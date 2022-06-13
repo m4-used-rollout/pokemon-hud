@@ -19,18 +19,18 @@ class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
             config.dexNavTheme
         ];
         return <div className={classes.filter(c => !!c).join(' ')} data-completed={map.CompletedCategories}>
-            <h3>DexNav</h3>
+            {/* <h3>DexNav</h3> */}
             {/* <h3>TPP DexNav</h3> */}
             {/* <h3>PuzzNav</h3> */}
             {/* <h3>AltairXD Satellite Pokédex</h3> */}
-            {/* <h3>T★DA</h3> */}
+            <h3>T★DA</h3>
             {map.MapName && !glitchOut ? <h4>{map.MapName}</h4> : null}
             <div className="backstop" />
             {glitchOut && <div className="encounters glitch" />}
             <KillScreen party={map.FriendlyParty} enemyParty={map.EnemyParty} playerName={map.PlayerName} />
             <WildBattle wilds={map.WildBattle} />
             <EnemyTrainer trainers={map.EnemyTrainers} battleKind={map.BattleKind} party={map.EnemyParty} />
-            {/* {!totalKnownEncounters && map.GoalTrainers && <GoalTrainers goalTrainers={map.GoalTrainers} />} */}
+            {config.generation > 3 && config.generation < 4 && !totalKnownEncounters && map.GoalTrainers && <GoalTrainers goalTrainers={map.GoalTrainers} />}
             {map.PuzzleNumber > 0 && <div className="encounters puzzle-display">
                 <div className="puzzle-number">{map.PuzzleNumber}</div>
                 <div className="puzzle-name">

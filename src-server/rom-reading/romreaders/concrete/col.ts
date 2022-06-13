@@ -3,7 +3,7 @@
 namespace RomReader {
 
     export class Col extends GCNReader {
-        
+
         protected ReadAbilities(startDol: Buffer, abilityNames?: string[]): string[] {
             return abilityNames;
         }
@@ -148,9 +148,15 @@ namespace RomReader {
         InteractionPoints: 172, // warps and inanimate objects
         NumberOfInteractionPoints: 174,
 
-        USStringTable: 201,
-        StringTableB: 202,
-        StringTableC: 203,
+        // Vanilla
+        // USStringTable: 201,
+        // StringTableB: 202,
+        // StringTableC: 203,
+
+        // Grand Colosseum shifted Common.rel pointer table after 196
+        USStringTable: 210,
+        StringTableB: 211,
+        StringTableC: 212,
 
         PokemonStats: 136,
         NumberOfPokemon: 138,

@@ -34,6 +34,7 @@ namespace RamReader {
 
         protected abstract fsysSlots: number;
         protected abstract fsysStructBytes: number;
+        protected abstract saveCountOffset: number;
         protected abstract partyOffset: number;
         protected abstract partySize: number;
         protected abstract partyPokeBytes: number;
@@ -57,6 +58,7 @@ namespace RamReader {
         private currentItemPCAddr: number;
         private currentPCAddrs: number[] = [];
         private currentDaycareAddr: number;
+        private currentSaveBaseAddr: number;
 
         protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number) {
             this.partyOffset && (this.currentPartyAddr = baseSub(this.currentPartyAddr, this.partyOffset, this.partySize, this.SendParty));
@@ -84,12 +86,12 @@ namespace RamReader {
             this.connection.on("error", err => setTimeout(() => this.Init(), 1000));
             this.connection.on('connect', () => {
                 this.Subscribe(this.baseAddrPtr, 4, data => {
-                    const baseAddr = data.readUInt32BE(0);
-                    console.log(`Save Struct Base Address: ${baseAddr.toString(16)}`);
+                    this.currentSaveBaseAddr = data.readUInt32BE(0);
+                    console.log(`Save Struct Base Address: ${this.currentSaveBaseAddr.toString(16)}`);
 
                     const BaseSub = (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => {
                         this.Unsubscribe(oldAddr);
-                        const addr = baseAddr + offset;
+                        const addr = this.currentSaveBaseAddr + offset;
                         this.Subscribe(addr, size, handler);
                         return addr;
                     }
@@ -115,6 +117,15 @@ namespace RamReader {
             });
         }
 
+        public FixSaving() {
+            // Sometimes when reloading a save state, the game will complain that the
+            // memory card you're saving to is not the original you loaded from.
+            // Setting the in-memory save count to 0 makes it bypass this check
+            // and let you save again.
+            if (this.currentSaveBaseAddr)
+                this.Write(this.currentSaveBaseAddr + this.saveCountOffset, 32, 0);
+        }
+
         public ReadByteRange(address: number, length: number, handler: (data: Buffer) => void) {
             this.Subscribe(address, length, (data: Buffer) => {
                 this.Unsubscribe(address);
@@ -131,6 +142,10 @@ namespace RamReader {
         public Unsubscribe(address: number) {
             this.connection.write(`UNSUBSCRIBE_MULTI ${address};\n`, 'ascii');
             delete this.Handlers[address];
+        }
+
+        public Write(address: number, bitSize: number, value: number) {
+            this.connection.write(`WRITE ${bitSize} ${address} ${value};\n`, 'ascii');
         }
 
         private Handlers: { [address: number]: (data: Buffer) => void } = {};
@@ -462,7 +477,7 @@ namespace RamReader {
             const dex = this.rom.ReadArray(data, 0x4, 0xC, data.readUInt16BE(0))
                 .map(data => ({
                     species: (this.rom.GetSpecies(data.readUInt16BE(0) & 0x7FFF) || { dexNumber: 0 }).dexNumber,
-                    owned: (data.readUInt16BE(0) & 0xC000) == 0 //|| (data.readUInt16BE(0x6) == this.currentState.id && data.readUInt16BE(0x4) == this.currentState.secret)
+                    owned: /*(data.readUInt16BE(0) & 0xC000) == 0 ||*/ (data.readUInt16BE(0x6) == this.currentState.id && data.readUInt16BE(0x4) == this.currentState.secret)
                 })).filter(d => !!d.species);
             resolve({
                 owned: dex.filter(d => d.owned).map(d => d.species),

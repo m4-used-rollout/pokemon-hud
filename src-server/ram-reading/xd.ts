@@ -13,6 +13,8 @@ namespace RamReader {
     }
 
     export class XD extends DolphinWatchBase<RomReader.XD> {
+        protected saveCountOffset = 0xB0;
+
         protected partyOffset = 0x140 + 0x30;
         protected partySize = 0x750;
         protected partyPokeBytes = 0xC4;

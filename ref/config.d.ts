@@ -24,6 +24,7 @@ declare interface Config extends DexNavConfig, GoalConfig, EmuCtlConfig, SplitsC
     listenOnly?: boolean;
     runStatusEndpoint?: string;
     newCatchEndpoint?: string;
+    allCatchesEndpoint?: string;
     forceNewCatch?: boolean;
     screenWidth: number;
     screenHeight: number;

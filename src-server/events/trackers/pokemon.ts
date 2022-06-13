@@ -5,7 +5,7 @@
 namespace Events {
 
     export type CaughtPokemonAction = { type: "Caught Pokemon", pv: number, dexNum: number, species: string, name: string, level: number, isShadow?: boolean, caughtIn?: string, otId?: string, mon: TPP.Pokemon };
-    type EvolvedPokemonAction = { type: "Evolved Pokemon", pv: number, dexNum: number, species: string, name: string, level: number, mon: TPP.Pokemon };
+    export type EvolvedPokemonAction = { type: "Evolved Pokemon", pv: number, dexNum: number, species: string, name: string, level: number, mon: TPP.Pokemon };
     type RenamedPokemonAction = { type: "Renamed Pokemon", pv: number, dexNum: number, species: string, newName: string, oldName: string, mon: TPP.Pokemon };
     type MissingPokemonAction = { type: "Missing Pokemon", pv: number, dexNum: number, species: string, name: string };
     type RecoveredPokemonAction = { type: "Recovered Pokemon", pv: number, dexNum: number, species: string, name: string, level: number, mon: TPP.Pokemon };
@@ -66,11 +66,11 @@ namespace Events {
                 const otId = (mon.original_trainer && mon.original_trainer.id || newState.id || "?????").toString();
                 seen.push(pv.toString());
                 if (!known) {
-                    // this.PotentialNewCatch(dexNum, oldState); //trigger it here so it doesn't trigger on replays
+                    this.ReportCatch(dexNum); //trigger it here so it doesn't trigger on replays
                     return dispatch({ type: "Caught Pokemon", pv, dexNum, species, name, level, isShadow, caughtIn, otId, mon });
                 }
                 else if (known.dexNums.indexOf(dexNum) < 0) {
-                    // this.PotentialNewCatch(dexNum, oldState); //trigger it here so it doesn't trigger on replays
+                    this.ReportCatch(dexNum); //trigger it here so it doesn't trigger on replays
                     dispatch({ type: "Evolved Pokemon", pv, dexNum, species, name, level, mon });
                 }
                 else if (known.level != mon.level)
@@ -182,10 +182,9 @@ namespace Events {
             return state;
         }
 
-        // private PotentialNewCatch(dexNum: number, state: TPP.RunStatus) {
-        //     if (state.caught_list.indexOf(dexNum) < 0)
-        //         TPP.Server.NewCatch(dexNum);
-        // }
+        private ReportCatch(dexNum: number) {
+            TPP.Server.AnyCatch(dexNum);
+        }
 
     }
     RegisterTracker(PokemonTracker);

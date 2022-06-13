@@ -4,6 +4,8 @@
 namespace RamReader {
 
     export class Col extends DolphinWatchBase<RomReader.Col> {
+        protected saveCountOffset = 0x10;
+
         protected partyOffset = 0xA0;
         protected partySize = 0x750;
         protected partyPokeBytes = 0x138;
@@ -29,7 +31,9 @@ namespace RamReader {
         protected musicIdAddress = 0x8047B0AC;
         protected musicIdBytes = 4;
 
-        protected fsysStartAddress = 0x807602E0;
+
+        //protected fsysStartAddress = 0x807602E0;
+        protected fsysStartAddress = 0x807250E0; // Grand Colosseum 2.0
         protected fsysSlots = 16;
         protected fsysStructBytes = 0x40;
 

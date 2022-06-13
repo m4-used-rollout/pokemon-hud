@@ -31,7 +31,7 @@ type PokeSpriteProps = {
 class PokeSprite extends React.PureComponent<PokeSpriteProps, {}> {
     render() {
         let pokemonId = this.props.dexNum || TPP.Server.RomData.GetSpecies(this.props.pokemonId).dexNumber;
-        if (config.generation == 1)
+        if (config.generation == 1 || (config.generation > 3 && config.generation < 4)) //Gen 1 and Col/XD
             pokemonId = this.props.pokemonId || TPP.Server.RomData.GetSpeciesByDexNumber(this.props.dexNum).id;
         let src = TPP.Server.RomData.GetPokemonSprite(pokemonId, this.props.form || 0, this.props.gender, this.props.shiny, this.props.generic);
         if (src.charAt(0) == "{") {

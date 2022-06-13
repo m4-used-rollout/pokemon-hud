@@ -253,6 +253,7 @@ declare namespace RomReader {
         };
         protected ZeroPad(int: number, digits: number): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
+        HasPokemonData(): boolean;
         ConvertText(text: string | Buffer | number[]): string;
         static FindLocalFile(path: string): string;
         protected shouldFixCaps: boolean;
@@ -680,6 +681,299 @@ declare namespace RomReader {
             speciesId: number;
             specialCondition: string;
         }))[];
+    }
+}
+declare namespace RomReader {
+    type ShadowData = {
+        id: number;
+        catchRate: number;
+        species: number;
+        purificationStart: number;
+        aggression?: number;
+        fleeChance?: number;
+        alwaysFlee?: number;
+        storyId?: number;
+        shadowLevel?: number;
+        shadowMoves?: Pokemon.Move[];
+    };
+    type StringTable = {
+        [key: number]: string;
+    };
+    abstract class GCNReader extends RomReaderBase {
+        protected basePath: string;
+        protected commonIndex: CommonRelIndex;
+        protected isXd: boolean;
+        shadowData: ShadowData[];
+        protected strings: StringTable;
+        protected trainerClasses: Pokemon.Trainer[];
+        protected typeNames: string[];
+        protected eggGroups: string[];
+        protected expCurves: Pokemon.ExpCurve.CalcExp[];
+        protected expCurveNames: string[];
+        protected contestTypes: string[];
+        protected contestEffects: string[];
+        constructor(basePath: string, commonIndex: CommonRelIndex, isXd?: boolean);
+        protected readonly StartDol: Buffer;
+        protected readonly CommonRel: RelTable;
+        FixAllCaps(str: string): string;
+        ReadStringTable(table: Buffer, address?: number): {
+            id: number;
+            addr: string;
+            string: string;
+        }[];
+        private substitutions;
+        ReadString(data: Buffer, address?: number): string;
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        GetMap(id: number): Pokemon.Map;
+        readonly DefaultMap: Pokemon.Map;
+        protected unlabeledMaps: {
+            [key: number]: string;
+        };
+        protected abstract ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
+        protected abstract ReadAbilities(startDol: Buffer, abilityNames?: string[]): string[];
+        protected ReadItemData(startDol: Buffer, commonRel: RelTable, names?: StringTable): Pokemon.Item[];
+        protected ReadTMHMMapping(startDol: Buffer): number[];
+        protected tmExp: RegExp;
+        protected MapTM(name: string, tmMap: number[]): string;
+        protected ReadMoveData(commonRel: RelTable, names?: StringTable): Pokemon.Move[];
+        protected ReadShadowData(commonRel: RelTable): ShadowData[];
+        UpdateShadowMon(shadowId: number, purification: number): void;
+        protected ReadTrainerData(commonRel: RelTable, names?: StringTable, classes?: Pokemon.Trainer[]): Pokemon.Trainer[];
+        protected ReadTrainerClasses(commonRel: RelTable, names?: StringTable): Pokemon.Trainer[];
+        protected abstract ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
+    }
+    class RelTable {
+        data: Buffer;
+        private static readonly DataStartOffsetPtr;
+        private static readonly CommonRelDataStartOffsetPtr;
+        private static readonly PointerStartOffsetPtr;
+        private static readonly PointerHeaderPointerOffsetPtr;
+        private static readonly PointerStructSize;
+        private pointers;
+        constructor(data: Buffer, isCommonRel?: boolean);
+        GetValueEntry(index: number): number;
+        GetRecordEntry(index: number, strIndex?: string): Buffer;
+    }
+    interface CommonRelIndex {
+        NumberOfItems?: number;
+        BGM?: number;
+        NumberOfBGMIDs?: number;
+        BattleFields?: number;
+        LegendaryPokemon?: number;
+        NumberOfLegendaryPokemon?: number;
+        PokefaceTextures?: number;
+        PeopleIDs: number;
+        NumberOfPeopleIDs: number;
+        TrainerClasses: number;
+        NumberOfTrainerClasses: number;
+        Doors: number;
+        NumberOfDoors: number;
+        Trainers?: number;
+        NumberOfTrainers?: number;
+        TrainerAIData?: number;
+        NumberOfTrainerAIData?: number;
+        TrainerPokemonData?: number;
+        NumberOfTrainerPokemonData?: number;
+        Battles: number;
+        NumberOfBattles: number;
+        MusicSamples?: number;
+        NumberOfMusicSamples?: number;
+        BattleDebugScenarios?: number;
+        NumberOfBattleDebugScenarios?: number;
+        AIDebugScenarios?: number;
+        NumberOfAIDebugScenarios?: number;
+        StoryDebugOptions?: number;
+        NumberOfStoryDebugOptions?: number;
+        KeyboardCharacters?: number;
+        NumberOfKeyboardCharacters?: number;
+        Keyboard2Characters?: number;
+        NumberOfKeyboard2Characters?: number;
+        Keyboard3Characters?: number;
+        NumberOfKeyboard3Characters?: number;
+        BattleStyles?: number;
+        NumberOfBattleStyles?: number;
+        Rooms: number;
+        NumberOfRooms: number;
+        RoomData?: number;
+        NumberOfRoomData?: number;
+        TreasureBoxData: number;
+        NumberTreasureBoxes: number;
+        CharacterModels: number;
+        NumberOfCharacterModels: number;
+        ShadowData?: number;
+        NumberOfShadowPokemon?: number;
+        PokemonMetLocations?: number;
+        NumberOfMetLocations?: number;
+        InteractionPoints: number;
+        NumberOfInteractionPoints: number;
+        USStringTable: number;
+        StringTableB?: number;
+        StringTableC?: number;
+        PokemonStats: number;
+        NumberOfPokemon: number;
+        Natures: number;
+        NumberOfNatures: number;
+        Moves: number;
+        NumberOfMoves: number;
+        PokemonData?: number;
+        NumberOfPokemonData?: number;
+        BattleBingo?: number;
+        NumberOfBingoCards?: number;
+        NumberOfPokespots?: number;
+        PokespotRock?: number;
+        PokespotRockEntries?: number;
+        PokespotOasis?: number;
+        PokespotOasisEntries?: number;
+        PokespotCave?: number;
+        PokespotCaveEntries?: number;
+        PokespotAll?: number;
+        PokespotAllEntries?: number;
+        BattleCDs?: number;
+        NumberBattleCDs?: number;
+        NumberOfBattleFields?: number;
+        BattleLayouts?: number;
+        NumberOfBattleLayouts?: number;
+        Flags?: number;
+        NumberOfFlags?: number;
+        RoomBGM?: number;
+        NumberOfRoomBGMs?: number;
+        ValidItems?: number;
+        TotalNumberOfItems?: number;
+        Items?: number;
+        SoundsMetaData?: number;
+        NumberOfSounds?: number;
+        TutorMoves?: number;
+        NumberOfTutorMoves?: number;
+        Types?: number;
+        NumberOfTypes?: number;
+    }
+}
+declare namespace RomReader {
+    class Col extends GCNReader {
+        protected ReadAbilities(startDol: Buffer, abilityNames?: string[]): string[];
+        protected unlabeledMaps: {
+            [key: number]: string;
+        };
+        constructor(basePath: string);
+        protected ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
+        protected ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
+    }
+}
+declare namespace RomReader {
+    interface XDTrainer extends Pokemon.Trainer {
+        partySummary: string[];
+        deckId: number;
+    }
+    interface XDTrainerPokemon {
+        speciesId: number;
+        level: number;
+        friendship: number;
+        heldItemId: number;
+        ivs: Pokemon.Stats;
+        evs: Pokemon.Stats;
+        moveIds: number[];
+        pv: number;
+    }
+    interface XDShadowData extends ShadowData {
+        baseMon: XDTrainerPokemon;
+    }
+    enum XDBattleStyle {
+        None = 0,
+        Single = 1,
+        Double = 2,
+        Other = 3
+    }
+    enum XDBattleType {
+        None = 0,
+        StoryAdminColo = 1,
+        Story = 2,
+        ColosseumPrelim = 3,
+        Sample = 4,
+        ColosseumFinal = 5,
+        ColosseumOrrePrelim = 6,
+        ColosseumOrreFinal = 7,
+        MtBattle = 8,
+        MtBattleFinal = 9,
+        BattleMode = 10,
+        LinkBattle = 11,
+        WildBattle = 12,
+        BattleBingo = 13,
+        BattleCD = 14,
+        BattleTraining = 15,
+        MirorBPokespot = 16,
+        BattleModeMtBattleColo = 17
+    }
+    interface XDBattle {
+        id: number;
+        battleType: XDBattleType;
+        battleTypeStr: string;
+        trainersPerSide: number;
+        battleStyle: XDBattleStyle;
+        partySize: number;
+        bgm: number;
+        isStoryBattle: boolean;
+        colosseumRound: number;
+        participants: {
+            deckId: number;
+            trainerId: number;
+            trainer: XDTrainer;
+        }[];
+    }
+    interface XDEncounterMon extends Pokemon.EncounterMon {
+        minLevel: number;
+        maxLevel: number;
+        stepsPerSnack: number;
+    }
+    interface XDEncounterSet {
+        [key: string]: XDEncounterMon[];
+    }
+    interface XDEncounters extends Pokemon.Encounters {
+        all: XDEncounterSet;
+    }
+    class XD extends GCNReader {
+        protected trainers: XDTrainer[];
+        protected battles: XDBattle[];
+        shadowData: XDShadowData[];
+        constructor(basePath: string);
+        GetTrainerByBattle(id: number, slot: number, battleId: number): XDTrainer;
+        GetBattle(id: number): XDBattle;
+        protected LoadDeckFile(deckName: string): Deck;
+        protected ReadDeckTrainers(deck: Deck, deckId: number): XDTrainer[];
+        protected ReadTMHMMapping(startDol: Buffer): number[];
+        protected MapTM(name: string, tmMap: number[]): string;
+        FixAllCaps(str: string): string;
+        protected ReadAbilities(startDol: Buffer): string[];
+        protected ReadBattles(commonRel: RelTable, deckTrainers: Pokemon.Trainer[][]): XDBattle[];
+        protected ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
+        protected ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
+        protected ReadShadowDataXD(shadowDeck: Deck, storyDeck: Deck): XDShadowData[];
+        protected LookUpTrainerPokemon(pkmDeck: Deck, id: number): XDTrainerPokemon;
+        protected ReadEncounters(data: Buffer, entries?: number): XDEncounters;
+    }
+    class Deck {
+        private sections;
+        readonly TrainerData: {
+            entries: number;
+            data: Buffer;
+        };
+        readonly TrainerPokemonData: {
+            entries: number;
+            data: Buffer;
+        };
+        readonly TrainerAIData: {
+            entries: number;
+            data: Buffer;
+        };
+        readonly TrainerStringData: {
+            entries: number;
+            data: Buffer;
+        };
+        readonly ShadowPokemonData: {
+            entries: number;
+            data: Buffer;
+        };
+        constructor(data: Buffer);
     }
 }
 declare const gen4FilesOffsets: {
@@ -1127,6 +1421,203 @@ declare namespace RamReader {
     }
 }
 declare namespace RamReader {
+    abstract class DolphinWatchBase<T extends RomReader.GCNReader> extends RamReaderBase<T> {
+        private connection;
+        protected transmitState: (state?: TPP.RunStatus) => void;
+        private saveStateInterval;
+        Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): void;
+        Stop(): void;
+        protected abstract battleBagAddress: number;
+        protected abstract battlePartyAddress: number;
+        protected abstract enemyTrainerAddress: number;
+        protected abstract enemyPartyAddress: number;
+        protected abstract baseAddrPtr: number;
+        protected abstract musicIdAddress: number;
+        protected abstract musicIdBytes: number;
+        protected abstract fsysStartAddress: number;
+        protected abstract fsysSlots: number;
+        protected abstract fsysStructBytes: number;
+        protected abstract saveCountOffset: number;
+        protected abstract partyOffset: number;
+        protected abstract partySize: number;
+        protected abstract partyPokeBytes: number;
+        protected abstract trainerDataOffset: number;
+        protected abstract trainerDataSize: number;
+        protected abstract pokedexOffset: number;
+        protected abstract pokedexSize: number;
+        protected abstract pcOffset: number;
+        protected abstract pcSize: number;
+        protected abstract pcBoxes: number;
+        protected abstract pcBoxBytes: number;
+        protected abstract bagSize: number;
+        protected abstract itemPCSize: number;
+        protected abstract daycareOffset: number;
+        protected abstract battlePartyPokeBytes: number;
+        protected abstract enemyTrainerBytes: number;
+        private currentPartyAddr;
+        private currentTrainerAddr;
+        private currentPokedexAddr;
+        private currentItemPCAddr;
+        private currentPCAddrs;
+        private currentDaycareAddr;
+        private currentSaveBaseAddr;
+        protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number): void;
+        protected AdditionalSubscriptions(): void;
+        Init(): void;
+        FixSaving(): void;
+        ReadByteRange(address: number, length: number, handler: (data: Buffer) => void): void;
+        Subscribe(address: number, length: number, handler: (data: Buffer) => void): void;
+        Unsubscribe(address: number): void;
+        Write(address: number, bitSize: number, value: number): void;
+        private Handlers;
+        private currentData;
+        private DataHandler;
+        private ResponseHandler;
+        protected ParsePokemon: (monData: Buffer) => TPP.ShadowPokemon;
+        protected AugmentShadowMon(mon: TPP.ShadowPokemon): TPP.ShadowPokemon;
+        protected ParseMove: (moveData: Buffer) => TPP.Move;
+        SendParty: (data: Buffer, monBytes?: number, inBattle?: boolean) => Promise<void>;
+        SendEnemyParty: (data: Buffer) => Promise<void>;
+        SendEnemyTrainer: (data: Buffer) => void;
+        SendTrainer: (data: Buffer) => Promise<void>;
+        SendBag: (data: Buffer) => void;
+        SendPokedex: (data: Buffer) => Promise<void>;
+        SendItemPC: (data: Buffer) => Promise<void>;
+        SendDaycare: (data: Buffer) => Promise<void>;
+        SendMap: (data: Buffer) => void;
+        FsysWatcher: (data: Buffer) => void;
+        SendMusic: (data: Buffer) => void;
+        ReadParty: (data?: Buffer, monBytes?: number) => Promise<TPP.PartyData>;
+        ReadTrainer: (data?: Buffer) => Promise<TPP.TrainerData>;
+        ReadBag: (data: Buffer) => {
+            [key: string]: TPP.Item[];
+        };
+        ReadPocket: (data: Buffer) => (TPP.Item & Pokemon.Item & {
+            count: number;
+        })[];
+        ReadPokedex: (data: Buffer) => Promise<{
+            owned: number[];
+            seen: number[];
+        }>;
+        ReadItemPC: (data: Buffer) => Promise<TPP.Item[]>;
+        protected currentPC: TPP.BoxData[];
+        PCBoxReader(boxNum: number): (data: Buffer) => void;
+        ReadPCBox: (data: Buffer, boxNum: number) => TPP.BoxData;
+        ReadDaycare: (data: Buffer) => Promise<TPP.PartyPokemon>;
+        ReadPC: (data?: Buffer) => Promise<TPP.CombinedPCData>;
+        ReadBattle: (data?: Buffer) => Promise<TPP.BattleStatus>;
+        protected TrainerChunkReaders: ((data?: Buffer) => Promise<TPP.TrainerData>)[];
+        protected OptionsSpec: OptionsSpec;
+        IsPartyDefeated: (party: TPP.PartyData) => boolean;
+        protected Status: {
+            [key: number]: string;
+        };
+        protected Game: {
+            [key: number]: string;
+        };
+    }
+}
+declare namespace RamReader {
+    class Col extends DolphinWatchBase<RomReader.Col> {
+        protected saveCountOffset: number;
+        protected partyOffset: number;
+        protected partySize: number;
+        protected partyPokeBytes: number;
+        protected trainerDataOffset: number;
+        protected trainerDataSize: number;
+        protected pokedexOffset: number;
+        protected pokedexSize: number;
+        protected pcOffset: number;
+        protected pcSize: number;
+        protected pcBoxes: number;
+        protected pcBoxBytes: number;
+        protected bagSize: number;
+        protected itemPCSize: number;
+        protected daycareOffset: any;
+        protected battlePartyPokeBytes: number;
+        protected enemyTrainerBytes: number;
+        protected battleBagAddress: number;
+        protected battlePartyAddress: number;
+        protected enemyTrainerAddress: number;
+        protected enemyPartyAddress: number;
+        protected baseAddrPtr: number;
+        protected musicIdAddress: number;
+        protected musicIdBytes: number;
+        protected fsysStartAddress: number;
+        protected fsysSlots: number;
+        protected fsysStructBytes: number;
+        protected evoFsysId: number;
+    }
+}
+declare namespace RamReader {
+    interface XDRAMShadowData {
+        snagged: boolean;
+        purified: boolean;
+        shadowExp: number;
+        speciesId: number;
+        pId: number;
+        purification: number;
+    }
+    class XD extends DolphinWatchBase<RomReader.XD> {
+        protected saveCountOffset: number;
+        protected partyOffset: number;
+        protected partySize: number;
+        protected partyPokeBytes: number;
+        protected trainerDataOffset: number;
+        protected trainerDataSize: number;
+        protected pokedexOffset: number;
+        protected pokedexSize: number;
+        protected pcOffset: number;
+        protected pcSize: number;
+        protected pcBoxes: number;
+        protected pcBoxBytes: number;
+        protected bagSize: number;
+        protected itemPCSize: number;
+        protected daycareOffset: number;
+        protected battlePartyPokeBytes: number;
+        protected enemyTrainerBytes: number;
+        protected shadowDataOffset: number;
+        protected shadowEntryBytes: number;
+        protected shadowEntries: number;
+        protected purificationChamberOffset: number;
+        protected purificationChamberSize: number;
+        protected battlePartyAddress: any;
+        protected enemyTrainerAddress: any;
+        protected enemyPartyAddress: any;
+        protected baseAddrPtr: number;
+        protected battleAddress: number;
+        protected battleTrainersOffset: number;
+        protected battleTrainerBytes: number;
+        protected battleBagAddress: number;
+        protected musicIdAddress: number;
+        protected musicIdBytes: number;
+        protected mapIdAddress: number;
+        protected fsysStartAddress: any;
+        protected fsysSlots: number;
+        protected fsysStructBytes: number;
+        protected purifierAddr: number;
+        protected shadowAddr: number;
+        protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number): void;
+        protected AdditionalSubscriptions(): void;
+        protected ParseOrreRibbons(ribbonVal: number, ribbonCounts: number[]): string[];
+        protected ParsePokemon: (monData: Buffer) => TPP.ShadowPokemon;
+        ReadBag: (data: Buffer) => {
+            [key: string]: TPP.Item[];
+        };
+        ReadTrainer: (data?: Buffer) => Promise<TPP.TrainerData>;
+        private currentBattle;
+        private currentEnemyTrainers;
+        private currentEnemyParty;
+        ReadBattle: (data?: Buffer) => Promise<TPP.BattleStatus>;
+        BattleTrainerReader(slot: number): (data: Buffer) => void;
+        SendBattle: (data: Buffer) => Promise<void>;
+        private shadowData;
+        ReadShadowData: (data: Buffer) => XDRAMShadowData[];
+        protected AugmentShadowMon(mon: TPP.ShadowPokemon): TPP.ShadowPokemon;
+        ReadPurifierData: (data: Buffer) => void;
+    }
+}
+declare namespace RamReader {
     interface Gen6Pokemon extends TPP.Pokemon {
         encryption_constant: number;
         sanity: number;
@@ -1291,6 +1782,7 @@ declare module TPP.Server {
     function MergeOverrides(currState?: RunStatus): void;
     function setState(dataJson: string): void;
     function NewCatch(dexNum: number): void;
+    function AnyCatch(dexNum: number): void;
     const fileExists: (path: string) => any;
     let emotePuller: TrendingEmotesPuller.TrendingEmotesPuller;
 }
@@ -1494,6 +1986,7 @@ declare namespace Events {
         Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void;
         Reducer(action: KnownActions & Timestamp): void;
         Reporter(state: TPP.RunStatus): TPP.RunStatus;
+        private ReportCatch;
     }
 }
 declare namespace Events {
@@ -1517,490 +2010,6 @@ declare namespace Events {
 declare namespace Events {
 }
 declare namespace Events {
-}
-declare namespace RomReader {
-    type ShadowData = {
-        id: number;
-        catchRate: number;
-        species: number;
-        purificationStart: number;
-        aggression?: number;
-        fleeChance?: number;
-        alwaysFlee?: number;
-        storyId?: number;
-        shadowLevel?: number;
-        shadowMoves?: Pokemon.Move[];
-    };
-    type StringTable = {
-        [key: number]: string;
-    };
-    abstract class GCNReader extends RomReaderBase {
-        protected basePath: string;
-        protected commonIndex: CommonRelIndex;
-        protected isXd: boolean;
-        shadowData: ShadowData[];
-        protected strings: StringTable;
-        protected trainerClasses: Pokemon.Trainer[];
-        protected typeNames: string[];
-        protected eggGroups: string[];
-        protected expCurves: Pokemon.ExpCurve.CalcExp[];
-        protected expCurveNames: string[];
-        protected contestTypes: string[];
-        protected contestEffects: string[];
-        constructor(basePath: string, commonIndex: CommonRelIndex, isXd?: boolean);
-        protected readonly StartDol: Buffer;
-        protected readonly CommonRel: RelTable;
-        FixAllCaps(str: string): string;
-        ReadStringTable(table: Buffer, address?: number): {
-            id: number;
-            addr: string;
-            string: string;
-        }[];
-        ReadStringOld(data: Buffer, address?: number, length?: number): string;
-        ReadStringSloppy(data: Buffer, address?: number, length?: number): string;
-        ReadString(data: Buffer, address?: number): string;
-        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
-        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
-        GetMap(id: number): Pokemon.Map;
-        readonly DefaultMap: Pokemon.Map;
-        protected unlabeledMaps: {
-            [key: number]: string;
-        };
-        protected abstract ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
-        protected abstract ReadAbilities(startDol: Buffer, abilityNames?: string[]): string[];
-        protected ReadItemData(startDol: Buffer, commonRel: RelTable, names?: StringTable): Pokemon.Item[];
-        protected ReadTMHMMapping(startDol: Buffer): number[];
-        protected tmExp: RegExp;
-        protected MapTM(name: string, tmMap: number[]): string;
-        protected ReadMoveData(commonRel: RelTable, names?: StringTable): Pokemon.Move[];
-        protected ReadShadowData(commonRel: RelTable): ShadowData[];
-        protected ReadTrainerData(commonRel: RelTable, names?: StringTable, classes?: Pokemon.Trainer[]): Pokemon.Trainer[];
-        protected ReadTrainerClasses(commonRel: RelTable, names?: StringTable): Pokemon.Trainer[];
-        protected abstract ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
-    }
-    class RelTable {
-        data: Buffer;
-        private static readonly DataStartOffsetPtr;
-        private static readonly CommonRelDataStartOffsetPtr;
-        private static readonly PointerStartOffsetPtr;
-        private static readonly PointerHeaderPointerOffsetPtr;
-        private static readonly PointerStructSize;
-        private pointers;
-        constructor(data: Buffer, isCommonRel?: boolean);
-        GetValueEntry(index: number): number;
-        GetRecordEntry(index: number): Buffer;
-    }
-    interface CommonRelIndex {
-        NumberOfItems?: number;
-        BGM?: number;
-        NumberOfBGMIDs?: number;
-        BattleFields?: number;
-        LegendaryPokemon?: number;
-        NumberOfLegendaryPokemon?: number;
-        PokefaceTextures?: number;
-        PeopleIDs: number;
-        NumberOfPeopleIDs: number;
-        TrainerClasses: number;
-        NumberOfTrainerClasses: number;
-        Doors: number;
-        NumberOfDoors: number;
-        Trainers?: number;
-        NumberOfTrainers?: number;
-        TrainerAIData?: number;
-        NumberOfTrainerAIData?: number;
-        TrainerPokemonData?: number;
-        NumberOfTrainerPokemonData?: number;
-        Battles: number;
-        NumberOfBattles: number;
-        MusicSamples?: number;
-        NumberOfMusicSamples?: number;
-        BattleDebugScenarios?: number;
-        NumberOfBattleDebugScenarios?: number;
-        AIDebugScenarios?: number;
-        NumberOfAIDebugScenarios?: number;
-        StoryDebugOptions?: number;
-        NumberOfStoryDebugOptions?: number;
-        KeyboardCharacters?: number;
-        NumberOfKeyboardCharacters?: number;
-        Keyboard2Characters?: number;
-        NumberOfKeyboard2Characters?: number;
-        Keyboard3Characters?: number;
-        NumberOfKeyboard3Characters?: number;
-        BattleStyles?: number;
-        NumberOfBattleStyles?: number;
-        Rooms: number;
-        NumberOfRooms: number;
-        RoomData?: number;
-        NumberOfRoomData?: number;
-        TreasureBoxData: number;
-        NumberTreasureBoxes: number;
-        CharacterModels: number;
-        NumberOfCharacterModels: number;
-        ShadowData?: number;
-        NumberOfShadowPokemon?: number;
-        PokemonMetLocations?: number;
-        NumberOfMetLocations?: number;
-        InteractionPoints: number;
-        NumberOfInteractionPoints: number;
-        USStringTable: number;
-        StringTableB?: number;
-        StringTableC?: number;
-        PokemonStats: number;
-        NumberOfPokemon: number;
-        Natures: number;
-        NumberOfNatures: number;
-        Moves: number;
-        NumberOfMoves: number;
-        PokemonData?: number;
-        NumberOfPokemonData?: number;
-        BattleBingo?: number;
-        NumberOfBingoCards?: number;
-        NumberOfPokespots?: number;
-        PokespotRock?: number;
-        PokespotRockEntries?: number;
-        PokespotOasis?: number;
-        PokespotOasisEntries?: number;
-        PokespotCave?: number;
-        PokespotCaveEntries?: number;
-        PokespotAll?: number;
-        PokespotAllEntries?: number;
-        BattleCDs?: number;
-        NumberBattleCDs?: number;
-        NumberOfBattleFields?: number;
-        BattleLayouts?: number;
-        NumberOfBattleLayouts?: number;
-        Flags?: number;
-        NumberOfFlags?: number;
-        RoomBGM?: number;
-        NumberOfRoomBGMs?: number;
-        ValidItems?: number;
-        TotalNumberOfItems?: number;
-        Items?: number;
-        SoundsMetaData?: number;
-        NumberOfSounds?: number;
-        TutorMoves?: number;
-        NumberOfTutorMoves?: number;
-        Types?: number;
-        NumberOfTypes?: number;
-    }
-}
-declare namespace RamReader {
-    abstract class DolphinWatchBase<T extends RomReader.GCNReader> extends RamReaderBase<T> {
-        private connection;
-        protected transmitState: (state?: TPP.RunStatus) => void;
-        private saveStateInterval;
-        Read(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void): void;
-        Stop(): void;
-        protected abstract battleBagAddress: number;
-        protected abstract battlePartyAddress: number;
-        protected abstract enemyTrainerAddress: number;
-        protected abstract enemyPartyAddress: number;
-        protected abstract baseAddrPtr: number;
-        protected abstract musicIdAddress: number;
-        protected abstract musicIdBytes: number;
-        protected abstract fsysStartAddress: number;
-        protected abstract fsysSlots: number;
-        protected abstract fsysStructBytes: number;
-        protected abstract partyOffset: number;
-        protected abstract partySize: number;
-        protected abstract partyPokeBytes: number;
-        protected abstract trainerDataOffset: number;
-        protected abstract trainerDataSize: number;
-        protected abstract pokedexOffset: number;
-        protected abstract pokedexSize: number;
-        protected abstract pcOffset: number;
-        protected abstract pcSize: number;
-        protected abstract pcBoxes: number;
-        protected abstract pcBoxBytes: number;
-        protected abstract bagSize: number;
-        protected abstract itemPCSize: number;
-        protected abstract daycareOffset: number;
-        protected abstract battlePartyPokeBytes: number;
-        protected abstract enemyTrainerBytes: number;
-        private currentPartyAddr;
-        private currentTrainerAddr;
-        private currentPokedexAddr;
-        private currentItemPCAddr;
-        private currentPCAddrs;
-        private currentDaycareAddr;
-        protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number): void;
-        protected AdditionalSubscriptions(): void;
-        Init(): void;
-        ReadByteRange(address: number, length: number, handler: (data: Buffer) => void): void;
-        Subscribe(address: number, length: number, handler: (data: Buffer) => void): void;
-        Unsubscribe(address: number): void;
-        private Handlers;
-        private currentData;
-        private DataHandler;
-        private ResponseHandler;
-        protected ParsePokemon: (monData: Buffer) => TPP.ShadowPokemon;
-        protected AugmentShadowMon(mon: TPP.ShadowPokemon): TPP.ShadowPokemon;
-        protected ParseMove: (moveData: Buffer) => TPP.Move;
-        SendParty: (data: Buffer, monBytes?: number, inBattle?: boolean) => Promise<void>;
-        SendEnemyParty: (data: Buffer) => Promise<void>;
-        SendEnemyTrainer: (data: Buffer) => void;
-        SendTrainer: (data: Buffer) => Promise<void>;
-        SendBag: (data: Buffer) => void;
-        SendPokedex: (data: Buffer) => Promise<void>;
-        SendItemPC: (data: Buffer) => Promise<void>;
-        SendDaycare: (data: Buffer) => Promise<void>;
-        SendMap: (data: Buffer) => void;
-        FsysWatcher: (data: Buffer) => void;
-        SendMusic: (data: Buffer) => void;
-        ReadParty: (data?: Buffer, monBytes?: number) => Promise<TPP.PartyData>;
-        ReadTrainer: (data?: Buffer) => Promise<TPP.TrainerData>;
-        ReadBag: (data: Buffer) => {
-            [key: string]: TPP.Item[];
-        };
-        ReadPocket: (data: Buffer) => (TPP.Item & Pokemon.Item & {
-            count: number;
-        })[];
-        ReadPokedex: (data: Buffer) => Promise<{
-            owned: number[];
-            seen: number[];
-        }>;
-        ReadItemPC: (data: Buffer) => Promise<TPP.Item[]>;
-        protected currentPC: TPP.BoxData[];
-        PCBoxReader(boxNum: number): (data: Buffer) => void;
-        ReadPCBox: (data: Buffer, boxNum: number) => TPP.BoxData;
-        ReadDaycare: (data: Buffer) => Promise<TPP.PartyPokemon>;
-        ReadPC: (data?: Buffer) => Promise<TPP.CombinedPCData>;
-        ReadBattle: (data?: Buffer) => Promise<TPP.BattleStatus>;
-        protected TrainerChunkReaders: ((data?: Buffer) => Promise<TPP.TrainerData>)[];
-        protected OptionsSpec: OptionsSpec;
-        IsPartyDefeated: (party: TPP.PartyData) => boolean;
-        protected Status: {
-            [key: number]: string;
-        };
-        protected Game: {
-            [key: number]: string;
-        };
-    }
-}
-declare namespace RomReader {
-    class Col extends GCNReader {
-        protected ReadAbilities(startDol: Buffer, abilityNames?: string[]): string[];
-        protected unlabeledMaps: {
-            [key: number]: string;
-        };
-        constructor(basePath: string);
-        protected ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
-        protected ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
-    }
-}
-declare namespace RamReader {
-    class Col extends DolphinWatchBase<RomReader.Col> {
-        protected partyOffset: number;
-        protected partySize: number;
-        protected partyPokeBytes: number;
-        protected trainerDataOffset: number;
-        protected trainerDataSize: number;
-        protected pokedexOffset: number;
-        protected pokedexSize: number;
-        protected pcOffset: number;
-        protected pcSize: number;
-        protected pcBoxes: number;
-        protected pcBoxBytes: number;
-        protected bagSize: number;
-        protected itemPCSize: number;
-        protected daycareOffset: any;
-        protected battlePartyPokeBytes: number;
-        protected enemyTrainerBytes: number;
-        protected battleBagAddress: number;
-        protected battlePartyAddress: number;
-        protected enemyTrainerAddress: number;
-        protected enemyPartyAddress: number;
-        protected baseAddrPtr: number;
-        protected musicIdAddress: number;
-        protected musicIdBytes: number;
-        protected fsysStartAddress: number;
-        protected fsysSlots: number;
-        protected fsysStructBytes: number;
-        protected evoFsysId: number;
-    }
-}
-declare namespace RomReader {
-    interface XDTrainer extends Pokemon.Trainer {
-        partySummary: string[];
-        deckId: number;
-    }
-    interface XDTrainerPokemon {
-        speciesId: number;
-        level: number;
-        friendship: number;
-        heldItemId: number;
-        ivs: Pokemon.Stats;
-        evs: Pokemon.Stats;
-        moveIds: number[];
-        pv: number;
-    }
-    interface XDShadowData extends ShadowData {
-        baseMon: XDTrainerPokemon;
-    }
-    enum XDBattleStyle {
-        None = 0,
-        Single = 1,
-        Double = 2,
-        Other = 3
-    }
-    enum XDBattleType {
-        None = 0,
-        StoryAdminColo = 1,
-        Story = 2,
-        ColosseumPrelim = 3,
-        Sample = 4,
-        ColosseumFinal = 5,
-        ColosseumOrrePrelim = 6,
-        ColosseumOrreFinal = 7,
-        MtBattle = 8,
-        MtBattleFinal = 9,
-        BattleMode = 10,
-        LinkBattle = 11,
-        WildBattle = 12,
-        BattleBingo = 13,
-        BattleCD = 14,
-        BattleTraining = 15,
-        MirorBPokespot = 16,
-        BattleModeMtBattleColo = 17
-    }
-    interface XDBattle {
-        id: number;
-        battleType: XDBattleType;
-        battleTypeStr: string;
-        trainersPerSide: number;
-        battleStyle: XDBattleStyle;
-        partySize: number;
-        bgm: number;
-        isStoryBattle: boolean;
-        colosseumRound: number;
-        participants: {
-            deckId: number;
-            trainerId: number;
-            trainer: XDTrainer;
-        }[];
-    }
-    interface XDEncounterMon extends Pokemon.EncounterMon {
-        minLevel: number;
-        maxLevel: number;
-        stepsPerSnack: number;
-    }
-    interface XDEncounterSet {
-        [key: string]: XDEncounterMon[];
-    }
-    interface XDEncounters extends Pokemon.Encounters {
-        all: XDEncounterSet;
-    }
-    class XD extends GCNReader {
-        protected trainers: XDTrainer[];
-        protected battles: XDBattle[];
-        shadowData: XDShadowData[];
-        constructor(basePath: string);
-        GetTrainerByBattle(id: number, slot: number, battleId: number): XDTrainer;
-        GetBattle(id: number): XDBattle;
-        protected LoadDeckFile(deckName: string): Deck;
-        protected ReadDeckTrainers(deck: Deck, deckId: number): XDTrainer[];
-        protected ReadTMHMMapping(startDol: Buffer): number[];
-        protected MapTM(name: string, tmMap: number[]): string;
-        FixAllCaps(str: string): string;
-        protected ReadAbilities(startDol: Buffer): string[];
-        protected ReadBattles(commonRel: RelTable, deckTrainers: Pokemon.Trainer[][]): XDBattle[];
-        protected ReadPokeData(commonRel: RelTable, names?: StringTable): Pokemon.Species[];
-        protected ReadRooms(commonRel: RelTable, names?: StringTable): Pokemon.Map[];
-        protected ReadShadowDataXD(shadowDeck: Deck, storyDeck: Deck): XDShadowData[];
-        protected LookUpTrainerPokemon(pkmDeck: Deck, id: number): XDTrainerPokemon;
-        protected ReadEncounters(data: Buffer, entries?: number): XDEncounters;
-    }
-    class Deck {
-        private sections;
-        readonly TrainerData: {
-            entries: number;
-            data: Buffer;
-        };
-        readonly TrainerPokemonData: {
-            entries: number;
-            data: Buffer;
-        };
-        readonly TrainerAIData: {
-            entries: number;
-            data: Buffer;
-        };
-        readonly TrainerStringData: {
-            entries: number;
-            data: Buffer;
-        };
-        readonly ShadowPokemonData: {
-            entries: number;
-            data: Buffer;
-        };
-        constructor(data: Buffer);
-    }
-}
-declare namespace RamReader {
-    interface XDRAMShadowData {
-        snagged: boolean;
-        purified: boolean;
-        shadowExp: number;
-        speciesId: number;
-        pId: number;
-        purification: number;
-    }
-    class XD extends DolphinWatchBase<RomReader.XD> {
-        protected partyOffset: number;
-        protected partySize: number;
-        protected partyPokeBytes: number;
-        protected trainerDataOffset: number;
-        protected trainerDataSize: number;
-        protected pokedexOffset: number;
-        protected pokedexSize: number;
-        protected pcOffset: number;
-        protected pcSize: number;
-        protected pcBoxes: number;
-        protected pcBoxBytes: number;
-        protected bagSize: number;
-        protected itemPCSize: number;
-        protected daycareOffset: number;
-        protected battlePartyPokeBytes: number;
-        protected enemyTrainerBytes: number;
-        protected shadowDataOffset: number;
-        protected shadowEntryBytes: number;
-        protected shadowEntries: number;
-        protected purificationChamberOffset: number;
-        protected purificationChamberSize: number;
-        protected battlePartyAddress: any;
-        protected enemyTrainerAddress: any;
-        protected enemyPartyAddress: any;
-        protected baseAddrPtr: number;
-        protected battleAddress: number;
-        protected battleTrainersOffset: number;
-        protected battleTrainerBytes: number;
-        protected battleBagAddress: number;
-        protected musicIdAddress: number;
-        protected musicIdBytes: number;
-        protected mapIdAddress: number;
-        protected fsysStartAddress: any;
-        protected fsysSlots: number;
-        protected fsysStructBytes: number;
-        protected purifierAddr: number;
-        protected shadowAddr: number;
-        protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number): void;
-        protected AdditionalSubscriptions(): void;
-        protected ParseOrreRibbons(ribbonVal: number, ribbonCounts: number[]): string[];
-        protected ParsePokemon: (monData: Buffer) => TPP.ShadowPokemon;
-        ReadBag: (data: Buffer) => {
-            [key: string]: TPP.Item[];
-        };
-        ReadTrainer: (data?: Buffer) => Promise<TPP.TrainerData>;
-        private currentBattle;
-        private currentEnemyTrainers;
-        private currentEnemyParty;
-        ReadBattle: (data?: Buffer) => Promise<TPP.BattleStatus>;
-        BattleTrainerReader(slot: number): (data: Buffer) => void;
-        SendBattle: (data: Buffer) => Promise<void>;
-        private shadowData;
-        ReadShadowData: (data: Buffer) => XDRAMShadowData[];
-        protected AugmentShadowMon(mon: TPP.ShadowPokemon): TPP.ShadowPokemon;
-        ReadPurifierData: (data: Buffer) => void;
-    }
 }
 declare namespace RomReader {
     function AugmentState(romData: RomReaderBase, state: TPP.RunStatus): void;

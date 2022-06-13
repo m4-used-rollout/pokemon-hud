@@ -68,6 +68,7 @@ module TPP.Server {
         var state = TPP.Server.getState();
         const urlParts = (<string>request.url || '').split('/');
         urlParts.shift(); //remove host
+        // try {
         switch ((urlParts.shift() || '').toLowerCase()) {
             default:
                 setJSONHeaders(response);
@@ -98,6 +99,14 @@ module TPP.Server {
                     outObj = RomData;
                 }
                 return JSON.stringify(outObj, null, 2);
+            case "fixsave":
+                // Check for FixSaving function on RamReader
+                // Currently only applicable to Colosseum and XD
+                if ((RamData as RamReader.DolphinWatchBase<RomReader.GCNReader>).FixSaving) {
+                    (RamData as RamReader.DolphinWatchBase<RomReader.GCNReader>).FixSaving();
+                    return "done";
+                }
+                return "can't";
             case "override":
                 //console.log(request.url);
                 const overrides: { [key: string]: any } = {};
@@ -122,5 +131,9 @@ module TPP.Server {
                 }
                 return JSON.stringify(inputs);
         }
+        // }
+        // catch (e) {
+        //     return JSON.stringify(e, null, 2);
+        // }
     }
 }

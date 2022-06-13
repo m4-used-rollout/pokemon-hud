@@ -53,6 +53,10 @@ namespace RomReader {
             return this.GetAllMapEncounters(map);
         }
 
+        HasPokemonData() {
+            return (this.pokemon || []).length > 0;
+        }
+
         ConvertText(text: string | Buffer | number[]): string {
             if (text instanceof Buffer) {
                 const decoded = text.toString("ucs2");

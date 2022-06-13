@@ -108,6 +108,7 @@ body {
             bottom:0;
             transform:skew(@bar-skew)translateX(-.2em);
             transition: width @transition-time ease-out;
+            max-width: 100%;
         }
 
         ul.party {
@@ -116,10 +117,12 @@ body {
             padding:0;
             margin-bottom: 5px;
             height: (@party-member-height * 6);
+            width: 100%;
             //min-height: 0; //TTH
             transition: filter .2s ease-in-out;
 
             > li {
+                overflow: hidden;
                 display:flex;
                 position: relative;
                 padding:0;
@@ -134,6 +137,12 @@ body {
                 &.male .name:after {
                     content:'♂';
                     color: @male-color;
+                }
+
+                &.level-cap {
+                    .exp-bar {
+                        visibility: hidden;
+                    }
                 }
 
                 .sleepy {
@@ -175,18 +184,20 @@ body {
 
                     .top-line {
                         display: flex;
+                        left:-.25em;
+                        width:~"calc(100% + .25em)";
                         align-items:center;
                         justify-content: flex-end;
                         font-size:1.2em;
                         position: relative;
 
                         .name {
-                            flex: 0 0 auto;
+                            flex: 0 1 60%;
                             text-align: left;
                             white-space: pre;
                             .outline();
 
-                            &:after {
+                            > span:after {
                                 margin-left: .1em;
                             }
                         }
@@ -328,18 +339,16 @@ body {
                     }
 
                     .moves {
+                        clear:both;
                         list-style: none;
-                        //width:~"calc(100% + .75em)";
+                        position: relative;
+                        left:-.25em;
+                        width:~"calc(100% + .25em)";
                         padding:0;
                         margin:0;
-                        position: absolute;
-                        left:-.75em;
-                        //left: 0;
-                        right: 0;
-                        top: 2.4em;
                         display: flex;
                         flex-flow: row wrap;
-                        .text-outline();
+                        .outline();
 
                         li {
                             display: inline-flex;
@@ -355,13 +364,16 @@ body {
                             }
 
                             img {
+                                flex: 0 0 .7em;
                                 height: .7em;
                                 align-self: center;
                                 border-radius: 50%;
                                 position: relative;
                             }
+
                             i.type {
-                                font-size: .7em;
+                                flex: 0 0 1em;
+                                font-size: .5em;
                                 align-self:center;
                                 border-radius: 50%;
                                 overflow: hidden;
@@ -373,15 +385,19 @@ body {
                             }
 
                             .move-name {
-                                margin:auto;
+                                flex: 1 1 auto;
+                                margin:auto .1em;
                                 text-align: center;
                             }
-                            span:last-of-type {
+
+                            .move-pp {
                                 margin-left:auto;
+                                flex: 0 0 auto;
+                                .empty-digit {
+                                    visibility: hidden;
+                                }
                             }
-                            &.long-name .move-name {
-                                .crush-text()
-                            }
+
                             &.pp-low {
                                 color:@low-health;
                             }
@@ -1022,8 +1038,8 @@ body {
 
 //@import 'themes/n3ds.less';
 @import 'themes/gbc.less';
-// @import 'themes/dualgb.less';
-// @import 'themes/gcn.less';
+@import 'themes/dualgb.less';
+@import 'themes/gcn.less';
 @import 'themes/touhou.less';
 @import 'themes/gen4-5.less';
 

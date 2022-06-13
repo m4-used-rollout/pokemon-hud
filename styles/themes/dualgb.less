@@ -696,11 +696,11 @@
                         padding: 0 .5em;
 
 
-                        &:before {
-                            font-size: .9em;
-                            vertical-align: baseline;
-                            margin-right:.1em;
-                        }
+                        // &:before {
+                        //     font-size: .9em;
+                        //     vertical-align: baseline;
+                        //     margin-right:.1em;
+                        // }
                     }
 
                     .cash {
@@ -719,10 +719,13 @@
                         display: inline-block;
                         width:1em;
                         height:1em;
+                        position:relative;
+                        top: -2px;
                         background-image:url('img/pc.png');
                         background-size: cover;
                         background-repeat: no-repeat;
                         background-position: top center;
+                        image-rendering: pixelated;
                     }
                     .pc.almost-full {
                         color:@med-health;
@@ -813,6 +816,8 @@
     &.stack-footer {
         .trainer-info .bottom-row {
             height: 2em!important;
+            left: -2px;
+            right: -4px;
 
             > div {
                 transform: none!important;
@@ -824,11 +829,11 @@
                     margin: 0;
                     padding: 0;
 
-                    &:before {
-                        display: inline-block;
-                        width: 1em;
-                        text-align: center;
-                    }
+                    // &:before {
+                    //     display: inline-block;
+                    //     width: 1em;
+                    //     text-align: center;
+                    // }
                 }
 
                 .cash {
@@ -844,7 +849,9 @@
                     text-align: right;
                     &:before {
                         float:right;
-                        margin-left: .25em;
+                        position: relative;
+                        left: 2px;
+                        margin-left: -4px;
                     }
                 }
                 .dex-counts {

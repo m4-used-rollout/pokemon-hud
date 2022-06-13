@@ -46,11 +46,12 @@ namespace RomReader {
             const startDol = this.StartDol;
             this.ReadStringTable(startDol, this.isXd ? 0x374FC0 : 0x2CC810).forEach(s => this.strings[s.id] = s.string);
             const commonRel = this.CommonRel;
-            const mainStringList = this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.USStringTable).slice(this.isXd ? 0x68 : 0)); //col 0x59890
+            const mainStringList = this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.USStringTable, "US String Table").slice(this.isXd ? 0x68 : 0)); //col 0x59890
+            // console.log(`US String Table count: ${mainStringList.length}`);
             mainStringList.forEach(s => this.strings[s.id] = s.string);
             if (!this.isXd) {
-                this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableB)).forEach(s => this.strings[s.id] = s.string); //col 0x66000
-                this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableC)).forEach(s => this.strings[s.id] = s.string); //col 0x784E0
+                this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableB, "String Table B")).forEach(s => this.strings[s.id] = this.strings[s.id] || s.string); //col 0x66000
+                this.ReadStringTable(commonRel.GetRecordEntry(commonIndex.StringTableC, "String Table C")).forEach(s => this.strings[s.id] = this.strings[s.id] || s.string); //col 0x784E0
             }
 
             this.abilities = this.ReadAbilities(startDol, ["-", ...mainStringList.filter(s => s.id > 3100 && s.id < 3200).map(s => s.string)]);
@@ -95,27 +96,31 @@ namespace RomReader {
                 .map(addr => ({ id: addr.id, addr: addr.addr.toString(16), string: this.FixAllCaps(this.ReadString(table, addr.addr)) }));
         }
 
-        public ReadStringOld(data: Buffer, address = 0, length = 0) {
-            length = length || (data.indexOf("\u0000", address + 2, "utf16le") - address);
-            const strBuf = data.slice(address, address + length);
-            if (length) {
-                try {
-                    return strBuf.swap16().toString("utf16le");
-                }
-                catch { }
-            }
-            return "";
-        }
+        // public ReadStringOld(data: Buffer, address = 0, length = 0) {
+        //     length = length || (data.indexOf("\u0000", address + 2, "utf16le") - address);
+        //     const strBuf = data.slice(address, address + length);
+        //     if (length) {
+        //         try {
+        //             return strBuf.swap16().toString("utf16le");
+        //         }
+        //         catch { }
+        //     }
+        //     return "";
+        // }
 
-        public ReadStringSloppy(data: Buffer, address = 0, length = 0) {
-            length = length || (data.indexOf("\u0000", address + 2, "utf16le") - address);
-            if (length)
-                return String.fromCodePoint(...this.ReadArray(data, address, 2, length / 2)
-                    .map(chr => chr.readUInt16BE(0) % 0xFFFF)
-                    .filter((c, i, arr) => c > 0 || i < arr.indexOf(0, 1))
-                    .filter(c => !!c));
-            return "";
-        }
+        // public ReadStringSloppy(data: Buffer, address = 0, length = 0) {
+        //     length = length || (data.indexOf("\u0000", address + 2, "utf16le") - address);
+        //     if (length)
+        //         return String.fromCodePoint(...this.ReadArray(data, address, 2, length / 2)
+        //             .map(chr => chr.readUInt16BE(0) % 0xFFFF)
+        //             .filter((c, i, arr) => c > 0 || i < arr.indexOf(0, 1))
+        //             .filter(c => !!c));
+        //     return "";
+        // }
+
+        private substitutions = {
+            ["‰".charCodeAt(0)]: "…".charCodeAt(0)
+        };
 
         public ReadString(data: Buffer, address = 0) {
             const chars = new Array<number>();
@@ -133,7 +138,7 @@ namespace RomReader {
                 else
                     chars.push(char);
             }
-            return String.fromCharCode(...chars);
+            return String.fromCharCode(...chars.map(c => this.substitutions[c] || c));
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
@@ -209,6 +214,12 @@ namespace RomReader {
                 species: data.readUInt16BE(2),
                 purificationStart: data[9] * 100
             }));
+        }
+
+        public UpdateShadowMon(shadowId: number, purification: number) {
+            const data = this.shadowData.find(sd => sd.id == shadowId);
+            if (data)
+                data.purificationStart = Math.max(purification, data.purificationStart || 0);
         }
 
         protected ReadTrainerData(commonRel: RelTable, names: StringTable = this.strings, classes: Pokemon.Trainer[] = this.trainerClasses) {
@@ -295,12 +306,15 @@ namespace RomReader {
                     this.pointers.push(data.readUInt32BE(i + 0x4) + dataStartOffset);
                 }
             }
+            // console.log(`Pointers: \n${this.pointers.map((p,i)=>`${i}: ${p.toString(16)}`).join('\n')}`);
         }
 
         public GetValueEntry(index: number) {
             return index >= 0 && index < this.pointers.length ? this.data.readUInt32BE(this.pointers[index]) : undefined;
         }
-        public GetRecordEntry(index: number) {
+        public GetRecordEntry(index: number, strIndex?: string) {
+            // if (strIndex)
+            //     console.log(`${strIndex} (${index}): ${this.pointers[index].toString(16)}`);
             return index >= 0 && index < this.pointers.length ? this.data.slice(this.pointers[index]) : undefined;
         }
     }

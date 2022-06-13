@@ -4,6 +4,8 @@
 /// <reference path="rom-reading/romreaders/concrete/g1.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g2.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g3.ts" />
+/// <reference path="rom-reading/romreaders/concrete/col.ts" />
+/// <reference path="rom-reading/romreaders/concrete/xd.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g4.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g5.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g6.ts" />
@@ -12,6 +14,8 @@
 /// <reference path="ram-reading/g1.ts" />
 /// <reference path="ram-reading/g2.ts" />
 /// <reference path="ram-reading/g3.ts" />
+/// <reference path="ram-reading/col.ts" />
+/// <reference path="ram-reading/xd.ts" />
 /// <reference path="ram-reading/g6.ts" />
 /// <reference path="ram-reading/g7.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
@@ -178,6 +182,26 @@ module TPP.Server {
                 RomData = rom;
                 if (!config.listenOnly)
                     RamData = new RamReader.Gen3(rom, 5337, "localhost", config);
+                break;
+            }
+            case 3.5: { //Colosseum
+                let rom = new RomReader.Col(path);
+                RomData = rom;
+                if (!rom.HasPokemonData) {
+                    const msg = `Unable to read ROM files at ${path}`;
+                    console.log(msg);
+                    alert(msg);
+                    process.exit(1);
+                }
+                if (!config.listenOnly)
+                    RamData = new RamReader.Col(rom, 6000, "localhost", config);
+                break;
+            }
+            case 3.9: { //XD
+                let rom = new RomReader.XD(path);
+                RomData = rom;
+                if (!config.listenOnly)
+                    RamData = new RamReader.XD(rom, 6000, "localhost", config);
                 break;
             }
             case 4: {
@@ -375,11 +399,35 @@ module TPP.Server {
             dexNums.forEach(dex => sendData(config.newCatchEndpoint, dex.toString()));
     }
 
+    export function AnyCatch(dexNum: number) {
+        let dexNums: number[];
+        if (config.romDexToNatDex) {
+            let num = config.romDexToNatDex[dexNum] || dexNum;
+            dexNums = num instanceof Array ? num : [num];
+        }
+        else
+            dexNums = [dexNum];
+        console.log(`Catch: ${dexNum}`);
+        if (config.allCatchesEndpoint)
+            dexNums.forEach(dex => {
+                try {
+                    let options = require('url').parse(`${config.allCatchesEndpoint}${dex}`);
+                    options['method'] = 'POST';
+                    let request = require('http').request(options);
+                    request.on('error', () => null);
+                    request.end(dex.toString(), 'utf8');
+                    return request;
+                }
+                catch (e) {
+                }
+            });
+    }
+
     const sendData = (url: string, data: string) => {
         try {
-            var options = require('url').parse(url);
+            let options = require('url').parse(url);
             options['method'] = 'POST';
-            var request = require('http').request(options);
+            let request = require('http').request(options);
             request.on('error', () => null);
             request.end(data, 'utf8');
             return request;
