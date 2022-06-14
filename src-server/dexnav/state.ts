@@ -147,7 +147,8 @@ namespace TPP.Server.DexNav {
                                 form: p.form,
                                 shiny: p.shiny,
                                 health: p.health,
-                                is_shadow: (p as TPP.ShadowPokemon).is_shadow
+                                is_shadow: (p as TPP.ShadowPokemon).is_shadow,
+                                catchRate: (p as TPP.ShadowPokemon).catch_rate || p.species.catch_rate
                             } as TPP.Server.DexNav.WildPokemon, p.species
                         ));
                 }

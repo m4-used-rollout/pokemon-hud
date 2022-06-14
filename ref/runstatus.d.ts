@@ -223,6 +223,7 @@ declare namespace TPP {
         };
         in_hyper_mode?: boolean;
         shadow_exp: number;
+        catch_rate: number;
     }
 
     export interface Item {

@@ -20,7 +20,7 @@ namespace Events {
     }
 
     const AllItems = (state: TPP.RunStatus) => []
-        .concat(...(Object.keys(state.items || {}).map(k => (state.items[k] as TPP.Item[]).map(i => Object.assign({ pocket: k }, i))) as (TPP.Item & { pocket: string })[][]))
+        .concat(...(Object.keys(state.items || {}).map(k => ((state.items[k] || []) as TPP.Item[]).map(i => Object.assign({ pocket: k }, i))) as (TPP.Item & { pocket: string })[][]))
         .concat(...AllMons(state).filter(m => m.held_item && m.held_item.id).map(m => Object.assign({}, m.held_item))) as (TPP.Item & { pocket?: string })[];
 
     const ItemTotals = (state: TPP.RunStatus) => {

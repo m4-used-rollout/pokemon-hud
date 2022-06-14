@@ -2,8 +2,6 @@
 /// <reference path="enemytrainer.tsx" />
 /// <reference path="goaltrainers.tsx" />
 
-
-
 class DexNav extends React.Component<{ state: TPP.Server.DexNav.State }, {}> {
     render() {
         let map = this.props.state;

@@ -121,7 +121,7 @@ namespace RamReader {
             // Sometimes when reloading a save state, the game will complain that the
             // memory card you're saving to is not the original you loaded from.
             // Setting the in-memory save count to 0 makes it bypass this check
-            // and let you save again.
+            // and lets you save again.
             if (this.currentSaveBaseAddr)
                 this.Write(this.currentSaveBaseAddr + this.saveCountOffset, 32, 0);
         }
@@ -278,7 +278,7 @@ namespace RamReader {
             if (mon.is_shadow && shadowData) {
                 mon.purification = mon.purification || { current: shadowData.purificationStart };
                 mon.purification.initial = shadowData.purificationStart;
-                mon.species.catch_rate = shadowData.catchRate;
+                mon.catch_rate = shadowData.catchRate;
 
                 const shadowMoves = (shadowData.shadowMoves || [this.rom.GetMove(0x164)]) //Fall back to Shadow Rush (Col)
                     .map(m => Object.assign(Pokemon.Convert.MoveToRunStatus(m), { is_shadow: true }) as TPP.ShadowMove);
@@ -330,7 +330,7 @@ namespace RamReader {
                 // if (this.IsPartyDefeated(party)) {
                 //     this.currentState.in_battle = false;
                 // }
-                this.currentState.in_battle = inBattle && !this.IsPartyDefeated(party);
+                this.currentState.in_battle = inBattle;// && !this.IsPartyDefeated(party);
                 this.transmitState();
             }
         }).catch(err => console.error(err));
@@ -464,7 +464,8 @@ namespace RamReader {
             balls: this.ReadPocket(data.slice(0xFC, 0x13C)),
             tms: this.ReadPocket(data.slice(0x13C, 0x23C)),
             berries: this.ReadPocket(data.slice(0x23C, 0x2F4)),
-            cologne: this.ReadPocket(data.slice(0x2F4, 0x300))
+            cologne: this.ReadPocket(data.slice(0x2F4, 0x300)),
+            pc: (this.currentState.items || { pc: [] }).pc
         });
 
         public ReadPocket = (data: Buffer) => this.rom.ReadArray(data, 0, 4)

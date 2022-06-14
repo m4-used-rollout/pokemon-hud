@@ -118,14 +118,15 @@ namespace RomReader {
         //     return "";
         // }
 
-        private substitutions = {
-            ["‰".charCodeAt(0)]: "…".charCodeAt(0)
-        };
+        private replacements = {
+            0x2030: 0x2025 // ‰ -> ‥
+        }
 
         public ReadString(data: Buffer, address = 0) {
             const chars = new Array<number>();
             for (let i = address; i < data.length; i += 2) {
                 let char = data.readUInt16BE(i);
+                char = this.replacements[char] || char;
                 if (char == 0)
                     return String.fromCharCode(...chars);
                 if (char == 0xFFFF) {
@@ -138,7 +139,13 @@ namespace RomReader {
                 else
                     chars.push(char);
             }
-            return String.fromCharCode(...chars.map(c => this.substitutions[c] || c));
+            return String.fromCharCode(...chars);
+        }
+
+        private replaceAll(str: string, find: string, replacement: string) {
+            while (str.indexOf(find) >= 0)
+                str = str.replace(find, replacement);
+            return str;
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {

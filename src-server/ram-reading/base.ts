@@ -231,6 +231,7 @@ namespace RamReader {
                 is_shadow: this.HasBeenSeenThisBattle(p) && (p as TPP.ShadowPokemon).is_shadow,
                 shadow_id: this.HasBeenSeenThisBattle(p) ? (p as TPP.ShadowPokemon).shadow_id : undefined,
                 purification: this.HasBeenSeenThisBattle(p) ? (p as TPP.ShadowPokemon).purification : undefined,
+                catch_rate: this.HasBeenSeenThisBattle(p) ? (p as TPP.ShadowPokemon).catch_rate : undefined,
                 form: p.form,
                 shiny: p.shiny,
                 shiny_value: p.shiny_value,

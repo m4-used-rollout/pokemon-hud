@@ -721,8 +721,9 @@ declare namespace RomReader {
             addr: string;
             string: string;
         }[];
-        private substitutions;
+        private replacements;
         ReadString(data: Buffer, address?: number): string;
+        private replaceAll;
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetMap(id: number): Pokemon.Map;
