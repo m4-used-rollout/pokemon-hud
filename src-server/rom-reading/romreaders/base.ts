@@ -311,9 +311,10 @@ namespace RomReader {
             }
         }
 
-        CalculateShiny(pokemon: TPP.Pokemon, threshold = 8) {
+        CalculateShiny(pokemon: TPP.Pokemon, threshold = this.ShinyThreshold()) {
             if (typeof pokemon.shiny !== "boolean" && pokemon.original_trainer) {
-                pokemon.shiny = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536))) < threshold;
+                pokemon.shiny_value = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536)))
+                pokemon.shiny = pokemon.shiny_value < threshold;
             }
         }
 

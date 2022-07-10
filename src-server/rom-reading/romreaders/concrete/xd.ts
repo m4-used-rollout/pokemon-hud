@@ -89,7 +89,7 @@ namespace RomReader {
         public shadowData: XDShadowData[];
         //protected encounters: { rock: XDEncounters, oasis: XDEncounters, cave: XDEncounters, all: XDEncounters };
 
-        constructor(basePath: string, ) {
+        constructor(basePath: string,) {
             super(basePath, XDCommonRelIndexes, true);
 
             const startDol = this.StartDol;
@@ -121,6 +121,9 @@ namespace RomReader {
 
         }
 
+        public ShinyThreshold(): number {
+            return 200; //XG
+        }
 
         public GetTrainerByBattle(id: number, slot: number, battleId: number): XDTrainer {
             const { participants } = ((this.battles.find(b => b.id == battleId) || { participants: [] as XDBattle['participants'] }));

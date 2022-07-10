@@ -724,6 +724,7 @@ declare namespace RomReader {
         private replacements;
         ReadString(data: Buffer, address?: number): string;
         private replaceAll;
+        GetTypeNames(commonRel: RelTable): string[];
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
         GetMap(id: number): Pokemon.Map;
@@ -937,6 +938,7 @@ declare namespace RomReader {
         protected battles: XDBattle[];
         shadowData: XDShadowData[];
         constructor(basePath: string);
+        ShinyThreshold(): number;
         GetTrainerByBattle(id: number, slot: number, battleId: number): XDTrainer;
         GetBattle(id: number): XDBattle;
         protected LoadDeckFile(deckName: string): Deck;
@@ -1436,6 +1438,8 @@ declare namespace RamReader {
         protected abstract musicIdAddress: number;
         protected abstract musicIdBytes: number;
         protected abstract fsysStartAddress: number;
+        protected singleBattleTrainerStart: number;
+        protected singleBattleTrainerEnd: number;
         protected abstract fsysSlots: number;
         protected abstract fsysStructBytes: number;
         protected abstract saveCountOffset: number;

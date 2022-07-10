@@ -31,7 +31,6 @@ namespace RamReader {
         protected musicIdAddress = 0x8047B0AC;
         protected musicIdBytes = 4;
 
-
         //protected fsysStartAddress = 0x807602E0;
         protected fsysStartAddress = 0x807250E0; // Grand Colosseum 2.0
         protected fsysSlots = 16;

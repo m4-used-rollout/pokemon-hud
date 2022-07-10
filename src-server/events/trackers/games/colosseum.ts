@@ -6,10 +6,25 @@ namespace Events {
     type NewShadowMonAction = { type: "New Shadow Mon", id: number, species: string, purification: number };
     type KnownActions = ChangedMusicAction | DefeatedTrainerAction | NewShadowMonAction | CaughtPokemonAction | EvolvedPokemonAction;
 
+    type MtBattleCompletion = { areaLeaderIds: number[], firstTrainerId: number; lastTrainerId: number };
 
-    const mtBattleAreaLeaderIds = [227, 237, 247, 257, 267, 277, 287, 297, 307, 317];
-    const mtBattleFirstTrainerId = 218;
-    const mtBattleLastTrainerId = 317;
+    const mtBattleStory: MtBattleCompletion = {
+        areaLeaderIds: [227, 237, 247, 257, 267, 277, 287, 297, 307, 317],
+        firstTrainerId: 218,
+        lastTrainerId: 317
+    }
+
+    const mtBattleSingles: MtBattleCompletion = {
+        areaLeaderIds: [584, 594, 604, 614, 624, 634, 644, 654, 664, 674],
+        firstTrainerId: 575,
+        lastTrainerId: 674
+    }
+
+    const mtBattleDoubles: MtBattleCompletion = {
+        areaLeaderIds: [684, 694, 704, 714, 724, 734, 744, 754, 764, 774],
+        firstTrainerId: 675,
+        lastTrainerId: 774
+    }
 
     class ColosseumTracker extends Tracker<KnownActions> {
         private currentMusicId: number;
@@ -17,7 +32,9 @@ namespace Events {
         private startedWatchingNews: number;
         private totalNewsSeconds = 0;
         private newsReportsWatched = 0;
-        private defeatedMtBattleTrainers = new Array<number>();
+        private defeatedMtBattleTrainersStory = new Array<number>();
+        private defeatedMtBattleTrainersBattleModeSingles = new Array<number>();
+        private defeatedMtBattleTrainersBattleModeDoubles = new Array<number>();
         private knownShadowMons = new Array<number>();
         private ownedPokemon = new Array<number>(); //Handles Pokedex Caught, since the game itself may not keep track
 
@@ -35,9 +52,9 @@ namespace Events {
                     this.ActOnMusic(action.cause, action.timestamp);
                     return;
                 case "Defeated Trainer":
-                    if (mtBattleAreaLeaderIds.indexOf(action.id) >= 0
-                        && this.defeatedMtBattleTrainers.indexOf(action.id) < 0)
-                        this.defeatedMtBattleTrainers.push(action.id); (this.romData as RomReader.GCNReader).UpdateShadowMon
+                    if (mtBattleStory.areaLeaderIds.indexOf(action.id) >= 0
+                        && this.defeatedMtBattleTrainersStory.indexOf(action.id) < 0)
+                        this.defeatedMtBattleTrainersStory.push(action.id); (this.romData as RomReader.GCNReader).UpdateShadowMon
                     return;
                 case "New Shadow Mon":
                     this.knownShadowMons.push(action.id);
@@ -56,7 +73,11 @@ namespace Events {
             state.game_stats = state.game_stats || {};
             state.game_stats['News Reports Watched'] = this.newsReportsWatched;
             state.game_stats['Seconds Spent Watching News'] = Math.ceil(this.totalNewsSeconds);
-            state.game_stats['Mt. Battle Completion Percentage'] = Math.floor(this.defeatedMtBattleTrainers.length / mtBattleAreaLeaderIds.length * 100);
+            state.game_stats['Mt. Battle Completion Percentage'] = Math.floor(this.defeatedMtBattleTrainersStory.length / mtBattleStory.areaLeaderIds.length * 100);
+            if (this.defeatedMtBattleTrainersBattleModeSingles.length > 0)
+                state.game_stats['Mt. Battle Completion (Battle Mode Singles)'] = Math.floor(this.defeatedMtBattleTrainersBattleModeSingles.length / mtBattleSingles.areaLeaderIds.length * 100);
+            if (this.defeatedMtBattleTrainersBattleModeDoubles.length > 0)
+                state.game_stats['Mt. Battle Completion (Battle Mode Doubles)'] = Math.floor(this.defeatedMtBattleTrainersBattleModeDoubles.length / mtBattleDoubles.areaLeaderIds.length * 100);
 
             // Mix in Pokedex owned
             state.caught_list = [...state.caught_list, ...this.ownedPokemon].filter((d, i, arr) => arr.indexOf(d) == i).sort((d1, d2) => d1 - d2);
@@ -65,9 +86,10 @@ namespace Events {
             state.seen = state.seen_list.length;
 
             // Add Mt. Battle Sequence Number
-            (state.enemy_trainers || [])
-                .filter(t => t.id >= mtBattleFirstTrainerId && t.id < mtBattleLastTrainerId)
-                .forEach(t => t.sequence_number = t.id - (mtBattleFirstTrainerId - 1));
+            [mtBattleStory, mtBattleSingles, mtBattleDoubles]
+                .forEach(mb => (state.enemy_trainers || [])
+                    .filter(t => t.id >= mb.firstTrainerId && t.id < mb.lastTrainerId)
+                    .forEach(t => t.sequence_number = t.id - (mb.firstTrainerId - 1)));
 
             // Fix Shady Guy's name
             (state.enemy_trainers || [])
@@ -108,5 +130,5 @@ namespace Events {
         }
 
     }
-    RegisterTracker(ColosseumTracker);
+    //RegisterTracker(ColosseumTracker);
 }

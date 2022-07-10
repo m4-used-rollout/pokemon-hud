@@ -59,7 +59,10 @@ namespace RomReader {
             this.moveLearns = {};
             this.ballIds = [];
 
-
+            if (this.commonIndex.Types)
+                this.types = this.typeNames = this.GetTypeNames(commonRel);
+            if (this.typeNames.indexOf("Electr") >= 0)
+                this.typeNames[this.typeNames.indexOf("Electr")] = "Electric";
             if (this.commonIndex.Moves)
                 this.moves = this.ReadMoveData(commonRel);
             this.items = this.ReadItemData(startDol, commonRel);
@@ -146,6 +149,10 @@ namespace RomReader {
             while (str.indexOf(find) >= 0)
                 str = str.replace(find, replacement);
             return str;
+        }
+
+        public GetTypeNames(commonRel: RelTable) {
+            return this.ReadArray(commonRel.GetRecordEntry(this.commonIndex.Types), 0, 0x30, commonRel.GetValueEntry(this.commonIndex.NumberOfTypes)).map(data => this.strings[data.readUInt32BE(0x8)]);
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {

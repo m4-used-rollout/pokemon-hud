@@ -32,6 +32,10 @@ namespace RamReader {
         protected abstract musicIdBytes: number;
         protected abstract fsysStartAddress: number;
 
+        // Col values, XD does this differently
+        protected singleBattleTrainerStart = 575;
+        protected singleBattleTrainerEnd = 674;
+
         protected abstract fsysSlots: number;
         protected abstract fsysStructBytes: number;
         protected abstract saveCountOffset: number;
@@ -343,7 +347,8 @@ namespace RamReader {
                 this.currentState.battle_kind = "Trainer";
                 this.currentState.enemy_trainers = this.currentState.enemy_trainers || [this.rom.GetTrainer(1)];
                 enemyParty[0] && (enemyParty[0].active = true);
-                enemyParty[1] && (enemyParty[1].active = true);
+                if (this.currentState.enemy_trainers && this.currentState.enemy_trainers[0] && !(this.currentState.enemy_trainers[0].id >= this.singleBattleTrainerStart && this.currentState.enemy_trainers[0].id <= this.singleBattleTrainerEnd))
+                    enemyParty[1] && (enemyParty[1].active = true);
                 this.currentState.enemy_party = this.ConcealEnemyParty(party);
                 this.transmitState();
             }
@@ -481,7 +486,7 @@ namespace RamReader {
                     owned: /*(data.readUInt16BE(0) & 0xC000) == 0 ||*/ (data.readUInt16BE(0x6) == this.currentState.id && data.readUInt16BE(0x4) == this.currentState.secret)
                 })).filter(d => !!d.species);
             resolve({
-                owned: dex.filter(d => d.owned).map(d => d.species),
+                owned: [],//dex.filter(d => d.owned).map(d => d.species),
                 seen: dex.map(d => d.species)
             });
         });
