@@ -1390,6 +1390,10 @@ declare namespace RamReader {
         protected GameStatsMapping: string[];
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
         protected OptionsSpec: {
+            sound: {
+                0: string;
+                0x10000: string;
+            };
             battle_style: {
                 0: string;
                 0x20000: string;
@@ -1469,7 +1473,7 @@ declare namespace RamReader {
         protected BaseAddrSubscriptions(baseSub: (oldAddr: number, offset: number, size: number, handler: (data: Buffer) => void) => number): void;
         protected AdditionalSubscriptions(): void;
         Init(): void;
-        FixSaving(): void;
+        Script_fixsaving(): "Reset save count to 0. Saving should now be possible again." | "Save file memory location is unknown. Could not fix saving.";
         ReadByteRange(address: number, length: number, handler: (data: Buffer) => void): void;
         Subscribe(address: number, length: number, handler: (data: Buffer) => void): void;
         Unsubscribe(address: number): void;
@@ -1555,13 +1559,18 @@ declare namespace RamReader {
     }
 }
 declare namespace RamReader {
+    type ShadowStatus = "Doesn't exist" | "Unsnagged" | "With Miror B" | "Snagged" | "Purified";
     interface XDRAMShadowData {
+        id: number;
+        status: ShadowStatus;
         snagged: boolean;
         purified: boolean;
         shadowExp: number;
         speciesId: number;
+        species?: string;
         pId: number;
         purification: number;
+        data?: string;
     }
     class XD extends DolphinWatchBase<RomReader.XD> {
         protected saveCountOffset: number;
@@ -1786,6 +1795,7 @@ declare module TPP.Server {
     function setOverrides(dataJSON: string): any;
     function MergeOverrides(currState?: RunStatus): void;
     function setState(dataJson: string): void;
+    function NewSeen(dexNum: number): void;
     function NewCatch(dexNum: number): void;
     function AnyCatch(dexNum: number): void;
     const fileExists: (path: string) => any;
@@ -1870,6 +1880,16 @@ declare namespace Events {
     }[]) => boolean;
 }
 declare namespace Events {
+    type CaughtAction = {
+        type: "First Catch";
+        dexNum: number;
+        species: string;
+    };
+    type SeenAction = {
+        type: "First Seen";
+        dexNum: number;
+        species: string;
+    };
 }
 declare namespace Events {
     type GotItemAction = {
@@ -2011,6 +2031,8 @@ declare namespace Events {
         className?: string;
         trainerString?: string;
     };
+}
+declare namespace Events {
 }
 declare namespace Events {
 }

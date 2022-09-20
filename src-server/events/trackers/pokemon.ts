@@ -64,6 +64,8 @@ namespace Events {
                 const isShadow = (mon as TPP.ShadowPokemon).is_shadow;
                 const caughtIn = (mon.met || {} as typeof mon.met).caught_in;
                 const otId = (mon.original_trainer && mon.original_trainer.id || newState.id || "?????").toString();
+                if (!dexNum)
+                    return;
                 seen.push(pv.toString());
                 if (!known) {
                     this.ReportCatch(dexNum); //trigger it here so it doesn't trigger on replays
@@ -73,8 +75,8 @@ namespace Events {
                     this.ReportCatch(dexNum); //trigger it here so it doesn't trigger on replays
                     dispatch({ type: "Evolved Pokemon", pv, dexNum, species, name, level, mon });
                 }
-                else if (known.level != mon.level)
-                    dispatch({ type: "Pokemon Leveled Up", pv, dexNum, species, name, level, mon })
+                // else if (known.level != mon.level)
+                //     dispatch({ type: "Pokemon Leveled Up", pv, dexNum, species, name, level, mon })
                 else if (known.name != name)
                     dispatch({ type: "Renamed Pokemon", pv, dexNum, species, newName: name, oldName: known.name, mon });
                 if (known.status == "Missing")
@@ -166,18 +168,19 @@ namespace Events {
 
             this.pokerus.forEach(pkrs => state.events.push({ group: "Caught Pokerus", name: pkrs.name, time: pkrs.timestamp }));
 
-            // if (state.pc && state.pc.boxes) {
-            //     const missingBox = state.pc.boxes.find(b => b.box_number === 0) || { box_contents: [], box_name: "The Lost", box_number: 0 };
-            //     missingBox.box_contents = [];
-            //     missingBox.box_contents = knowns.filter(k => k.status == "Missing" && !state.pc.boxes.some(b => b.box_contents.some(p => p.personality_value == k.pv))).map(m => ({
-            //         personality_value: m.pv,
-            //         name: m.name,
-            //         moves: [],
-            //         species: { national_dex: m.dexNums.filter(d => d).pop(), name: m.species.filter(s => s).pop() },
-            //     } as any as TPP.BoxedPokemon));
-            //     if (state.pc.boxes.indexOf(missingBox) < 0 && missingBox.box_contents.length > 0)
-            //         state.pc.boxes.unshift(missingBox);
-            // }
+            // Trihard: Track Pokemon that were never saved
+            if (state.pc && state.pc.boxes) {
+                const missingBox = state.pc.boxes.find(b => b.box_number === 0) || { box_contents: [], box_name: "The Lost", box_number: 0 };
+                missingBox.box_contents = [];
+                missingBox.box_contents = knowns.filter(k => k.status == "Missing" && !state.pc.boxes.some(b => b.box_contents.some(p => p.personality_value == k.pv))).map(m => ({
+                    personality_value: m.pv,
+                    name: m.name,
+                    moves: [],
+                    species: { national_dex: m.dexNums.filter(d => d).pop(), name: m.species.filter(s => s).pop() },
+                } as any as TPP.BoxedPokemon));
+                if (state.pc.boxes.indexOf(missingBox) < 0 && missingBox.box_contents.length > 0)
+                    state.pc.boxes.unshift(missingBox);
+            }
 
             return state;
         }

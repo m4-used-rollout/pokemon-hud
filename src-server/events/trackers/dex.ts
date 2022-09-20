@@ -2,13 +2,14 @@
 
 namespace Events {
 
-    type CaughtAction = { type: "First Catch", dexNum: number, species: string };
-    type SeenAction = { type: "First Seen", dexNum: number, species: string };
+    export type CaughtAction = { type: "First Catch", dexNum: number, species: string };
+    export type SeenAction = { type: "First Seen", dexNum: number, species: string };
     type KnownActions = CaughtAction | SeenAction;
 
 
     class DexTracker extends Tracker<KnownActions> {
         private firstCatches = new Array<TPP.Event>();
+        private firstSeen = new Array<TPP.Event>();
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
             if (newState.caught != oldState.caught)
@@ -25,15 +26,21 @@ namespace Events {
                     if (!this.firstCatches.find(c => (c as any as CaughtAction).dexNum == action.dexNum))
                         this.firstCatches.push({ group: "First Catch", name: action.species, dexNum: action.dexNum, time: action.timestamp } as TPP.Event);
                     return;
+                case "First Seen":
+                    if (!this.firstSeen.find(c => (c as any as SeenAction).dexNum == action.dexNum))
+                        this.firstSeen.push({ group: "First Seen", name: action.species, dexNum: action.dexNum, time: action.timestamp } as TPP.Event);
+                    return;
+
             }
         }
 
         public Reporter(state: TPP.RunStatus): TPP.RunStatus {
             state.events.push(...this.firstCatches);
+            state.events.push(...this.firstSeen);
             return state;
         }
 
     }
 
-    RegisterTracker(DexTracker);
+    //RegisterTracker(DexTracker);
 }

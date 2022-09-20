@@ -225,7 +225,7 @@ namespace RamReader {
         protected ConcealEnemyParty(party: (TPP.PartyPokemon & { active?: boolean })[]): TPP.EnemyParty {
             // return party; //SPY!
             return party.map((p, i) => p && ({
-                species: this.HasBeenSeenThisBattle(p) ? Object.assign({}, p.species, { abilities: [], tm_moves: [], }) as TPP.PokemonSpecies : { id: 0, name: "???", national_dex: 0 },
+                species: this.HasBeenSeenThisBattle(p) ? { ...p.species, abilities: [], tm_moves: [] } as TPP.PokemonSpecies : { id: 0, name: "???", national_dex: 0 },
                 health: p.health,
                 active: p.active || this.IsCurrentlyBattling(p, i, true),
                 is_shadow: this.HasBeenSeenThisBattle(p) && (p as TPP.ShadowPokemon).is_shadow,

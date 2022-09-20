@@ -3,13 +3,27 @@
 
 namespace RamReader {
 
+    type ShadowStatus = "Doesn't exist" | "Unsnagged" | "With Miror B" | "Snagged" | "Purified";
+
     export interface XDRAMShadowData {
+        id: number;
+        status: ShadowStatus;
         snagged: boolean;
         purified: boolean;
         shadowExp: number;
         speciesId: number;
+        species?: string;
         pId: number;
         purification: number;
+        data?: string;
+    }
+
+    const shadowStatusValues: { [key: number]: ShadowStatus } = {
+        [0x00]: "Doesn't exist",
+        [0x20]: "Unsnagged",
+        [0x40]: "With Miror B",
+        [0x60]: "Snagged",
+        [0x80]: "Purified"
     }
 
     export class XD extends DolphinWatchBase<RomReader.XD> {
@@ -253,14 +267,36 @@ namespace RamReader {
 
         private shadowData: XDRAMShadowData[];
 
-        public ReadShadowData = (data: Buffer) => this.shadowData = this.rom.ReadArray(data, 0, 0x48, this.rom.shadowData.length).map(sData => (<XDRAMShadowData>{
+        public ReadShadowData = (data: Buffer) => this.shadowData = this.rom.ReadArray(data, 0, 0x48, this.rom.shadowData.length).map((sData, i) => (<XDRAMShadowData>{
+            id: i,
+            status: shadowStatusValues[sData[0] & 0xF0],
             snagged: (sData[0] >>> 6 & 1) > 0,
             purified: (sData[0] >>> 7 & 1) > 0,
             shadowExp: sData.readUInt32BE(4),
             speciesId: sData.readUInt16BE(0x1A),
+            species: (this.rom.GetSpecies(sData.readUInt16BE(0x1A)) || { name: "???" }).name,
             pId: sData.readUInt16BE(0x1C),
-            purification: sData.readInt32BE(0x24)
+            purification: sData.readInt32BE(0x24),
+            data: sData.toString('hex')
         }));
+
+        // Is not useful unfortunately. More research needed.
+        // public Script_markshadow(shadowIdstr: string, status: string) {
+        //     if (!shadowIdstr)
+        //         return "Usage: /script/markshadow/<shadow Id>/<status>";
+        //     const shadowId = parseInt(shadowIdstr);
+        //     const statusString = Object.values(shadowStatusValues).find(v => v == status) || shadowStatusValues[parseInt(status, 16)];
+        //     if (!statusString)
+        //         return `Invalid status provided. Valid choices are ${Object.keys(shadowStatusValues).map(k => `0x${parseInt(k).toString(16)}: "${shadowStatusValues[k]}"`).join(', ')}`;
+        //     if (!this.shadowData[shadowId])
+        //         return "Invalid shadow id. Check /ramdata/shadowData";
+        //     if (!this.shadowAddr)
+        //         return "Address of shadow data in memory is currently unknown";
+        //     const statusValue = parseInt(Object.keys(shadowStatusValues).find(k => shadowStatusValues[k] == statusString));
+        //     const address = this.shadowAddr + (this.shadowEntryBytes * shadowId);
+        //     this.Write(address, 8, statusValue);
+        //     return `Shadow id ${shadowId} (${this.shadowData[shadowId].species}) status now set to 0x${statusValue.toString(16)}: "${statusString}"`;
+        // }
 
         protected AugmentShadowMon(mon: TPP.ShadowPokemon) {
             if (mon.shadow_id && this.shadowData) {

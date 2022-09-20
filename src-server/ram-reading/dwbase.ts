@@ -121,13 +121,16 @@ namespace RamReader {
             });
         }
 
-        public FixSaving() {
+        public Script_fixsaving() {
             // Sometimes when reloading a save state, the game will complain that the
             // memory card you're saving to is not the original you loaded from.
             // Setting the in-memory save count to 0 makes it bypass this check
             // and lets you save again.
-            if (this.currentSaveBaseAddr)
+            if (this.currentSaveBaseAddr) {
                 this.Write(this.currentSaveBaseAddr + this.saveCountOffset, 32, 0);
+                return "Reset save count to 0. Saving should now be possible again.";
+            }
+            return "Save file memory location is unknown. Could not fix saving.";
         }
 
         public ReadByteRange(address: number, length: number, handler: (data: Buffer) => void) {

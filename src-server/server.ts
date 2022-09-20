@@ -89,7 +89,7 @@ module TPP.Server {
                     .map(p => ({ ...p, badgeNums: p.dexNums.map(d => ((config.romDexToNatDex || [])[d] || d).toString().padStart(3, '0')) }));
                 return JSON.stringify(pokemon);
             }
-            case "romdata":
+            case "romdata": {
                 setJSONHeaders(response);
                 let outObj = {}
                 if (urlParts.length) {
@@ -99,14 +99,35 @@ module TPP.Server {
                     outObj = RomData;
                 }
                 return JSON.stringify(outObj, null, 2);
-            case "fixsave":
-                // Check for FixSaving function on RamReader
-                // Currently only applicable to Colosseum and XD
-                if ((RamData as RamReader.DolphinWatchBase<RomReader.GCNReader>).FixSaving) {
-                    (RamData as RamReader.DolphinWatchBase<RomReader.GCNReader>).FixSaving();
-                    return "done";
+            }
+            case "ramdata": {
+                setJSONHeaders(response);
+                let outObj = {}
+                if (urlParts.length) {
+                    urlParts.forEach(p => outObj[p] = RamData[p]);
                 }
-                return "can't";
+                else {
+                    outObj = RamData;
+                }
+                return JSON.stringify(outObj, null, 2);
+            }
+            case "script": {
+                const scriptName = (urlParts[0] || "").toLowerCase();
+                if (scriptName.length == 0)
+                    return "Must provide script name";
+                const scriptParams = urlParts.slice(1).map(decodeURIComponent);
+                if (typeof RamData[`Script_${scriptName}`] === "function")
+                    return (RamData[`Script_${scriptName}`] as Function).call(RamData, ...scriptParams) || `Script ${scriptName} executed`;
+                return `Script ${scriptName} does not exist.`;
+            }
+            // case "fixsave":
+            //     // Check for FixSaving function on RamReader
+            //     // Currently only applicable to Colosseum and XD
+            //     if ((RamData as RamReader.DolphinWatchBase<RomReader.GCNReader>).FixSaving) {
+            //         (RamData as RamReader.DolphinWatchBase<RomReader.GCNReader>).FixSaving();
+            //         return "done";
+            //     }
+            //     return "can't";
             case "override":
                 //console.log(request.url);
                 const overrides: { [key: string]: any } = {};

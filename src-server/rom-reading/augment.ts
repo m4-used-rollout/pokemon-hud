@@ -284,9 +284,10 @@ namespace RomReader {
             if (state.enemy_party) {
                 state.enemy_party = state.enemy_party.filter(p => !!p);
                 state.enemy_party.forEach(p => {
-                    let romMon = romData.GetSpecies(p.species.id, p.form);
-                    p.species = augmentSpecies(p.species, romMon);
-                    removeInvalidEvos(p as any as TPP.Pokemon);
+                    // Comment out for randomizers to not leak info
+                    // let romMon = romData.GetSpecies(p.species.id, p.form);
+                    // p.species = augmentSpecies(p.species, romMon);
+                    // removeInvalidEvos(p as any as TPP.Pokemon);
                     romData.CalculateUnownForm(p);
                 });
             }

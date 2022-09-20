@@ -100,6 +100,27 @@ module TPP.Server {
             oldCatches = s.caught_list;
         });
     }
+    if (config.newSeenEndpoint) {
+        let oldTrainer = {} as TPP.Trainer;
+        let oldSeen = new Array<number>();
+        stateChangeHandlers.push(s => {
+            const sameTrainer = s.id == oldTrainer.id && s.secret == oldTrainer.secret;
+            oldSeen = (sameTrainer ? oldSeen : s.seen_list) || [];
+            if ((s.seen_list || []).length > oldSeen.length) {
+                let newSeen = s.seen_list.filter(c => oldSeen.indexOf(c) < 0);
+                if (newSeen.length <= 7) //these should only happen up to 3 at a time, really, but who knows
+                    newSeen.forEach(NewSeen);
+            }
+            if (!sameTrainer) {
+                oldTrainer = { id: s.id, secret: s.secret, name: s.name };
+                console.log(`New trainer: ${s.name} ${s.id}-${s.secret}`);
+                if (config.stateBackupFolder && fs.existsSync(defaultStateFileName(s))) {
+                    fs.promises.readFile(defaultStateFileName(s)).then(data => setState(Object.assign(JSON.parse(data.toString('utf8')))));
+                }
+            }
+            oldSeen = s.seen_list;
+        });
+    }
     if (config.stateBackupFolder) {
         let filePromise = fs.promises.mkdir(config.stateBackupFolder, { recursive: true }).catch(err => console.error(`Could not create state backup folder (${config.stateBackupFolder}): ${err}`));
         let lastSave = Date.now();
@@ -384,6 +405,19 @@ module TPP.Server {
             console.error(e);
         }
         transmitState();
+    }
+
+    export function NewSeen(dexNum: number) {
+        let dexNums: number[];
+        if (config.romDexToNatDex) {
+            let num = config.romDexToNatDex[dexNum] || dexNum;
+            dexNums = num instanceof Array ? num : [num];
+        }
+        else
+            dexNums = [dexNum];
+        console.log(`Newly seen: ${dexNum}`);
+        if (config.newSeenEndpoint)
+            dexNums.forEach(dex => sendData(config.newSeenEndpoint, dex.toString()));
     }
 
     export function NewCatch(dexNum: number) {

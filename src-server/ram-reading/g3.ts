@@ -562,18 +562,18 @@ namespace RamReader {
         }
 
         protected OptionsSpec = {
-            // sound: {
-            //     0: "Mono",
-            //     0x10000: "Stereo"
-            // },
-            // battle_style: {
-            //     0: "Shift",
-            //     0x20000: "Set"
-            // },
-            battle_style: {
-                0: "Normal",
-                0x20000: "Hard"
+            sound: {
+                0: "Mono",
+                0x10000: "Stereo"
             },
+            battle_style: {
+                0: "Shift",
+                0x20000: "Set"
+            },
+            // battle_style: { //Blazing Emerald
+            //     0: "Normal",
+            //     0x20000: "Hard"
+            // },
             experience: {
                 0: "Party",
                 0x10000: "Single"

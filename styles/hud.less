@@ -129,12 +129,12 @@ body {
                 margin:0;
                 height:@party-member-height;
 
-                &.female .name:after {
+                &.female .name > div:after {
                     content:'♀';
                     color: @female-color;
                 }
 
-                &.male .name:after {
+                &.male .name > div:after {
                     content:'♂';
                     color: @male-color;
                 }
@@ -185,6 +185,8 @@ body {
                     .top-line {
                         display: flex;
                         left:-.25em;
+                        top: -.1em;
+                        margin-bottom: -.1em;
                         width:~"calc(100% + .25em)";
                         align-items:center;
                         justify-content: flex-end;
@@ -197,7 +199,7 @@ body {
                             white-space: pre;
                             .outline();
 
-                            > span:after {
+                            > div:after {
                                 margin-left: .1em;
                             }
                         }
@@ -343,6 +345,7 @@ body {
                         list-style: none;
                         position: relative;
                         left:-.25em;
+                        top: -.25em;
                         width:~"calc(100% + .25em)";
                         padding:0;
                         margin:0;
@@ -373,7 +376,7 @@ body {
 
                             i.type {
                                 flex: 0 0 1em;
-                                font-size: .5em;
+                                font-size: .7em;
                                 align-self:center;
                                 border-radius: 50%;
                                 overflow: hidden;
@@ -1036,11 +1039,11 @@ body {
 @import 'splits/splits.less';
 @import 'emotes/emotes.less';
 
-//@import 'themes/n3ds.less';
-@import 'themes/gbc.less';
-@import 'themes/dualgb.less';
-@import 'themes/gcn.less';
-@import 'themes/touhou.less';
-@import 'themes/gen4-5.less';
+// @import 'themes/n3ds.less';
+// @import 'themes/gbc.less';
+// @import 'themes/dualgb.less';
+// @import 'themes/gcn.less';
+// @import 'themes/touhou.less';
+// @import 'themes/gen4-5.less';
 
 @import 'animations/glitch.less';

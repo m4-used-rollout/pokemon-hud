@@ -136,6 +136,7 @@ namespace TPP.Server.DexNav {
                 if (this.EnemyParty
                     && this.EnemyParty.some(p => ((p || {}) as TPP.ShadowPokemon).is_shadow)
                     && this.EnemyParty.every(p => p && (((p as TPP.ShadowPokemon).is_shadow && !!(p.health || [][0])) || (!(p as TPP.ShadowPokemon).is_shadow && !(p.health || [])[0])))
+                    && this.EnemyParty.filter(p => p && (p.health || [])[0] > 0).length == 1
                 ) {
                     this.WildBattle = this.WildBattle || this.EnemyParty
                         .filter(p => p && p.species && (p as TPP.ShadowPokemon).is_shadow && p.health && p.health[0])
