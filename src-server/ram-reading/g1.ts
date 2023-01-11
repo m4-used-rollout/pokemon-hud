@@ -45,6 +45,7 @@ namespace RamReader {
                 wRivalName: NAME_LENGTH,
                 wObtainedBadges: 1,
                 wNumBoxItems: 1,
+                wPikachuHappiness: 1,
                 wBoxItems: PC_ITEM_CAPACITY * 2,
                 wDayCareInUse: 1,
                 wDayCareMonName: NAME_LENGTH,
@@ -74,6 +75,7 @@ namespace RamReader {
                     coins: parseInt(struct.wPlayerCoins.toString('hex')),
                     rival_name: this.rom.ConvertText(struct.wRivalName),
                     evolution_is_happening: false,
+                    pikachu_happiness: (struct.wPikachuHappiness || [])[0],
                     badges: struct.wObtainedBadges[0],
                     items: {
                         items: this.rom.ReadArray(struct.wBagItems, 0, 2, struct.wNumBagItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
@@ -272,7 +274,7 @@ namespace RamReader {
             if (data[offset('Species')] == 0)
                 return poke;
             // \1Species::    db
-            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(species) || this.rom.GetSpecies(data[offset('Species')]));
+            poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpeciesById(species) || this.rom.GetSpeciesById(data[offset('Species')]));
             // \1HP::         dw
             poke.health = [data.readUInt16BE(offset('HP'))];
             // \1BoxLevel::   db

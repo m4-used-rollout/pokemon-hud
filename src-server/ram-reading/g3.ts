@@ -52,6 +52,7 @@ namespace RamReader {
 
         public ReadPC = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.PCBlockAddress}/${this.rom.config.PCBytes}`, this.WrapBytes(data => ({
             current_box_number: data.readUInt32LE(0),
+            // boxes: [],
             boxes: this.rom.ReadArray(data.slice(4, 0x8344), 0, 30 * 80, 14).map((box, i) => ({
                 box_number: i + 1,
                 box_name: /*["The Fallen", "The Forgiven", "The Innocent", "The Lost", "The Remembered", "The Loved", "The Mourned", "The Troubled", "The Faithful", "The Forlorn"][i] ||*/ this.rom.ConvertText(data.slice(0x8344 + (i * 9), 0x8344 + ((i + 1) * 9))), //TriHard Names
@@ -66,12 +67,12 @@ namespace RamReader {
                 const battle_kind = battleFlags & 8 ? "Trainer" : "Wild";
                 const enemy_trainers = new Array<TPP.EnemyTrainer>();
                 if (battle_kind == "Trainer") {
-                    //const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank) as RomReader.TTHMap; //TTH
+                    // const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank) as RomReader.TTHMap; //TTH
                     enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
-                    //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
+                    // enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
                     if (battleFlags & 0x8000) { //BATTLE_TYPE_TWO_OPPONENTS
                         enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
-                        //enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
+                        // enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
                     }
                 }
                 const partyBytes = parseInt(this.rom.config.PartyBytes, 16);
@@ -130,69 +131,69 @@ namespace RamReader {
                 area_name: this.rom.GetMap(data.readUInt8(5), data.readUInt8(4)).areaName
             } as TPP.TrainerData))),
             //Inventory
-            this.StructEmulatorCaller<TPP.TrainerData>(`System Bus`, {
-                EncryptionKeyOffset: 4,
-                MoneyOffset: 8,
-                ItemPCOffset: parseInt(this.rom.config.ItemPCCount, 16) * 4,
-                ItemPocketOffset: parseInt(this.rom.config.ItemPocketCount, 16) * 4,
-                ItemCandyOffset: parseInt(this.rom.config.ItemCandyCount || "0", 16) * 4,
-                ItemKeyOffset: parseInt(this.rom.config.ItemKeyCount, 16) * 4,
-                ItemBallOffset: parseInt(this.rom.config.ItemBallCount, 16) * 4,
-                ItemTMOffset: parseInt(this.rom.config.ItemTMCount, 16) * 4,
-                ItemBerriesOffset: parseInt(this.rom.config.ItemBerriesCount, 16) * 4
-            }, sym => (this.rom.config[sym] ? `${sym == "EncryptionKeyOffset" ? this.rom.config.SaveBlock2Address : this.rom.config.SaveBlock1Address}+${this.rom.config[sym]}` : 0), struct => {
-                const key = struct.EncryptionKeyOffset ? struct.EncryptionKeyOffset.readInt32LE(0) : 0;
-                const halfKey = key & 0xFFFF;
-                const items: TPP.TrainerData["items"] = {
-                    pc: this.ParseItemCollection(struct.ItemPCOffset, struct.ItemPCOffset.length / 4), //no key
-                    items: this.ParseItemCollection(struct.ItemPocketOffset, struct.ItemPocketOffset.length / 4, halfKey),
-                    key: this.ParseItemCollection(struct.ItemKeyOffset, struct.ItemKeyOffset.length / 4, halfKey),
-                    balls: this.ParseItemCollection(struct.ItemBallOffset, struct.ItemBallOffset.length / 4, halfKey),
-                    tms: this.ParseItemCollection(struct.ItemTMOffset, struct.ItemTMOffset.length / 4, halfKey),
-                    berries: this.ParseItemCollection(struct.ItemBerriesOffset, struct.ItemBerriesOffset.length / 4, halfKey)
-                };
-                if (struct.ItemCandyOffset)
-                    items.candy = this.ParseItemCollection(struct.ItemCandyOffset, struct.ItemCandyOffset.length / 4, halfKey); //TTH
-                return {
-                    money: struct.MoneyOffset.readUInt32LE(0) ^ key,
-                    coins: struct.MoneyOffset.readUInt16LE(4) ^ halfKey,
-                    ball_count: items.balls.reduce((sum, b) => sum + b.count, 0),
-                    items
-                } as TPP.TrainerData
-            }),
-            // this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.MoneyOffset}/8/${this.rom.config.SaveBlock1Address}+${this.rom.config.ItemPCOffset}/${(this.TotalItemSlots() * 4).toString(16)}${this.rom.config.EncryptionKeyOffset ? `/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4` : ""}`, this.WrapBytes(data => {
-            //     const key = this.rom.config.EncryptionKeyOffset ? data.readUInt32LE((this.TotalItemSlots() * 4) + 8) : 0;
-            //     const halfKey = key % 0x10000;
-            //     const PCCount = parseInt(this.rom.config.ItemPCCount, 16);
-            //     const CandyCount = parseInt(this.rom.config.ItemCandyCount || "0", 16);
-            //     const ItemCount = parseInt(this.rom.config.ItemPocketCount, 16);
-            //     const KeyCount = parseInt(this.rom.config.ItemKeyCount, 16);
-            //     const BallCount = parseInt(this.rom.config.ItemBallCount, 16);
-            //     const TMCount = parseInt(this.rom.config.ItemTMCount, 16);
-            //     const BerriesCount = parseInt(this.rom.config.ItemBerriesCount, 16);
-            //     const PCOffset = parseInt(this.rom.config.ItemPCOffset, 16) - 8;
-            //     const CandyOffset = parseInt(this.rom.config.ItemCandyOffset || "0", 16) - PCOffset;
-            //     const ItemsOffset = parseInt(this.rom.config.ItemPocketOffset, 16) - PCOffset;
-            //     const KeyOffset = parseInt(this.rom.config.ItemKeyOffset, 16) - PCOffset;
-            //     const BallOffset = parseInt(this.rom.config.ItemBallOffset, 16) - PCOffset;
-            //     const TMOffset = parseInt(this.rom.config.ItemTMOffset, 16) - PCOffset;
-            //     const BerriesOffset = parseInt(this.rom.config.ItemBerriesOffset, 16) - PCOffset;
-            //     const ballPocket = this.ParseItemCollection(data.slice(BallOffset), BallCount, halfKey);
+            // this.StructEmulatorCaller<TPP.TrainerData>(`System Bus`, {
+            //     EncryptionKeyOffset: 4,
+            //     MoneyOffset: 8,
+            //     ItemPCOffset: parseInt(this.rom.config.ItemPCCount, 16) * 4,
+            //     // ItemCandyOffset: parseInt(this.rom.config.ItemCandyCount || "0", 16) * 4, // TTH
+            //     ItemPocketOffset: parseInt(this.rom.config.ItemPocketCount, 16) * 4,
+            //     ItemKeyOffset: parseInt(this.rom.config.ItemKeyCount, 16) * 4,
+            //     ItemBallOffset: parseInt(this.rom.config.ItemBallCount, 16) * 4, // Remove for TTH
+            //     ItemTMOffset: parseInt(this.rom.config.ItemTMCount, 16) * 4,
+            //     ItemBerriesOffset: parseInt(this.rom.config.ItemBerriesCount, 16) * 4
+            // }, sym => (this.rom.config[sym] ? `${sym == "EncryptionKeyOffset" ? this.rom.config.SaveBlock2Address : this.rom.config.SaveBlock1Address}+${this.rom.config[sym]}` : 0), struct => {
+            //     const key = struct.EncryptionKeyOffset ? struct.EncryptionKeyOffset.readInt32LE(0) : 0;
+            //     const halfKey = key & 0xFFFF;
+            //     const items: TPP.TrainerData["items"] = {
+            //         pc: this.ParseItemCollection(struct.ItemPCOffset, struct.ItemPCOffset.length / 4), //no key
+            //         items: this.ParseItemCollection(struct.ItemPocketOffset, struct.ItemPocketOffset.length / 4, halfKey),
+            //         key: this.ParseItemCollection(struct.ItemKeyOffset, struct.ItemKeyOffset.length / 4, halfKey),
+            //         balls: this.ParseItemCollection(struct.ItemBallOffset, struct.ItemBallOffset.length / 4, halfKey), // Remove for TTH
+            //         tms: this.ParseItemCollection(struct.ItemTMOffset, struct.ItemTMOffset.length / 4, halfKey),
+            //         berries: this.ParseItemCollection(struct.ItemBerriesOffset, struct.ItemBerriesOffset.length / 4, halfKey)
+            //     };
+            //     // if (struct.ItemCandyOffset)
+            //     //     items.candy = this.ParseItemCollection(struct.ItemCandyOffset, struct.ItemCandyOffset.length / 4, halfKey); //TTH
             //     return {
-            //         money: data.readUInt32LE(0) ^ key,
-            //         coins: data.readUInt16LE(4) ^ halfKey,
-            //         items: {
-            //             pc: this.ParseItemCollection(data.slice(8), PCCount), //no key //no PC (TriHard)
-            //             // candy: this.ParseItemCollection(data.slice(CandyOffset), CandyCount, halfKey), //TTH
-            //             items: this.ParseItemCollection(data.slice(ItemsOffset), ItemCount, halfKey),
-            //             key: this.ParseItemCollection(data.slice(KeyOffset), KeyCount, halfKey),
-            //             balls: ballPocket,
-            //             tms: this.ParseItemCollection(data.slice(TMOffset), TMCount, halfKey),
-            //             berries: this.ParseItemCollection(data.slice(BerriesOffset), BerriesCount, halfKey)
-            //         },
-            //         ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
+            //         money: struct.MoneyOffset.readUInt32LE(0) ^ key,
+            //         coins: struct.MoneyOffset.readUInt16LE(4) ^ halfKey,
+            //         ball_count: items.balls.reduce((sum, b) => sum + b.count, 0),  // Remove for TTH
+            //         items
             //     } as TPP.TrainerData
-            // })),
+            // }),
+            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.MoneyOffset}/8/${this.rom.config.SaveBlock1Address}+${this.rom.config.ItemPCOffset}/${(this.TotalItemSlots() * 4).toString(16)}${this.rom.config.EncryptionKeyOffset ? `/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4` : ""}`, this.WrapBytes(data => {
+                const key = this.rom.config.EncryptionKeyOffset ? data.readUInt32LE((this.TotalItemSlots() * 4) + 8) : 0;
+                const halfKey = key % 0x10000;
+                const PCCount = parseInt(this.rom.config.ItemPCCount, 16);
+                const CandyCount = parseInt(this.rom.config.ItemCandyCount || "0", 16);
+                const ItemCount = parseInt(this.rom.config.ItemPocketCount, 16);
+                const KeyCount = parseInt(this.rom.config.ItemKeyCount, 16);
+                const BallCount = parseInt(this.rom.config.ItemBallCount, 16);
+                const TMCount = parseInt(this.rom.config.ItemTMCount, 16);
+                const BerriesCount = parseInt(this.rom.config.ItemBerriesCount, 16);
+                const PCOffset = parseInt(this.rom.config.ItemPCOffset, 16) - 8;
+                const CandyOffset = parseInt(this.rom.config.ItemCandyOffset || "0", 16) - PCOffset;
+                const ItemsOffset = parseInt(this.rom.config.ItemPocketOffset, 16) - PCOffset;
+                const KeyOffset = parseInt(this.rom.config.ItemKeyOffset, 16) - PCOffset;
+                const BallOffset = parseInt(this.rom.config.ItemBallOffset, 16) - PCOffset;
+                const TMOffset = parseInt(this.rom.config.ItemTMOffset, 16) - PCOffset;
+                const BerriesOffset = parseInt(this.rom.config.ItemBerriesOffset, 16) - PCOffset;
+                const ballPocket = this.ParseItemCollection(data.slice(BallOffset), BallCount, halfKey);
+                return {
+                    money: data.readUInt32LE(0) ^ key,
+                    coins: data.readUInt16LE(4) ^ halfKey,
+                    items: {
+                        pc: this.ParseItemCollection(data.slice(8), PCCount), //no key //no PC (TriHard)
+                        // candy: this.ParseItemCollection(data.slice(CandyOffset), CandyCount, halfKey), //TTH
+                        items: this.ParseItemCollection(data.slice(ItemsOffset), ItemCount, halfKey),
+                        key: this.ParseItemCollection(data.slice(KeyOffset), KeyCount, halfKey),
+                        balls: ballPocket,
+                        tms: this.ParseItemCollection(data.slice(TMOffset), TMCount, halfKey),
+                        berries: this.ParseItemCollection(data.slice(BerriesOffset), BerriesCount, halfKey)
+                    },
+                    ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
+                } as TPP.TrainerData
+            })),
             //Badges Ruby/Sapphire/FireRed/LeafGreen
             !this.rom.config.VarsOffset && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${this.rom.config.BadgesOffset || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
                 return {
@@ -282,9 +283,9 @@ namespace RamReader {
             } as TPP.TrainerData))),
         ].filter(t => !!t) as Array<() => Promise<TPP.TrainerData>>;
 
-        // protected TotalItemSlots() {
-        //     return parseInt(this.rom.config.ItemPCCount, 16) + parseInt(this.rom.config.ItemCandyCount || "0", 16) + parseInt(this.rom.config.ItemPocketCount, 16) + parseInt(this.rom.config.ItemKeyCount, 16) + parseInt(this.rom.config.ItemBallCount, 16) + parseInt(this.rom.config.ItemTMCount, 16) + parseInt(this.rom.config.ItemBerriesCount, 16);
-        // }
+        protected TotalItemSlots() {
+            return parseInt(this.rom.config.ItemPCCount, 16) + parseInt(this.rom.config.ItemCandyCount || "0", 16) + parseInt(this.rom.config.ItemPocketCount, 16) + parseInt(this.rom.config.ItemKeyCount, 16) + parseInt(this.rom.config.ItemBallCount, 16) + parseInt(this.rom.config.ItemTMCount, 16) + parseInt(this.rom.config.ItemBerriesCount, 16);
+        }
 
         protected ParseItemCollection(itemData: Buffer, length = itemData.length / 4, key = 0) {
             return this.rom.ReadArray(itemData, 0, 4, length, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data.readUInt16LE(0)), (data.readUInt16LE(2) >>> 0) ^ (key >>> 0))).filter(i => i.id);
@@ -544,7 +545,7 @@ namespace RamReader {
             "Shopping Trips", "Itemfinder Uses", "Rainstorms Soaked By", "Pokédex Views", "Ribbons Earned", "Ledges Jumped",
             "TVs Watched", "Clocks Checked", "Lottery Wins", "Daycare Uses", "Cable Car Rides", "Hot Spring Baths", "Union Room Battles", "Berries Crushed"
         ];
-        //, "Puzzles Completed"] //TTH
+        // , "Puzzles Completed"] //TTH
         //, "People Harassed", "Pokémon Lost", "Enemy Pokémon Defeated", "Things Stolen", "Elite Four Attempts"]; //TriHard Emerald
 
         protected Decrypt(data: Buffer, key: number, checksum?: number) {
@@ -574,10 +575,10 @@ namespace RamReader {
             //     0: "Normal",
             //     0x20000: "Hard"
             // },
-            experience: {
-                0: "Party",
-                0x10000: "Single"
-            },
+            // experience: {
+            //     0: "Party",
+            //     0x10000: "Single"
+            // },
             battle_scene: {
                 0: "On",
                 0x40000: "Off"

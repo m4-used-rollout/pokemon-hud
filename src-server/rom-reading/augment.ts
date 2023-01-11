@@ -273,6 +273,11 @@ namespace RomReader {
             (state.battle_party = (state.battle_party || []).filter(p => !!p).map(augmentPartyPokemon)).forEach(augmentPokemon);
             (state.pc.boxes || []).forEach(b => (b.box_contents = (b.box_contents || []).filter(p => !!p)).forEach(augmentPokemon));
 
+            if (typeof state.pikachu_happiness === "number")
+                ([...(state.daycare || []), ...(state.party || []), ...(state.battle_party || []), ...state.pc.boxes.reduce((all, b) => [...all, ...b.box_contents], new Array<TPP.Pokemon>())] as TPP.Pokemon[])
+                    .filter(p => p && p.original_trainer && p.original_trainer.name == state.name && p.original_trainer.id == state.id && p.species && p.species.id && ((romData.GetSpeciesById(p.species.id) || { name: "" }).name || "").toLowerCase() == "pikachu")
+                    .forEach(p => p.friendship = state.pikachu_happiness);
+
             state.name = romData.ConvertText(state.name);
             state.ball_count = countBalls();
 
@@ -285,9 +290,9 @@ namespace RomReader {
                 state.enemy_party = state.enemy_party.filter(p => !!p);
                 state.enemy_party.forEach(p => {
                     // Comment out for randomizers to not leak info
-                    // let romMon = romData.GetSpecies(p.species.id, p.form);
-                    // p.species = augmentSpecies(p.species, romMon);
-                    // removeInvalidEvos(p as any as TPP.Pokemon);
+                    let romMon = romData.GetSpecies(p.species.id, p.form);
+                    p.species = augmentSpecies(p.species, romMon);
+                    removeInvalidEvos(p as any as TPP.Pokemon);
                     romData.CalculateUnownForm(p);
                 });
             }

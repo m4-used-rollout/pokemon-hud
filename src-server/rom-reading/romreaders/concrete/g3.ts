@@ -52,7 +52,7 @@ namespace RomReader {
         isPokeball: boolean;
         data?: string;
         pocket?: string | number;
-        pluralName: string; //TTH
+        pluralName?: string; //TTH
     }
 
     export interface TTHMap extends Pokemon.Map {
@@ -66,6 +66,7 @@ namespace RomReader {
 
         private puzzleList: { id: number, bank: number }[]; //TTH
         public totalPuzzles = 0;
+        private gfRomHeader: GFRomHeader;
 
         stringTerminator = 0xFF;
 
@@ -78,21 +79,45 @@ namespace RomReader {
                 this.types = touhouTypes;
                 this.shouldFixCaps = false; //some of Touhoumon is already decapped
             }
+            this.gfRomHeader = this.ParseGFRomHeader(romData);
+
+            // Update INI from Rom Header
+            // Doesn't exist for Ruby or Sapphire
+            if (this.romHeader != 'AXVE' && this.romHeader != 'AXPE') {
+                config.ItemPCOffset = this.gfRomHeader.pcItemsOffset.toString(16);
+                config.ItemPocketOffset = this.gfRomHeader.bagItemsOffset.toString(16);
+                config.ItemBallOffset = this.gfRomHeader.bagPokeballsOffset.toString(16);
+                config.ItemBerriesOffset = this.gfRomHeader.bagBerriesOffset.toString(16);
+                config.ItemTMOffset = this.gfRomHeader.bagTMHMsOffset.toString(16);
+                config.ItemKeyOffset = this.gfRomHeader.bagKeyItemsOffset.toString(16);
+                config.ItemPCCount = this.gfRomHeader.pcItemsCount.toString(16);
+                config.ItemPocketCount = this.gfRomHeader.bagCountItems.toString(16);
+                config.ItemBallCount = this.gfRomHeader.bagCountPokeballs.toString(16);
+                config.ItemBerriesCount = this.gfRomHeader.bagCountBerries.toString(16);
+                config.ItemTMCount = this.gfRomHeader.bagCountTMHMs.toString(16);
+                config.ItemKeyCount = this.gfRomHeader.bagCountKeyItems.toString(16);
+
+                // config.ItemCandyOffset = this.gfRomHeader.bagCandyOffset.toString(16); //TTH
+                // config.ItemCandyCount = this.gfRomHeader.bagCountCandy.toString(16); // TTH
+
+                // config.SaveBlock2Address += "+4"; // TTH
+            }
+
             this.abilities = this.ReadAbilities(romData, config);
             this.pokemon = this.ReadPokeData(romData, config);
             this.items = this.ReadItemData(romData, config);
             this.ballIds = this.items.filter((i: Gen3Item) => i.isPokeball).map(i => i.id);
 
-            //Blazing Emerald
-            this.ballIds[0] = 4;
-            this.ballIds[1] = 3;
-            this.ballIds[2] = 5;
-            this.ballIds[3] = 2;
-            this.ballIds[4] = 1;
+            // //Blazing Emerald
+            // this.ballIds[0] = 4;
+            // this.ballIds[1] = 3;
+            // this.ballIds[2] = 5;
+            // this.ballIds[3] = 2;
+            // this.ballIds[4] = 1;
 
             this.moves = this.ReadMoveData(romData, config);
             this.GetTMHMNames(romData, config);
-            this.shouldFixCaps = false; // Vega/Blazing Emerald
+            // this.shouldFixCaps = false; // Vega/Blazing Emerald
             this.trainers = this.ReadTrainerData(romData, config);
             this.areas = this.ReadMapLabels(romData, config);
             // this.totalPuzzles = parseInt(config.PuzzleCount, 16); //TTH
@@ -148,7 +173,7 @@ namespace RomReader {
             return mapArr.some(m => m[0] == bank && ((m.length == 2 && m[1] == id) || m[1] <= id && m[2] >= id));
         }
         IsUnknownTrainerMap(id: number, bank: number) {
-            //return false; //TTH
+            // return false; //TTH
             switch (this.romHeader) {
                 case "BPEE":
                     //return false; //Sirius
@@ -232,8 +257,8 @@ namespace RomReader {
             const itemStructExtensionBytes = 0; //16 for TriHard Emerald and TTH2019
             return this.ReadArray(romData, parseInt(config.ItemData, 16), 44 + itemStructExtensionBytes, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
                 name: this.FixAllCaps(this.ConvertText(data)),
-                //name: this.ConvertText(romData.slice(this.ReadRomPtr(data, 0), 255 + this.ReadRomPtr(data, 0))), //TTH
-                //pluralName: this.ConvertText(romData.slice(data.readInt32LE(4) > 0 && !data.readInt32LE(8) ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0), 255 + (data.readInt32LE(4) > 0 ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0)))) + (data.readInt32LE(4) || data.readInt32LE(8) ? "" : "s"), //TTH
+                // name: this.ConvertText(romData.slice(this.ReadRomPtr(data, 0), 255 + this.ReadRomPtr(data, 0))), //TTH
+                // pluralName: this.ConvertText(romData.slice(data.readInt32LE(4) > 0 && !data.readInt32LE(8) ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0), 255 + (data.readInt32LE(4) > 0 ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0)))) + (data.readInt32LE(4) || data.readInt32LE(8) ? "" : "s"), //TTH
                 id: i,
                 // price: data.readInt16LE(16),
                 // holdEffect: data[18],
@@ -345,9 +370,9 @@ namespace RomReader {
                 ).reduce((allMaps, currBank) => Array.prototype.concat.apply(allMaps, currBank), []);
         }
 
-        TrainerIsRival(id: number, classId: number) {
-            return classId == 89; //Vega
-        }
+        // TrainerIsRival(id: number, classId: number) {
+        //     return classId == 89; //Vega
+        // }
 
         //Trick or Treat House
         private GetPuzzleTrainers(romData: Buffer, mapTrainerTableAddr: number, config: PGEINI): Pokemon.Trainer[] {
@@ -372,6 +397,101 @@ namespace RomReader {
 
         private GetPuzzleAuthor(romData: Buffer, mapScriptPtr: number) {
             return this.ReadArray(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x21).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
+        }
+
+        private ParseGFRomHeader(romData: Buffer) {
+            //TODO: This doesn't exist in Ruby and Sapphire
+            const headerData = romData.slice(0x100, 0x204);
+            const romHeader = <GFRomHeader>{
+                version: headerData.readUInt32LE(0x0),
+                language: headerData.readUInt32LE(0x4),
+                gameName: headerData.toString("utf8", 0x8, 0x28),
+                monFrontPicsAddr: headerData.readUInt32LE(0x28),
+                monBackPicsAddr: headerData.readUInt32LE(0x2C),
+                monNormalPalettesAddr: headerData.readUInt32LE(0x30),
+                monShinyPalettesAddr: headerData.readUInt32LE(0x34),
+                monIconsAddr: headerData.readUInt32LE(0x38),
+                monIconPaletteIdsAddr: headerData.readUInt32LE(0x3C),
+                monIconPalettesAddr: headerData.readUInt32LE(0x40),
+                monSpeciesNamesAddr: headerData.readUInt32LE(0x44),
+                moveNamesAddr: headerData.readUInt32LE(0x48),
+                decorationsAddr: headerData.readUInt32LE(0x4C),
+                flagsOffset: headerData.readUInt32LE(0x50),
+                varsOffset: headerData.readUInt32LE(0x54),
+                pokedexOffset: headerData.readUInt32LE(0x58),
+                seen1Offset: headerData.readUInt32LE(0x5C),
+                seen2Offset: headerData.readUInt32LE(0x60),
+                pokedexVar: headerData.readUInt32LE(0x64),
+                pokedexFlag: headerData.readUInt32LE(0x68),
+                mysteryEventFlag: headerData.readUInt32LE(0x6C),
+                pokedexCount: headerData.readUInt32LE(0x70),
+                playerNameLength: headerData.readUInt8(0x74),
+                trainerNameLength: headerData.readUInt8(0x75),
+                pokemonNameLength1: headerData.readUInt8(0x76),
+                pokemonNameLength2: headerData.readUInt8(0x77),
+                unk5: headerData.readUInt8(0x78),
+                unk6: headerData.readUInt8(0x79),
+                unk7: headerData.readUInt8(0x7A),
+                unk8: headerData.readUInt8(0x7B),
+                unk9: headerData.readUInt8(0x7C),
+                unk10: headerData.readUInt8(0x7D),
+                unk11: headerData.readUInt8(0x7E),
+                unk12: headerData.readUInt8(0x7F),
+                unk13: headerData.readUInt8(0x80),
+                unk14: headerData.readUInt8(0x81),
+                unk15: headerData.readUInt8(0x82),
+                unk16: headerData.readUInt8(0x83),
+                unk17: headerData.readUInt8(0x84),
+                // 3 bytes padding
+                saveBlock2Size: headerData.readUInt32LE(0x88),
+                saveBlock1Size: headerData.readUInt32LE(0x8C),
+                partyCountOffset: headerData.readUInt32LE(0x90),
+                partyOffset: headerData.readUInt32LE(0x94),
+                warpFlagsOffset: headerData.readUInt32LE(0x98),
+                trainerIdOffset: headerData.readUInt32LE(0x9C),
+                playerNameOffset: headerData.readUInt32LE(0xA0),
+                playerGenderOffset: headerData.readUInt32LE(0xA4),
+                frontierStatusOffset: headerData.readUInt32LE(0xA8),
+                frontierStatusOffset2: headerData.readUInt32LE(0xAC),
+                externalEventFlagsOffset: headerData.readUInt32LE(0xB0),
+                externalEventDataOffset: headerData.readUInt32LE(0xB4),
+                unk18: headerData.readUInt32LE(0xB8),
+                baseStatsAddr: headerData.readUInt32LE(0xBC),
+                abilityNamesAddr: headerData.readUInt32LE(0xC0),
+                abilityDescriptionsAddr: headerData.readUInt32LE(0xC4),
+                itemsAddr: headerData.readUInt32LE(0xC8),
+                movesAddr: headerData.readUInt32LE(0xCC),
+                ballGfxAddr: headerData.readUInt32LE(0xD0),
+                ballPalettesAddr: headerData.readUInt32LE(0xD4),
+                gcnLinkFlagsOffset: headerData.readUInt32LE(0xD8),
+                gameClearFlag: headerData.readUInt32LE(0xDC),
+                ribbonFlag: headerData.readUInt32LE(0xE0),
+                bagCountItems: headerData.readUInt8(0xE4),
+                bagCountKeyItems: headerData.readUInt8(0xE5),
+                bagCountPokeballs: headerData.readUInt8(0xE6),
+                bagCountTMHMs: headerData.readUInt8(0xE7),
+                bagCountBerries: headerData.readUInt8(0xE8),
+                pcItemsCount: headerData.readUInt8(0xE9),
+                // 2 bytes padding
+                pcItemsOffset: headerData.readUInt32LE(0xEC),
+                giftRibbonsOffset: headerData.readUInt32LE(0xF0),
+                enigmaBerryOffset: headerData.readUInt32LE(0xF4),
+                enigmaBerrySize: headerData.readUInt32LE(0xF8),
+                moveDescriptionsAddr: headerData.readUInt32LE(0xFC),
+                unk20: headerData.readUInt32LE(0x100)
+            }
+            // romHeader.bagCountCandy = 50; // TTH
+
+            // Precalc bag offsets
+            romHeader.bagItemsOffset = romHeader.pcItemsOffset + romHeader.pcItemsCount * 4;
+            // romHeader.bagCandyOffset = romHeader.pcItemsOffset + romHeader.pcItemsCount * 4; // TTH
+            // romHeader.bagItemsOffset = romHeader.bagCandyOffset + romHeader.bagCountCandy * 4; // TTH
+            romHeader.bagKeyItemsOffset = romHeader.bagItemsOffset + romHeader.bagCountItems * 4;
+            romHeader.bagPokeballsOffset = romHeader.bagKeyItemsOffset + romHeader.bagCountKeyItems * 4;
+            romHeader.bagTMHMsOffset = romHeader.bagPokeballsOffset + romHeader.bagCountPokeballs * 4;
+            romHeader.bagBerriesOffset = romHeader.bagTMHMsOffset + romHeader.bagCountTMHMs * 4;
+
+            return romHeader;
         }
 
         private FindMapEncounters(romData: Buffer, config: PGEINI) {
@@ -486,5 +606,90 @@ namespace RomReader {
         ]
 
     }
+
+    interface GFRomHeader {
+        version: number;
+        language: number;
+        gameName: string;
+        monFrontPicsAddr: number;
+        monBackPicsAddr: number;
+        monNormalPalettesAddr: number;
+        monShinyPalettesAddr: number;
+        monIconsAddr: number;
+        monIconPaletteIdsAddr: number;
+        monIconPalettesAddr: number;
+        monSpeciesNamesAddr: number;
+        moveNamesAddr: number;
+        decorationsAddr: number;
+        flagsOffset: number;
+        varsOffset: number;
+        pokedexOffset: number;
+        seen1Offset: number;
+        pokedexVar: number;
+        pokedexFlag: number;
+        mysteryEventFlag: number;
+        pokedexCount: number;
+        playerNameLength: number;
+        trainerNameLength: number;
+        pokemonNameLength1: number;
+        pokemonNameLength2: number;
+        unk5: number;
+        unk6: number;
+        unk7: number;
+        unk8: number;
+        unk9: number;
+        unk10: number;
+        unk11: number;
+        unk12: number;
+        unk13: number;
+        unk14: number;
+        unk15: number;
+        unk16: number;
+        unk17: number;
+        saveBlock2Size: number;
+        saveBlock1Size: number;
+        partyCountOffset: number;
+        partyOffset: number;
+        warpFlagsOffset: number;
+        trainerIdOffset: number;
+        playerNameOffset: number;
+        playerGenderOffset: number;
+        frontierStatusOffset: number;
+        frontierStatusOffset2: number;
+        externalEventFlagsOffset: number;
+        externalEventDataOffset: number;
+        unk18: number;
+        baseStatsAddr: number;
+        abilityNamesAddr: number;
+        abilityDescriptionsAddr: number;
+        itemsAddr: number;
+        movesAddr: number;
+        ballGfxAddr: number;
+        ballPalettesAddr: number;
+        gcnLinkFlagsOffset: number;
+        gameClearFlag: number;
+        ribbonFlag: number;
+        bagCountItems: number;
+        bagCountKeyItems: number;
+        bagCountPokeballs: number;
+        bagCountTMHMs: number;
+        bagCountBerries: number;
+        pcItemsCount: number;
+        pcItemsOffset: number;
+        giftRibbonsOffset: number;
+        enigmaBerryOffset: number;
+        enigmaBerrySize: number;
+        moveDescriptionsAddr: number;
+        unk20: number;
+
+        // Not present in ROM
+        bagItemsOffset?: number;
+        bagKeyItemsOffset?: number;
+        bagPokeballsOffset?: number;
+        bagTMHMsOffset?: number;
+        bagBerriesOffset?: number;
+        bagCountCandy?: number; // TTH
+        bagCandyOffset?: number; // TTH
+    };
 
 }

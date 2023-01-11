@@ -19,7 +19,12 @@ namespace RamReader {
     }
 
     export class Gen2 extends RamReaderBase<RomReader.Gen2> {
-        protected SymAddr = (symbol: string) => this.rom.symTable[symbol].toString(16);
+        protected SymAddr = (...symbols: string[]) => {
+            const symbol = symbols.find(symbol => !!this.rom.symTable[symbol]);
+            if (!symbol)
+                throw `Could not find symbol ${symbols.join(' ')}`;
+            return this.rom.symTable[symbol].toString(16);
+        };
         protected StructSize = (startSymbol: string, endSymbol: string = startSymbol.replace("Start", '') + "End") => this.rom.symTable[endSymbol] - this.rom.symTable[startSymbol];
 
         protected PCBoxSize = () => this.StructSize('sBox') + 2; //??
@@ -44,7 +49,7 @@ namespace RamReader {
             return (this.isCrystal16 && shortId > 0) ? this.crystal16MovesMapping[shortId] || 0 : shortId;
         }
 
-        public ReadParty = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wPokemonData')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurPartyMon')}/1/${this.SymAddr('wBattleMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wBattleMon')}/${this.BattleMonSize().toString(16)}` + (this.isCrystal16 ? `/${this.SymAddr('wPokemonIndexTable')}/${this.Crystal16PokemonMappingSize().toString(16)}/${this.SymAddr('wMoveIndexTable')}/${this.Crystal16MovesMappingSize().toString(16)}` : ""), this.WrapBytes(data => this.ParseParty(data)));
+        public ReadParty = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wPokemonData')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurPartyMon')}/1/${this.SymAddr('wBattleMonNick', 'wBattleMonNickname')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wBattleMon')}/${this.BattleMonSize().toString(16)}` + (this.isCrystal16 ? `/${this.SymAddr('wPokemonIndexTable')}/${this.Crystal16PokemonMappingSize().toString(16)}/${this.SymAddr('wMoveIndexTable')}/${this.Crystal16MovesMappingSize().toString(16)}` : ""), this.WrapBytes(data => this.ParseParty(data)));
         public ReadPC = this.isCrystal16
             ? this.StructEmulatorCaller<TPP.CombinedPCData>('CartRAM', (() => {
                 const struct = {
@@ -70,7 +75,7 @@ namespace RamReader {
                 return pcData;
             })
             : this.CachedEmulatorCaller([`WRAM/ReadByteRange/${this.SymAddr('wCurBox')}/1/${this.SymAddr('wBoxNames')}/${(BOX_NAME_LENGTH * NUM_BOXES).toString(16)}`, `CartRAM/ReadByteRange/${this.SymAddr('sBox')}/${this.PCBoxSize().toString(16)}/${this.SymAddr('sBox1')}/${(this.PCBoxSize() * 7).toString(16)}/${this.SymAddr('sBox8')}/${(this.PCBoxSize() * 7).toString(16)}`], this.WrapBytes(data => this.ParsePC(data)));
-        public ReadBattle = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wEnemyMonCatchRate')}/1/${this.SymAddr('wOtherTrainerClass')}/1/${this.SymAddr('wOtherTrainerID')}/1/${this.SymAddr('wOTPartyCount')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurOTMon')}/1/${this.SymAddr('wEnemyMonNick')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wEnemyMon')}/${this.BattleMonSize().toString(16)}/${this.SymAddr('wStringBuffer3')}/${NAME_LENGTH.toString(16)}` + (this.isCrystal16 ? `/${this.SymAddr('wPokemonIndexTable')}/${this.Crystal16PokemonMappingSize().toString(16)}/${this.SymAddr('wMoveIndexTable')}/${this.Crystal16MovesMappingSize().toString(16)}` : ""), this.WrapBytes(data => this.ParseBattleBundle(data)));
+        public ReadBattle = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wEnemyMonCatchRate')}/1/${this.SymAddr('wOtherTrainerClass')}/1/${this.SymAddr('wOtherTrainerID')}/1/${this.SymAddr('wOTPartyCount')}/${this.PartySize().toString(16)}/${this.SymAddr('wBattleMode')}/1/${this.SymAddr('wCurOTMon')}/1/${this.SymAddr('wEnemyMonNick', 'wEnemyMonNickname')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wEnemyMon')}/${this.BattleMonSize().toString(16)}/${this.SymAddr('wStringBuffer3')}/${NAME_LENGTH.toString(16)}` + (this.isCrystal16 ? `/${this.SymAddr('wPokemonIndexTable')}/${this.Crystal16PokemonMappingSize().toString(16)}/${this.SymAddr('wMoveIndexTable')}/${this.Crystal16MovesMappingSize().toString(16)}` : ""), this.WrapBytes(data => this.ParseBattleBundle(data)));
         protected TrainerChunkReaders = [
             this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
                 wPlayerName: NAME_LENGTH,
@@ -88,15 +93,20 @@ namespace RamReader {
                 wMomsMoney: 3,
                 wCoins: 2,
                 wBadges: 2,
-                wTMsHMs: this.StructSize('wTMsHMs'),
+                // TODO: pokecrystal has wTMsHMsEnd but pokegold doesn't
+                wTMsHMs: this.StructSize('wTMsHMs', 'wNumItems'),
                 wNumItems: 1,
-                wItems: this.StructSize('wItems'),
+                // TODO: pokecrystal has wItemsEnd but pokegold doesn't
+                wItems: this.StructSize('wItems', 'wNumKeyItems'),
                 wNumKeyItems: 1,
-                wKeyItems: this.StructSize('wKeyItems'),
+                // TODO: pokecrystal has wKeyItemsEnd but pokegold doesn't
+                wKeyItems: this.StructSize('wKeyItems', 'wNumBalls'),
                 wNumBalls: 1,
-                wBalls: this.StructSize('wBalls'),
+                // TODO: pokecrystal has wBallsEnd but pokegold doesn't
+                wBalls: this.StructSize('wBalls', 'wNumPCItems'),
                 wNumPCItems: 1,
-                wPCItems: this.StructSize('wPCItems'),
+                // TODO: pokecrystal has wPCItemsEnd but pokegold doesn't
+                wPCItems: this.StructSize('wPCItems', 'wPokegearFlags'),
                 wPhoneList: this.StructSize('wPhoneList', 'wLuckyNumberShowFlag') - 23,
                 wCurDay: 1,
             }, sym => this.rom.symTable[sym], struct => {
@@ -123,7 +133,8 @@ namespace RamReader {
                 return {
                     name: this.rom.ConvertText(struct.wPlayerName),
                     id: struct.wPlayerID.readUInt16BE(0),
-                    secret: struct.wSecretID.readUInt16BE(0),
+                    // wSecretID is only in Crystal
+                    secret: struct.wSecretID && struct.wSecretID.readUInt16BE(0),
                     options,
                     caught_list: ownedMons,
                     seen_list: seenMons,
@@ -148,10 +159,10 @@ namespace RamReader {
                         balls: this.rom.ReadArray(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         key: this.rom.ReadArray(struct.wKeyItems, 0, 1, struct.wNumKeyItems[0], true, e => e[0] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]))),
                         tms: this.rom.ReadArray(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
-                        // pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
-                        pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255, true, data => data[1] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[1]), data[0]))
+                        pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
+                        // pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255, true, data => data[1] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[1]), data[0]))
                     },
-                    phone_book: this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => (data[0] == 1 && struct.wMomsName) ? this.rom.ConvertText(struct.wMomsName) : this.rom.GetPhoneContact(data[0])).filter(p => !!p),
+                    phone_book: this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => (data[0] == 1 && struct.wMomsName) ? "Mom" /*this.rom.ConvertText(struct.wMomsName) /* Used as player name backup? */ : this.rom.GetPhoneContact(data[0])).filter(p => !!p),
                     time: { ...((this.currentState || { time: null }).time || { h: 0, m: 0, s: 0 }), d: dayOfWeek[struct.wCurDay[0] % 7] }
                 };
             }),
@@ -208,17 +219,17 @@ namespace RamReader {
             frame: { bitmask: 0x7 }
         }
         protected PrinterSpec: OptionsSpec = {
-            // print: { // removed for Gold97
-            //     0: 'Lightest',
-            //     0x20: 'Lighter',
-            //     0x40: 'Normal',
-            //     0x60: 'Darker',
-            //     0x7F: 'Darkest'
-            // },
-            type_chart: { // added for Gold97
-                0: "SW97",
-                0x20: "Final"
-            }
+            print: { // removed for Gold97
+                0: 'Lightest',
+                0x20: 'Lighter',
+                0x40: 'Normal',
+                0x60: 'Darker',
+                0x7F: 'Darkest'
+            },
+            // type_chart: { // added for Gold97
+            //     0: "SW97",
+            //     0x20: "Final"
+            // }
         }
         protected Options2Spec: OptionsSpec = {
             menu_account: {
@@ -418,7 +429,7 @@ namespace RamReader {
                 return poke;
 
             const actualSpecies = this.Crystal16MapPokemon(data[offset('Species')]);
-            poke.is_egg = species > 253;// this.rom.NumPokemon; // gold97
+            poke.is_egg = species >= 253;// this.rom.NumPokemon; // gold97
 
             // \1Species::    db
             poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(forceSpecies || actualSpecies));
@@ -465,13 +476,14 @@ namespace RamReader {
             // \1CaughtLevel:: db
             // \1CaughtGender::
             // \1CaughtLocation:: db
-            poke.met = this.UnpackCaughtData(data.readInt16BE(offset('CaughtData')), poke.original_trainer);
+            if (!!offset('CaughtData'))
+                poke.met = this.UnpackCaughtData(data.readInt16BE(offset('CaughtData')), poke.original_trainer);
 
             // \1Level::   db
             poke.level = data[offset('Level')];
 
             // Fake PV
-            poke.personality_value = (data.readUInt16BE(offset('DVs')) << 16) + (poke.original_trainer.id | data.readInt16BE(offset('CaughtData')));
+            poke.personality_value = (data.readUInt16BE(offset('DVs')) << 16) + (poke.original_trainer.id | (!!offset('CaughtData') ? data.readInt16BE(offset('CaughtData')) : 0));
 
             if (nickname)
                 poke.name = this.rom.ConvertText(nickname);

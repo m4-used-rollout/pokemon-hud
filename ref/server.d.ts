@@ -637,6 +637,7 @@ declare namespace RomReader {
         config: PGEINI;
         private puzzleList;
         totalPuzzles: number;
+        private gfRomHeader;
         stringTerminator: number;
         constructor(romFileLocation: string, iniFileLocation?: string);
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
@@ -653,10 +654,10 @@ declare namespace RomReader {
         private GetTMHMNames;
         private ReadMapLabels;
         private ReadMaps;
-        TrainerIsRival(id: number, classId: number): boolean;
         private GetPuzzleTrainers;
         private GetPuzzleName;
         private GetPuzzleAuthor;
+        private ParseGFRomHeader;
         private FindMapEncounters;
         private ReadEncounterSet;
         private ReadMoveLearns;
@@ -1317,7 +1318,7 @@ declare namespace RamReader {
         sleep_turns?: number;
     }
     class Gen2 extends RamReaderBase<RomReader.Gen2> {
-        protected SymAddr: (symbol: string) => string;
+        protected SymAddr: (...symbols: string[]) => string;
         protected StructSize: (startSymbol: string, endSymbol?: string) => number;
         protected PCBoxSize: () => number;
         protected PartySize: () => number;
@@ -1379,6 +1380,7 @@ declare namespace RamReader {
         ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadBattle: () => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
+        protected TotalItemSlots(): number;
         protected ParseItemCollection(itemData: Buffer, length?: number, key?: number): TPP.Item[];
         protected ParseParty(partyData: Buffer): TPP.PartyPokemon[];
         protected ParseBattleMons(battleData: Buffer, numBattlers: number): TPP.PartyPokemon[];
@@ -1397,10 +1399,6 @@ declare namespace RamReader {
             battle_style: {
                 0: string;
                 0x20000: string;
-            };
-            experience: {
-                0: string;
-                0x10000: string;
             };
             battle_scene: {
                 0: string;

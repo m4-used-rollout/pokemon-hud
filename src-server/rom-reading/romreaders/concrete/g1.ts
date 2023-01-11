@@ -241,8 +241,8 @@ namespace RomReader {
 
         private ReadPokeData(romData: Buffer) {
             const nameBytes = 10;
-            const dataBytes = (this.symTable['MonBaseStatsEnd'] - this.symTable['MonBaseStats']) || 28; // Sanqui
-            const contiguousMons = this.symTable['MonBaseStatsEnd'] ? Math.floor((this.symTable['CryData'] - this.symTable['BaseStats']) / dataBytes) : 251; // Sanqui
+            const dataBytes = (this.symTable['MonBaseStatsEnd'] - this.symTable['MonBaseStats']) || 28; // Sanqui/Yellow
+            const contiguousMons = Math.floor((this.symTable['CryData'] - this.symTable['BaseStats']) / dataBytes);
             return this.ReadArray(romData, this.symTable['BaseStats'], dataBytes, contiguousMons).concat(this.ReadArray(romData, this.symTable['MewBaseStats'], dataBytes, dexCount - contiguousMons))
                 .map(data => {
                     const speciesOffset = this.PokedexToIndex(romData, data[0x00]);

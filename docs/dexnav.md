@@ -52,7 +52,7 @@ DexNav will only show encounter groups available to you. If you don't have a fis
 Our most popular PokéNav feature with trainers trying to "Catch 'em all™" is the collection of [colorful crowns](https://bulbapedia.bulbagarden.net/wiki/DexNav#Mark_of_completion) that will display in the top-right corner of the DexNav screen starting when all of the Pokémon in a single encounter group in the current area have been caught. The T-1616 DexNav has these as well! There are four different crowns in all, with four different meanings.
 
 - ![Bronze](../img/dexnav/bronze.png) Bronze: All Pokémon in a single encounter group in the area have been caught.
-- ![Silver](../img/dexnav/silver.png) Silver: All Pokémon in a two of the encounter groups in the area have been caught.
+- ![Silver](../img/dexnav/silver.png) Silver: All Pokémon in two of the encounter groups in the area have been caught.
 - ![Gold](../img/dexnav/gold.png) Gold: All Pokémon in all three encounter groups in the area have been caught.
 - ![Platinum](../img/dexnav/platinum.png) Platinum: All Pokémon in the area have been caught. This includes any hidden Pokémon.
 

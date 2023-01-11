@@ -43,7 +43,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 {(config.generation > 5 || (config.generation > 2 && (t.time || config.badgeCount > 8)) || (t.items && t.items.candy)) && t.options && displayOpts.length >= 1 && /*<div className="options">}
                     {*/displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)/*}
                 {</div>*/}
-                {t.items && t.items.z_crystals && <ZCrystals items={t.items} />}
+                {config.generation == 7 && t.items && t.items.z_crystals && <ZCrystals items={t.items} />}
                 {config.generation > 5 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
                 {t.party_fitness && <span className="fitness">{t.party_fitness.toLocaleString()}</span>}
                 <div className="dex-counts">

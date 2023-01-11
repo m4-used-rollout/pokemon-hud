@@ -129,7 +129,7 @@ namespace TPP.Server.DexNav {
                     }
                 });
                 // this.EnemyTrainers = (this.EnemyTrainers || []).filter(t => t && !(t.class_id == 0 && t.pic_id == 0));
-                this.EnemyTrainers = (this.EnemyTrainers || []).filter(t => t && typeof t.class_id === "number" && typeof t.pic_id === "number");
+                this.EnemyTrainers = (this.EnemyTrainers || []).filter(t => t && (typeof t.class_id === "number" || typeof t.pic_id === "number"));
                 if (this.EnemyTrainers && this.IsUnknownArea && this.EnemyTrainers.length > 1) {
                     this.EnemyTrainers.length = 1;
                 }

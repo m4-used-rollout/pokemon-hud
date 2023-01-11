@@ -375,6 +375,11 @@ module TPP.Server {
                 delete state.party;
                 state.party = data;
             }
+            else if (data.party || data.battle_party) {
+                partyString = dataJson;
+                state.party = data.party || state.party;
+                state.battle_party = data.battle_party;
+            }
             else if (data.boxes) {
                 pcString = dataJson;
                 state.pc = state.pc || data;
@@ -386,10 +391,7 @@ module TPP.Server {
                 trainerString = dataJson;
                 let party = data.party || state.party || [];
                 let pc = data.pc || state.pc;
-                state = data;
-                state.seen_list = RomData.CollapseSeenForms(state.seen_list);
-                state.pc = pc;
-                state.party = party;
+                state = { ...data, party, pc, seen_list: RomData.CollapseSeenForms(state.seen_list) };
                 mergeBattleState(); //if it's being sent separately, don't overwrite it
             }
             else if (data.in_battle || data.in_battle === false) { //battle data subset of trainer data

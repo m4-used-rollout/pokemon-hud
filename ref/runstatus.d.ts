@@ -59,6 +59,7 @@ declare namespace TPP {
         mom_name?: string;
         party_fitness?: number;
         phone_book?: string[];
+        pikachu_happiness?: number;
         rematch_available?: number;
         time?: {
             d: string;
