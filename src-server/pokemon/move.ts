@@ -6,9 +6,12 @@ namespace Pokemon {
         basePP: number;
         accuracy: number;
         type: string;
+        physical?:boolean;
+        special?:boolean;
+        status?:boolean;
         contestData?: ContestData;
     }
-    
+
     export interface ContestData {
         effect: string;
         type: string;

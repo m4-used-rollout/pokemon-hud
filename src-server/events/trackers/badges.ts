@@ -44,6 +44,8 @@ namespace Events {
                     return this._badges = ["Elnath", "Gemma", "Hadar", "Arneb", "Phact", "Sarfah", "Prior", "Mirach"];
                 case "nihon": // gold97
                     return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Mineral", "Dusk", "Glacier", "Indigo"];
+                case "naljo": // prism
+                    return this._badges = ["Pyre", "Nature", "Charm", "Midnight", "Muscle", "Haze", "Raucous", "Naljo", "Marine", "Hail", "Sprout", "Sparky", "Fist", "Psi", "White", "Star", "Hive", "Plain", "Marsh", "Blaze"];
             }
             return [];
         }

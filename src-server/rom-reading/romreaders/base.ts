@@ -93,14 +93,14 @@ namespace RomReader {
         GetSpecies(id: number, form = 0) {
             return this.pokemon.filter(p => p && (p.id === id || (p.baseSpeciesId && p.baseSpeciesId === id && p.formNumber && p.formNumber === form))).reduce((merged, cur) => ({ ...merged, ...cur, id: merged.id || cur.id, dexNumber: merged.dexNumber || cur.dexNumber, name: merged.name || cur.name }), <Pokemon.Species>{}) || <Pokemon.Species>{};
         }
-        GetSpeciesById(id:number) {
-            return this.pokemon.find(p=>p && p.id == id) || <Pokemon.Species>{};
+        GetSpeciesById(id: number) {
+            return this.pokemon.find(p => p && p.id == id) || <Pokemon.Species>{};
         }
         GetSpeciesByDexNumber(dexNum: number) {
-            return this.pokemon.find(p => p && p.dexNumber == dexNum)|| <Pokemon.Species>{};
+            return this.pokemon.find(p => p && p.dexNumber == dexNum) || <Pokemon.Species>{};
         }
         GetMove(id: number) {
-            return this.moves.find(m => m && m.id === id)|| <Pokemon.Move>{};
+            return this.moves.find(m => m && m.id === id) || <Pokemon.Move>{};
         }
         GetMap(id: number, bank: number = null) {
             return this.maps.find(m => m && id === m.id && (bank === null || bank === m.bank)) || <Pokemon.Map>{};
@@ -294,6 +294,10 @@ namespace RomReader {
             return setFlags.filter(f => f <= flagCount);
         }
 
+        CountSetBytes(bytes: number) {
+            return bytes.toString(2).split('').filter(b => b == "1").length;
+        }
+
         CalculateGender(pokemon: TPP.Pokemon) {
             if (pokemon.species.gender_ratio && typeof (pokemon.gender) !== "string") {
                 if (pokemon.species.gender_ratio == 255) {
@@ -367,7 +371,7 @@ namespace RomReader {
             HappinessNight: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220, timeOfDay: "Night" }),
 
             //Romhacks
-            LevelSpecificMap: (evoParam:number, speciesId: number) => ({ speciesId, specialCondition: `Level At ${this.GetAreaName(evoParam)}`}), // Blazing Emerald
+            LevelSpecificMap: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Level At ${this.GetAreaName(evoParam)}` }), // Blazing Emerald
         }
 
         private surfExp = /^surf$/i;

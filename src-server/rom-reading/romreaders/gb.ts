@@ -176,9 +176,12 @@ namespace RomReader {
             return -1;
         }
 
-        protected GetSymbolSize(symbol:string) {
-            const addr = this.symTable[symbol];
-            const nextSymAddr = this.symTable[Object.keys(this.symTable).find((s,i,arr)=>i && arr[i-1] == symbol)];
+        //TODO: This assumes symbols are sorted
+        protected GetSymbolSize(symbol: string, ...alternatives: string[]) {
+            const addr = this.symTable[symbol] || this.symTable[alternatives.find(sym => !!this.symTable[sym])];
+            let nextSymAddr = this.symTable[Object.keys(this.symTable).find((s, i, arr) => i && arr[i - 1] == symbol)];
+            if (nextSymAddr < addr)
+                nextSymAddr += 0x4000;
             return nextSymAddr - addr;
         }
     }

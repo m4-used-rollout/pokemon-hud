@@ -166,6 +166,9 @@ declare namespace Pokemon {
         basePP: number;
         accuracy: number;
         type: string;
+        physical?: boolean;
+        special?: boolean;
+        status?: boolean;
         contestData?: ContestData;
     }
     interface ContestData {
@@ -297,6 +300,7 @@ declare namespace RomReader {
         ReadArray(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endFunc?: (data: Buffer) => boolean): Buffer[];
         ReadArray(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endValue?: number): Buffer[];
         GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
+        CountSetBytes(bytes: number): number;
         CalculateGender(pokemon: TPP.Pokemon): void;
         CalculateShiny(pokemon: TPP.Pokemon, threshold?: number): void;
         CalculateUnownForm(pokemon: {
@@ -488,7 +492,7 @@ declare namespace RomReader {
         IsFlagSet(romData: Buffer, flagStartOffset: number, flagIndex: number): boolean;
         ParseBCD(bcd: Buffer): number;
         FindTerminator(data: Buffer): number;
-        protected GetSymbolSize(symbol: string): number;
+        protected GetSymbolSize(symbol: string, ...alternatives: string[]): number;
     }
 }
 declare namespace RomReader {
@@ -572,6 +576,7 @@ declare namespace RomReader {
         private phoneContacts;
         constructor(romFileLocation: string);
         readonly isCrystal16: boolean;
+        readonly isPrism: boolean;
         private NearToFarPointer;
         ReadCrystal16IndirectionTable(romData: Buffer, address: number, skipEmptyZero?: boolean): Buffer[];
         ReadCrystal16ListItems(romData: Buffer, address: number): Buffer[];
@@ -589,6 +594,7 @@ declare namespace RomReader {
         private ReadMaps;
         private ReadAreaNames;
         private GetTMHMNames;
+        GetTMById(id: number): string;
         private ReadMoveData;
         private ReadItemData;
         private ReadCrystal16TrainerData;
@@ -602,6 +608,9 @@ declare namespace RomReader {
         private ReadTrainerSprites;
         private ReadPokemonSprites;
         private CalculateTimesOfDay;
+        private GetAbilityNames;
+        protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number, endOffset?: number): string[];
+        private ReadPrismStringBundle;
     }
 }
 declare const gen3Charmap: string[];
@@ -1319,7 +1328,7 @@ declare namespace RamReader {
     }
     class Gen2 extends RamReaderBase<RomReader.Gen2> {
         protected SymAddr: (...symbols: string[]) => string;
-        protected StructSize: (startSymbol: string, endSymbol?: string) => number;
+        protected StructSize: (startSymbol: string, ...endSymbol: string[]) => number;
         protected PCBoxSize: () => number;
         protected PartySize: () => number;
         protected PartyMonSize: () => number;
@@ -1336,6 +1345,7 @@ declare namespace RamReader {
         ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadBattle: () => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
+        private getMissingDefaultTime;
         protected OptionsSpec: OptionsSpec;
         protected FrameSpec: OptionsSpec;
         protected PrinterSpec: OptionsSpec;

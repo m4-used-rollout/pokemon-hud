@@ -25,7 +25,7 @@ namespace RamReader {
                 throw `Could not find symbol ${symbols.join(' ')}`;
             return this.rom.symTable[symbol].toString(16);
         };
-        protected StructSize = (startSymbol: string, endSymbol: string = startSymbol.replace("Start", '') + "End") => this.rom.symTable[endSymbol] - this.rom.symTable[startSymbol];
+        protected StructSize = (startSymbol: string, ...endSymbol: string[]) => this.rom.symTable[[...endSymbol, startSymbol.replace("Start", '') + "End"].find(s => !!this.rom.symTable[s])] - this.rom.symTable[startSymbol];
 
         protected PCBoxSize = () => this.StructSize('sBox') + 2; //??
         protected PartySize = () => this.StructSize('wPokemonData', 'wPartyMonNicknamesEnd');
@@ -88,29 +88,31 @@ namespace RamReader {
                 wPokedexSeen: DEX_FLAG_BYTES,
                 wXCoord: 1,
                 wYCoord: 1,
-                wMapGroup: 2,
+                wMapGroup: 1,
+                wMapNumber: 1,
                 wMoney: 3,
                 wMomsMoney: 3,
                 wCoins: 2,
                 wBadges: 2,
                 // TODO: pokecrystal has wTMsHMsEnd but pokegold doesn't
-                wTMsHMs: this.StructSize('wTMsHMs', 'wNumItems'),
+                wTMsHMs: this.StructSize('wTMsHMs'),//, 'wNumItems'),
                 wNumItems: 1,
                 // TODO: pokecrystal has wItemsEnd but pokegold doesn't
-                wItems: this.StructSize('wItems', 'wNumKeyItems'),
+                wItems: this.StructSize('wItems'),//, 'wNumKeyItems'),
                 wNumKeyItems: 1,
                 // TODO: pokecrystal has wKeyItemsEnd but pokegold doesn't
-                wKeyItems: this.StructSize('wKeyItems', 'wNumBalls'),
+                wKeyItems: this.StructSize('wKeyItems'),//, 'wNumBalls'),
                 wNumBalls: 1,
                 // TODO: pokecrystal has wBallsEnd but pokegold doesn't
-                wBalls: this.StructSize('wBalls', 'wNumPCItems'),
+                wBalls: this.StructSize('wBalls'),//, 'wNumPCItems'),
                 wNumPCItems: 1,
                 // TODO: pokecrystal has wPCItemsEnd but pokegold doesn't
-                wPCItems: this.StructSize('wPCItems', 'wPokegearFlags'),
+                wPCItems: this.StructSize('wPCItems'),//, 'wPokegearFlags'),
                 wPhoneList: this.StructSize('wPhoneList', 'wLuckyNumberShowFlag') - 23,
                 wCurDay: 1,
+                wTimeOfDay: 1,
             }, sym => this.rom.symTable[sym], struct => {
-                const map = this.rom.GetMap(struct.wMapGroup[1], struct.wMapGroup[0]) || {} as Pokemon.Map;
+                const map = this.rom.GetMap(struct.wMapNumber[0], struct.wMapGroup[0]) || {} as Pokemon.Map;
                 const options = {
                     ...this.ParseOptions(struct.wOptions[0], this.OptionsSpec),
                     ...this.ParseOptions(struct.wOptions[2], this.FrameSpec),
@@ -142,58 +144,69 @@ namespace RamReader {
                     seen: seenMons.length,
                     x: struct.wXCoord[0],
                     y: struct.wYCoord[0],
-                    map_id: struct.wMapGroup[1],
+                    map_id: struct.wMapNumber[0],
                     map_bank: struct.wMapGroup[0],
                     map_name: map.name,
                     area_id: map.areaId,
                     area_name: map.areaName,
                     money: this.ReadUInt24BE(struct.wMoney, 0),
-                    momsMoney: this.ReadUInt24BE(struct.wMomsMoney, 0),
-                    coins: struct.wCoins.readUInt16BE(0),
-                    mom_name: struct.wMomsName ? this.rom.ConvertText(struct.wMomsName) : undefined,
-                    rival_name: this.rom.ConvertText(struct.wRivalName),
+                    momsMoney: struct.wMomsMoney && this.ReadUInt24BE(struct.wMomsMoney, 0),
+                    coins: struct.wCoins && struct.wCoins.readUInt16BE(0),
+                    mom_name: struct.wMomsName && this.rom.ConvertText(struct.wMomsName),
+                    rival_name: struct.wRivalName && this.rom.ConvertText(struct.wRivalName),
                     evolution_is_happening: false,
                     badges: struct.wBadges.readUInt16LE(0),
                     items: {
                         items: this.rom.ReadArray(struct.wItems, 0, 2, struct.wNumItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         balls: this.rom.ReadArray(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         key: this.rom.ReadArray(struct.wKeyItems, 0, 1, struct.wNumKeyItems[0], true, e => e[0] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]))),
-                        tms: this.rom.ReadArray(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
+                        tms: this.rom.isPrism ?
+                            this.GetSetFlags(struct.wTMsHMs).map(id => Pokemon.Convert.ItemToRunStatus({ name: this.rom.GetTMById(id), isKeyItem: true, id: id + 255 })) :
+                            this.rom.ReadArray(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
                         pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
                         // pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255, true, data => data[1] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[1]), data[0]))
                     },
-                    phone_book: this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => (data[0] == 1 && struct.wMomsName) ? "Mom" /*this.rom.ConvertText(struct.wMomsName) /* Used as player name backup? */ : this.rom.GetPhoneContact(data[0])).filter(p => !!p),
-                    time: { ...((this.currentState || { time: null }).time || { h: 0, m: 0, s: 0 }), d: dayOfWeek[struct.wCurDay[0] % 7] }
+                    phone_book: struct.wPhoneList && (this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => (data[0] == 1 && struct.wMomsName) ? "Mom" /*this.rom.ConvertText(struct.wMomsName) /* Used as player name backup? */ : this.rom.GetPhoneContact(data[0])).filter(p => !!p)),
+                    time: { ...((this.currentState || { time: null }).time || { h: 0, m: 0, s: 0 }), d: dayOfWeek[struct.wCurDay[0] % 7], tod: struct.wTimeOfDay ? timeOfDay[struct.wTimeOfDay[0]] : undefined }
                 };
             }),
             this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
                 wDayCareMan: 1,
+                wDaycareMan: 1, // Prism
                 wBreedMon1Nick: NAME_LENGTH,
                 wBreedMon1OT: NAME_LENGTH,
-                wBreedMon1Stats: this.StructSize('wBreedMon1Stats', 'wDayCareLady'),
+                wBreedMon1Stats: this.StructSize('wBreedMon1Stats', 'wBreedMon1End', 'wDayCareLady'),
                 wDayCareLady: 1,
+                wDaycareLady: 1, // Prism
                 wBreedMon2Nick: NAME_LENGTH,
                 wBreedMon2OT: NAME_LENGTH,
-                wBreedMon2Stats: this.StructSize('wBreedMon1Stats', 'wEggNick'),
+                wBreedMon2Stats: this.StructSize('wBreedMon2Stats', 'wBreedMon2End', 'wEggNick'),
             }, sym => this.rom.symTable[sym], struct => ({
                 daycare: [
-                    (struct.wDayCareMan[0] & 1) && this.ParsePokemon(struct.wBreedMon1Stats, struct.wBreedMon1Stats[0], struct.wBreedMon1Nick, struct.wBreedMon1OT),
-                    (struct.wDayCareLady[0] & 1) && this.ParsePokemon(struct.wBreedMon2Stats, struct.wBreedMon2Stats[0], struct.wBreedMon2Nick, struct.wBreedMon2OT)
+                    ((struct.wDayCareMan || struct.wDaycareMan)[0] & 1) && this.ParsePokemon(struct.wBreedMon1Stats, struct.wBreedMon1Stats[0], struct.wBreedMon1Nick, struct.wBreedMon1OT),
+                    ((struct.wDayCareLady || struct.wDaycareLady)[0] & 1) && this.ParsePokemon(struct.wBreedMon2Stats, struct.wBreedMon2Stats[0], struct.wBreedMon2Nick, struct.wBreedMon2OT)
                 ].filter(p => !!p)
             })),
             this.StructEmulatorCaller<TPP.TrainerData>('System Bus', {
                 hHours: 1,
                 hMinutes: 1,
                 hSeconds: 1
-            }, sym => this.rom.symTable[sym], struct => ({
+            }, sym => this.rom.symTable[sym], async struct => ({
                 time: {
-                    ...((this.currentState || { time: null }).time || { d: "" }),
-                    h: struct.hHours[0],
-                    m: struct.hMinutes[0],
-                    s: struct.hSeconds[0]
+                    ...((this.currentState || { time: null }).time || (await this.getMissingDefaultTime())),
+                    h: struct.hHours && struct.hHours[0],
+                    m: struct.hMinutes && struct.hMinutes[0],
+                    s: struct.hSeconds && struct.hSeconds[0]
                 }
             }))
         ];
+
+        private async getMissingDefaultTime() {
+            return this.CallEmulator(`WRAM/ReadByteRange/${this.rom.symTable["wCurDay"].toString(16)}/1` + (!!this.rom.symTable["wTimeOfDay"] ? `/${this.rom.symTable["wTimeOfDay"].toString(16)}/1` : ""), this.WrapBytes(data => ({
+                d: dayOfWeek[data[0] % 7],
+                tod: data.length > 1 ? timeOfDay[data[1]] : undefined
+            })), true);
+        }
 
 
         protected OptionsSpec: OptionsSpec = {
@@ -216,7 +229,8 @@ namespace RamReader {
             }
         }
         protected FrameSpec: OptionsSpec = {
-            frame: { bitmask: 0x7 }
+            //frame: { bitmask: 0x7 }
+            frame: { bitmask: 0xF } // Prism
         }
         protected PrinterSpec: OptionsSpec = {
             print: { // removed for Gold97
@@ -484,6 +498,9 @@ namespace RamReader {
 
             // Fake PV
             poke.personality_value = (data.readUInt16BE(offset('DVs')) << 16) + (poke.original_trainer.id | (!!offset('CaughtData') ? data.readInt16BE(offset('CaughtData')) : 0));
+
+            if (this.rom.isPrism && poke.species) // If DVs have an even number of set bits, ability 0. Otherwise, ability 1
+                poke.ability = poke.species.abilities[this.rom.CountSetBytes(data.readUInt16BE(offset('DVs'))) % 2];
 
             if (nickname)
                 poke.name = this.rom.ConvertText(nickname);
