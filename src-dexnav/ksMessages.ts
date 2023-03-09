@@ -1,0 +1,12 @@
+const ksMessages = [
+    'SYSTEM ERROR',
+    'SHUTTING DOWN...',
+    'SAVE FILE DELETED',
+    'DISCONNECTED FROM HOST',
+    'LOSS OF SIGNAL',
+    'END OF TRANSMISSION',
+    'DESYNC',
+    'DEFEAT',
+    'MISSING IN ACTION',
+    'GAME OVER',
+];
