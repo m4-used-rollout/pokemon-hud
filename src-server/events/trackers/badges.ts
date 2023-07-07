@@ -20,7 +20,9 @@ namespace Events {
                 case "kanto":
                     return this._badges = ["Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth", "Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising"];
                 case "johto":
-                    return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
+                    if (this.config.generation == 2)
+                        return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
+                    return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Storm", "Mineral", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "hoenn":
                     // return this._badges = ["Stone", "Shadow", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rime"]; // Blazing Emerald
                     return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
@@ -46,6 +48,16 @@ namespace Events {
                     return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Mineral", "Dusk", "Glacier", "Indigo"];
                 case "naljo": // prism
                     return this._badges = ["Pyre", "Nature", "Charm", "Midnight", "Muscle", "Haze", "Raucous", "Naljo", "Marine", "Hail", "Sprout", "Sparky", "Fist", "Psi", "White", "Star", "Hive", "Plain", "Marsh", "Blaze"];
+                case "tyron": // Victory Fire
+                    return this._badges = ["Transform", "Rising", "Black", "Wave", "Blaze", "Snowflake,", "MindEye", "Nature"];
+                // Peace Emblem 0x44D
+                case "sylon": // Resolute
+                    return this._badges = ["Razor", "                                                                                                                                                                                                          Imagery", "Film", "Metal", "Belief", "Wisdom", "Amulet", "Basis"];
+                case "ivara": // Mega Power
+                    return this._badges = ["Roulette", "Basalt", "Sylphid", "Buds", "Spiral", "Electrode", "Purgatory", "Truth"];
+                case "harvestcraft":
+                    // Harvestcraft can swap the order of the first two badges depending on who you fight first. Joy!
+                    return this._badges = ["Blank", "Warm", "Soil", "Metal", "Swarm", "Pixie", "Dew", "Brain"];
             }
             return [];
         }

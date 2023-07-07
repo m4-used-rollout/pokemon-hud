@@ -607,6 +607,7 @@ declare namespace RomReader {
         private ProcessPalette;
         private ReadTrainerSprites;
         private ReadPokemonSprites;
+        GetForm(pokemon: TPP.Pokemon): number;
         private CalculateTimesOfDay;
         private GetAbilityNames;
         protected ReadStringBundle(romData: Buffer, startOffset: number, numStrings: number, endOffset?: number): string[];

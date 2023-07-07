@@ -391,7 +391,7 @@ module TPP.Server {
                 trainerString = dataJson;
                 let party = data.party || state.party || [];
                 let pc = data.pc || state.pc;
-                state = { ...data, party, pc, seen_list: RomData.CollapseSeenForms(state.seen_list) };
+                state = { ...data, party, pc, seen_list: RomData.CollapseSeenForms(data.seen_list) };
                 mergeBattleState(); //if it's being sent separately, don't overwrite it
             }
             else if (data.in_battle || data.in_battle === false) { //battle data subset of trainer data

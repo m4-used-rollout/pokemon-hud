@@ -93,7 +93,7 @@ namespace RamReader {
                 wMoney: 3,
                 wMomsMoney: 3,
                 wCoins: 2,
-                wBadges: 2,
+                wBadges: this.rom.isPrism ? 3 : 2,
                 // TODO: pokecrystal has wTMsHMsEnd but pokegold doesn't
                 wTMsHMs: this.StructSize('wTMsHMs'),//, 'wNumItems'),
                 wNumItems: 1,
@@ -155,7 +155,7 @@ namespace RamReader {
                     mom_name: struct.wMomsName && this.rom.ConvertText(struct.wMomsName),
                     rival_name: struct.wRivalName && this.rom.ConvertText(struct.wRivalName),
                     evolution_is_happening: false,
-                    badges: struct.wBadges.readUInt16LE(0),
+                    badges: this.rom.isPrism ? struct.wBadges.readUIntLE(0, 3) : struct.wBadges.readUInt16LE(0),
                     items: {
                         items: this.rom.ReadArray(struct.wItems, 0, 2, struct.wNumItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         balls: this.rom.ReadArray(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
@@ -163,12 +163,71 @@ namespace RamReader {
                         tms: this.rom.isPrism ?
                             this.GetSetFlags(struct.wTMsHMs).map(id => Pokemon.Convert.ItemToRunStatus({ name: this.rom.GetTMById(id), isKeyItem: true, id: id + 255 })) :
                             this.rom.ReadArray(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
-                        pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
+                        pc: this.rom.ReadArray(struct.wNumPCItems ? struct.wPCItems : struct.wPCItems.slice(1), 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : struct.wPCItems[0], true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
                         // pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255, true, data => data[1] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[1]), data[0]))
                     },
                     phone_book: struct.wPhoneList && (this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => (data[0] == 1 && struct.wMomsName) ? "Mom" /*this.rom.ConvertText(struct.wMomsName) /* Used as player name backup? */ : this.rom.GetPhoneContact(data[0])).filter(p => !!p)),
                     time: { ...((this.currentState || { time: null }).time || { h: 0, m: 0, s: 0 }), d: dayOfWeek[struct.wCurDay[0] % 7], tod: struct.wTimeOfDay ? timeOfDay[struct.wTimeOfDay[0]] : undefined }
                 };
+            }),
+            // Prism Bingo stats
+            this.rom.isPrism && this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
+                wHallOfFameCount: 2,
+                wMysteryZoneWinCount: 2,
+                wMiningLevel: 1,
+                wMiningEXP: 1,
+                wSmeltingLevel: 1,
+                wSmeltingEXP: 1,
+                wJewelingLevel: 1,
+                wJewelingEXP: 1,
+                wBallMakingLevel: 1,
+                wBallMakingEXP: 1,
+                wOrphanPoints: 2,
+                wSootSackAsh: 2,
+                wBattlePoints: 2,
+                wPachisiWinCount: 2,
+                wTowerTycoonsDefeated: 2,
+                wFossilsRevived: 2,
+                wAccumulatedOrphanPoints: 4,
+                wBattleArcadeMaxScore: 4,
+                wBattleArcadeMaxRound: 2,
+                wBattleArcadeTickets: 3,
+                wGlobalStepCounter: 4,
+                wBattlesWonCounter: 3,
+                wTotalBattleTime: 6, // 3 byte hours (big endian), minutes, seconds, hundredths
+                wBankMoney: 3,
+            }, sym => this.rom.symTable[sym], struct => {
+                const game_stats = {
+                    "Steps Taken": struct.wGlobalStepCounter && struct.wGlobalStepCounter.readUInt32LE(0),
+                    "Hall of Fame Entries": struct.wHallOfFameCount && struct.wHallOfFameCount.readUInt16LE(0),
+                    "Mystery Zone Clears": struct.wMysteryZoneWinCount && struct.wMysteryZoneWinCount.readUInt16LE(0),
+                    "Smelting Level": struct.wSmeltingLevel && struct.wSmeltingLevel[0],
+                    "Smelting Exp": struct.wSmeltingEXP && struct.wSmeltingEXP[0],
+                    "Jeweling Level": struct.wJewelingLevel && struct.wJewelingLevel[0],
+                    "Jeweling Exp": struct.wJewelingEXP && struct.wJewelingEXP[0],
+                    "Mining Level": struct.wMiningLevel && struct.wMiningLevel[0],
+                    "Mining Exp": struct.wMiningEXP && struct.wMiningEXP[0],
+                    "Orphan Points (Current)": struct.wOrphanPoints && struct.wOrphanPoints.readUInt16BE(0),
+                    "Orphan Points (Total)": struct.wAccumulatedOrphanPoints && struct.wAccumulatedOrphanPoints.readUInt32BE(0),
+                    "Battle Tower Tycoons Defeated": struct.wTowerTycoonsDefeated && struct.wTowerTycoonsDefeated.readUInt16LE(0),
+                    "Battle Points": struct.wBattlePoints && struct.wBattlePoints.readUInt16LE(0),
+                    "Soot Sack Ash": struct.wSootSackAsh && struct.wSootSackAsh.readUInt16BE(0),
+                    "Ball Making Level": struct.wBallMakingLevel && struct.wBallMakingLevel[0],
+                    "Ball Making Exp": struct.wBallMakingEXP && struct.wBallMakingEXP[0],
+                    "Fossils Revived": struct.wFossilsRevived && struct.wFossilsRevived.readUInt16LE(0),
+                    "Battle Arcade High Score": struct.wBattleArcadeMaxScore && struct.wBattleArcadeMaxScore.readUInt32BE(0),
+                    "Battle Arcade Most Rounds": struct.wBattleArcadeMaxRound && struct.wBattleArcadeMaxRound.readUInt16BE(0),
+                    "Battle Arcade Tickets": struct.wBattleArcadeTickets && struct.wBattleArcadeTickets.readUIntBE(0, 3),
+                    "Pachisi Wins": struct.wPachisiWinCount && struct.wPachisiWinCount.readUInt16LE(0),
+                    "Battles Won": struct.wBattlesWonCounter && struct.wBattlesWonCounter.readUIntLE(0, 3),
+                    "Time Spent Battling": struct.wTotalBattleTime && ((struct.wTotalBattleTime.readUIntBE(0, 3) * 3600) + (struct.wTotalBattleTime[3] * 60) + struct.wTotalBattleTime[4] + (struct.wTotalBattleTime[5] / 100)),
+                    "Money in the Bank": struct.wBankMoney && struct.wBankMoney.readUIntBE(0, 3),
+                };
+                Object.keys(game_stats).forEach(k => {
+                    if (!game_stats[k]) //Filter out any stats that are missing or 0
+                        delete game_stats[k];
+                });
+                return { game_stats };
             }),
             this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
                 wDayCareMan: 1,
@@ -199,7 +258,7 @@ namespace RamReader {
                     s: struct.hSeconds && struct.hSeconds[0]
                 }
             }))
-        ];
+        ].filter(r => !!r);
 
         private async getMissingDefaultTime() {
             return this.CallEmulator(`WRAM/ReadByteRange/${this.rom.symTable["wCurDay"].toString(16)}/1` + (!!this.rom.symTable["wTimeOfDay"] ? `/${this.rom.symTable["wTimeOfDay"].toString(16)}/1` : ""), this.WrapBytes(data => ({
@@ -211,9 +270,12 @@ namespace RamReader {
 
         protected OptionsSpec: OptionsSpec = {
             text_speed: {
+                // 0: "Instant", // Prism
                 1: "Fast",
                 3: "Med",
                 5: "Slow"
+                // 2: "Mid", // Prism
+                // 3: "Slow", // Prism
             },
             sound: {
                 0: "Mono",
@@ -226,7 +288,11 @@ namespace RamReader {
             battle_scene: {
                 0: "On",
                 0x80: "Off"
-            }
+            },
+            // turning_speed: { // Prism
+            //     0: "Slow",
+            //     0x8: "Fast"
+            // }
         }
         protected FrameSpec: OptionsSpec = {
             //frame: { bitmask: 0x7 }
@@ -246,10 +312,24 @@ namespace RamReader {
             // }
         }
         protected Options2Spec: OptionsSpec = {
-            menu_account: {
+            menu_account: { // Removed for Prism
                 0: 'Off',
                 1: 'On'
             }
+            // hold_to_mash: { // Prism
+            //     0: 'None',
+            //     1: 'Start',
+            //     2: 'A+B',
+            //     3: 'A or B'
+            // },
+            // preferred_units: { // Prism
+            //     0: 'Metric',
+            //     4: 'Imperial'
+            // },
+            // time_format: { // Prism
+            //     0: '24-hour',
+            //     8: '12-hour'
+            // }
         }
 
         protected BaseOffsetCalc = (baseSymbol: string, extraOffset = 0) => ((symbol: string) => (this.rom.symTable[baseSymbol + symbol] - this.rom.symTable[baseSymbol]) + extraOffset);
@@ -443,7 +523,7 @@ namespace RamReader {
                 return poke;
 
             const actualSpecies = this.Crystal16MapPokemon(data[offset('Species')]);
-            poke.is_egg = species >= 253;// this.rom.NumPokemon; // gold97
+            poke.is_egg = species == 253; //== for Prism, thanks Libabeel // this.rom.NumPokemon; // gold97
 
             // \1Species::    db
             poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(forceSpecies || actualSpecies));

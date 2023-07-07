@@ -5,11 +5,11 @@
 @dex-label-color: white;
 
 // Blazed Glazed/RandoWhite 2/Ultra Sun/Red/Y/PBR/Gauntlet/Rising Ruby
-// @dex-frame-border: #600;
-// @dex-frame-color: #c00;
-// @dex-frame-bevel: #600;
-// @dex-frame-highlight: #900;
-// @dex-label-color: white;
+@dex-frame-border: #600;
+@dex-frame-color: #c00;
+@dex-frame-bevel: #600;
+@dex-frame-highlight: #900;
+@dex-label-color: white;
 
 // Volt White
 // @dex-frame-border: #ACACAC;
@@ -54,6 +54,10 @@
 // @dex-frame-bevel: #838996;
 // @dex-frame-highlight: #757575;
 
+// Inverse?
+// @dex-frame-highlight: #ACACAC;
+// @dex-frame-color: #757575;
+
 // Pyrite/Bronze/Colosseum/Gold97
 // @dex-frame-border: #4A2F28;
 // @dex-frame-color: #F8D8B1;
@@ -94,26 +98,27 @@
 // @screen-error-color: rgb(210, 23, 23);
 
 // Transparent
-@dex-frame-border:    rgba(0,0,0, .25);
-@dex-frame-color:     rgba(0,0,0, 0);
-@dex-frame-bevel:     rgba(0,0,0, .25);
-@dex-frame-highlight: rgba(0,0,0, .5);
-@dex-label-color: black;
+// @dex-frame-border:    rgba(0,0,0, .25);
+// @dex-frame-color:     rgba(0,0,0, 0);
+// @dex-frame-bevel:     rgba(0,0,0, .25);
+// @dex-frame-highlight: rgba(0,0,0, .5);
+// @dex-label-color: black;
 
 .dexFrame(@dex-frame-border: @dex-frame-border, @dex-frame-color: @dex-frame-color, @dex-frame-bevel: @dex-frame-bevel) {
     border: 1px outset @dex-frame-border;
     background-color: @dex-frame-color;
     box-shadow: 0 0 2px 2px @dex-frame-bevel inset;
-    background: linear-gradient(
-        90deg,
-        rgb(255,   0,   0) 0%,
-        rgb(255, 128,   0) 20%,
-        rgb(255, 255,   0) 40%,
-        rgb(  0, 255,   0) 60%,
-        rgb(  0, 255, 128) 70%,
-        rgb(  0,   0, 255) 80%,
-        rgb(128,   0, 255) 100%,
-    );
+    // Prism
+    // background: linear-gradient(
+    //     90deg,
+    //     rgb(255,   0,   0) 0%,
+    //     rgb(255, 128,   0) 20%,
+    //     rgb(255, 255,   0) 40%,
+    //     rgb(  0, 255,   0) 60%,
+    //     rgb(  0, 255, 128) 70%,
+    //     rgb(  0,   0, 255) 80%,
+    //     rgb(128,   0, 255) 100%,
+    // );
 }
 
 .dexLabel(@dex-frame-color: @dex-frame-color, @dex-frame-bevel: @dex-frame-bevel, @dex-frame-highlight:@dex-frame-highlight) {

@@ -71,13 +71,13 @@ namespace Events {
                     this.ReportCatch(dexNum); //trigger it here so it doesn't trigger on replays
                     return dispatch({ type: "Caught Pokemon", pv, dexNum, species, name, level, isShadow, caughtIn, otId, mon });
                 }
-                else if (known.dexNums.indexOf(dexNum) < 0) {
+                else if (known.dexNums.indexOf(dexNum) < 0 && (known.name == name || ((known.name || "").toLowerCase() == known.species.map(s => (s || "").toLowerCase()).pop() && (name || "").toLowerCase() == (species || "").toLowerCase()))) {
                     this.ReportCatch(dexNum); //trigger it here so it doesn't trigger on replays
                     dispatch({ type: "Evolved Pokemon", pv, dexNum, species, name, level, mon });
                 }
                 // else if (known.level != mon.level)
                 //     dispatch({ type: "Pokemon Leveled Up", pv, dexNum, species, name, level, mon })
-                else if (known.name != name)
+                else if (known.name != name && known.species.includes(species))
                     dispatch({ type: "Renamed Pokemon", pv, dexNum, species, newName: name, oldName: known.name, mon });
                 if (known.status == "Missing")
                     dispatch({ type: "Recovered Pokemon", pv, dexNum, species, name, level, mon });

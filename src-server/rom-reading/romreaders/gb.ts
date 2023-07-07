@@ -37,9 +37,6 @@ namespace RomReader {
         }
 
         GetForm(pokemon: TPP.Pokemon) {
-            if (pokemon.species.id == 201) {
-                return Math.floor((((pokemon.ivs.attack & 6) << 5) | ((pokemon.ivs.defense & 6) << 3) | ((pokemon.ivs.speed & 6) << 1) | ((pokemon.ivs.special_attack & 6) >> 1)) / 10);
-            }
             return 0;
         }
 

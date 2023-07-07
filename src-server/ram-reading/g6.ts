@@ -8,32 +8,34 @@ namespace RamReader {
     const DEX_SEEN_FLAG_BYTES = 0x60; //Math.floor((NUM_POKEMON_FORMS + 7) / 8);
     const BOX_STRUCT_BYTES = 0xE8;
 
-    // const partyLocation = 0x8CE1C5C; //X
-    // const pcMetadataLocation = 0x8C6A7D8; //X
-    // const pcDataLocation = 0x8C861B8; //X
+    // 8C64D34 X save block base?
+    const partyLocation = 0x8CE1C5C; //X
+    const pcMetadataLocation = 0x8C6A7D8; //X
+    const pcDataLocation = 0x8C861B8; //X
     const battleBlockLocation = 0x81F0000; //X
     const battleBlockSize = 0x20000; //X
-    // const battleInfoOffset = 0xB280; //X
-    // const optionsLocation = 0x8C7B6C4; //X
-    // const locationLocation = 0x8C6709E; //X
-    // const pokedexLocation = 0x8C7A8D8; //X
-    // const itemsLocation = 0x8C67554; //X
-    // const trainerDataLocation = 0x8C79C2C; //X
-    // const trainerMiscLocation = 0x8C6A69C; //X
-    // const daycareLocation = 0x8C7FF34; //X
+    const battleInfoOffset = 0xB280; //X
+    const optionsLocation = 0x8C7B6C4; //X
+    const locationLocation = 0x8C6709E; //X
+    const pokedexLocation = 0x8C7A8D8; //X
+    const itemsLocation = 0x8C67554; //X
+    const trainerDataLocation = 0x8C79C2C; //X
+    const trainerMiscLocation = 0x8C6A69C; //X
+    const daycareLocation = 0x8C7FF34; //X
+    const statsLocation = 0x8C83134; //X?
 
-    const partyLocation = 0x8CF71F0; //Omega Ruby
-    const battleInfoOffset = 0xB588; //Omega Ruby
-    const pcMetadataLocation = 0x8C6DEFC; //Omega Ruby
-    const pcDataLocation = 0x8C9A144; //Omega Ruby
-    const optionsLocation = 0x8C7F914; //Omega Ruby
-    const locationLocation = 0x8C6A7B2; //Omega Ruby
-    const pokedexLocation = 0x8C7DFFC; //Omega Ruby
-    const itemsLocation = 0x8C6AC80; //Omega Ruby
-    const trainerDataLocation = 0x8C7D350; //Omega Ruby
-    const trainerMiscLocation = 0x8C6DDD0; //Omega Ruby
-    const daycareLocation = 0x8C84188; //Omega Ruby
-    const statsLocation = 0x8C87280; //Omega Ruby
+    // const partyLocation = 0x8CF71F0; //Omega Ruby
+    // const battleInfoOffset = 0xB588; //Omega Ruby
+    // const pcMetadataLocation = 0x8C6DEFC; //Omega Ruby
+    // const pcDataLocation = 0x8C9A144; //Omega Ruby
+    // const optionsLocation = 0x8C7F914; //Omega Ruby
+    // const locationLocation = 0x8C6A7B2; //Omega Ruby
+    // const pokedexLocation = 0x8C7DFFC; //Omega Ruby
+    // const itemsLocation = 0x8C6AC80; //Omega Ruby
+    // const trainerDataLocation = 0x8C7D350; //Omega Ruby
+    // const trainerMiscLocation = 0x8C6DDD0; //Omega Ruby
+    // const daycareLocation = 0x8C84188; //Omega Ruby
+    // const statsLocation = 0x8C87280; //Omega Ruby
 
     // const partyLocation = 0x8CE1C5C + 0x10; //X 1.5
     // const pcMetadataLocation = 0x8C6A7D8 + 0x10; //X 1.5
@@ -251,8 +253,8 @@ namespace RamReader {
             return { options };
         }
 
-        // protected itemPocketOffsets = [0x0, 0x640, 0x7C0, 0x968, 0xA68]; //XY?
-        protected itemPocketOffsets = [0x0, 0x640, 0x7C0, 0x970, 0xA70]; //ORAS
+        protected itemPocketOffsets = [0x0, 0x640, 0x7C0, 0x968, 0xA68]; //XY?
+        // protected itemPocketOffsets = [0x0, 0x640, 0x7C0, 0x970, 0xA70]; //ORAS
 
         protected ParseItems(data: Buffer): Partial<TPP.TrainerData> {
             const pockets = new Array(5).fill(0).map((_, i) => this.rom.ReadArray(data, this.itemPocketOffsets[i], 4, 0, false, item => item.readUInt16LE(0) == 0)
