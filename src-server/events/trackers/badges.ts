@@ -52,7 +52,7 @@ namespace Events {
                     return this._badges = ["Transform", "Rising", "Black", "Wave", "Blaze", "Snowflake,", "MindEye", "Nature"];
                 // Peace Emblem 0x44D
                 case "sylon": // Resolute
-                    return this._badges = ["Razor", "                                                                                                                                                                                                          Imagery", "Film", "Metal", "Belief", "Wisdom", "Amulet", "Basis"];
+                return this._badges = ["Razor", "Imagery", "Film", "Metal", "Belief", "Wisdom", "Amulet", "Basis", "Transform", "Rising", "Hard", "Toxic", "Blaze", "Snowflake,", "MindEye", "Nature", "Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising"];
                 case "ivara": // Mega Power
                     return this._badges = ["Roulette", "Basalt", "Sylphid", "Buds", "Spiral", "Electrode", "Purgatory", "Truth"];
                 case "harvestcraft":

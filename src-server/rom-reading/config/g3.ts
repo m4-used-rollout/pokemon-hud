@@ -257,3 +257,37 @@ const gen3Charmap = [
 	/*0xFE*/ "",
 	/*0xFF*/ ""
 ]
+
+const gen3BadgeFlagMaps = {
+	"sylon": [ // Resolute
+		// Sylon
+		0x867, // Razor Badge
+		0x868, // Imagery Badge
+		0x869, // Film Badge
+		0x86A, // Metal Badge
+		0x86B, // Belief Badge
+		0x86C, // Wisdom Badge
+		0x86D, // Amulet Badge
+		0x86E, // Basis Badge
+
+		// Tyron
+		0x1148, // Transform Badge, LILY
+		0x115A, // Rising Badge, WOOD
+		0x1140, // Toxic Badge, JACLYN
+		0x112B, // Hard Badge, AURON
+		0x1183, // Blaze Badge, DAMIEN
+		0x115C, // Snowflake Badge, AISHA
+		0x118C, // MindEye Badge, PURE
+		0x11A0, // Nature Badge, SIENA
+
+		// Johto
+		0x0515, // Zephyr Badge, FALKNER
+		0x11E6, // Hive Badge, BUGSY
+		0x11B5, // Plain Badge, WHITNEY
+		0x0534, // Fog Badge, MORTY
+		0x120F, // Mineral Badge, JASMINE
+		0x1218, // Storm Badge, CHUCK
+		0x1215, // Glacier Badge, PRYCE
+		0x126E  // Rising Badge, CLAIR
+	]
+}

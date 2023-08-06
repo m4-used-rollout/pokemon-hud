@@ -615,6 +615,9 @@ declare namespace RomReader {
     }
 }
 declare const gen3Charmap: string[];
+declare const gen3BadgeFlagMaps: {
+    "sylon": number[];
+};
 declare namespace Tools.LZ77 {
     function Decompress(compressed: Buffer, offset?: number): Buffer;
 }
@@ -1402,6 +1405,7 @@ declare namespace RamReader {
         protected CalculateGender(genderRatio: number, personalityValue: number): "Male" | "Female";
         protected GameStatsMapping: string[];
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
+        protected ReadBadgeFlags(flags: Buffer, flagMap: number[]): number;
         protected OptionsSpec: {
             sound: {
                 0: string;

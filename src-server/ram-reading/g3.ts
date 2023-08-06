@@ -236,9 +236,11 @@ namespace RamReader {
                 const flags = data.slice(0, FlagsBytes);
                 const vars = this.rom.ReadArray(data.slice(VarsOffset - FlagsOffset), 0, 2, 256).map(v => v.readUInt16LE(0));
                 const stats = this.rom.ReadArray(data.slice(GameStatsOffset - FlagsOffset), 0, 4, 64).map(s => (s.readUInt32LE(0) ^ key) >>> 0);
-                const badges = (flags.readUInt16LE(0x10C) >>> 7) & 0xFF;
+                let badges = (flags.readUInt16LE(0x10C) >>> 7) & 0xFF;
                 const frontier = flags.readUInt32LE(0x118) >>> 4 & 0x3FFF;
                 const gameClear = this.GetFlag(flags, 0x864); //FLAG_SYS_GAME_CLEAR
+                if (gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()])
+                    badges = this.ReadBadgeFlags(data, gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()]);
                 return {
                     badges,
                     frontier_symbols: this.GetFlag(flags, 0x8D2) ? frontier : undefined, //FLAG_SYS_FRONTIER_PASS
@@ -560,6 +562,15 @@ namespace RamReader {
                 return null;
             }
             return data;
+        }
+
+        protected ReadBadgeFlags(flags: Buffer, flagMap: number[]) {
+            const badgeBuffer = Buffer.alloc(Math.ceil(flagMap.length / 8));
+            flagMap.forEach((f, i) => this.GetFlag(flags, f) && this.SetFlag(badgeBuffer, i));
+            let badgeInt = 0;
+            for (let i = 0; i * 8 < flagMap.length; i++)
+                badgeInt += badgeBuffer[i] << (i * 8);
+            return badgeInt;
         }
 
         protected OptionsSpec = {

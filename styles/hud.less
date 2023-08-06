@@ -698,6 +698,8 @@ body {
 
                 // margin-bottom: -18vw; //PBR
 
+                font-size: 7vw; // 12 badges per row
+
                 span {
                     position: relative;
                     display: inline-block;
@@ -710,7 +712,11 @@ body {
                     // background-position: top; //PBR
                     width: 11vw;
                     height: 11vw;
+
                     margin: 0 .5vw;
+
+                    width: 7vw; // 12 badges per row
+                    height: 7vw;  // 12 badges per row
 
                     img {
                         vertical-align: middle;
@@ -724,6 +730,9 @@ body {
                         left: 0;
                         transform-origin: center center;
                         //image-rendering: pixelated;
+
+                        width: 7vw; // 12 badges per row
+                        height: 7vw;  // 12 badges per row
 
                         &.unowned {
                             filter: contrast(0%) brightness(50%);
@@ -855,8 +864,8 @@ body {
                 text-align: center;
                 font-family: pokered;
                 white-space:nowrap;
-                // font-size: 2.5vh;
-                font-size: 3vh;
+                font-size: 2.5vh;
+                // font-size: 3vh;
                 width: 100%;
 
                 .fit-to-width-container {
