@@ -498,11 +498,13 @@ declare namespace RomReader {
 declare namespace RomReader {
     class Gen1 extends GBReader {
         private fishingRodIds;
+        private jessieJamesRocketMinTrainerId?;
         constructor(romFileLocation: string);
         GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
         GetTrainerSprite(id: number): string;
         GetItemSprite(id: number): string;
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        private GetJessieJamesRocketMinTrainerId;
         private FindFishingEncounters;
         private ParseEncounters;
         private ReadEncounterTablesAt;
@@ -1305,6 +1307,12 @@ declare namespace RamReader {
             battle_scene: {
                 0: string;
                 0x80: string;
+            };
+            sound: {
+                0: string;
+                0x10: string;
+                0x20: string;
+                0x30: string;
             };
         };
         protected BaseOffsetCalc: (baseSymbol: string, extraOffset?: number) => (symbol: string) => number;

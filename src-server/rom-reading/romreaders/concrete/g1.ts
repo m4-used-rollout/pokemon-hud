@@ -8,16 +8,16 @@ namespace RomReader {
     const mapNames = gen1MapNames;
     const genericMonRef: Pokemon.Species[] = require(`./data/generic/species.json`);
 
+    const jessieJamesSpriteId = -30;
+
     const types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bird", "Bug", "Ghost", "Steel", "", "", "", "", "", "", "", "", "", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
     const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
 
-    const tmCount = 50, hmCount = 5, dexCount = 151, trainerClasses = 47;
+    const tmCount = 51, hmCount = 5, dexCount = 151, trainerClasses = 47;
 
     interface ClearFix { [key: number]: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } };
     const pokeSpriteClearFix: ClearFix = {};
-
-    const unownSpriteClearFix: ClearFix = {};
 
     const trainerSpriteClearFix: ClearFix = {};
 
@@ -27,6 +27,7 @@ namespace RomReader {
 
     export class Gen1 extends GBReader {
         private fishingRodIds = { oldRod: 0, goodRod: 0, superRod: 0 };
+        private jessieJamesRocketMinTrainerId?: number;
 
         constructor(romFileLocation: string) {
             super(romFileLocation, charmap);
@@ -34,6 +35,7 @@ namespace RomReader {
 
             let romData = this.loadROM();
             this.symTable = this.LoadSymbolFile(romFileLocation.replace(/\.[^.]*$/, '.sym'));
+            this.GetJessieJamesRocketMinTrainerId(romData); // Yellow
             this.pokemon = this.ReadPokeData(romData);
             // this.pokemonSprites = this.ReadPokemonSprites(romData);
             this.trainers = this.ReadTrainerData(romData);
@@ -52,7 +54,7 @@ namespace RomReader {
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
             //return `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${this.GetSpecies(id).dexNumber}.png`;
-            return `./img/sprites/redblue/${this.GetSpecies(id).dexNumber || "../../missingno"}.png`;
+            return `./img/sprites/${TPP.Server.getConfig().spriteFolder}/${this.GetSpecies(id).dexNumber || "../../missingno"}.png`;
         }
         GetTrainerSprite(id: number) {
             return `./img/trainers/${TPP.Server.getConfig().trainerSpriteFolder || TPP.Server.getConfig().spriteFolder}/${id}.png`
@@ -72,6 +74,11 @@ namespace RomReader {
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
             return (runState.badges & 16) == 16; //Soul Badge
+        }
+
+        private GetJessieJamesRocketMinTrainerId(romData: Buffer) {
+            if (this.symTable["IsFightingJessieJames"])
+                this.jessieJamesRocketMinTrainerId = romData[this.symTable["IsFightingJessieJames"] + 0xA];
         }
 
         private FindFishingEncounters(romData) {
@@ -131,7 +138,7 @@ namespace RomReader {
             const encounterRates = this.ReadArray(romData, this.symTable['WildMonEncounterSlotChances'], 2).map(data => data[0]).concat(0xFF)
                 .map((r, i, arr) => Math.round(((r - (i > 0 ? arr[i - 1] : 0)) / 256) * 100));
             const encounterBank = this.LinearAddressToBanked(this.symTable['WildDataPointers']).bank;
-            return this.ReadArray(romData, this.symTable['WildDataPointers'], 2).map((ptr, i) => (<Pokemon.Map>{
+            return this.ReadArray(romData, this.symTable['WildDataPointers'], 2, gen1MapNames.length).map((ptr, i) => (<Pokemon.Map>{
                 id: i,
                 name: gen1MapNames[i],
                 encounters: { all: this.ReadEncounterTablesAt(romData, this.BankAddressToLinear(encounterBank, ptr.readInt16LE(0)), encounterRates) }
@@ -143,7 +150,7 @@ namespace RomReader {
         }
 
         private AddTMHMs(romData: Buffer) {
-            const firstTMId = (0xFA + 1) - tmCount;
+            const firstTMId = (0xFA + 1) - 50;
             const tms = this.ReadArray(romData, this.symTable['TechnicalMachines'], 1, tmCount)
                 .map((m, i) => (<Pokemon.Item>{ id: firstTMId + i, isKeyItem: false, name: `TM${i < 9 ? "0" : ""}${i + 1} ${this.moves[m[0]] ? this.moves[m[0]].name : "???"}` }));
             const hms = this.ReadArray(romData, this.symTable['HMMoves'], 1).reverse()
@@ -218,7 +225,7 @@ namespace RomReader {
                         party = this.ReadArray(tData, 1, 1).map(p => ({ level, species: this.GetSpecies(p[0]) }));
                     trainers.push({
                         classId: cId,
-                        spriteId: cId,
+                        spriteId: this.jessieJamesRocketMinTrainerId && (classNames[cId] || "").toLowerCase() == "rocket" && tId + 1 >= this.jessieJamesRocketMinTrainerId ? jessieJamesSpriteId : cId,
                         id: tId + 1,
                         className: classNames[cId],
                         name: "",

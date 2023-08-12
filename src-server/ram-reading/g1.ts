@@ -91,6 +91,11 @@ namespace RamReader {
                 1: "Fast",
                 3: "Med",
                 5: "Slow"
+
+                //Cramorant
+                // 1: "Inst",
+                // 3: "Fast",
+                // 5: "Mid"
             },
             battle_style: {
                 0: "Shift",
@@ -99,6 +104,13 @@ namespace RamReader {
             battle_scene: {
                 0: "On",
                 0x80: "Off"
+            },
+            //Yellow
+            sound: {
+                0:"Mono",
+                0x10: "Earphone 1",
+                0x20: "Earphone 2",
+                0x30: "Earphone 3"
             }
         }
         protected BaseOffsetCalc = (baseSymbol: string, extraOffset = 0) => ((symbol: string) => (this.rom.symTable[baseSymbol + symbol] - this.rom.symTable[baseSymbol]) + extraOffset);
