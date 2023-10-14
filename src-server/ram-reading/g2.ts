@@ -107,8 +107,12 @@ namespace RamReader {
                 wBalls: this.StructSize('wBalls'),//, 'wNumPCItems'),
                 wNumPCItems: 1,
                 // TODO: pokecrystal has wPCItemsEnd but pokegold doesn't
+                wNumBerries: 1,
+                wBerries:this.StructSize('wBerries'),
+                wNumMedicine: 1,
+                wMedicine:this.StructSize('wMedicine'),
                 wPCItems: this.StructSize('wPCItems'),//, 'wPokegearFlags'),
-                wPhoneList: this.StructSize('wPhoneList', 'wLuckyNumberShowFlag') - 23,
+                wPhoneList: this.StructSize('wPhoneList', 'wLuckyNumberShowFlag'),// - 23, (not sure why I'm doing -23)
                 wCurDay: 1,
                 wTimeOfDay: 1,
             }, sym => this.rom.symTable[sym], struct => {
@@ -160,6 +164,8 @@ namespace RamReader {
                         items: this.rom.ReadArray(struct.wItems, 0, 2, struct.wNumItems[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         balls: this.rom.ReadArray(struct.wBalls, 0, 2, struct.wNumBalls[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         key: this.rom.ReadArray(struct.wKeyItems, 0, 1, struct.wNumKeyItems[0], true, e => e[0] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]))),
+                        berries: struct.wBerries && this.rom.ReadArray(struct.wBerries, 0, 2, struct.wNumBerries[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
+                        medicine: struct.wMedicine && this.rom.ReadArray(struct.wMedicine, 0, 2, struct.wNumMedicine[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         tms: this.rom.isPrism ?
                             this.GetSetFlags(struct.wTMsHMs).map(id => Pokemon.Convert.ItemToRunStatus({ name: this.rom.GetTMById(id), isKeyItem: true, id: id + 255 })) :
                             this.rom.ReadArray(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
@@ -523,7 +529,7 @@ namespace RamReader {
                 return poke;
 
             const actualSpecies = this.Crystal16MapPokemon(data[offset('Species')]);
-            poke.is_egg = species == 253; //== for Prism, thanks Libabeel // this.rom.NumPokemon; // gold97
+            poke.is_egg = species == 254; //253; //== for Prism, thanks Libabeel // this.rom.NumPokemon; // gold97 // BW3
 
             // \1Species::    db
             poke.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(forceSpecies || actualSpecies));

@@ -602,6 +602,7 @@ declare namespace RomReader {
         private ReadCrystal16TrainerData;
         private TrainerClassCount;
         private ReadTrainerData;
+        private ReadBW3TrainerData;
         private ReadPokeData;
         private ReadMoveLearns;
         private ReadFrameBorders;
@@ -619,6 +620,7 @@ declare namespace RomReader {
 declare const gen3Charmap: string[];
 declare const gen3BadgeFlagMaps: {
     "sylon": number[];
+    "ivara": number[];
 };
 declare namespace Tools.LZ77 {
     function Decompress(compressed: Buffer, offset?: number): Buffer;

@@ -274,7 +274,7 @@ namespace RomReader {
             (state.pc.boxes || []).forEach(b => (b.box_contents = (b.box_contents || []).filter(p => !!p)).forEach(augmentPokemon));
 
             if (typeof state.pikachu_happiness === "number")
-                ([...(state.daycare || []), ...(state.party || []), ...(state.battle_party || []), ...((state.pc || {}).boxes || []).reduce((all, b) => [...all, ...b.box_contents], new Array<TPP.Pokemon>())] as TPP.Pokemon[])
+                ([...(state.daycare || []), ...(state.party || []), ...(state.battle_party || []), ...((state.pc || {} as TPP.CombinedPCData).boxes || []).reduce((all, b) => [...all, ...b.box_contents], new Array<TPP.Pokemon>())] as TPP.Pokemon[])
                     .filter(p => p && p.original_trainer && p.original_trainer.name == state.name && p.original_trainer.id == state.id && p.species && p.species.id && ((romData.GetSpeciesById(p.species.id) || { name: "" }).name || "").toLowerCase() == "pikachu")
                     // .filter(p => p && p.original_trainer && p.original_trainer.name == state.name && p.original_trainer.id == state.id && p.species && p.species.id && ((romData.GetSpeciesById(p.species.id) || { name: "" }).name || "").toLowerCase() == "cramorant") // Cramorant
                     .forEach(p => p.friendship = state.pikachu_happiness);

@@ -289,5 +289,26 @@ const gen3BadgeFlagMaps = {
 		0x1218, // Storm Badge, CHUCK
 		0x1215, // Glacier Badge, PRYCE
 		0x126E  // Rising Badge, CLAIR
+	],
+	"ivara": [ // Mega Power
+		// Ivara
+		0x867, // Roulette Badge
+		0x868, // Basalt Badge
+		0x869, // Sylphid Badge
+		0x86A, // Buds Badge
+		0x86B, // Spiral Badge
+		0x86C, // Electrode Badge
+		0x86D, // Purgatory Badge
+		0x86E, // Truth Badge
+
+		// Lande
+		0x8C4, // Knight Badge: Chestnut Gym 0x8C4 (Tower Silver) Mega Steelix
+		0x8C6, // Scholar Badge: Asparagus Gym 0x8C6 (Dome Silver) Mega Absol
+		0x8C8, // Wilderness Badge: Baobab City 0x8C8 (Palace Silver) Mega Aerodactyl
+		0x8CA, // Shield Badge: Ceratoides Town 0x8CA (Arena Silver) Mega Charizard X
+		0x8CC, // Prism Badge: Gracilipes City 0x8CC (Factory Silver) Mega Slowbro
+		0x8CE, // Spring Badge: Miscanthus Town 0x8CE (Pike Silver) Mega Swampert
+		0x8D0, // Rebirth Badge: Mangrove Town 0x8D0 (Pyramid Silver) Mega Metagross
+		0x424  // Immortal Badge: Balanophora Town 0x424 (Trick House Puzzle 1 Orange Mail) Mega Lati@s
 	]
 }

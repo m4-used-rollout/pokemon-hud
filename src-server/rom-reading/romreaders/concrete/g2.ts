@@ -15,13 +15,15 @@ namespace RomReader {
 
     const trainerTypes = ["Normal", "Moves", "Item", "Moves/Item"];
 
-    const grassEncounterRates = [30, 30, 20, 10, 5, 4, 1];
+    // const grassEncounterRates = [30, 30, 20, 10, 5, 4, 1];
+    const grassEncounterRates = [20, 15, 15, 15, 10, 10, 5, 5, 4, 1]; // BW3
     const surfEncounterRates = [60, 30, 10];
     const encounterTimesOfDay = ['morning', 'day', 'night'];
     const fishingRods = ['oldRod', 'goodRod', 'superRod'];
     const fishingRodIds = { oldRod: 58, goodRod: 59, superRod: 61 };
 
-    const tmCount = 50, hmCount = 7, moveTutor = 3, itemCount = 256, dexCount = 256, moveCount = 256; //251;
+    // const tmCount = 50, hmCount = 7, moveTutor = 3, itemCount = 256, dexCount = 256, moveCount = 256; //251;
+    const tmCount = 50, hmCount = 5, moveTutor = 25, itemCount = 256, dexCount = 256, moveCount = 256; //BW3
     const abilityCount = 99; //Prism
 
     interface ClearFix { [key: number]: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } };
@@ -148,59 +150,102 @@ namespace RomReader {
     // pokeSpriteClearFix[251] = { start: [[19, 39], [31, 31]] }; //Celebi
 
     // Crystal
-    pokeSpriteClearFix[5] = { start: [[16, 37], [41, 23]] }; //Charmeleon
-    pokeSpriteClearFix[6] = { start: [[36, 27], [37, 28], [38, 29], [39, 30]] }; //Charizard
-    pokeSpriteClearFix[15] = { start: [[11, 30]] }; //Beedrill
-    pokeSpriteClearFix[26] = { start: [[37, 22], [39, 22]] }; //Raichu
-    pokeSpriteClearFix[34] = { start: [[13, 12]] }; //Nidoking
-    pokeSpriteClearFix[52] = { start: [[35, 35]] }; //Meowth
-    pokeSpriteClearFix[56] = { start: [[18, 18], [37, 18], [39, 31], [16, 25]] }; //Mankey
-    pokeSpriteClearFix[57] = { start: [[15, 15]] }; //Primeape
-    pokeSpriteClearFix[58] = { stop: [[22, 9]] }; //Growlithe
-    pokeSpriteClearFix[65] = { start: [[42, 15]] }; //Alakazam
-    pokeSpriteClearFix[69] = { start: [[31, 31], [31, 27], [32, 28], [33, 30]] }; //Bellsprout
-    pokeSpriteClearFix[71] = { start: [[37, 5], [38, 6]] }; //Victreebel
-    pokeSpriteClearFix[73] = { start: [[37, 41], [38, 42], [37, 48], [45, 43], [46, 44]] }; //Tentacruel
-    pokeSpriteClearFix[78] = { start: [[39, 10]] }; //Rapidash
-    pokeSpriteClearFix[81] = { start: [[19, 33], [20, 32], [24, 34]] }; //Magnemite
-    pokeSpriteClearFix[82] = { start: [[23, 29], [24, 28], [25, 27], [33, 27]] }; //Magneton
-    pokeSpriteClearFix[84] = { start: [[33, 35], [34, 36]] }; //Doduo
-    pokeSpriteClearFix[85] = { start: [[19, 15], [20, 14], [26, 17]] }; //Dodrio
-    pokeSpriteClearFix[86] = { start: [[22, 19]] }; //Seel
-    pokeSpriteClearFix[92] = { clearDiagonal: true }; //Gastly
-    pokeSpriteClearFix[93] = { start: [[14, 35], [39, 39]] }; //Haunter
-    pokeSpriteClearFix[99] = { start: [[36, 19], [37, 20], [35, 27], [8, 39]] }; //Kingler
-    pokeSpriteClearFix[104] = { start: [[24, 26]] }; //Cubone
-    pokeSpriteClearFix[107] = { start: [[27, 37]] }; //Hitmonchan
-    pokeSpriteClearFix[116] = { start: [[25, 34], [24, 35]] }; //Horsea
-    pokeSpriteClearFix[118] = { start: [[23, 44]], stop: [[23, 46]] }; //Goldeen
-    pokeSpriteClearFix[125] = { start: [[13, 23], [42, 23], [42, 30], [31, 42]] }; //Electabuzz
-    pokeSpriteClearFix[126] = { start: [[42, 18]] }; //Magmar
-    pokeSpriteClearFix[141] = { start: [[22, 30], [42, 30]] }; //Kabutops
-    pokeSpriteClearFix[144] = { start: [[16, 45], [17, 46], [40, 11], [40, 27], [45, 23], [49, 11]] }; //Articuno
-    pokeSpriteClearFix[148] = { start: [[38, 34]] }; //Dragonair
-    pokeSpriteClearFix[149] = { start: [[17, 8], [17, 12], [17, 22], [31, 5], [32, 6]] }; //Dragonite
-    pokeSpriteClearFix[150] = { start: [[13, 33], [14, 32], [24, 32], [35, 17]] }; //Mewtwo
-    pokeSpriteClearFix[165] = { start: [[14, 41], [15, 42]], stop: [[14, 20]] }; //Ledyba
-    pokeSpriteClearFix[166] = { start: [[16, 25], [17, 26], [15, 30], [31, 39], [18, 43]] }; //Ledian
-    pokeSpriteClearFix[167] = { start: [[12, 33], [13, 32]] }; //Spinarak
-    pokeSpriteClearFix[168] = { start: [[11, 34], [12, 30], [44, 25]] }; //Ariados
-    pokeSpriteClearFix[183] = { start: [[44, 44]] }; //Marill
-    pokeSpriteClearFix[185] = { start: [[21, 24], [36, 24]] }; //Sudowoodo
-    pokeSpriteClearFix[190] = { start: [[15, 33], [16, 34], [26, 34]] }; //Aipom
-    pokeSpriteClearFix[191] = { start: [[30, 21], [31, 20], [33, 21]] }; //Sunkern
-    pokeSpriteClearFix[198] = { start: [[11, 16], [8, 25], [12, 34], [21, 29], [22, 30], [21, 27], [22, 26], [43, 33], [45, 46], [45, 15]] }; //Murkrow
-    pokeSpriteClearFix[200] = { start: [[32, 17], [19, 36], [22, 36], [23, 37], [31, 44]] }; //Misdreavus
-    pokeSpriteClearFix[203] = { start: [[32, 42]] }; //Girafarig
-    pokeSpriteClearFix[207] = { start: [[35, 37]] }; //Gligar
-    pokeSpriteClearFix[212] = { start: [[42, 42], [43, 43], [44, 44], [34, 30], [7, 37]] }; //Scizor
-    pokeSpriteClearFix[228] = { start: [[18, 35], [20, 41], [21, 40], [22, 39]] }; //Houndour
-    pokeSpriteClearFix[229] = { start: [[34, 43], [35, 42]] }; //Houndoom
-    pokeSpriteClearFix[234] = { start: [[9, 13], [40, 41]] }; //Stantler
-    pokeSpriteClearFix[235] = { start: [[21, 25], [21, 41], [12, 29]] }; //Smeargle
-    pokeSpriteClearFix[236] = { start: [[39, 29]] }; //Tyrogue
-    pokeSpriteClearFix[239] = { start: [[39, 38], [40, 37]] }; //Elekid
-    pokeSpriteClearFix[242] = { start: [[9, 31]], stop: [[14, 46]] }; //Blissey
+    // pokeSpriteClearFix[5] = { start: [[16, 37], [41, 23]] }; //Charmeleon
+    // pokeSpriteClearFix[6] = { start: [[36, 27], [37, 28], [38, 29], [39, 30]] }; //Charizard
+    // pokeSpriteClearFix[15] = { start: [[11, 30]] }; //Beedrill
+    // pokeSpriteClearFix[26] = { start: [[37, 22], [39, 22]] }; //Raichu
+    // pokeSpriteClearFix[34] = { start: [[13, 12]] }; //Nidoking
+    // pokeSpriteClearFix[52] = { start: [[35, 35]] }; //Meowth
+    // pokeSpriteClearFix[56] = { start: [[18, 18], [37, 18], [39, 31], [16, 25]] }; //Mankey
+    // pokeSpriteClearFix[57] = { start: [[15, 15]] }; //Primeape
+    // pokeSpriteClearFix[58] = { stop: [[22, 9]] }; //Growlithe
+    // pokeSpriteClearFix[65] = { start: [[42, 15]] }; //Alakazam
+    // pokeSpriteClearFix[69] = { start: [[31, 31], [31, 27], [32, 28], [33, 30]] }; //Bellsprout
+    // pokeSpriteClearFix[71] = { start: [[37, 5], [38, 6]] }; //Victreebel
+    // pokeSpriteClearFix[73] = { start: [[37, 41], [38, 42], [37, 48], [45, 43], [46, 44]] }; //Tentacruel
+    // pokeSpriteClearFix[78] = { start: [[39, 10]] }; //Rapidash
+    // pokeSpriteClearFix[81] = { start: [[19, 33], [20, 32], [24, 34]] }; //Magnemite
+    // pokeSpriteClearFix[82] = { start: [[23, 29], [24, 28], [25, 27], [33, 27]] }; //Magneton
+    // pokeSpriteClearFix[84] = { start: [[33, 35], [34, 36]] }; //Doduo
+    // pokeSpriteClearFix[85] = { start: [[19, 15], [20, 14], [26, 17]] }; //Dodrio
+    // pokeSpriteClearFix[86] = { start: [[22, 19]] }; //Seel
+    // pokeSpriteClearFix[92] = { clearDiagonal: true }; //Gastly
+    // pokeSpriteClearFix[93] = { start: [[14, 35], [39, 39]] }; //Haunter
+    // pokeSpriteClearFix[99] = { start: [[36, 19], [37, 20], [35, 27], [8, 39]] }; //Kingler
+    // pokeSpriteClearFix[104] = { start: [[24, 26]] }; //Cubone
+    // pokeSpriteClearFix[107] = { start: [[27, 37]] }; //Hitmonchan
+    // pokeSpriteClearFix[116] = { start: [[25, 34], [24, 35]] }; //Horsea
+    // pokeSpriteClearFix[118] = { start: [[23, 44]], stop: [[23, 46]] }; //Goldeen
+    // pokeSpriteClearFix[125] = { start: [[13, 23], [42, 23], [42, 30], [31, 42]] }; //Electabuzz
+    // pokeSpriteClearFix[126] = { start: [[42, 18]] }; //Magmar
+    // pokeSpriteClearFix[141] = { start: [[22, 30], [42, 30]] }; //Kabutops
+    // pokeSpriteClearFix[144] = { start: [[16, 45], [17, 46], [40, 11], [40, 27], [45, 23], [49, 11]] }; //Articuno
+    // pokeSpriteClearFix[148] = { start: [[38, 34]] }; //Dragonair
+    // pokeSpriteClearFix[149] = { start: [[17, 8], [17, 12], [17, 22], [31, 5], [32, 6]] }; //Dragonite
+    // pokeSpriteClearFix[150] = { start: [[13, 33], [14, 32], [24, 32], [35, 17]] }; //Mewtwo
+    // pokeSpriteClearFix[165] = { start: [[14, 41], [15, 42]], stop: [[14, 20]] }; //Ledyba
+    // pokeSpriteClearFix[166] = { start: [[16, 25], [17, 26], [15, 30], [31, 39], [18, 43]] }; //Ledian
+    // pokeSpriteClearFix[167] = { start: [[12, 33], [13, 32]] }; //Spinarak
+    // pokeSpriteClearFix[168] = { start: [[11, 34], [12, 30], [44, 25]] }; //Ariados
+    // pokeSpriteClearFix[183] = { start: [[44, 44]] }; //Marill
+    // pokeSpriteClearFix[185] = { start: [[21, 24], [36, 24]] }; //Sudowoodo
+    // pokeSpriteClearFix[190] = { start: [[15, 33], [16, 34], [26, 34]] }; //Aipom
+    // pokeSpriteClearFix[191] = { start: [[30, 21], [31, 20], [33, 21]] }; //Sunkern
+    // pokeSpriteClearFix[198] = { start: [[11, 16], [8, 25], [12, 34], [21, 29], [22, 30], [21, 27], [22, 26], [43, 33], [45, 46], [45, 15]] }; //Murkrow
+    // pokeSpriteClearFix[200] = { start: [[32, 17], [19, 36], [22, 36], [23, 37], [31, 44]] }; //Misdreavus
+    // pokeSpriteClearFix[203] = { start: [[32, 42]] }; //Girafarig
+    // pokeSpriteClearFix[207] = { start: [[35, 37]] }; //Gligar
+    // pokeSpriteClearFix[212] = { start: [[42, 42], [43, 43], [44, 44], [34, 30], [7, 37]] }; //Scizor
+    // pokeSpriteClearFix[228] = { start: [[18, 35], [20, 41], [21, 40], [22, 39]] }; //Houndour
+    // pokeSpriteClearFix[229] = { start: [[34, 43], [35, 42]] }; //Houndoom
+    // pokeSpriteClearFix[234] = { start: [[9, 13], [40, 41]] }; //Stantler
+    // pokeSpriteClearFix[235] = { start: [[21, 25], [21, 41], [12, 29]] }; //Smeargle
+    // pokeSpriteClearFix[236] = { start: [[39, 29]] }; //Tyrogue
+    // pokeSpriteClearFix[239] = { start: [[39, 38], [40, 37]] }; //Elekid
+    // pokeSpriteClearFix[242] = { start: [[9, 31]], stop: [[14, 46]] }; //Blissey
+
+    // Black and White 3: Genesis
+    pokeSpriteClearFix[1] = { start: [[27, 30]] }; //Snivy
+    pokeSpriteClearFix[3] = { start: [[38, 27], [16, 39]] }; //Serperior
+    pokeSpriteClearFix[20] = { start: [[35, 30]] }; //Azurill
+    pokeSpriteClearFix[21] = { start: [[44, 44]] }; //Marill
+    pokeSpriteClearFix[34] = { start: [[13, 28], [13, 26], [46, 22]] }; //Palpitoad
+    pokeSpriteClearFix[47] = { start: [[39, 6], [12, 11], [46, 41], [35, 46], [34, 48]], stop: [[39, 11]] };
+    pokeSpriteClearFix[53] = { start: [[16, 33], [17, 34], [35, 35], [33, 38], [21, 29], [23, 30]] }; //Roselia
+    pokeSpriteClearFix[54] = { start: [[18, 15], [18, 20]] }; //Roserade
+    pokeSpriteClearFix[58] = { start: [[39, 8], [38, 11], [21, 23], [29, 38]] };
+    pokeSpriteClearFix[59] = { start: [[31, 26]] };
+    pokeSpriteClearFix[60] = { start: [[36, 27], [24, 29]] };
+    pokeSpriteClearFix[66] = { stop: [[18, 15], [20, 16], [22, 17], [13, 22], [14, 24], [11, 28], [10, 29], [9, 31], [8, 34]], clearDiagonal: true };
+    pokeSpriteClearFix[67] = { start: [[37, 37]], stop: [[11, 2], [13, 2], [10, 4], [14, 4], [30, 4], [5, 7], [7, 7], [34, 7], [4, 9], [35, 9], [8, 23], [44, 26], [2, 27], [48, 27], [52, 36]], clearDiagonal: true };
+    pokeSpriteClearFix[70] = { start: [[30, 27]], stop: [[39, 25], [40, 26], [10, 27]], clearDiagonal: true };
+    pokeSpriteClearFix[74] = { start: [[16, 34], [37, 34]] };
+    pokeSpriteClearFix[82] = { start: [[32, 15]] };
+    pokeSpriteClearFix[92] = { start: [[35, 2], [41, 12], [45, 31], [14, 35], [14, 39], [5, 31], [15, 43]], clearDiagonal: true }; // Cofagrigus
+    pokeSpriteClearFix[93] = { clearDiagonal: true }; //Gastly
+    pokeSpriteClearFix[94] = { start: [[14, 35], [39, 39]] }; //Haunter
+    pokeSpriteClearFix[97] = { start: [[31, 36]] };
+    pokeSpriteClearFix[98] = { start: [[6, 36], [46, 37]], clearDiagonal: true };
+    pokeSpriteClearFix[109] = { clearDiagonal: true };
+    pokeSpriteClearFix[111] = { start: [[23, 27], [13, 29]] };
+    pokeSpriteClearFix[113] = { start: [[35, 12], [39, 15], [13, 23], [12, 28], [11, 29], [9, 34], [44, 34], [46, 40]] };
+    pokeSpriteClearFix[114] = { start: [[19, 33], [20, 32], [24, 34]] }; //Magnemite
+    pokeSpriteClearFix[115] = { start: [[23, 29], [24, 28], [25, 27], [33, 27]] }; //Magneton
+    pokeSpriteClearFix[118] = { start: [[17, 22], [23, 32]] };
+    pokeSpriteClearFix[128] = { start: [[51, 22], [33, 23], [13, 47]] };
+    pokeSpriteClearFix[130] = { start: [[6, 14], [14, 16], [9, 18], [27, 21], [24, 22], [33, 22], [44, 27]] };
+    pokeSpriteClearFix[136] = { start: [[39, 38], [40, 37]] }; //Elekid
+    pokeSpriteClearFix[137] = { start: [[13, 23], [42, 23], [42, 30], [31, 42]] }; //Electabuzz
+    pokeSpriteClearFix[140] = { start: [[42, 18]] }; //Magmar
+    pokeSpriteClearFix[155] = { start: [[35, 37]] }; //Gligar
+    pokeSpriteClearFix[166] = { start: [[22, 36], [44, 26]] }; //Frillish
+    pokeSpriteClearFix[167] = { start: [[16, 37], [38, 43], [39, 42]] }; //Jellicent
+    pokeSpriteClearFix[184] = { start: [[36, 36], [43, 21]] }; //Sylveon
+    pokeSpriteClearFix[188] = { start: [[8, 47], [26, 47]] }; //Durant
+    pokeSpriteClearFix[241] = { start: [[21, 48], [37, 44], [42, 44]] }; //Cryogonal
+    pokeSpriteClearFix[247] = { start: [[38, 34]] }; //Dragonair
+    pokeSpriteClearFix[248] = { start: [[17, 8], [17, 12], [17, 22], [31, 5], [32, 6]] }; //Dragonite
+
 
     //Prism
     // pokeSpriteClearFix[15] = { start: [[14, 19]] };
@@ -462,12 +507,12 @@ namespace RomReader {
     trainerSpriteClearFix[10] = { start: [[28, 52]] }; //Pokemon Prof
     trainerSpriteClearFix[11] = { start: [[22, 47]] }; //Old Guy
     trainerSpriteClearFix[13] = { start: [[16, 36], [36, 36]] }; //Bruno
-    trainerSpriteClearFix[15] = { start: [[22, 32], [22, 40]] }; //Koga
+    // trainerSpriteClearFix[15] = { start: [[22, 32], [22, 40]] }; //Koga
     trainerSpriteClearFix[16] = { start: [[22, 23]] }; //Girl3
     trainerSpriteClearFix[17] = { start: [[28, 44]] }; //Brock
     trainerSpriteClearFix[20] = { start: [[39, 27], [16, 37], [40, 36]] }; //Science Guy
     trainerSpriteClearFix[23] = { start: [[32, 37], [33, 39], [35, 42], [40, 41], [32, 46], [33, 48]] }; //Schoolboy
-    trainerSpriteClearFix[24] = { start: [[33, 35], [44, 44], [42, 36]], stop: [[39, 54], [17, 53], [17, 20], [20, 14], [21, 11], [22, 9], [23, 8]], clearDiagonal: true }; //Bird Keeper
+    // trainerSpriteClearFix[24] = { start: [[33, 35], [44, 44], [42, 36]], stop: [[39, 54], [17, 53], [17, 20], [20, 14], [21, 11], [22, 9], [23, 8]], clearDiagonal: true }; //Bird Keeper
     trainerSpriteClearFix[25] = { start: [[16, 14]] }; //Lass
     trainerSpriteClearFix[28] = { start: [[40, 28], [41, 27]] }; //Cooltrainer F
     trainerSpriteClearFix[29] = { start: [[32, 36]] }; //Beauty
@@ -475,7 +520,7 @@ namespace RomReader {
     trainerSpriteClearFix[33] = { start: [[24, 26], [33, 29]] }; //Skier
     trainerSpriteClearFix[34] = { start: [[17, 25], [18, 24]] }; //Teacher
     trainerSpriteClearFix[36] = { start: [[33, 25], [38, 45]] }; //Bug Catcher
-    trainerSpriteClearFix[37] = { start: [[12, 17], [14, 18], [16, 19], [17, 20], [19, 21], [20, 22], [22, 23], [24, 24], [25, 25], [26, 26]] }; //Fisher
+    // trainerSpriteClearFix[37] = { start: [[12, 17], [14, 18], [16, 19], [17, 20], [19, 21], [20, 22], [22, 23], [24, 24], [25, 25], [26, 26]] }; //Fisher
     trainerSpriteClearFix[38] = { start: [[33, 13]] }; //Swimmer M
     trainerSpriteClearFix[40] = { start: [[40, 17], [41, 18], [42, 19]] }; //Sailor
     trainerSpriteClearFix[42] = { start: [[22, 23]] }; //Girl3
@@ -492,6 +537,12 @@ namespace RomReader {
     // trainerSpriteClearFix[63] = { start: [[18, 23], [19, 22], [35, 29], [36, 28], [28, 43]] }; //Azure (TPP Red replacement for Pyrite)
     trainerSpriteClearFix[64] = { start: [[19, 21], [20, 20]] }; //Blue
     trainerSpriteClearFix[65] = { stop: [[19, 33], [19, 34], [20, 34]] }; //Officer /*39 in Chatty Crystal*/
+
+    // Black and White 3: Genesis
+    trainerSpriteClearFix[25] = trainerSpriteClearFix[26] = { start: [[12, 17], [14, 18], [16, 19], [17, 20], [19, 21], [20, 22], [22, 23], [24, 24], [25, 25], [26, 26]] };
+    trainerSpriteClearFix[42] = { start: [[19, 39], [20, 38]] };
+    trainerSpriteClearFix[95] = { start: [[24, 13], [24, 16], [32, 45], [32, 48]] };
+
 
     // Prism
     // trainerSpriteClearFix[20] = { start: [[32, 37], [33, 39], [35, 42], [40, 41], [32, 46], [33, 48]] }; //Schoolboy
@@ -569,7 +620,7 @@ namespace RomReader {
             this.moves = this.ReadMoveData(romData);
             this.tmMapping = this.GetTMHMNames(romData);
             this.pokemon = this.ReadPokeData(romData);
-            this.trainers = this.isCrystal16 ? this.ReadCrystal16TrainerData(romData) : this.ReadTrainerData(romData);
+            this.trainers = this.isCrystal16 ? this.ReadCrystal16TrainerData(romData) : this.ReadBW3TrainerData(romData);
             this.ballIds = this.items.filter((i: Gen2Item) => i.pocket == "Ball").map(i => i.id);
             this.areas = this.ReadAreaNames(romData);
             this.maps = this.ReadMaps(romData);
@@ -681,8 +732,9 @@ namespace RomReader {
             let switchFish = this.symTable[config.TimeFishGroups] ? this.ReadArray(romData, this.symTable[config.TimeFishGroups], this.isCrystal16 ? 6 : 4, 255, true).map(fish => ({ day: this.isCrystal16 ? fish.readUInt16LE(1) : fish[0], night: this.isCrystal16 ? fish.readUInt16LE(4) : fish[2] })) : [];
             this.fishingSummary.timeFishGroups = this.symTable[config.TimeFishGroups] ? this.ReadArray(romData, this.symTable[config.TimeFishGroups], this.isCrystal16 ? 6 : 4, 22, true).map(fish => ({ day: { species: this.isCrystal16 ? fish.readUInt16LE(1) : fish[0], level: this.isCrystal16 ? fish[0] : fish[1] }, night: { species: this.isCrystal16 ? fish.readUInt16LE(4) : fish[2], level: fish[3] } })) : [];
             // switchFish.unshift({ day: 0, night: 0 });
+            const fishGroupHeaderBytes = 8; // 7 BW3
             const fishBank = this.LinearAddressToBanked(this.symTable[config.FishingWildsOffset]).bank, fishEncounterGroupsStartAddr = this.BankAddressToLinear(fishBank, romData.readUInt16LE(this.symTable[config.FishingWildsOffset] + 1));
-            let fishEncounterGroups = this.ReadArray(romData.slice(this.symTable[config.FishingWildsOffset], fishEncounterGroupsStartAddr), 0, 7).map((header, i, arr) => {
+            let fishEncounterGroups = this.ReadArray(romData.slice(this.symTable[config.FishingWildsOffset], fishEncounterGroupsStartAddr), 0, fishGroupHeaderBytes).map((header, i, arr) => {
                 let nibbleRate = header[0] / 255;
                 let fishEncs = Array<{ id: number; rate: number; level: number, rodType: string; }>();
                 let summary = { fishGroup: i, encounters: { oldRod: [], goodRod: [], superRod: [] } } as FishingSummary;
@@ -697,9 +749,9 @@ namespace RomReader {
                     summary.encounters[rodType] = this.ReadArray(romData.slice(addr, nextAddr < addr ? addr + 255 : nextAddr), 0, this.isCrystal16 ? 4 : 3, 4)
                         .map(enc => ({ rate: Math.round(enc[0] * 100 / 255), species: this.isCrystal16 ? enc.readUInt16LE(2) : enc[1], level: enc[this.isCrystal16 ? 1 : 2] }));
                 }
-                let oldRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(1)),
-                    goodRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(3)),
-                    superRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(5)),
+                let oldRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(2)),// 1 Bw3
+                    goodRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(4)), // 3 BW3
+                    superRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(6)), // 5 BW3
                     next = (arr[i + 1] ? this.BankAddressToLinear(fishBank, arr[i + 1].readUInt16LE(1)) : null);
                 processFishEncs(oldRod, goodRod, "oldRod");
                 processFishEncs(goodRod, superRod, "goodRod");
@@ -743,8 +795,8 @@ namespace RomReader {
 
         private FindMapEncounters(romData: Buffer) {
             const encounterBytes = this.isCrystal16 ? 3 : 2;
-            const grassBytes = 2 + 3 + (encounterBytes * 7 * 3); // Map + Rates + Morn/Day/Night (7 encounters each)
-            const surfBytes = 2 + 1 + (encounterBytes * 3); // Map + Rate + 3 encounters
+            const grassBytes = 2 + 3 + (encounterBytes * grassEncounterRates.length * 3); // Map + Rates + Morn/Day/Night (7 encounters each)
+            const surfBytes = 2 + 1 + (encounterBytes * surfEncounterRates.length); // Map + Rate + 3 encounters
 
             // Prism
             const naljoGrassGroups = this.symTable["NaljoGrassWildMons"] ? this.ReadArray(romData, this.symTable["NaljoGrassWildMons"], grassBytes) : [];
@@ -1007,9 +1059,70 @@ namespace RomReader {
             return trainers;
         }
 
+        private ReadBW3TrainerData(romData: Buffer) {
+            const trainerClasses = this.GetSymbolSize(config.TrainerClassNamesOffset) / 3;
+            let classNames = this.ReadStringBundle(romData, this.symTable[config.TrainerClassNamesOffset], trainerClasses).map(n => this.FixAllCaps(n));
+            classNames.unshift(""); //trainer class 0
+            let trainers: Pokemon.Trainer[] = [];
+            this.ReadArray(romData, this.symTable[config.TrainerGroupsOffset], 3, trainerClasses).map(dba => this.BankAddressToLinear(dba[0], dba.readUInt16LE(1))).forEach((ptr, cId, ptrArr) => {
+                cId++;
+                const thisAddr = ptr;
+                const symbolName = Object.keys(this.symTable).find(k => this.symTable[k] == thisAddr) || "Bad Ptr";
+                if (symbolName == "Bad Ptr")
+                    return;
+                //console.log(symbolName);
+                // let nextAddr = [...ptrArr].sort((a, b) => a - b).find(p => p > thisAddr);
+                const trainerGroup = new Array<TrainerSummary>();
+                const tData = romData.slice(thisAddr, thisAddr + this.GetSymbolSize(symbolName));
+                let offset = 0;
+                for (let tId = 1; offset < tData.length; tId++) {
+                    const addr = offset + thisAddr;
+                    // ; Trainer data structure:
+                    // ; - db "NAME@", TRAINERTYPE_* constants |ed together
+                    // ; - 1 to 6 Pokémon:
+                    // ;    * in all cases:              db level, species
+                    // ;    * with TRAINERTYPE_DVS:      db atk|def dv, spd|spc dv
+                    // ;    * with TRAINERTYPE_STAT_EXP: dw hp, atk, def, spd, spc
+                    // ;    * with TRAINERTYPE_ITEM:     db item
+                    // ;    * with TRAINERTYPE_MOVES:    db move 1, move 2, move 3, move 4
+                    // ; - db -1 ; end
+                    const name = this.ConvertText(tData.slice(offset));
+                    while (tData[offset] != 0x50 && offset < tData.length)
+                        offset++;
+                    offset++;
+                    const trainerType = (tData[offset] || 0) & 0xF;
+                    offset++;
+                    const party: { level: number, species: Pokemon.Species }[] = [];
+                    while (tData[offset] != 0xFF && offset < tData.length) {
+                        party.push({ level: tData[offset], species: this.GetSpecies(tData[offset + 1]) });
+                        offset += 2;                        // TRAINERTYPE_NORMAL
+                        offset += trainerType & 1 ? 4 : 0;  // TRAINERTYPE_MOVES
+                        offset += trainerType & 2 ? 1 : 0;  // TRAINERTYPE_ITEM
+                        offset += trainerType & 4 ? 2 : 0;  // TRAINERTYPE_DVS
+                        offset += trainerType & 8 ? 10 : 0; // TRAINERTYPE_STAT_EXP
+                    }
+                    offset++;
+                    const trainer = {
+                        classId: cId,
+                        spriteId: cId,
+                        addr: addr.toString(16),
+                        id: tId,
+                        className: classNames[cId],
+                        name: this.FixAllCaps(name),
+                        trainerType: trainerType.toString(),
+                        party: party
+                    } as Gen2Trainer;
+                    trainerGroup.push({ name: name, type: trainerType, party: (party || []).map(p => ({ level: p.level, species: p.species.id })) });
+                    trainers.push(trainer);
+                }
+                this.trainerSummary.push(trainerGroup);
+            });
+            return trainers;
+        }
+
         private ReadPokeData(romData: Buffer) {
             const nameBytes = 10;
-            const dataBytes = this.isPrism ? 0x18 : 32; // Prism excludes TM bytes
+            const dataBytes = this.isPrism ? 0x18 : 34; // Prism excludes TM bytes // BW3 adds more move tutors
             const namesOffset = this.symTable[config.PokemonNamesOffset] - nameBytes; //include 00
             const statsOffset = this.symTable[config.PokemonStatsOffset] - (this.isCrystal16 ? 0 : dataBytes); //include 00
             const baseData = this.isCrystal16 ? this.ReadCrystal16IndirectionTable(romData, statsOffset) : this.ReadArray(romData, statsOffset, dataBytes, dexCount);
@@ -1019,7 +1132,7 @@ namespace RomReader {
 
             return baseData.map((data, i) => (<Pokemon.Species>{
                 id: i,
-                dexNumber: this.isCrystal16 ? (getCrystal16DexNum(i) || 2001 /*TPP Phancero for Chatty Crystal*/) : (i > 0 ? data[0x00] : 0),
+                dexNumber: i, // this.isCrystal16 ? (getCrystal16DexNum(i) || 2001 /*TPP Phancero for Chatty Crystal*/) : (i > 0 ? data[0x00] : 0), // BW3
                 name: pokeNames[i],
                 baseStats: {
                     hp: data[0x01],
@@ -1123,7 +1236,7 @@ namespace RomReader {
 
         private TranslatePicBank(bank: number) {
             //Crystal
-            return bank + (this.isCrystal16 || this.isPrism ? 0 : config.CrystalPicBankOffset);
+            return bank;//+ (this.isCrystal16 || this.isPrism ? 0 : config.CrystalPicBankOffset); // BW3
             //Gold/Silver
             // if (bank == 0x13) {
             //     return 0x1F;

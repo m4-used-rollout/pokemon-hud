@@ -31,7 +31,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
             {config.generation < 6 && typeof t.frontier_symbols === "undefined" && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
             {config.generation < 6 && typeof t.frontier_symbols === "number" && <BattleFrontier bitfield={t.frontier_symbols} />}
             {t.time && <Clock time={t.time} />}
-            {config.generation < 6 && !t.time && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
+            {config.generation < 6 && (!t.time || config.generation < 3) && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
             </div>}
             <FitToWidth className="bottom-row">
