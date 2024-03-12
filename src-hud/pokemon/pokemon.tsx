@@ -32,6 +32,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
             mon.original_trainer.id != this.props.gameState.id && "trademon",
             `ot-${mon.original_trainer.name}`,
             mon.capsule && "ball-capsule",
+            mon.pokerus && mon.pokerus.infected && `pokerus${mon.pokerus.cured ? " cured" : ""}`,
             isShadow && "shadow",
             (mon as TPP.ShadowPokemon).in_hyper_mode && "hyper-mode"
         ].filter(c => !!c).map(cleanString).join(' ');

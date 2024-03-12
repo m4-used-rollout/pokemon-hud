@@ -145,6 +145,8 @@ namespace RomReader {
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
+            if (runState.game == "Nameless")
+                return true;
             return (runState.badges & 16) == 16; //Balance/Soul Badge
         }
 
@@ -186,10 +188,10 @@ namespace RomReader {
                         // [26, 60, 65],   //Trainer Hill //Blazing Emerald
                         // [26, 88]        //Trainer Hill //Blazing Emerald
                     ]);
-                case "BPRE":
-                    return this.CurrentMapIn(id, bank, [
-                        [2, 1, 11]   //Trainer Tower
-                    ]);
+                // case "BPRE":
+                //     return this.CurrentMapIn(id, bank, [
+                //         [2, 1, 11]   //Trainer Tower
+                //     ]);
                 default:
                     return false;
             }
@@ -554,6 +556,8 @@ namespace RomReader {
         }
 
         private ReadEvolutions(romData: Buffer, config: PGEINI) {
+            this.evolutionMethods[0xFE] = this.evolutionMethods[0xFE] || this.EvolutionMethod.MegaEvo; // Nameless
+
             const evoCount = parseInt(config.NumberOfEvolutionsPerPokemon);
             this.ReadArray(romData, parseInt(config.PokemonEvolutions, 16), 8 * evoCount, this.pokemon.length)
                 .map(evoData => this.ReadArray(evoData, 0, 8, evoCount)

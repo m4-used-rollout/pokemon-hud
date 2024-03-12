@@ -28,7 +28,7 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                     {t.items.key.map(i => <li key={i.id}>{i.name}</li>)}
                 </ul>
             </div>} */}
-            {config.generation < 6 && typeof t.frontier_symbols === "undefined" && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
+            {config.generation < 6 && config.runName!="Diamond" && config.runName!="Pearl" && typeof t.frontier_symbols === "undefined" && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
             {config.generation < 6 && typeof t.frontier_symbols === "number" && <BattleFrontier bitfield={t.frontier_symbols} />}
             {t.time && <Clock time={t.time} />}
             {config.generation < 6 && (!t.time || config.generation < 3) && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
@@ -40,11 +40,11 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                 {(t.stickers || t.stickers === 0) && <span className="stickers">{t.stickers}</span>}
                 {config.generation < 3 && <span className={`pc ${pcBoxCount < 20 ? "almost-" : ""}${pcBoxCount >= 18 ? "full" : ""}`}>{pcBoxCount.toLocaleString()}</span>}
                 {t.level_cap && t.level_cap < 100 ? <span className="level-cap">{t.level_cap}</span> : null}
-                {(config.generation > 5 || (config.generation > 2 && (t.time || config.badgeCount > 8)) || (t.items && t.items.candy)) && t.options && displayOpts.length >= 1 && /*<div className="options">}
+                {(config.generation > 5 || (config.generation > 2 && (t.time || config.badgeCount > 8)) || (t.items && t.items.candy)|| config.runName=="Diamond" || config.runName=="Pearl") && t.options && displayOpts.length >= 1 && /*<div className="options">}
                     {*/displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)/*}
                 {</div>*/}
                 {config.generation == 7 && t.items && t.items.z_crystals && <ZCrystals items={t.items} />}
-                {config.generation > 5 && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
+                {(config.generation > 5 || config.runName=="Diamond" || config.runName=="Pearl") && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
                 {t.party_fitness && <span className="fitness">{t.party_fitness.toLocaleString()}</span>}
                 <div className="dex-counts">
                     <span className="owned">{t.caught || 0}</span>

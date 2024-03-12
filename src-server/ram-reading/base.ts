@@ -117,7 +117,7 @@ namespace RamReader {
 
         protected ReadSync(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
             this.TrainerProcessor(state, transmitState)()
-                .then(() => state.party && state.in_battle ? null : this.PartyProcessor(state, transmitState)())
+                .then(() => state.generation > 3 && state.party && state.in_battle ? null : this.PartyProcessor(state, transmitState)())
                 .then(this.BattleProcessor(state, transmitState))
                 .then(this.PCProcessor(state, transmitState))
                 .then(() => this.ReadSync(state, transmitState));

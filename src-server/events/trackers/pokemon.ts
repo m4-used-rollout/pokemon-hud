@@ -86,7 +86,7 @@ namespace Events {
                 if (mon.pokerus && mon.pokerus.infected && !known.pkrs)
                     dispatch({ type: "Caught Pokerus", pv, dexNum, species, name, mon });
                 if (mon.pokerus && mon.pokerus.cured && !known.cured)
-                    dispatch({ type: "Caught Pokerus", pv, dexNum, species, name, mon });
+                    dispatch({ type: "Cured of Pokerus", pv, dexNum, species, name, mon });
             });
             if (newState.party && newState.daycare && newState.pc && newState.pc.boxes && newState.pc.boxes.every(b => !!b)) //only alert missing pokemon when all pokemon sinks have reported in
                 Object.keys(PokemonTracker.knownPokemon).filter(k => seen.indexOf(k) < 0).map(k => PokemonTracker.knownPokemon[k] as KnownPokemon)

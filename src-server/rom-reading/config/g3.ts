@@ -310,5 +310,34 @@ const gen3BadgeFlagMaps = {
 		0x8CE, // Spring Badge: Miscanthus Town 0x8CE (Pike Silver) Mega Swampert
 		0x8D0, // Rebirth Badge: Mangrove Town 0x8D0 (Pyramid Silver) Mega Metagross
 		0x424  // Immortal Badge: Balanophora Town 0x424 (Trick House Puzzle 1 Orange Mail) Mega Lati@s
+	],
+	"cyenn": [ // Nameless
+		// Cyenn ("Levels")
+		0x820,
+		0x821,
+		0x822,
+		0x823,
+		0x824,
+		0x825,
+		0x826,
+		0x827,
+
+		// Tyron
+		0x06A1, // Peace Emblem
+		0x06A2, // Magic Emblem
+		0x06A4, // Power Emblem
+		0x0626, // Skill Emblem
+		0x06A3, // Mystery Emblem
+		0x069F, // Glory Emblem
+
+		// Lande
+		0x075B, // Knight Badge: Chestnut Gym
+		0x051A, // Scholar Badge: Asparagus Gym
+		0x075D, // Wilderness Badge: Baobab City
+		0x07CE, // Shield Badge: Ceratoides Town
+		0x0751, // Prism Badge: Gracilipes City
+		0x075C, // Spring Badge: Miscanthus Town
+		0x074B, // Rebirth Badge: Mangrove Town
+		0x07C8  // Spook Badge: Lycoris Gym
 	]
 }

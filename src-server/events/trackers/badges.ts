@@ -25,8 +25,8 @@ namespace Events {
                     return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Storm", "Mineral", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "hoenn":
                     return this._badges = ["Stone", "Miasma", "Dynamo", "Heat", "Balance", "Knight Emblem", "Comet", "Focus"]; // Snakewood
-                    // return this._badges = ["Stone", "Shadow", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rime"]; // Blazing Emerald
-                    // return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
+                // return this._badges = ["Stone", "Shadow", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rime"]; // Blazing Emerald
+                // return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
                 case "sinnoh":
                     return this._badges = ["Coal", "Forest", "Cobble", "Fen", "Relic", "Mine", "Icicle", "Beacon"];
                 case "unova":
@@ -55,9 +55,11 @@ namespace Events {
                     return this._badges = ["Transform", "Rising", "Black", "Wave", "Blaze", "Snowflake,", "MindEye", "Nature"];
                 // Peace Emblem 0x44D
                 case "sylon": // Resolute
-                return this._badges = ["Razor", "Imagery", "Film", "Metal", "Belief", "Wisdom", "Amulet", "Basis", "Transform", "Rising", "Hard", "Toxic", "Blaze", "Snowflake,", "MindEye", "Nature", "Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising"];
+                    return this._badges = ["Razor", "Imagery", "Film", "Metal", "Belief", "Wisdom", "Amulet", "Basis", "Transform", "Rising", "Hard", "Toxic", "Blaze", "Snowflake,", "MindEye", "Nature", "Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising"];
                 case "ivara": // Mega Power
                     return this._badges = ["Roulette", "Basalt", "Sylphid", "Buds", "Spiral", "Electrode", "Purgatory", "Truth", "Knight", "Scholar", "Wilderness", "Shield", "Prism", "Spring", "Rebirth", "Immortal"];
+                case "cyenn": // Nameless
+                    return this._badges = ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Peace Emblem", "Magic Emblem", "Power Emblem", "Skill Emblem", "Mystery Emblem", "Glory Emblem", "Knight", "Scholar", "Wilderness", "Shield", "Prism", "Spring", "Rebirth", "Spook"];
                 case "harvestcraft":
                     // Harvestcraft can swap the order of the first two badges depending on who you fight first. Joy!
                     return this._badges = ["Blank", "Warm", "Soil", "Metal", "Swarm", "Pixie", "Dew", "Brain"];

@@ -48,6 +48,8 @@ namespace RamReader {
     export class Gen3 extends RamReaderBase<RomReader.Gen3> {
         protected Markings = ['●', '■', '▲', '♥'];
 
+        protected readerFunc = this.ReadSync;
+
         public ReadParty = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.gPlayerParty}/${this.rom.config.PartyBytes}`, this.WrapBytes(data => this.ParseParty(data)));
 
         public ReadPC = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.PCBlockAddress}/${this.rom.config.PCBytes}`, this.WrapBytes(data => ({
@@ -67,7 +69,7 @@ namespace RamReader {
                 const battle_kind = battleFlags & 8 ? "Trainer" : "Wild";
                 const enemy_trainers = new Array<TPP.EnemyTrainer>();
                 if (battle_kind == "Trainer") {
-                    // const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank) as RomReader.TTHMap; //TTH
+                    //const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank) as RomReader.TTHMap; //TTH
                     enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
                     // enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
                     if (battleFlags & 0x8000) { //BATTLE_TYPE_TWO_OPPONENTS
@@ -195,10 +197,11 @@ namespace RamReader {
             //     } as TPP.TrainerData
             // })),
             //Badges Ruby/Sapphire/FireRed/LeafGreen
-            !this.rom.config.VarsOffset && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}+${this.rom.config.BadgesOffset || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8).toString(16)}/2`, this.WrapBytes(data => {
-                return {
-                    badges: (data.readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100,
-                } as TPP.Goals
+            !this.rom.config.VarsOffset && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/1000`, this.WrapBytes(data => {
+                let badges = (data.slice(parseInt(this.rom.config.BadgesOffset, 16) || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8)).readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100
+                if (gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()])
+                    badges = this.ReadBadgeFlags(data, gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()]);
+                return { badges } as TPP.Goals
             })),
             //Stats (FireRed)
             !this.rom.config.VarsOffset && this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4/${this.rom.config.SaveBlock1Address}+${this.rom.config.GameStatsOffset}/${this.rom.config.GameStatsOffset}`, this.WrapBytes(data => {
@@ -373,7 +376,7 @@ namespace RamReader {
             const met = sections.D.readUInt16LE(2);
             //const metMap = this.rom.GetMap(sections.D.readUInt8(1));
             const metArea = sections.D.readUInt8(1) & 0xFF; // Blazing Emerald
-            const bgCaughtIn = (met >>> 10) & 0x1F;
+            const bgCaughtIn = (sections.D[3] >>> 5 & 0x1F) - 1;
             pkmn.met = {
                 // map_id: metMap.id,
                 // area_id: metMap.areaId,
@@ -384,7 +387,8 @@ namespace RamReader {
                 // game: this.ParseOriginalGame((met >>> 7) % 16),
                 // caught_in: this.rom.GetItem(this.rom.MapCaughtBallId((met >>> 11) % 16)).name || ((met >>> 11) % 16).toString(),
                 game: this.ParseOriginalGame((met >>> 7) & 0x7), //Blazing Emerald
-                caught_in: `${this.rom.GetItem(this.rom.MapCaughtBallId(bgCaughtIn + 1)).name}`// (${bgCaughtIn.toString(16)})`,
+                // caught_in: `${this.rom.GetItem(this.rom.MapCaughtBallId(bgCaughtIn + 1)).name}`// (${bgCaughtIn.toString(16)})`,
+                caught_in: this.rom.GetItem(bgCaughtIn).name || bgCaughtIn.toString(16),
                 //data: sections.D.slice(1, 4).toString('hex')
             }; // as TPP.Pokemon["met"];
             pkmn.original_trainer.gender = this.ParseGender(met >>> 15);

@@ -444,6 +444,11 @@ declare namespace RomReader {
                 happiness: number;
                 timeOfDay: string;
             };
+            MegaEvo: (evoParam: number, speciesId: number) => {
+                speciesId: number;
+                item: Pokemon.Item;
+                specialCondition: string;
+            };
             LevelSpecificMap: (evoParam: number, speciesId: number) => {
                 speciesId: number;
                 specialCondition: string;
@@ -621,6 +626,7 @@ declare const gen3Charmap: string[];
 declare const gen3BadgeFlagMaps: {
     "sylon": number[];
     "ivara": number[];
+    "cyenn": number[];
 };
 declare namespace Tools.LZ77 {
     function Decompress(compressed: Buffer, offset?: number): Buffer;
@@ -1400,6 +1406,7 @@ declare namespace RamReader {
 declare namespace RamReader {
     class Gen3 extends RamReaderBase<RomReader.Gen3> {
         protected Markings: string[];
+        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
         ReadParty: () => Promise<TPP.PartyPokemon[]>;
         ReadPC: () => Promise<TPP.CombinedPCData>;
         ReadBattle: () => Promise<TPP.BattleStatus>;

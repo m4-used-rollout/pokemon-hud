@@ -469,6 +469,25 @@ body {
                     image-rendering: pixelated;
                 }
 
+                &.pokerus .extra-info > div:after {
+                    content:'';
+                    flex: 0 0 16px;
+                    height: 16px;
+                    width: 16px;
+                    align-self: center;
+                    // position: absolute;
+                    // left: 0;
+                    // bottom: 0;
+                    background-image: url('./img/pkrs-infected.png');
+                    background-size: contain;
+                    background-repeat: no-repeat;
+                    image-rendering: crisp-edges;
+                }
+
+                &.pokerus.cured .extra-info > div:after {
+                    background-image: url('./img/pkrs-cured.png');
+                    filter:brightness(60%);
+                }
 
                 div.held-item {
                     position:absolute;
@@ -702,6 +721,25 @@ body {
 
                 // font-size: 7vw; // 12 badges per row
 
+                font-size: 8vw; // 10 badges per row
+
+                // For better badge fitting at smaller sizes
+                display: flex;
+                flex-flow: row wrap;
+                justify-content: space-around;
+
+                // Nameless force badge groups
+                &:before, &:after {
+                    content: "";
+                    width: 100%;
+                    height: 0;
+                    order: 8;
+                }
+
+                &:after {
+                    order: 13;
+                }
+
                 span {
                     position: relative;
                     display: inline-block;
@@ -720,6 +758,9 @@ body {
                     // width: 7vw; // 12 badges per row
                     // height: 7vw;  // 12 badges per row
 
+                    width: 8vw; // 10 badges per row
+                    height: 8vw;  // 10 badges per row
+
                     img {
                         vertical-align: middle;
                         transition: filter (@transition-time * 3) ease-in, opacity @transition-time ease-out, transform (@transition-time * 2) ease-out;
@@ -735,6 +776,9 @@ body {
 
                         // width: 7vw; // 12 badges per row
                         // height: 7vw;  // 12 badges per row
+
+                        width: 8vw; // 10 badges per row
+                        height: 8vw;  // 10 badges per row
 
                         &.unowned {
                             filter: contrast(0%) brightness(50%);
@@ -1045,6 +1089,14 @@ body {
                     }
                 }
             }
+        }
+    }
+}
+
+.inverse {
+    .badges {
+        img:not(.unowned) {
+            filter: hue-rotate(180deg);
         }
     }
 }

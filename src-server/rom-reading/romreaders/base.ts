@@ -369,6 +369,7 @@ namespace RomReader {
             Happiness: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220 }),
             HappinessDay: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220, timeOfDay: "MornDay" }),
             HappinessNight: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220, timeOfDay: "Night" }),
+            MegaEvo: (evoParam: number, speciesId: number) => ({ speciesId, item: evoParam ? this.GetItem(evoParam) : undefined, specialCondition: evoParam ? "Mega Evolve With" : "Is Mega Evolution" }),
 
             //Romhacks
             LevelSpecificMap: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Level At ${this.GetAreaName(evoParam)}` }), // Blazing Emerald
