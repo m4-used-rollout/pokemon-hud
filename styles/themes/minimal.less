@@ -1,0 +1,65 @@
+@party-member-height: 80px;
+
+.minimal.pokemon-hud {
+    ul.party {
+        >li {
+            .pokemon-image {
+                width: @party-member-height;
+                height: @party-member-height;
+
+                .frame-border {
+                    display: none;
+                }
+
+                img {
+                    // Gen 3, Generic
+                    width: 64px;
+                    height: 64px;
+                }
+
+                &.unown img,
+                .no-flip img {
+                    transform: translateX(-50%)translateY(-50%); //don't flip
+                }
+            }
+
+            .pokemon-info,
+            .held-item {
+                display: none;
+            }
+
+        }
+    }
+
+    .trainer-info {
+        .bottom-row {
+            .badges {
+                text-align: center;
+                font-size: 1em;
+
+                span {
+                    width: 1em;
+                    height: 1em;
+                    margin: 0;
+
+                    img {
+                        width: 1em;
+                        height: 1em;
+                    }
+                }
+            }
+        }
+    }
+
+    &.blue ul.party {
+        transform: rotateY(180deg);
+
+        >li .pokemon-image {
+
+            &.unown img,
+            .no-flip img {
+                transform: translateX(-50%)translateY(-50%)rotateY(180deg); //do flip
+            }
+        }
+    }
+}

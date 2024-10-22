@@ -77,10 +77,10 @@ namespace Events {
                 }
                 // else if (known.level != mon.level)
                 //     dispatch({ type: "Pokemon Leveled Up", pv, dexNum, species, name, level, mon })
-                else if (known.name != name && known.species.includes(species))
-                    dispatch({ type: "Renamed Pokemon", pv, dexNum, species, newName: name, oldName: known.name, mon });
-                if (known.status == "Missing")
-                    dispatch({ type: "Recovered Pokemon", pv, dexNum, species, name, level, mon });
+                // else if (known.name != name && known.species.includes(species))
+                //     dispatch({ type: "Renamed Pokemon", pv, dexNum, species, newName: name, oldName: known.name, mon });
+                // if (known.status == "Missing")
+                //     dispatch({ type: "Recovered Pokemon", pv, dexNum, species, name, level, mon });
                 if (known.isShadow && !isShadow)
                     dispatch({ type: "Purified Pokemon", pv, dexNum, species, name, level, mon });
                 if (mon.pokerus && mon.pokerus.infected && !known.pkrs)

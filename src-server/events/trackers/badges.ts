@@ -24,9 +24,9 @@ namespace Events {
                         return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                     return this._badges = ["Zephyr", "Hive", "Plain", "Fog", "Storm", "Mineral", "Glacier", "Rising", "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
                 case "hoenn":
-                    return this._badges = ["Stone", "Miasma", "Dynamo", "Heat", "Balance", "Knight Emblem", "Comet", "Focus"]; // Snakewood
-                // return this._badges = ["Stone", "Shadow", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rime"]; // Blazing Emerald
-                // return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
+                    // return this._badges = ["Stone", "Miasma", "Dynamo", "Heat", "Balance", "Knight Emblem", "Comet", "Focus"]; // Snakewood
+                    // return this._badges = ["Stone", "Shadow", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rime"]; // Blazing Emerald
+                    return this._badges = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
                 case "sinnoh":
                     return this._badges = ["Coal", "Forest", "Cobble", "Fen", "Relic", "Mine", "Icicle", "Beacon"];
                 case "unova":

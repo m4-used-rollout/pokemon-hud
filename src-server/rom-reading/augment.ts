@@ -293,6 +293,13 @@ namespace RomReader {
                     // Comment out for randomizers to not leak info
                     let romMon = romData.GetSpecies(p.species.id, p.form);
                     p.species = augmentSpecies(p.species, romMon);
+
+                    //Conceal types for randomizer
+                    // if (!state.caught_list.includes(p.species.national_dex)) {
+                    //     p.species.type1 = "???";
+                    //     p.species.type2 = "???";
+                    // }
+
                     removeInvalidEvos(p as any as TPP.Pokemon);
                     romData.CalculateUnownForm(p);
                 });

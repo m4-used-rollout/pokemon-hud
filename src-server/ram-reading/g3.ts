@@ -100,8 +100,17 @@ namespace RamReader {
         protected TrainerChunkReaders = [
             //Save Block 2
             this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}/${(parseInt(this.rom.config.EncryptionKeyOffset || "FB", 16) + 4).toString(16)}`, this.WrapBytes(data => {
-                const caughtList = this.GetSetFlags(data.slice(0x28), 412);
-                const seenList = this.GetSetFlags(data.slice(0x5C), 412);
+                let dexValues = {};
+                //if (this.rom.romHeader == 'AXVE' || this.rom.romHeader == 'AXPE') {
+                    const caughtList = this.GetSetFlags(data.slice(0x28), 412);
+                    const seenList = this.GetSetFlags(data.slice(0x5C), 412);
+                    dexValues = {
+                        caught: caughtList.length,
+                        caught_list: caughtList,
+                        seen: seenList.length,
+                        seen_list: seenList,
+                    };
+                //}
                 const rawOptions = data.readUInt32LE(0x13) & 0xFFFFFF;
                 const options = this.ParseOptions(rawOptions);
                 if (this.ShouldForceOptions(options)) {
@@ -113,13 +122,21 @@ namespace RamReader {
                     id: data.readUInt16LE(10),
                     secret: data.readUInt16LE(12),
                     options,
-                    caught: caughtList.length,
-                    caught_list: caughtList,
-                    seen: seenList.length,
-                    seen_list: seenList,
+                    ...dexValues,
                     security_key: this.rom.config.EncryptionKeyOffset ? data.readUInt32LE(parseInt(this.rom.config.EncryptionKeyOffset, 16)) : 0,
                 } as TPP.TrainerData;
             }), 0xE * 2, 0x13 * 2),
+            //Pokedex
+            // this.rom.romHeader != 'AXVE' && this.rom.romHeader != 'AXPE' && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+10+${this.rom.gfRomHeader.pokedexOffset.toString(16)}/${Math.ceil(412/8).toString(16)}/${this.rom.config.SaveBlock1Address}+44+${this.rom.gfRomHeader.seen1Offset.toString(16)}/${Math.ceil(412/8).toString(16)}`, this.WrapBytes(data=> {
+            //     const caughtList = this.GetSetFlags(data, 412);
+            //     const seenList = this.GetSetFlags(data.slice(Math.ceil(412/8)), 412);
+            //     return {
+            //         caught: caughtList.length,
+            //         caught_list: caughtList,
+            //         seen: seenList.length,
+            //         seen_list: seenList,
+            //     };
+            // })),
             //Location
             this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}/6/${this.rom.config.CurrentAreaAddr}/1`, this.WrapBytes(data => ({
                 x: data.readUInt16LE(0),

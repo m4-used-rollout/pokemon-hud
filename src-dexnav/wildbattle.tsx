@@ -29,7 +29,7 @@ class WildBattle extends PersistentComponent<{ wilds: TPP.Server.DexNav.WildPoke
                     {/* {partyMon && partyMon.fitness && <div className="fitness">{partyMon.fitness.toLocaleString()}</div>} */}
                 </div>}
             {livingWilds.length == 1 &&
-                <div className="types">
+                <div className="types" style={{/*opacity:livingWilds[0].owned ? 1 : 0, transition: "opacity 1s ease-in-out"*/}}>
                     <TypeImg type={wild.type1} filled/>
                     {wild.type1 != wild.type2 ? <TypeImg type={wild.type2} filled/> : null}
                 </div>

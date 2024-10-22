@@ -12,7 +12,7 @@ namespace RomReader {
 
     export abstract class GBAReader extends GBReader {
         protected stringTerminator = 0xFF;
-        protected romHeader = "";
+        public romHeader = "";
         public shinyChance = 8;
 
         constructor(romFileLocation: string, private iniFileLocation: string) {

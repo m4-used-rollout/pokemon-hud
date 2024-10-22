@@ -9,20 +9,20 @@ namespace RamReader {
     const BOX_STRUCT_BYTES = 0xE8;
 
     // 8C64D34 X save block base?
-    const partyLocation = 0x8CE1C5C; //X
-    const pcMetadataLocation = 0x8C6A7D8; //X
-    const pcDataLocation = 0x8C861B8; //X
-    const battleBlockLocation = 0x81F0000; //X
-    const battleBlockSize = 0x20000; //X
-    const battleInfoOffset = 0xB280; //X
-    const optionsLocation = 0x8C7B6C4; //X
-    const locationLocation = 0x8C6709E; //X
-    const pokedexLocation = 0x8C7A8D8; //X
-    const itemsLocation = 0x8C67554; //X
-    const trainerDataLocation = 0x8C79C2C; //X
-    const trainerMiscLocation = 0x8C6A69C; //X
-    const daycareLocation = 0x8C7FF34; //X
-    const statsLocation = 0x8C83134; //X?
+    // const partyLocation = 0x8CE1C5C; //X
+    // const pcMetadataLocation = 0x8C6A7D8; //X
+    // const pcDataLocation = 0x8C861B8; //X
+    // const battleBlockLocation = 0x81F0000; //X
+    // const battleBlockSize = 0x20000; //X
+    // const battleInfoOffset = 0xB280; //X
+    // const optionsLocation = 0x8C7B6C4; //X
+    // const locationLocation = 0x8C6709E; //X
+    // const pokedexLocation = 0x8C7A8D8; //X
+    // const itemsLocation = 0x8C67554; //X
+    // const trainerDataLocation = 0x8C79C2C; //X
+    // const trainerMiscLocation = 0x8C6A69C; //X
+    // const daycareLocation = 0x8C7FF34; //X
+    // const statsLocation = 0x8C83134; //X?
 
     // const partyLocation = 0x8CF71F0; //Omega Ruby
     // const battleInfoOffset = 0xB588; //Omega Ruby
@@ -37,16 +37,20 @@ namespace RamReader {
     // const daycareLocation = 0x8C84188; //Omega Ruby
     // const statsLocation = 0x8C87280; //Omega Ruby
 
-    // const partyLocation = 0x8CE1C5C + 0x10; //X 1.5
-    // const pcMetadataLocation = 0x8C6A7D8 + 0x10; //X 1.5
-    // const pcDataLocation = 0x8C861B8 + 0x10; //X 1.5
-    // const optionsLocation = 0x8C7B6C4 + 0x10; //X 1.5
-    // const locationLocation = 0x8C6709E + 0x10; //X 1.5
-    // const pokedexLocation = 0x8C7A8D8 + 0x10; //X 1.5
-    // const itemsLocation = 0x8C67554 + 0x10; //X 1.5
-    // const trainerDataLocation = 0x8C79C2C + 0x10; //X 1.5
-    // const trainerMiscLocation = 0x8C6A69C + 0x10; //X 1.5
-    // const daycareLocation = 0x8C7FF34 + 0x10; //X 1.5
+    const partyLocation = 0x8CE1C5C + 0x10; //X 1.5
+    const pcMetadataLocation = 0x8C6A7D8 + 0x10; //X 1.5
+    const pcDataLocation = 0x8C861B8 + 0x10; //X 1.5
+    const optionsLocation = 0x8C7B6C4 + 0x10; //X 1.5
+    const locationLocation = 0x8C6709E + 0x10; //X 1.5
+    const pokedexLocation = 0x8C7A8D8 + 0x10; //X 1.5
+    const itemsLocation = 0x8C67554 + 0x10; //X 1.5
+    const trainerDataLocation = 0x8C79C2C + 0x10; //X 1.5
+    const trainerMiscLocation = 0x8C6A69C + 0x10; //X 1.5
+    const daycareLocation = 0x8C7FF34 + 0x10; //X 1.5
+    const battleBlockLocation = 0x81F0000; //X
+    const battleBlockSize = 0x20000; //X
+    const battleInfoOffset = 0xB280; //X
+    const statsLocation = 0x8C83134 + 0x10; //X 1.5?
 
     const pcBoxSize = BOX_STRUCT_BYTES * 30;
     const pcDataSize = pcBoxSize * 31;

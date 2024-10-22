@@ -66,7 +66,7 @@ namespace RomReader {
 
         private puzzleList: { id: number, bank: number }[]; //TTH
         public totalPuzzles = 0;
-        private gfRomHeader: GFRomHeader;
+        public gfRomHeader: GFRomHeader;
 
         stringTerminator = 0xFF;
 
