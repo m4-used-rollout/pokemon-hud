@@ -20,7 +20,7 @@ class Pokemon extends React.Component<{ pokemon: TPP.PartyPokemon; gameState: TP
         let classes = [
             this.props.gameState.generation > 3 && (Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) >= 50 ? "health-high" : "health-med"),
             this.props.gameState.generation == 3 && (Math.floor(hpPercent) <= 20 ? "health-low" : Math.floor(hpPercent) > 50 ? "health-high" : "health-med"),
-            this.props.gameState.generation < 3 && (hpPixels < 10 ? "health-low" : hpPixels >= 24 ? "health-high" : "health-med"),
+            this.props.gameState.generation < 3 && (hpPixels < 10 ? "health-low" : hpPixels > 24 ? "health-high" : "health-med"),
             this.props.gameState.transitioning && 'glitch',
             this.props.gameState.transitioning && `glitch-effect-${Math.ceil(Math.random() * 6)}`,
             mon.gender,

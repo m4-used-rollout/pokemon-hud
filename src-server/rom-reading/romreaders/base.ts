@@ -341,7 +341,7 @@ namespace RomReader {
             return { speciesId, specialCondition: `Unknown evolution method: ${method} (${evoParam})` };
         }
 
-        protected EvolutionMethod = {
+        protected EvolutionMethod: Record<string, EvoMethod> = {
             Level: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam }),
             LevelAttackHigher: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Attack > Defense" }),
             LevelAtkDefEqual: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Attack = Defense" }),
@@ -353,13 +353,23 @@ namespace RomReader {
             LevelHighBeauty: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "High Beauty" }),
             LevelItemDay: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), timeOfDay: "MornDay", specialCondition: "Level While Holding" }),
             LevelItemNight: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), timeOfDay: "Night", specialCondition: "Level While Holding" }),
+            LevelDay: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, timeOfDay: "MornDay" }),
+            LevelDusk: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, timeOfDay: "Dusk" }),
+            LevelNight: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, timeOfDay: "Night" }),
             LevelWithMove: (evoParam: number, speciesId: number) => ({ speciesId, move: this.GetMove(evoParam) }),
+            LevelWithMoveType: (evoParam: number, speciesId: number) => ({ speciesId, moveType: this.GetType(evoParam) }),
             LevelWithOtherSpecies: (evoParam: number, speciesId: number) => ({ speciesId, otherSpeciesId: evoParam || undefined, specialCondition: `Level With ${(this.GetSpecies(evoParam) || { name: "???" }).name} In Party` }),
+            LevelWithDarkType: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: `Level With Dark Type In Party` }),
             LevelMale: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam, specialCondition: "Male Only" }),
             LevelFemale: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam, specialCondition: "Female Only" }),
             LevelElectifiedArea: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Electrified Area" }),
             LevelMossRock: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Moss Rock" }),
             LevelIcyRock: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "Icy Rock" }),
+            LevelInRain: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "In Rain" }),
+            LevelSpecificArea: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Level At ${this.GetAreaName(evoParam)}` }),
+            LevelSpecificMap: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Level At ${this.GetMap(evoParam).name}` }),
+            LevelNatureAmped: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, natures: ["Hardy", "Brave", "Adamant", "Naughty", "Docile", "Impish", "Lax", "Hasty", "Jolly", "Naive", "Rash", "Sassy", "Quirky"], specialCondition: "With Amped Nature" }),
+            LevelNatureLowKey: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, natures: ["Lonely", "Bold", "Relaxed", "Timid", "Serious", "Modest", "Mild", "Quiet", "Bashful", "Calm", "Gentle", "Careful"], specialCondition: "With Low Key Nature" }),
             Trade: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true }),
             TradeItem: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true, item: this.GetItem(evoParam) }),
             TradeForOtherSpecies: (evoParam: number, speciesId: number) => ({ speciesId, isTrade: true, otherSpeciesId: evoParam, specialCondition: `Trade For ${(this.GetSpecies(evoParam) || { name: "???" }).name}` }),
@@ -369,10 +379,13 @@ namespace RomReader {
             Happiness: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220 }),
             HappinessDay: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220, timeOfDay: "MornDay" }),
             HappinessNight: (evoParam: number, speciesId: number) => ({ speciesId, happiness: evoParam || 220, timeOfDay: "Night" }),
-            MegaEvo: (evoParam: number, speciesId: number) => ({ speciesId, item: evoParam ? this.GetItem(evoParam) : undefined, specialCondition: evoParam ? "Mega Evolve With" : "Is Mega Evolution" }),
-
-            //Romhacks
-            LevelSpecificMap: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Level At ${this.GetAreaName(evoParam)}` }), // Blazing Emerald
+            CriticalHits: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Hit ${evoParam || 3} Crits In One Battle` }),
+            RockArch: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Rock Arch After Taking ${evoParam || 49}HP Of Damage` }),
+            ScrollOfDarkness: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Use Scroll Of Darkness` }),
+            ScrollOfWaters: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Use Scroll Of Waters` }),
+            MegaEvo: (evoParam: number, speciesId: number) => ({ speciesId, item: evoParam ? this.GetItem(evoParam) : undefined, specialCondition: evoParam ? "Mega Evolve With" : "Mega Evolution" }),
+            MegaEvoMove: (evoParam: number, speciesId: number) => ({ speciesId, move: evoParam ? this.GetMove(evoParam) : undefined, specialCondition: evoParam ? "Mega Evolve Knowing" : "Mega Evolution" }),
+            MegaEvoPrimal: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: "Primal Reversion" })
         }
 
         private surfExp = /^surf$/i;

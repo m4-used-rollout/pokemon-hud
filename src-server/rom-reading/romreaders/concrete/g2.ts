@@ -608,7 +608,9 @@ namespace RomReader {
             const hudConfig = TPP.Server.getConfig();
 
             let romData = this.loadROM();
-            this.symTable = this.LoadSymbolFile(romFileLocation.replace(/\.[^.]*$/, '.sym'));
+            const sym = this.LoadSymbolFile(romFileLocation.replace(/\.[^.]*$/, '.sym'));
+            this.symTable = sym.symTable;
+            this.symDomains = sym.symDomains;
 
             //if (this.isCrystal16)
             this.types = hudConfig.typeTable || defaultTypes;

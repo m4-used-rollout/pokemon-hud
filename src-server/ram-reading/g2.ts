@@ -27,6 +27,8 @@ namespace RamReader {
         };
         protected StructSize = (startSymbol: string, ...endSymbol: string[]) => this.rom.symTable[[...endSymbol, startSymbol.replace("Start", '') + "End"].find(s => !!this.rom.symTable[s])] - this.rom.symTable[startSymbol];
 
+        protected readerFunc = this.ReadSync;
+
         protected PCBoxSize = () => this.StructSize('sBox') + 2; //??
         protected PartySize = () => this.StructSize('wPokemonData', 'wPartyMonNicknamesEnd');
         protected PartyMonSize = () => this.StructSize('wPartyMon1', 'wPartyMon2');
@@ -108,9 +110,9 @@ namespace RamReader {
                 wNumPCItems: 1,
                 // TODO: pokecrystal has wPCItemsEnd but pokegold doesn't
                 wNumBerries: 1,
-                wBerries:this.StructSize('wBerries'),
+                wBerries: this.StructSize('wBerries'),
                 wNumMedicine: 1,
-                wMedicine:this.StructSize('wMedicine'),
+                wMedicine: this.StructSize('wMedicine'),
                 wPCItems: this.StructSize('wPCItems'),//, 'wPokegearFlags'),
                 wPhoneList: this.StructSize('wPhoneList', 'wLuckyNumberShowFlag'),// - 23, (not sure why I'm doing -23)
                 wCurDay: 1,

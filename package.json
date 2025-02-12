@@ -6,7 +6,8 @@
   "author": "",
   "license": "MIT",
   "overrides": {
-    "graceful-fs": "^4.2.10"
+    "graceful-fs": "^4.2.10",
+    "fs-extra": "^8.1.0"
   },
   "devDependencies": {
     "@types/ini": "^1.3.29",
@@ -15,19 +16,21 @@
     "@types/react-dom": "^0.14.23",
     "del": "^2.2.2",
     "graceful-fs": "^4.2.10",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.0",
+    "gulp-changed": "^4.0.3",
     "gulp-electron": "^0.1.3",
-    "gulp-flatten": "^0.3.1",
-    "gulp-less": "^3.3.0",
+    "gulp-flatten": "^0.4.0",
+    "gulp-less": "^5.0.0",
     "gulp-sourcemaps": "^2.6.0",
-    "gulp-typescript": "^3.1.6",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "merge2": "^1.0.3",
-    "typescript": "^2.9.2"
+    "typescript": "~3.0.0"
   },
   "dependencies": {
-    "electron": "^5.0.2",
+    "@electron/remote": "github:electron/remote",
+    "electron": "^33.0.2",
     "ini": "^1.3.4",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }

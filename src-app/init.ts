@@ -54,7 +54,7 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
         win.show()
     });
 
-    win.webContents.on("crashed", () => {
+    (win.webContents as any).on("crashed", () => {
         win.destroy();
         createWindow(page, windowWidth, windowHeight, x, y, frameless, resize, resetEveryHours);
     });
@@ -68,7 +68,8 @@ function createWindow(page: string = 'hud', windowWidth: number = 640, windowHei
     }));
 
     // Emitted when the window is closed.
-    win.on('closed', () => windowList = windowList.filter(w => w != win));
+    // win.on('closed', () => windowList = windowList.filter(w => w != win));
+    win.on('closed', () => app.quit());
 
     win.on('unresponsive', () => win.reload());
 

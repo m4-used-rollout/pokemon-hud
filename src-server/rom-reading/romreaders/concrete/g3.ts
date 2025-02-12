@@ -64,8 +64,8 @@ namespace RomReader {
     export class Gen3 extends GBAReader {
         public config: PGEINI;
 
-        private puzzleList: { id: number, bank: number }[]; //TTH
-        public totalPuzzles = 0;
+        public puzzleList: { id: number, bank: number }[] = []; //TTH
+        //public totalPuzzles = 0;
         public gfRomHeader: GFRomHeader;
 
         stringTerminator = 0xFF;
@@ -197,15 +197,15 @@ namespace RomReader {
             }
         }
 
-        private isFRLG(config: PGEINI) {
+        protected isFRLG(config: PGEINI) {
             return ['BPR', 'BPG'].indexOf(config.Header.substring(0, 3)) >= 0;
         }
 
-        private ReadAbilities(romData: Buffer, config: PGEINI, numAbilities = parseInt(config.NumberOfAbilities)) {
+        protected ReadAbilities(romData: Buffer, config: PGEINI, numAbilities = parseInt(config.NumberOfAbilities)) {
             return this.ReadArray(romData, parseInt(config.AbilityNames, 16), 13, numAbilities).map(a => this.FixAllCaps(this.ConvertText(a)));
         }
 
-        private ReadPokeData(romData: Buffer, config: PGEINI) {
+        protected ReadPokeData(romData: Buffer, config: PGEINI) {
             let pokemonNames = this.ReadArray(romData, parseInt(config.PokemonNames, 16), 11, parseInt(config.NumberOfPokemon)).map(p => this.FixAllCaps(this.ConvertText(p)));
             let dexMapping = this.ReadArray(romData, parseInt(config.NationalDexTable, 16), 2, parseInt(config.NumberOfPokemon)).map(n => n.readInt16LE(0));
             dexMapping.unshift(0);
@@ -243,7 +243,7 @@ namespace RomReader {
             }));
         }
 
-        private ReadTrainerData(romData: Buffer, config: PGEINI) {
+        protected ReadTrainerData(romData: Buffer, config: PGEINI) {
             let trainerClasses = this.ReadArray(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ConvertText(tc)));
             return this.ReadArray(romData, parseInt(config.TrainerTable, 16), 40, parseInt(config.NumberOfTrainers)).map((data, i) => (<Pokemon.Trainer>{
                 classId: data[1],
@@ -255,7 +255,7 @@ namespace RomReader {
             }));
         }
 
-        private ReadItemData(romData: Buffer, config: PGEINI) {
+        protected ReadItemData(romData: Buffer, config: PGEINI) {
             const itemStructExtensionBytes = 0; //16 for TriHard Emerald and TTH2019
             return this.ReadArray(romData, parseInt(config.ItemData, 16), 44 + itemStructExtensionBytes, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
                 name: this.FixAllCaps(this.ConvertText(data)),
@@ -280,7 +280,7 @@ namespace RomReader {
             }));
         }
 
-        private ReadMoveData(romData: Buffer, config: PGEINI) {
+        protected ReadMoveData(romData: Buffer, config: PGEINI) {
             let moveNames = this.ReadArray(romData, parseInt(config.AttackNames, 16), 13, parseInt(config.NumberOfAttacks) + 1).map(p => this.FixAllCaps(this.ConvertText(p)));
             let contestData = this.ReadArray(romData, parseInt(config.ContestMoveEffectData, 16), 4, parseInt(config.NumberOfAttacks)).map(data => ({
                 effect: contestEffects[data[0]],
@@ -327,7 +327,7 @@ namespace RomReader {
             }));
         }
 
-        private GetTMHMNames(romData: Buffer, config: PGEINI) {
+        protected GetTMHMNames(romData: Buffer, config: PGEINI) {
             const tmHmExp = /^(T|H)M(\d+)/i;
             let moveMap = this.ReadArray(romData, parseInt(config.TMData, 16), 2, parseInt(config.TotalTMsPlusHMs)).map(m => m.readUInt16LE(0));
             let TMs = this.items.filter(i => tmHmExp.test(i.name));
@@ -338,7 +338,7 @@ namespace RomReader {
             });
         }
 
-        private ReadMapLabels(romData: Buffer, config: PGEINI) {
+        protected ReadMapLabels(romData: Buffer, config: PGEINI) {
             if (romData.readUInt32LE(parseInt(config.MapLabelData, 16)) < 0x8000000)
                 return this.ReadArray(romData, parseInt(config.MapLabelData, 16), 8, parseInt(config.NumberOfMapLabels)).map(data => {
                     const addr = this.ReadRomPtr(data, 4);
@@ -351,10 +351,10 @@ namespace RomReader {
                 });
         }
 
-        private ReadMaps(romData: Buffer, config: PGEINI) {
+        protected ReadMaps(romData: Buffer, config: PGEINI) {
             let mapBanksPtr = /*parseInt(config.Pointer2PointersToMapBanks || "0", 16) ||*/ this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
             const mapLabelOffset = parseInt(config.MapLabelOffset || "0", 16);
-            this.totalPuzzles = mapLabelOffset;
+            //this.totalPuzzles = mapLabelOffset;
             return this.ReadPtrBlock(romData, mapBanksPtr)
                 .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
                     .map((mapHeader, m) => /*(<TTHMap>{*/(<Pokemon.Map>{
@@ -376,32 +376,32 @@ namespace RomReader {
         //     return classId == 89; //Vega
         // }
 
-        //Trick or Treat House
-        private GetPuzzleTrainers(romData: Buffer, mapTrainerTableAddr: number, config: PGEINI): Pokemon.Trainer[] {
-            if (mapTrainerTableAddr < 0)
-                return [];
+        // //Trick or Treat House
+        // protected GetPuzzleTrainers(romData: Buffer, mapTrainerTableAddr: number, config: PGEINI): Pokemon.Trainer[] {
+        //     if (mapTrainerTableAddr < 0)
+        //         return [];
 
-            const trainerClasses = this.ReadArray(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ConvertText(tc)));
-            return this.ReadArray(romData, mapTrainerTableAddr, 36, 32, true, data => data.readUInt16LE(0) == 0).map((data, i) => (<Pokemon.Trainer>{
-                classId: data[1],
-                className: trainerClasses[data[1]],
-                id: i + 1,
-                name: this.FixAllCaps(this.ConvertText(data.slice(4))),
-                spriteId: data[3],
-                gender: data[2] & 128 ? "Female" : "Male",
-            }));
-        }
+        //     const trainerClasses = this.ReadArray(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ConvertText(tc)));
+        //     return this.ReadArray(romData, mapTrainerTableAddr, 36, 32, true, data => data.readUInt16LE(0) == 0).map((data, i) => (<Pokemon.Trainer>{
+        //         classId: data[1],
+        //         className: trainerClasses[data[1]],
+        //         id: i + 1,
+        //         name: this.FixAllCaps(this.ConvertText(data.slice(4))),
+        //         spriteId: data[3],
+        //         gender: data[2] & 128 ? "Female" : "Male",
+        //     }));
+        // }
 
-        //Trick or Treat House
-        private GetPuzzleName(romData: Buffer, mapScriptPtr: number) {
-            return this.ReadArray(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x20).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
-        }
+        // //Trick or Treat House
+        // protected GetPuzzleName(romData: Buffer, mapScriptPtr: number) {
+        //     return this.ReadArray(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x20).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
+        // }
 
-        private GetPuzzleAuthor(romData: Buffer, mapScriptPtr: number) {
-            return this.ReadArray(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x21).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
-        }
+        // protected GetPuzzleAuthor(romData: Buffer, mapScriptPtr: number) {
+        //     return this.ReadArray(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x21).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
+        // }
 
-        private ParseGFRomHeader(romData: Buffer) {
+        protected ParseGFRomHeader(romData: Buffer) {
             //TODO: This doesn't exist in Ruby and Sapphire
             const headerData = romData.slice(0x100, 0x204);
             const romHeader = <GFRomHeader>{
@@ -496,7 +496,7 @@ namespace RomReader {
             return romHeader;
         }
 
-        private FindMapEncounters(romData: Buffer, config: PGEINI) {
+        protected FindMapEncounters(romData: Buffer, config: PGEINI) {
             let wildPokemonPtr = this.FindPtrFromPreceedingData(romData, wildPokemonPtrMarker);
             this.ReadArray(romData, wildPokemonPtr, 20).forEach(data => {
                 let mapBank = data[0], mapId = data[1];
@@ -516,7 +516,7 @@ namespace RomReader {
             });
         }
 
-        private ReadEncounterSet(romData: Buffer, setAddr: number, encounterRates: number[], requiredItems: number[] = [], includeGroupRate = false) {
+        protected ReadEncounterSet(romData: Buffer, setAddr: number, encounterRates: number[], requiredItems: number[] = [], includeGroupRate = false) {
             if (setAddr <= 0)
                 return [];
             let setPtr = this.ReadRomPtr(romData, setAddr + 4);
@@ -534,7 +534,7 @@ namespace RomReader {
             }
         }
 
-        private ReadMoveLearns(romData: Buffer, config: PGEINI) {
+        protected ReadMoveLearns(romData: Buffer, config: PGEINI) {
             const movelearns = {} as { [key: number]: Pokemon.MoveLearn[] };
             this.ReadPtrBlock(romData, parseInt(config.PokemonAttackTable, 16)).forEach((addr, i) => {
                 movelearns[i] = this.ReadArray(romData, addr, 2).map(data => {
@@ -555,7 +555,7 @@ namespace RomReader {
             return movelearns;
         }
 
-        private ReadEvolutions(romData: Buffer, config: PGEINI) {
+        protected ReadEvolutions(romData: Buffer, config: PGEINI) {
             this.evolutionMethods[0xFE] = this.evolutionMethods[0xFE] || this.EvolutionMethod.MegaEvo; // Nameless
 
             const evoCount = parseInt(config.NumberOfEvolutionsPerPokemon);
@@ -567,7 +567,7 @@ namespace RomReader {
         }
 
         // For Blazing Emerald (and any future Skeli hack possibly?)
-        private ReadLevelCaps(romData: Buffer, config: PGEINI) {
+        protected ReadLevelCaps(romData: Buffer, config: PGEINI) {
             const capAddr = parseInt(config.LevelCaps || '0', 16);
             const capCount = parseInt(config.LevelCapCount || '9', 16);
             this.levelCaps = capAddr > 0 ?
@@ -595,7 +595,7 @@ namespace RomReader {
             /*15*/ this.EvolutionMethod.LevelHighBeauty,
             // Blazing Emerald
             /*16*/ this.EvolutionMethod.LevelWithMove,
-            /*17*/ this.EvolutionMethod.LevelSpecificMap,
+            /*17*/ this.EvolutionMethod.LevelSpecificArea,
             /*18*/ undefined,
             /*19*/ undefined,
             /*20*/ undefined,

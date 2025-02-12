@@ -6,7 +6,8 @@ namespace RomReader {
 
     export abstract class GBReader extends RomReaderBase {
         protected stringTerminator = 0x50;
-        public symTable: { [key: string]: number };
+        public symTable: Record<string, number>;
+        public symDomains: Record<string, string>;
 
         constructor(private romFileLocation: string, private charmap: string[]) {
             super();
@@ -130,28 +131,41 @@ namespace RomReader {
         protected LoadSymbolFile(filename: string) {
             const symFile: string = fs.readFileSync(filename, 'utf8');
             const symTable: { [key: string]: number } = {};
+            const symDomain: { [key: string]: string } = {};
             symFile.split('\n').forEach(line => {
                 const parsed = this.symbolEntry.exec(line.trim());
                 if (parsed) {
                     const bank = parseInt(parsed[1], 16);
                     const address = parseInt(parsed[2], 16);
                     const symbol = parsed[3];
-                    if (address < 0x8000) // ROM
-                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.ROM)
-                    else if (address < 0xA000) // VRAM
-                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.VRAM)
-                    else if (address < 0xC000) // SRAM
-                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.SRAM)
-                    else if (address < 0xE000) //WRAM
-                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.WRAM)
-                    else if (address < 0xFE00) // ECHO (nothing should use this, but just in case)
-                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.WRAM)
-                    else //OAM, I/O, HRAM (no banks)
+                    if (address < 0x8000) {// ROM
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.ROM);
+                        symDomain[symbol] = "ROM";
+                    }
+                    else if (address < 0xA000){ // VRAM
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.VRAM);
+                        symDomain[symbol] = "VRAM";
+                    }
+                    else if (address < 0xC000){ // SRAM
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.SRAM);
+                        symDomain[symbol] = "CartRAM";
+                    }
+                    else if (address < 0xE000){ //WRAM
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.WRAM);
+                        symDomain[symbol] = "WRAM";
+                    }
+                    else if (address < 0xFE00){ // ECHO (nothing should use this, but just in case)
+                        symTable[symbol] = this.BankAddressToLinear(bank, address, this.BankSizes.WRAM);
+                        symDomain[symbol] = "WRAM";
+                    }
+                    else{ //OAM, I/O, HRAM (no banks)
                         symTable[symbol] = address
+                        symDomain[symbol] = "SystemBus";
+                    }
                 }
             });
             //console.dir(symTable);
-            return symTable;
+            return {symTable, symDomains: symDomain};
         }
 
         public GetOamAddress = (symbol: string) => this.symTable[symbol] ? this.symTable[symbol] - 0xFE00 : null;

@@ -3,7 +3,7 @@
 /// <reference path="events/events.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g1.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g2.ts" />
-/// <reference path="rom-reading/romreaders/concrete/g3.ts" />
+/// <reference path="rom-reading/romreaders/concrete/tth.ts" />
 /// <reference path="rom-reading/romreaders/concrete/col.ts" />
 /// <reference path="rom-reading/romreaders/concrete/xd.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g4.ts" />
@@ -14,6 +14,7 @@
 /// <reference path="ram-reading/g1.ts" />
 /// <reference path="ram-reading/g2.ts" />
 /// <reference path="ram-reading/g3.ts" />
+/// <reference path="ram-reading/tth.ts" />
 /// <reference path="ram-reading/col.ts" />
 /// <reference path="ram-reading/xd.ts" />
 /// <reference path="ram-reading/g6.ts" />
@@ -203,6 +204,13 @@ module TPP.Server {
                 RomData = rom;
                 if (!config.listenOnly)
                     RamData = new RamReader.Gen3(rom, 5337, "localhost", config);
+                break;
+            }
+            case 3.2022: { // TTH 2022
+                let rom = new RomReader.Gen3TTH(path, config.iniFile && RomReader.RomReaderBase.FindLocalFile(config.iniFile));
+                RomData = rom;
+                if (!config.listenOnly)
+                    RamData = new RamReader.Gen3TTH(rom, 5337, "localhost", config);
                 break;
             }
             case 3.5: { //Colosseum

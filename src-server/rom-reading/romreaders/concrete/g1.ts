@@ -10,11 +10,12 @@ namespace RomReader {
 
     const jessieJamesSpriteId = -30;
 
-    const types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bird", "Bug", "Ghost", "Steel", "", "", "", "", "", "", "", "", "", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark"];
+    const types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bird", "Bug", "Ghost", "Steel", "", "", "", "", "", "", "", "", "", "???", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy"];
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
     const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
 
-    const tmCount = 51, hmCount = 5, dexCount = 151, trainerClasses = 47;
+    // const tmCount = 51, hmCount = 5, dexCount = 151, trainerClasses = 47;
+    const tmCount = 51, hmCount = 5, dexCount = 252, trainerClasses = 59; // KEP
 
     interface ClearFix { [key: number]: { start?: number[][], stop?: number[][], clearDiagonal?: boolean } };
     const pokeSpriteClearFix: ClearFix = {};
@@ -33,22 +34,44 @@ namespace RomReader {
             super(romFileLocation, charmap);
             this.natures = [];
 
+            console.log("Reading ROM");
             let romData = this.loadROM();
-            this.symTable = this.LoadSymbolFile(romFileLocation.replace(/\.[^.]*$/, '.sym'));
+            console.log(`${romData.byteLength} bytes`)
+            console.log("Parsing SYM file");
+            const sym = this.LoadSymbolFile(romFileLocation.replace(/\.[^.]*$/, '.sym'));
+            this.symTable = sym.symTable;
+            this.symDomains = sym.symDomains;
+            console.log(`${Object.keys(this.symTable).length} symbols loaded.`)
             this.GetJessieJamesRocketMinTrainerId(romData); // Yellow
+            console.log("Reading Pokemon");
             this.pokemon = this.ReadPokeData(romData);
+            console.log(`${this.pokemon.length} species`)
             // this.pokemonSprites = this.ReadPokemonSprites(romData);
+            console.log("Reading Trainers");
             this.trainers = this.ReadTrainerData(romData);
+            console.log(`${this.trainers.length} trainers`)
             // this.trainerSprites = this.ReadTrainerSprites(romData);
             // this.frameBorders = this.ReadFrameBorders(romData);
+            console.log("Reading Items");
             this.items = this.ReadItemData(romData);
+            console.log(`${this.items.length} items`)
             this.ballIds = this.FindBallIds(romData);
             this.FindFishingRods(romData);
+            console.log("Reading Area Names");
             this.areas = this.ReadAreaNames();
+            console.log(`${this.areas.length} areas`)
+            console.log("Reading Moves");
             this.moves = this.ReadMoveData(romData);
+            console.log(`${this.moves.length} moves`)
+            console.log("Reading Move Learns");
             this.moveLearns = this.ReadMoveLearns(romData);
+            console.log(`${Object.values(this.moveLearns).reduce((sum, cur) => sum + cur.length, 0)} movelearns`)
+            console.log("Reading Maps/Encounters");
             this.maps = this.ReadMaps(romData);
+            console.log(`${this.maps.length} maps`)
+            console.log("Reading Fishing Encounters");
             this.FindFishingEncounters(romData);
+            console.log("Reading TMs and HMs");
             this.AddTMHMs(romData);
         }
 
@@ -82,10 +105,10 @@ namespace RomReader {
         }
 
         private FindFishingEncounters(romData) {
-            const fishBank = this.LinearAddressToBanked(this.symTable['SuperRodData']).bank;
+            const fishBank = this.symTable['SuperRodData'] ? this.LinearAddressToBanked(this.symTable['SuperRodData']).bank : 0;
             const alwaysFish = new Array<Pokemon.EncounterMon>();
-            const oldRodSpecies = romData.readUInt8(this.symTable['ItemUseOldRod'] + 7);
-            const goodRodSpecies = [romData.readUInt8(this.symTable['GoodRodMons'] + 1), romData.readUInt8(this.symTable['GoodRodMons'] + 3)];
+            const oldRodSpecies = this.symTable['ItemUseOldRod'] ? romData.readUInt8(this.symTable['ItemUseOldRod'] + 7) : []
+            const goodRodSpecies = this.symTable['GoodRodMons'] ? [romData.readUInt8(this.symTable['GoodRodMons'] + 1), romData.readUInt8(this.symTable['GoodRodMons'] + 3)] : [];
             alwaysFish.push({
                 speciesId: oldRodSpecies,
                 species: this.GetSpecies(oldRodSpecies),
@@ -98,7 +121,7 @@ namespace RomReader {
                 requiredItem: this.GetItem(this.fishingRodIds.goodRod),
                 rate: 25 //50% for this species, 50% to catch anything at all
             }));
-            this.ReadArray(romData, this.symTable['SuperRodData'], 3).forEach(sr => {
+            this.symTable['SuperRodData'] && this.ReadArray(romData, this.symTable['SuperRodData'], 3).forEach(sr => {
                 const fgAddr = this.BankAddressToLinear(fishBank, sr.readInt16LE(1));
                 this.GetMap(sr.readUInt8(0)).encounters['all'].fishing = this.CombineDuplicateEncounters(alwaysFish
                     .concat(this.ReadArray(romData, fgAddr + 1, 2, romData[fgAddr])
@@ -215,8 +238,10 @@ namespace RomReader {
             this.ReadArray(romData, this.symTable["TrainerDataPointers"], 2, trainerClasses).forEach((ptr, cId, ptrArr) => {
                 cId++;
                 let thisAddr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
-                let nextAddr = ptrArr[cId] ? this.BankAddressToLinear(bank, ptrArr[cId].readUInt16LE(0)) : 0;
-                this.ReadBundledData(romData, thisAddr, 0, nextAddr || 1, nextAddr).forEach((tData, tId) => {
+                const ptrArrSorted = [...ptrArr].sort();
+                const sortedIndex = ptrArrSorted.indexOf(ptr);
+                let nextAddr = ptrArrSorted[sortedIndex + 1] ? this.BankAddressToLinear(bank, ptrArrSorted[sortedIndex + 1].readUInt16LE(0)) : 0;
+                this.ReadBundledData(romData, thisAddr, 0, nextAddr ? 255 : 1, nextAddr || this.BankAddressToLinear(bank + 1, 0)).forEach((tData, tId) => {
                     const level = tData[0];
                     let party: { level: number, species: Pokemon.Species }[] = undefined;
                     if (level == 0xFF)
@@ -249,7 +274,9 @@ namespace RomReader {
         private ReadPokeData(romData: Buffer) {
             const nameBytes = 10;
             const dataBytes = (this.symTable['MonBaseStatsEnd'] - this.symTable['MonBaseStats']) || 28; // Sanqui/Yellow
-            const contiguousMons = Math.floor((this.symTable['CryData'] - this.symTable['BaseStats']) / dataBytes);
+            //const afterMonsSymbol = ['CryData', 'TryEvolvingMon', ...Object.keys(this.symTable)].find(s => s != "MonBaseStats" && this.LinearAddressToBanked(this.symTable[s]).bank == this.LinearAddressToBanked(this.symTable['MonBaseStats']).bank);
+            const afterMonsSymbol = 'TryEvolvingMon';
+            const contiguousMons = Math.floor((this.symTable[afterMonsSymbol] - this.symTable['BaseStats']) / dataBytes);
             return this.ReadArray(romData, this.symTable['BaseStats'], dataBytes, contiguousMons).concat(this.ReadArray(romData, this.symTable['MewBaseStats'], dataBytes, dexCount - contiguousMons))
                 .map(data => {
                     const speciesOffset = this.PokedexToIndex(romData, data[0x00]);

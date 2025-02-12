@@ -28,9 +28,9 @@ namespace Events {
             )
                 dispatch({
                     type: "Challenged Trainer",
-                    id: newState.enemy_trainers[0].id || newState.enemy_trainers[1].id,
-                    classId: newState.enemy_trainers[0].class_id || newState.enemy_trainers[1].class_id,
-                    className: newState.enemy_trainers[0].class_name || newState.enemy_trainers[1].class_name,
+                    id: newState.enemy_trainers[0].id || newState.enemy_trainers[1] && newState.enemy_trainers[1].id,
+                    classId: newState.enemy_trainers[0].class_id || newState.enemy_trainers[1] && newState.enemy_trainers[1].class_id,
+                    className: newState.enemy_trainers[0].class_name || newState.enemy_trainers[1] && newState.enemy_trainers[1].class_name,
                     name: newState.enemy_trainers.map(t => `${t.class_name == t.name ? "" : (t.class_name || "")} ${t.name}`.trim()).join(' & ')
                 });
             else if (((oldState.in_battle && !newState.in_battle) || (oldState.battle_kind == "Trainer" && newState.battle_kind != "Trainer")) //Gen 5 scripts lose battle_kind before they lose in_battle

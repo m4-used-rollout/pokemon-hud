@@ -4,6 +4,7 @@ namespace RamReader {
 
     const NAME_LENGTH = 11;
     const ITEM_NAME_LENGTH = 13;
+    const PARTY_LENGTH = 6;
     const MONS_PER_BOX = 20;
     const NUM_BOXES = 12;
     const NUM_POKEMON = 151;
@@ -20,33 +21,163 @@ namespace RamReader {
     export class Gen1 extends RamReaderBase<RomReader.Gen1> {
         protected SymAddr = (symbol: string) => this.rom.symTable[symbol].toString(16);
 
+        protected readerFunc = this.ReadSync;
+
         protected PCBoxSize = () => this.rom.symTable['wBoxDataEnd'] - this.rom.symTable['wBoxDataStart'];
         protected PartySize = () => this.rom.symTable['wPartyDataEnd'] - this.rom.symTable['wPartyDataStart'];
         protected PartyMonSize = () => this.rom.symTable['wPartyMon2'] - this.rom.symTable['wPartyMon1'];
         protected BattleMonSize = () => this.rom.symTable['wTrainerClass'] - this.rom.symTable['wBattleMonNick'];
 
-        public ReadParty = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wPartyDataStart')}/${this.PartySize().toString(16)}/${this.SymAddr('wIsInBattle')}/1/${this.SymAddr('wPlayerMonNumber')}/1/${this.SymAddr('wBattleMonNick')}/${this.BattleMonSize().toString(16)}`, this.WrapBytes(data => this.ParseParty(data)));
-        public ReadPC = this.CachedEmulatorCaller([`WRAM/ReadByteRange/${this.SymAddr('wCurrentBoxNum')}/1/${this.SymAddr('wBoxDataStart')}/${this.PCBoxSize().toString(16)}`, `CartRAM/ReadByteRange/${this.SymAddr('sBox1')}/${(this.PCBoxSize() * 6).toString(16)}/${this.SymAddr('sBox7')}/${(this.PCBoxSize() * 6).toString(16)}`], this.WrapBytes(data => this.ParsePC(data)));
-        public ReadBattle = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wIsInBattle')}/1/${this.SymAddr('wEnemyMonActualCatchRate')}/1/${this.SymAddr('wTrainerClass')}/1/${this.SymAddr('wTrainerNo')}/1/${this.SymAddr('wTrainerName')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wEnemyPartyCount')}/${this.PartySize().toString(16)}/${this.SymAddr('wIsInBattle')}/1/${this.SymAddr('wEnemyMonPartyPos')}/1/${this.SymAddr('wEnemyMonNick')}/${this.BattleMonSize().toString(16)}`, this.WrapBytes(data => this.ParseBattleBundle(data)));
+        protected GuessSymbolSize = (sym: string) => this.rom.symTable[sym] ?
+            this.rom.symTable[sym + "End"] ? this.rom.symTable[sym + "End"] - this.rom.symTable[sym]
+                : this.rom.symTable[Object.keys(this.rom.symTable).find((s, i, arr) => i && arr[i - 1] == sym)] - this.rom.symTable[sym]
+            : 0;
+
+        // public ReadParty = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wPartyDataStart')}/${this.PartySize().toString(16)}/${this.SymAddr('wIsInBattle')}/1/${this.SymAddr('wPlayerMonNumber')}/1/${this.SymAddr('wBattleMonNick')}/${this.BattleMonSize().toString(16)}`, this.WrapBytes(data => this.ParseParty(data)));
+        // public ReadPC = this.CachedEmulatorCaller([`WRAM/ReadByteRange/${this.SymAddr('wCurrentBoxNum')}/1/${this.SymAddr('wBoxDataStart')}/${this.PCBoxSize().toString(16)}`, `CartRAM/ReadByteRange/${this.SymAddr('sBox1')}/${(this.PCBoxSize() * 6).toString(16)}/${this.SymAddr('sBox7')}/${(this.PCBoxSize() * 6).toString(16)}`], this.WrapBytes(data => this.ParsePC(data)));
+        // public ReadBattle = this.CachedEmulatorCaller(`WRAM/ReadByteRange/${this.SymAddr('wIsInBattle')}/1/${this.SymAddr('wEnemyMonActualCatchRate')}/1/${this.SymAddr('wTrainerClass')}/1/${this.SymAddr('wTrainerNo')}/1/${this.SymAddr('wTrainerName')}/${NAME_LENGTH.toString(16)}/${this.SymAddr('wEnemyPartyCount')}/${this.PartySize().toString(16)}/${this.SymAddr('wIsInBattle')}/1/${this.SymAddr('wEnemyMonPartyPos')}/1/${this.SymAddr('wEnemyMonNick')}/${this.BattleMonSize().toString(16)}`, this.WrapBytes(data => this.ParseBattleBundle(data)));
+        public ReadParty = this.StructEmulatorCaller<TPP.PartyData>('WRAM', {
+            wPartyCount: 1,
+            wPartySpecies: PARTY_LENGTH + 1,
+            wPartyMons: this.PartyMonSize() * PARTY_LENGTH,
+            wPartyMonOT: NAME_LENGTH * PARTY_LENGTH,
+            wPartyMonNicks: NAME_LENGTH * PARTY_LENGTH,
+            wIsInBattle: 1,
+            wPlayerMonNumber: 1,
+            wBattleMonNick: this.BattleMonSize()
+        }, sym => this.rom.symTable[sym], struct => {
+            // wPartyCount::   ds 1
+            const partyCount = struct.wPartyCount[0];
+            // wPartySpecies:: ds PARTY_LENGTH
+            // wPartyEnd::     ds 1
+            const partySpecies = struct.wPartySpecies.map(s => s);
+
+            // wPartyMons::
+            // wPartyMon1:: party_struct wPartyMon1
+            // wPartyMon2:: party_struct wPartyMon2
+            // wPartyMon3:: party_struct wPartyMon3
+            // wPartyMon4:: party_struct wPartyMon4
+            // wPartyMon5:: party_struct wPartyMon5
+            // wPartyMon6:: party_struct wPartyMon6
+            const party: TPP.PartyData = partyCount ? this.rom.ReadArray(struct.wPartyMons, 0, this.PartyMonSize(), partyCount)
+                .map((p, i) => this.ParsePartyMon(p, partySpecies[i])) : [];
+
+            if (partyCount) {
+                // wPartyMonOT::    ds NAME_LENGTH * PARTY_LENGTH
+                this.AddOTNames(party, struct.wPartyMonOT, partyCount);
+                // wPartyMonNicks:: ds NAME_LENGTH * PARTY_LENGTH
+                this.AddNicknames(party, struct.wPartyMonNicks, partyCount);
+                // wPartyDataEnd::
+            }
+
+            // wIsInBattle: ds 1
+            if (struct.wIsInBattle[0] > 0) {
+                // wPlayerMonNumber: ds 1
+                if (party[struct.wPlayerMonNumber[0]]) {
+                    party[struct.wPlayerMonNumber[0]] = { ...party[struct.wPlayerMonNumber[0]], ...(this.ParseBattlePokemon(struct.wBattleMonNick) || {} as TPP.PartyPokemon) };
+                }
+            }
+            return party.filter(p => !!p && !!p.species && !!p.personality_value);
+        });
+        public ReadPC = this.StructEmulatorCaller<TPP.CombinedPCData>(['WRAM', 'CartRAM'], {
+            wCurrentBoxNum: 1,
+            wBoxDataStart: this.PCBoxSize(),
+            ...(() => {
+                const boxes: Record<string, number> = {};
+                Object.keys(this.rom.symTable).filter(k => /^sBox\d+$/.test(k)).forEach(k => boxes[k] = this.PCBoxSize());
+                return boxes;
+            })()
+        }, sym => ({ address: this.rom.symTable[sym], domain: this.rom.symDomains[sym] }), struct => {
+            const currentBox = (struct.wCurrentBoxNum[0] + 1) & 0x1F;// + 15; //pbr
+            const pc = Object.keys(struct).slice(1).map(b => this.ParsePCBox(struct[b]));
+            const active = pc.shift();
+            pc[currentBox - 1] = active;
+            //pc[currentBox - 15] = active; //pbr
+            return {
+                current_box_number: currentBox,
+                boxes: pc.map((box, i) => (<TPP.BoxData>{
+                    box_contents: box,
+                    box_name: `Box ${i + 1}`,
+                    box_number: i + 1
+                    // box_name: `Red Box ${i + 1}`, //PBR
+                    // box_number: i + 15 //PBR
+                }))
+            };
+        });
+        private enemyReadyForActiveMons = true;
+        public ReadBattle = this.StructEmulatorCaller<TPP.BattleStatus>('WRAM', {
+            wIsInBattle: 1,
+            wEnemyMonActualCatchRate: 1,
+            wTrainerClass: 1,
+            wTrainerNo: 1,
+            wTrainerName: NAME_LENGTH,
+            wEnemyPartyCount: this.PartySize(),
+            wEnemyMonPartyPos: 1,
+            wEnemyMonNick: this.BattleMonSize(),
+        }, sym => this.rom.symTable[sym], struct => {
+            const in_battle = struct.wIsInBattle[0] > 0;
+            const battle_kind = struct.wIsInBattle[0] < 2 ? "Wild" : "Trainer";
+            const actualCatchRate = struct.wEnemyMonActualCatchRate.readUInt8(0);
+            if (in_battle) {
+                const enemy_trainers = new Array<TPP.EnemyTrainer>();
+                if (battle_kind == "Trainer") {
+                    const trainerClass = struct.wTrainerClass.readUInt8(0);
+                    const trainerNum = struct.wTrainerNo.readUInt8(0);
+                    const trainer = Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(trainerNum, trainerClass));
+                    trainer.name = this.rom.ConvertText(struct.wTrainerName);
+                    if (/Rival\d+/i.test(trainer.class_name))
+                        trainer.class_name = "Rival"
+                    if ((trainer.name || "").toLowerCase() == (trainer.class_name || '').toLowerCase())
+                        trainer.name = trainer.class_name;
+                    trainer.class_id = trainerClass;
+                    trainer.id = trainerNum;
+                    enemy_trainers.push(trainer);
+                }
+                let enemy_party: TPP.PartyData = [];
+                const currEnemyMon = this.ParseBattlePokemon(struct.wEnemyMonNick);
+                if (battle_kind == "Wild") {
+                    enemy_party[0] = currEnemyMon;
+                    enemy_party[0].species.catch_rate = actualCatchRate;
+                }
+                else {
+                    // Conceal active mons during an enemy trainer battle until the first mon is activated (no spoilers!)
+                    if (struct.wEnemyMonPartyPos[0] === 0)
+                        this.enemyReadyForActiveMons = true;
+                    const trainerClass = struct.wTrainerClass.readUInt8(0);
+                    const trainerNum = struct.wTrainerNo.readUInt8(0);
+                    enemy_party = this.ParseParty(struct.wEnemyPartyCount);
+                    enemy_party[struct.wEnemyMonPartyPos[0]] = { ...enemy_party[struct.wEnemyMonPartyPos[0]], ...currEnemyMon, active: true } as TPP.PartyPokemon;
+                    enemy_party.forEach((p, i) => {
+                        p.personality_value = (p.personality_value ^ (i << 16) ^ ((trainerClass << 8 | trainerNum))) >>> 0; //attempt to avoid enemy PV collisions
+                        if (i != struct.wEnemyMonPartyPos[0] || !this.enemyReadyForActiveMons)
+                            (p as any).active = false;
+                    });
+                }
+
+                return { in_battle, battle_kind, enemy_party, enemy_trainers };
+            }
+            this.enemyReadyForActiveMons = false;
+            return { in_battle };
+        });
         protected TrainerChunkReaders = [
             this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
                 wPlayerName: NAME_LENGTH,
                 wPlayerID: 2,
                 wOptions: 1,
-                wPokedexOwned: DEX_FLAG_BYTES,
-                wPokedexSeen: DEX_FLAG_BYTES,
-                wXCoord: 1,
-                wYCoord: 1,
+                wPokedexOwned: this.GuessSymbolSize('wPokedexOwned'),
+                wPokedexSeen: this.GuessSymbolSize('wPokedexSeen'),
+                // wXCoord: 1,
+                // wYCoord: 1,
                 wCurMap: 1,
                 wNumBagItems: 1,
-                wBagItems: BAG_ITEM_CAPACITY * 2,
+                wBagItems: this.GuessSymbolSize('wBagItems'),
                 wPlayerMoney: 3,
                 wPlayerCoins: 2,
                 wRivalName: NAME_LENGTH,
                 wObtainedBadges: 1,
-                wNumBoxItems: 1,
                 wPikachuHappiness: 1,
-                wBoxItems: PC_ITEM_CAPACITY * 2,
+                wNumBoxItems: 1,
+                wBoxItems: this.GuessSymbolSize('wBoxItems'),
                 wDayCareInUse: 1,
                 wDayCareMonName: NAME_LENGTH,
                 wDayCareMonOT: NAME_LENGTH,
@@ -64,15 +195,15 @@ namespace RamReader {
                     seen_list: this.GetSetFlags(struct.wPokedexSeen),
                     caught: this.GetSetFlags(struct.wPokedexOwned).length,
                     seen: this.GetSetFlags(struct.wPokedexSeen).length,
-                    x: struct.wXCoord[0],
-                    y: struct.wYCoord[0],
+                    // x: struct.wXCoord[0],
+                    // y: struct.wYCoord[0],
                     map_id: struct.wCurMap[0],
                     map_name: this.rom.GetMap(struct.wCurMap[0]).name,
                     map_bank: null,
                     area_id: null,
                     area_name: null,
-                    money: parseInt(struct.wPlayerMoney.toString('hex')),
-                    coins: parseInt(struct.wPlayerCoins.toString('hex')),
+                    money: parseInt(struct.wPlayerMoney.toString('hex')), // BCD conversion
+                    coins: parseInt(struct.wPlayerCoins.toString('hex')), // BCD conversion
                     rival_name: this.rom.ConvertText(struct.wRivalName),
                     evolution_is_happening: false,
                     pikachu_happiness: (struct.wPikachuHappiness || [])[0],
@@ -106,12 +237,12 @@ namespace RamReader {
                 0x80: "Off"
             },
             //Yellow
-            sound: {
-                0:"Mono",
-                0x10: "Earphone 1",
-                0x20: "Earphone 2",
-                0x30: "Earphone 3"
-            }
+            // sound: {
+            //     0: "Mono",
+            //     0x10: "Earphone 1",
+            //     0x20: "Earphone 2",
+            //     0x30: "Earphone 3"
+            // }
         }
         protected BaseOffsetCalc = (baseSymbol: string, extraOffset = 0) => ((symbol: string) => (this.rom.symTable[baseSymbol + symbol] - this.rom.symTable[baseSymbol]) + extraOffset);
 

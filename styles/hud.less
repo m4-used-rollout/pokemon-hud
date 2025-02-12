@@ -43,7 +43,7 @@ body {
     &.pokemon-hud {
         font-family: pokeplatinum;
         color:white;
-        font-size: @party-member-height / 5;
+        font-size: calc(@party-member-height / 5);
         width:100%;
         overflow: hidden;
         user-select: none;
@@ -120,7 +120,7 @@ body {
             margin-bottom: 5px;
             height: (@party-member-height * 6);
             width: 100%;
-            //min-height: 0; //TTH
+            //min-height: 0!important; //TTH
             transition: filter .2s ease-in-out;
 
             > li {
@@ -170,6 +170,8 @@ body {
                         //height:(@party-member-height * .9);
                         //height: 160px; //HGSS
                         height: 128px; //Gen 3, Generic
+                        height: 56*2px; // Gen 1
+                        .outline(white); // Gen 1
                         image-rendering: pixelated;
                     }
 
@@ -878,7 +880,7 @@ body {
                 flex: 1 1 auto;
                 display: inline-flex;
                 flex-flow: row wrap;
-                justify-content: space-between;
+                justify-content: stretch;
                 h5 {
                     width: 100%;
                     margin: 0;
@@ -887,21 +889,25 @@ body {
                 ul {
                     display:flex;
                     flex-flow: row wrap;
-                    justify-content: space-between;
+                    justify-content: space-evenly;
                     list-style:none;
                     margin: 0;
                     padding: 0;
+                    width: 100%;
 
                     li {
-                        flex: 0 1 auto;
                         padding: 0;
                         flex: 0 0 auto;
-                        margin: -.1em .5em;
+                        margin: 0;
+                        margin-bottom: -.1em;
+                        max-width: fit-content;
                     }
                 }
 
                 &.too-much-candy {
-                    font-size: .8em;
+                    li {
+                        margin-top: -.25em;
+                    }
                 }
             }
 
@@ -941,7 +947,7 @@ body {
                 text-align: center;
                 margin:auto;
                 //font-size: 1.25em;
-                line-height: .75em;
+                //line-height: .75em;
                 //margin-top: -2vw;
 
                 span {
@@ -970,6 +976,8 @@ body {
                 left:4px;
                 right:4px;
                 font-size:1.5em;
+
+                background-color:black; //TTH
 
                 //bottom: 1em; //Unregistered HyperCam 2
 

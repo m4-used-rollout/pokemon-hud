@@ -88,12 +88,14 @@ declare namespace Pokemon {
         level?: number;
         item?: Item;
         move?: Move;
+        moveType?: string;
         otherSpeciesId?: number;
         isTrade?: boolean;
         happiness?: number;
         mapId?: number;
         specialCondition?: string;
-        timeOfDay?: "Morn" | "Day" | "Night" | "MornDay";
+        natures?: string[];
+        timeOfDay?: "Morn" | "Day" | "Night" | "MornDay" | "Dusk";
         speciesId: number;
     }
 }
@@ -310,150 +312,7 @@ declare namespace RomReader {
         }): void;
         protected evolutionMethods: EvoMethod[];
         protected ParseEvolution(method: number, evoParam: number, speciesId: number): Pokemon.Evolution;
-        protected EvolutionMethod: {
-            Level: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-            };
-            LevelAttackHigher: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelAtkDefEqual: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelDefenseHigher: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelLowPV: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelHighPV: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelSpawnPokemon: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelIsSpawned: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelHighBeauty: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelItemDay: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                item: Pokemon.Item;
-                timeOfDay: string;
-                specialCondition: string;
-            };
-            LevelItemNight: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                item: Pokemon.Item;
-                timeOfDay: string;
-                specialCondition: string;
-            };
-            LevelWithMove: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                move: Pokemon.Move;
-            };
-            LevelWithOtherSpecies: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                otherSpeciesId: number;
-                specialCondition: string;
-            };
-            LevelMale: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelFemale: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelElectifiedArea: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelMossRock: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            LevelIcyRock: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                level: number;
-                specialCondition: string;
-            };
-            Trade: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                isTrade: boolean;
-            };
-            TradeItem: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                isTrade: boolean;
-                item: Pokemon.Item;
-            };
-            TradeForOtherSpecies: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                isTrade: boolean;
-                otherSpeciesId: number;
-                specialCondition: string;
-            };
-            Stone: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                item: Pokemon.Item;
-            };
-            StoneMale: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                item: Pokemon.Item;
-                specialCondition: string;
-            };
-            StoneFemale: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                item: Pokemon.Item;
-                specialCondition: string;
-            };
-            Happiness: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                happiness: number;
-            };
-            HappinessDay: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                happiness: number;
-                timeOfDay: string;
-            };
-            HappinessNight: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                happiness: number;
-                timeOfDay: string;
-            };
-            MegaEvo: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                item: Pokemon.Item;
-                specialCondition: string;
-            };
-            LevelSpecificMap: (evoParam: number, speciesId: number) => {
-                speciesId: number;
-                specialCondition: string;
-            };
-        };
+        protected EvolutionMethod: Record<string, EvoMethod>;
         private surfExp;
     }
 }
@@ -462,9 +321,8 @@ declare namespace RomReader {
         private romFileLocation;
         private charmap;
         protected stringTerminator: number;
-        symTable: {
-            [key: string]: number;
-        };
+        symTable: Record<string, number>;
+        symDomains: Record<string, string>;
         constructor(romFileLocation: string, charmap: string[]);
         ConvertText(text: string | Buffer | number[]): string;
         GetForm(pokemon: TPP.Pokemon): number;
@@ -490,7 +348,12 @@ declare namespace RomReader {
         };
         private symbolEntry;
         protected LoadSymbolFile(filename: string): {
-            [key: string]: number;
+            symTable: {
+                [key: string]: number;
+            };
+            symDomains: {
+                [key: string]: string;
+            };
         };
         GetOamAddress: (symbol: string) => number;
         GetHramAddress: (symbol: string) => number;
@@ -651,6 +514,12 @@ declare namespace RomReader {
     }
 }
 declare namespace RomReader {
+    interface Gen3Item extends Pokemon.Item {
+        isPokeball: boolean;
+        data?: string;
+        pocket?: string | number;
+        pluralName?: string;
+    }
     interface TTHMap extends Pokemon.Map {
         author?: string;
         puzzleNo?: number;
@@ -658,8 +527,10 @@ declare namespace RomReader {
     }
     class Gen3 extends GBAReader {
         config: PGEINI;
-        private puzzleList;
-        totalPuzzles: number;
+        puzzleList: {
+            id: number;
+            bank: number;
+        }[];
         gfRomHeader: GFRomHeader;
         stringTerminator: number;
         constructor(romFileLocation: string, iniFileLocation?: string);
@@ -668,43 +539,154 @@ declare namespace RomReader {
         GetCurrentLevelCap(badges: number, champion?: boolean): number;
         private CurrentMapIn;
         IsUnknownTrainerMap(id: number, bank: number): boolean;
-        private isFRLG;
-        private ReadAbilities;
-        private ReadPokeData;
-        private ReadTrainerData;
-        private ReadItemData;
-        private ReadMoveData;
-        private GetTMHMNames;
-        private ReadMapLabels;
-        private ReadMaps;
-        private GetPuzzleTrainers;
-        private GetPuzzleName;
-        private GetPuzzleAuthor;
-        private ParseGFRomHeader;
-        private FindMapEncounters;
-        private ReadEncounterSet;
-        private ReadMoveLearns;
-        private ReadEvolutions;
-        private ReadLevelCaps;
-        evolutionMethods: (((evoParam: number, speciesId: number) => {
-            speciesId: number;
-            happiness: number;
-        }) | ((evoParam: number, speciesId: number) => {
-            speciesId: number;
-            level: number;
-        }) | ((evoParam: number, speciesId: number) => {
-            speciesId: number;
-            isTrade: boolean;
-        }) | ((evoParam: number, speciesId: number) => {
-            speciesId: number;
-            item: Pokemon.Item;
-        }) | ((evoParam: number, speciesId: number) => {
-            speciesId: number;
-            move: Pokemon.Move;
-        }) | ((evoParam: number, speciesId: number) => {
-            speciesId: number;
-            specialCondition: string;
-        }))[];
+        protected isFRLG(config: PGEINI): boolean;
+        protected ReadAbilities(romData: Buffer, config: PGEINI, numAbilities?: number): string[];
+        protected ReadPokeData(romData: Buffer, config: PGEINI): Pokemon.Species[];
+        protected ReadTrainerData(romData: Buffer, config: PGEINI): Pokemon.Trainer[];
+        protected ReadItemData(romData: Buffer, config: PGEINI): Gen3Item[];
+        protected ReadMoveData(romData: Buffer, config: PGEINI): Pokemon.Move[];
+        protected GetTMHMNames(romData: Buffer, config: PGEINI): void;
+        protected ReadMapLabels(romData: Buffer, config: PGEINI): string[];
+        protected ReadMaps(romData: Buffer, config: PGEINI): any;
+        protected ParseGFRomHeader(romData: Buffer): GFRomHeader;
+        protected FindMapEncounters(romData: Buffer, config: PGEINI): void;
+        protected ReadEncounterSet(romData: Buffer, setAddr: number, encounterRates: number[], requiredItems?: number[], includeGroupRate?: boolean): Pokemon.EncounterMon[];
+        protected ReadMoveLearns(romData: Buffer, config: PGEINI): {
+            [key: number]: Pokemon.MoveLearn[];
+        };
+        protected ReadEvolutions(romData: Buffer, config: PGEINI): void;
+        protected ReadLevelCaps(romData: Buffer, config: PGEINI): void;
+        evolutionMethods: EvoMethod[];
+    }
+    interface GFRomHeader {
+        version: number;
+        language: number;
+        gameName: string;
+        monFrontPicsAddr: number;
+        monBackPicsAddr: number;
+        monNormalPalettesAddr: number;
+        monShinyPalettesAddr: number;
+        monIconsAddr: number;
+        monIconPaletteIdsAddr: number;
+        monIconPalettesAddr: number;
+        monSpeciesNamesAddr: number;
+        moveNamesAddr: number;
+        decorationsAddr: number;
+        flagsOffset: number;
+        varsOffset: number;
+        pokedexOffset: number;
+        seen1Offset: number;
+        pokedexVar: number;
+        pokedexFlag: number;
+        mysteryEventFlag: number;
+        pokedexCount: number;
+        playerNameLength: number;
+        trainerNameLength: number;
+        pokemonNameLength1: number;
+        pokemonNameLength2: number;
+        unk5: number;
+        unk6: number;
+        unk7: number;
+        unk8: number;
+        unk9: number;
+        unk10: number;
+        unk11: number;
+        unk12: number;
+        unk13: number;
+        unk14: number;
+        unk15: number;
+        unk16: number;
+        unk17: number;
+        saveBlock2Size: number;
+        saveBlock1Size: number;
+        partyCountOffset: number;
+        partyOffset: number;
+        warpFlagsOffset: number;
+        trainerIdOffset: number;
+        playerNameOffset: number;
+        playerGenderOffset: number;
+        frontierStatusOffset: number;
+        frontierStatusOffset2: number;
+        externalEventFlagsOffset: number;
+        externalEventDataOffset: number;
+        unk18: number;
+        baseStatsAddr: number;
+        abilityNamesAddr: number;
+        abilityDescriptionsAddr: number;
+        itemsAddr: number;
+        movesAddr: number;
+        ballGfxAddr: number;
+        ballPalettesAddr: number;
+        gcnLinkFlagsOffset: number;
+        gameClearFlag: number;
+        ribbonFlag: number;
+        bagCountItems: number;
+        bagCountKeyItems: number;
+        bagCountPokeballs: number;
+        bagCountTMHMs: number;
+        bagCountBerries: number;
+        pcItemsCount: number;
+        pcItemsOffset: number;
+        giftRibbonsOffset: number;
+        enigmaBerryOffset: number;
+        enigmaBerrySize: number;
+        moveDescriptionsAddr: number;
+        unk20: number;
+        bagItemsOffset?: number;
+        bagKeyItemsOffset?: number;
+        bagPokeballsOffset?: number;
+        bagTMHMsOffset?: number;
+        bagBerriesOffset?: number;
+        bagCountCandy?: number;
+        bagCandyOffset?: number;
+    }
+}
+declare namespace RomReader {
+    interface Gen3Item extends Pokemon.Item {
+        isPokeball: boolean;
+        data?: string;
+        pocket?: string | number;
+        pluralName?: string;
+    }
+    interface TTHMap extends Pokemon.Map {
+        author?: string;
+        puzzleNo?: number;
+        trainers: Pokemon.Trainer[];
+    }
+    class Gen3TTH extends Gen3 {
+        readonly totalPuzzles: number;
+        evolutions: Pokemon.Evolution[][];
+        stringTerminator: number;
+        constructor(romFileLocation: string, iniFileLocation?: string);
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
+        GetCurrentLevelCap(badges: number, champion?: boolean): number;
+        IsUnknownTrainerMap(id: number, bank: number): boolean;
+        protected isFRLG(config: PGEINI): boolean;
+        protected ReadAbilities(romData: Buffer, config: PGEINI, numAbilities?: number): string[];
+        protected ReadPokeData(romData: Buffer, config: PGEINI): Pokemon.Species[];
+        protected ReadTrainerData(romData: Buffer, config: PGEINI): Pokemon.Trainer[];
+        protected ReadItemData(romData: Buffer, config: PGEINI): Gen3Item[];
+        protected ReadMoveData(romData: Buffer, config: PGEINI): Pokemon.Move[];
+        protected GetTMHMNames(romData: Buffer, config: PGEINI): void;
+        protected ReadMapLabels(romData: Buffer, config: PGEINI): string[];
+        protected ReadMaps(romData: Buffer, config: PGEINI): any;
+        TrainerIsRival(id: number, classId: number): boolean;
+        protected GetPuzzleTrainers(romData: Buffer, mapTrainerTableAddr: number, config: PGEINI): Pokemon.Trainer[];
+        protected GetPuzzleName(romData: Buffer, mapScriptPtr: number): string;
+        protected GetPuzzleAuthor(romData: Buffer, mapScriptPtr: number): string;
+        protected ParseGFRomHeader(romData: Buffer): GFRomHeader;
+        protected FindMapEncounters(romData: Buffer, config: PGEINI): void;
+        protected ReadEncounterSet(romData: Buffer, setAddr: number, encounterRates: number[], requiredItems?: number[], includeGroupRate?: boolean): Pokemon.EncounterMon[];
+        protected ReadMoveLearns(romData: Buffer, config: PGEINI): {
+            [key: number]: Pokemon.MoveLearn[];
+        };
+        protected ReadEvolutions(romData: Buffer, config: PGEINI): Pokemon.Evolution[][];
+        protected ReadLevelCaps(romData: Buffer, config: PGEINI): void;
+        evolutionMethods: EvoMethod[] & {
+            [0xFFFF]: EvoMethod;
+            [0xFFFE]: EvoMethod;
+            [0xFFFD]: EvoMethod;
+        };
     }
     interface GFRomHeader {
         version: number;
@@ -1333,7 +1315,7 @@ declare namespace RamReader {
             strain: number;
             cured: boolean;
         };
-        protected ParseGender(gender: number): "Male" | "Female";
+        protected ParseGender(gender: number): "Male" | "Female" | "Unspecified";
         protected ParseRibbon(ribbonVal: number, ribbonName: string): string;
         protected RibbonRanks: string[];
         protected ParseHoennRibbons(ribbonVal: number): string[];
@@ -1354,11 +1336,11 @@ declare namespace RamReader {
             this_level: number;
             remaining: number;
         };
-        protected StructEmulatorCaller<T>(domain: string, struct: {
-            [key: string]: number;
-        }, symbolMapper: (symbol: string) => string | number, callback: (struct: {
-            [key: string]: Buffer;
-        }) => (T | Promise<T>)): () => Promise<T>;
+        protected StructEmulatorCaller<T>(domain: string, struct: Record<string, number>, symbolMapper: (symbol: string) => string | number, callback: (struct: Record<string, Buffer>) => (T | Promise<T>)): () => Promise<T>;
+        protected StructEmulatorCaller<T>(domain: string[], struct: Record<string, number>, symbolMapper: (symbol: string) => {
+            address: string | number;
+            domain: string;
+        }, callback: (struct: Record<string, Buffer>) => (T | Promise<T>)): () => Promise<T>;
         protected SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress?: number, ifValue?: number, bytes?: number): Promise<{}>;
         protected GameStatsMapping: string[];
         protected ParseGameStats(statArr: number[]): {
@@ -1376,12 +1358,15 @@ declare namespace RamReader {
     }
     class Gen1 extends RamReaderBase<RomReader.Gen1> {
         protected SymAddr: (symbol: string) => string;
+        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
         protected PCBoxSize: () => number;
         protected PartySize: () => number;
         protected PartyMonSize: () => number;
         protected BattleMonSize: () => number;
-        ReadParty: () => Promise<TPP.PartyPokemon[]>;
+        protected GuessSymbolSize: (sym: string) => number;
+        ReadParty: () => Promise<TPP.PartyData>;
         ReadPC: () => Promise<TPP.CombinedPCData>;
+        private enemyReadyForActiveMons;
         ReadBattle: () => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
         protected OptionsSpec: {
@@ -1397,12 +1382,6 @@ declare namespace RamReader {
             battle_scene: {
                 0: string;
                 0x80: string;
-            };
-            sound: {
-                0: string;
-                0x10: string;
-                0x20: string;
-                0x30: string;
             };
         };
         protected BaseOffsetCalc: (baseSymbol: string, extraOffset?: number) => (symbol: string) => number;
@@ -1431,6 +1410,7 @@ declare namespace RamReader {
     class Gen2 extends RamReaderBase<RomReader.Gen2> {
         protected SymAddr: (...symbols: string[]) => string;
         protected StructSize: (startSymbol: string, ...endSymbol: string[]) => number;
+        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
         protected PCBoxSize: () => number;
         protected PartySize: () => number;
         protected PartyMonSize: () => number;
@@ -1504,6 +1484,62 @@ declare namespace RamReader {
         protected CalculateGender(genderRatio: number, personalityValue: number): "Male" | "Female";
         protected GameStatsMapping: string[];
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
+        protected ReadBadgeFlags(flags: Buffer, flagMap: number[]): number;
+        protected OptionsSpec: {
+            sound: {
+                0: string;
+                0x10000: string;
+            };
+            battle_style: {
+                0: string;
+                0x20000: string;
+            };
+            battle_scene: {
+                0: string;
+                0x40000: string;
+            };
+            map_zoom: {
+                0: string;
+                0x80000: string;
+            };
+            text_speed: {
+                0: string;
+                0x100: string;
+                0x200: string;
+            };
+            frame: {
+                bitmask: number;
+                offset: number;
+            };
+            button_mode: {
+                0: string;
+                1: string;
+                2: string;
+            };
+        };
+    }
+}
+declare namespace RamReader {
+    class Gen3TTH extends RamReaderBase<RomReader.Gen3TTH> {
+        constructor(rom: RomReader.Gen3TTH, port: number, hostname: string, config: Config);
+        protected Markings: string[];
+        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
+        ReadParty: () => Promise<TPP.PartyPokemon[]>;
+        ReadPC: () => Promise<TPP.CombinedPCData>;
+        ReadBattle: () => Promise<TPP.BattleStatus>;
+        protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
+        protected TotalItemSlots(): number;
+        protected ParseItemCollection(itemData: Buffer, length?: number, key?: number): TPP.Item[];
+        protected ParseParty(partyData: Buffer): TPP.PartyPokemon[];
+        protected ParseBattleMons(battleData: Buffer, numBattlers: number): TPP.PartyPokemon[];
+        private pkmCache;
+        protected ParsePokemon(pkmdata: Buffer, boxSlot?: number): TPP.PartyPokemon & TPP.BoxedPokemon;
+        protected ParseBattlePokemon(pkmdata: Buffer): TPP.PartyPokemon;
+        protected ParseVolatileStatus(status: number): string[];
+        protected CalculateGender(genderRatio: number, personalityValue: number): "Male" | "Female";
+        protected GameStatsMapping: string[];
+        protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
+        CalcChecksum(data: Buffer): number;
         protected ReadBadgeFlags(flags: Buffer, flagMap: number[]): number;
         protected OptionsSpec: {
             sound: {

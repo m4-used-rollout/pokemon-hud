@@ -8,7 +8,7 @@
 /// <reference path="./utils/throttle.ts" />
 
 (function () { //add TPP.Server module to global scope
-    let scopeInject = require('electron').remote.require('./server');
+    let scopeInject = (require('electron') as any).remote.require('./server');
     Object.keys(scopeInject).forEach(k => window[k] = scopeInject[k]);
 })();
 

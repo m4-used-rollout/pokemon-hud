@@ -48,8 +48,9 @@ namespace RamReader {
         protected PartyProcessor(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
             return () => this.ReadParty().then(party => {
                 if (party) {
+                    state.party = party;
                     this.CurrentParty = party;
-                    state.party = party.map((p, i) => p && Object.assign({}, p, this.GetBattleMon(i, false, p.personality_value, p.name, true) || {}));
+                    //state.party = party.map((p, i) => ({ ...p, ...(this.GetBattleMon(i, false, p.personality_value, p.name, true) || {}) }));
                     transmitState(state);
                 }
             }).catch(err => console.error(err));
@@ -80,18 +81,19 @@ namespace RamReader {
             return () => this.ReadBattle().then(battle => {
                 if (battle) {
                     delete state.enemy_party;
+                    delete state.battle_party;
                     delete state.enemy_trainers;
                     delete state.battle_kind;
                     Object.assign(state, battle);
                     if (battle.in_battle) {
-                        battle.enemy_party.forEach((p, i) => p && Object.assign(p, this.GetBattleMon(i, true, p.personality_value, p.name, true) || {}));
-                        state.enemy_party = this.ConcealEnemyParty(battle.enemy_party as TPP.PartyData);
-                        state.party = this.CurrentParty ? this.CurrentParty.map((p, i) => p && Object.assign({}, p, this.GetBattleMon(i, false, p.personality_value, p.name, true) || {})) : [];
+                        state.enemy_party = this.ConcealEnemyParty(battle.enemy_party.map((p, i) => p && { ...p, ...(this.GetBattleMon(i, true, p.personality_value, p.name) || {}) }) as TPP.PartyData);
+                        if (this.config.generation > 2)
+                            state.battle_party = (battle.battle_party || this.CurrentParty || []).map((p, i) => p && { ...p, ...(this.GetBattleMon(i, false, p.personality_value, p.name) || {}) });
                     }
                     else {
                         this.CurrentBattleMons = null;
                         this.CurrentBattleSeenPokemon = null;
-                        state.party = this.CurrentParty;
+                        //state.party = this.CurrentParty;
                     }
                     transmitState(state);
                 }
@@ -183,9 +185,10 @@ namespace RamReader {
             this.CurrentBattleSeenPokemon = this.CurrentBattleSeenPokemon || [];
             if (!mon || !mon.species || !mon.health || !mon.moves)
                 return false;
-            if (mon.health[0] < mon.health[1]) //obviously we've seen it because it's hurt
+            if ((this.config.generation > 2 && mon.health[0] < mon.health[1]) || mon.health[0] == 0) //obviously we've seen it because it's hurt
                 return true;
-            //TODO: Also check for PP below maximum
+            if (this.config.generation > 2 && (mon.moves || []).some(m => m.max_pp > 0 && m.pp < m.max_pp)) //obviously we've seen it because it used a move
+                return true;
             if (mon.active) { //Gen 1/2 reader manages the active flag itself, so let's go off that
                 if (!this.CurrentBattleSeenPokemon.some(pv => mon.personality_value == pv))
                     this.CurrentBattleSeenPokemon.push(mon.personality_value);
@@ -240,7 +243,7 @@ namespace RamReader {
                 fitness: p.fitness,
                 personality_value: p.personality_value,
                 buffs: p.buffs,
-                moves: p.moves.filter(m => m.pp < m.max_pp), //only show moves with less than max PP (because they've been used)
+                moves: (p.moves || []).filter(m => m.pp < m.max_pp), //only show moves with less than max PP (because they've been used)
                 name: this.HasBeenSeenThisBattle(p) ? p.name : "???"
             }));
         }
@@ -406,6 +409,7 @@ namespace RamReader {
         protected ParseGender(gender: number) {
             if (gender == 0) return "Male";
             if (gender == 1) return "Female";
+            if (gender == 2) return "Unspecified";
             return null;
         }
 
@@ -536,12 +540,53 @@ namespace RamReader {
             return { current, next_level, this_level, remaining: next_level - current };
         }
 
-        protected StructEmulatorCaller<T>(domain: string, struct: { [key: string]: number }, symbolMapper: (symbol: string) => string | number, callback: (struct: { [key: string]: Buffer }) => (T | Promise<T>)): () => Promise<T> {
-            const symbols = Object.keys(struct).map(s => ({ symbol: s, address: symbolMapper(s), length: struct[s] })).filter(s => !!s.address);
-            return this.CachedEmulatorCaller(`${domain}/ReadByteRange/${symbols.map(s => `${typeof s.address === "number" ? s.address.toString(16) : s.address}/${s.length.toString(16)}`).join('/')}`, this.WrapBytes(data => {
+        // protected StructEmulatorCaller<T>(domain: string, struct: { [key: string]: number }, symbolMapper: (symbol: string) => string | number, callback: (struct: { [key: string]: Buffer }) => (T | Promise<T>)): () => Promise<T> {
+        //     const symbols = Object.keys(struct).map(s => ({ symbol: s, address: symbolMapper(s), length: struct[s] })).filter(s => !!s.address);
+        //     return this.CachedEmulatorCaller(`${domain}/ReadByteRange/${symbols.map(s => `${typeof s.address === "number" ? s.address.toString(16) : s.address}/${s.length.toString(16)}`).join('/')}`, this.WrapBytes(data => {
+        //         let offset = 0;
+        //         const outStruct: { [key: string]: Buffer } = {};
+        //         symbols.forEach(s => {
+        //             outStruct[s.symbol] = data.slice(offset, offset + s.length);
+        //             offset += s.length;
+        //         });
+        //         return callback(outStruct);
+        //     }));
+        // }
+
+        protected StructEmulatorCaller<T>(domain: string, struct: Record<string, number>, symbolMapper: (symbol: string) => string | number, callback: (struct: Record<string, Buffer>) => (T | Promise<T>)): () => Promise<T>;
+        protected StructEmulatorCaller<T>(domain: string[], struct: Record<string, number>, symbolMapper: (symbol: string) => { address: string | number, domain: string }, callback: (struct: Record<string, Buffer>) => (T | Promise<T>)): () => Promise<T>;
+        protected StructEmulatorCaller<T>(domain: string | string[], struct: Record<string, number>, symbolMapper: (symbol: string) => string | number | { address: string | number, domain: string }, callback: (struct: Record<string, Buffer>) => (T | Promise<T>)): () => Promise<T> {
+            let symbols = Object.keys(struct).map(s => {
+                let mapping = symbolMapper(s);
+                if (typeof mapping !== "object")
+                    mapping = { address: mapping, domain: domain as string };
+                return { symbol: s, ...mapping, length: struct[s] }
+            })
+                .filter(s => !!s.address && (Array.isArray(domain) ? domain : [domain]).includes(s.domain));
+            const domains = (Array.isArray(domain) ? domain : [domain]).map(d => ({ domain: d, offset: 0, size: symbols.filter(s => s.domain == d).reduce((sum, cur) => sum + cur.length, 0) }));
+            domains.forEach((d, i, arr) => d.offset = i ? arr.slice(0, i - 1).reduce((sum, cur) => sum + cur.size, 0) : 0);
+            symbols = symbols.sort((s1, s2) => s1.domain != s2.domain
+                ? domains.findIndex(d => d.domain == s1.domain) - domains.findIndex(d => d.domain == s2.domain)
+                : typeof s1.address === "number" && typeof s2.address === "number" ? s1.address - s2.address : 0);
+            // let lastSymbol = symbols[0];
+            const contiguousSymbols = symbols// [lastSymbol];
+            // symbols.slice(1).forEach(s => {
+            //     if (lastSymbol.domain == s.domain
+            //         && typeof s.address === "number"
+            //         && typeof lastSymbol.address === "number"
+            //         && s.address == lastSymbol.address + lastSymbol.length
+            //     )
+            //         lastSymbol.length += s.length;
+            //     else
+            //         contiguousSymbols.push(lastSymbol = s);
+            // });
+            const calls = domains.map(d => `${d.domain}/ReadByteRange/${contiguousSymbols.filter(s => s.domain == d.domain).map(s => `${typeof s.address === "number" ? s.address.toString(16) : s.address}/${s.length.toString(16)}`).join('/')}`)
+            console.dir(calls);
+            return this.CachedEmulatorCaller(calls, this.WrapBytes(data => {
                 let offset = 0;
-                const outStruct: { [key: string]: Buffer } = {};
+                const outStruct: Record<string, Buffer> = {};
                 symbols.forEach(s => {
+                    // const domainOffset = domains.find(d => d.domain == s.domain).offset;
                     outStruct[s.symbol] = data.slice(offset, offset + s.length);
                     offset += s.length;
                 });
@@ -549,7 +594,8 @@ namespace RamReader {
             }));
         }
 
-        protected SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress = -1, ifValue = 0, bytes = 4) {
+        protected async SetSelfCallEvent(eventName: string, event: "Read" | "Write" | "Execute", address: number, callEndpoint: string, ifAddress = -1, ifValue = 0, bytes = 4) {
+            await this.CallEmulator(`${eventName}/RemoveMemoryCallback`); //Remove any old instances of this callback
             const callUrl = `${eventName}/OnMemory${event}${ifAddress >= 0 ? "IfValue" : ""}/${address.toString(16)}/${bytes}/${ifAddress >= 0 ? `${ifAddress.toString(16)}/${ifValue.toString(16)}/` : ""}http://localhost:${this.config.listenPort || 1337}/${callEndpoint}`;
             //console.log(callUrl);
             return this.CallEmulator(callUrl);

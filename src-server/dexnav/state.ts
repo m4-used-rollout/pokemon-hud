@@ -99,6 +99,7 @@ namespace TPP.Server.DexNav {
             this.PopulateCompletionTotals(allMapEncounters, runState);
             this.FriendlyParty = runState.party;
             if (runState.in_battle) {
+                this.FriendlyParty = runState.battle_party || runState.party;
                 this.BattleKind = runState.battle_kind;
                 if (runState.battle_kind == "Wild") {
                     // let mon = runState.enemy_party.filter(p=>p.species && p.species.id).sort((p1,p2)=>((p2.health[0] > 0 ? 10 : 0) * (p2.shiny ? 10 : 1)) - ((p1.health[0] > 0 ? 10 : 0) * (p1.shiny ? 10 : 1))).shift();

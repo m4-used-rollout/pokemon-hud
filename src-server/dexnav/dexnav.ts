@@ -28,7 +28,7 @@ namespace TPP.Server.DexNav {
             || hour != getHour(runState) //Changed time of day
             || runState.in_battle != in_battle //Got into/out of a battle
             || enemyParty != JSON.stringify(runState.enemy_party) //enemy trainer update
-            || party != JSON.stringify(runState.party) //our party update
+            || party != JSON.stringify(in_battle && runState.battle_party || runState.party) //our party update
             || (!state.PuzzleFoundScroll && runState.trick_house && runState.trick_house.filter(t => true).pop() != "Incomplete") //found TTH scroll
         ) {
             let map = RomData.GetMap(runState.map_id, runState.map_bank);
@@ -39,7 +39,7 @@ namespace TPP.Server.DexNav {
             hour = getHour(runState);
             in_battle = runState.in_battle;
             enemyParty = JSON.stringify(runState.enemy_party);
-            party = JSON.stringify(runState.party);
+            party = JSON.stringify(in_battle && runState.battle_party || runState.party);
             transmitState();
         }
     });

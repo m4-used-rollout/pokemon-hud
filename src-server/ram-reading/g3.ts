@@ -267,7 +267,7 @@ namespace RamReader {
                     // trick_house: [flags[(0x60 / 8)] & 2 ? "Complete" : flags[(0x60 / 8)] & 1 ? "Found Scroll" : "Incomplete"], //TTH
                     trick_house: VarsOffset > 0 ? vars.slice(0xAB, 0xB3).map(v => ["Incomplete", "Found Scroll", "Complete"][v]) : null,
                     game_stats: GameStatsBytes > 0 ? this.ParseGameStats(stats) : null,
-                    puzzleTotal: this.rom.totalPuzzles,
+                    //puzzleTotal: this.rom.totalPuzzles,
                     level_cap: this.rom.GetCurrentLevelCap(badges, gameClear)
                 } as TPP.TrainerData
             }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step

@@ -243,6 +243,7 @@ declare interface PGEINI {
     "ShinyOdds"?: string;
     "LevelCaps"?: string;
     "LevelCapCount"?: string;
+    "WildPokemonHeaders"?: string; // TTH 2022
 
     //RAM locations
     "gPlayerParty": string;
