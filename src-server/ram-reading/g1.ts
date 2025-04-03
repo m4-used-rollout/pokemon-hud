@@ -73,8 +73,10 @@ namespace RamReader {
             // wIsInBattle: ds 1
             if (struct.wIsInBattle[0] > 0) {
                 // wPlayerMonNumber: ds 1
-                if (party[struct.wPlayerMonNumber[0]]) {
-                    party[struct.wPlayerMonNumber[0]] = { ...party[struct.wPlayerMonNumber[0]], ...(this.ParseBattlePokemon(struct.wBattleMonNick) || {} as TPP.PartyPokemon) };
+                const battleMonIndex = struct.wPlayerMonNumber[0]
+                const battleMon: TPP.PartyPokemon = this.ParseBattlePokemon(struct.wBattleMonNick);
+                if (party[battleMonIndex] && battleMon && party[battleMonIndex].name == battleMon.name) {
+                    party[battleMonIndex] = { ...party[battleMonIndex], ...battleMon };
                 }
             }
             return party.filter(p => !!p && !!p.species && !!p.personality_value);
@@ -110,8 +112,12 @@ namespace RamReader {
             wEnemyMonActualCatchRate: 1,
             wTrainerClass: 1,
             wTrainerNo: 1,
-            wTrainerName: NAME_LENGTH,
-            wEnemyPartyCount: this.PartySize(),
+            wTrainerName: this.GuessSymbolSize('wTrainerName'), //KEP
+            wEnemyPartyCount: 1,
+            wEnemyPartySpecies: PARTY_LENGTH + 1,
+            wEnemyMons: this.PartyMonSize() * PARTY_LENGTH,
+            wEnemyMonOT: NAME_LENGTH * PARTY_LENGTH,
+            wEnemyMonNicks: NAME_LENGTH * PARTY_LENGTH,
             wEnemyMonPartyPos: 1,
             wEnemyMonNick: this.BattleMonSize(),
         }, sym => this.rom.symTable[sym], struct => {
@@ -141,12 +147,21 @@ namespace RamReader {
                 }
                 else {
                     // Conceal active mons during an enemy trainer battle until the first mon is activated (no spoilers!)
-                    if (struct.wEnemyMonPartyPos[0] === 0)
+                    const activeEnemy = struct.wEnemyMonPartyPos[0];
+                    if (activeEnemy === 0)
                         this.enemyReadyForActiveMons = true;
                     const trainerClass = struct.wTrainerClass.readUInt8(0);
                     const trainerNum = struct.wTrainerNo.readUInt8(0);
-                    enemy_party = this.ParseParty(struct.wEnemyPartyCount);
-                    enemy_party[struct.wEnemyMonPartyPos[0]] = { ...enemy_party[struct.wEnemyMonPartyPos[0]], ...currEnemyMon, active: true } as TPP.PartyPokemon;
+                    const enemyCount = struct.wEnemyPartyCount[0];
+                    const enemySpecies = struct.wEnemyPartySpecies.map(s => s);
+                    enemy_party = enemyCount ? this.rom.ReadArray(struct.wEnemyMons, 0, this.PartyMonSize(), enemyCount)
+                        .map((p, i) => this.ParsePartyMon(p, enemySpecies[i])) : [];
+                    if (enemyCount) {
+                        this.AddOTNames(enemy_party, struct.wEnemyMonOT, enemyCount);
+                        this.AddNicknames(enemy_party, struct.wEnemyMonNicks, enemyCount);
+                    }
+                    if (this.enemyReadyForActiveMons) // if not ready, will read last active mon from a previous battle here
+                        enemy_party[activeEnemy] = { ...enemy_party[activeEnemy], ...currEnemyMon, active: true } as TPP.PartyPokemon;
                     enemy_party.forEach((p, i) => {
                         p.personality_value = (p.personality_value ^ (i << 16) ^ ((trainerClass << 8 | trainerNum))) >>> 0; //attempt to avoid enemy PV collisions
                         if (i != struct.wEnemyMonPartyPos[0] || !this.enemyReadyForActiveMons)
@@ -246,69 +261,6 @@ namespace RamReader {
         }
         protected BaseOffsetCalc = (baseSymbol: string, extraOffset = 0) => ((symbol: string) => (this.rom.symTable[baseSymbol + symbol] - this.rom.symTable[baseSymbol]) + extraOffset);
 
-        protected ParseBattleBundle(data: Buffer): TPP.BattleStatus {
-            //wIsInBattle/1
-            const in_battle = data[0] > 0;
-            const battle_kind = data[0] < 2 ? "Wild" : "Trainer";
-            //wEnemyMonActualCatchRate/1
-            const actualCatchRate = data.readUInt8(1);
-            if (in_battle) {
-                const enemy_trainers = new Array<TPP.EnemyTrainer>();
-                if (battle_kind == "Trainer") {
-                    //wTrainerClass/1
-                    const trainerClass = data.readUInt8(2);
-                    //wTrainerNo/1
-                    const trainerNum = data.readUInt8(3);
-                    const trainer = Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(trainerNum, trainerClass));
-                    //wTrainerName/NAME_LENGTH
-                    trainer.name = this.rom.ConvertText(data.slice(4, 4 + NAME_LENGTH));
-                    if (/Rival\d+/i.test(trainer.class_name))
-                        trainer.class_name = "Rival"
-                    if ((trainer.name || "").toLowerCase() == (trainer.class_name || '').toLowerCase())
-                        trainer.name = trainer.class_name;
-                    trainer.class_id = trainerClass;
-                    trainer.id = trainerNum;
-                    enemy_trainers.push(trainer);
-                }
-                //wEnemyParty
-                let enemy_party: TPP.PartyData = [];
-                if (battle_kind == "Wild") {
-                    enemy_party[0] = this.ParseBattlePokemon(data.slice(4 + NAME_LENGTH + this.PartySize() + 2));
-                    enemy_party[0].species.catch_rate = actualCatchRate;
-                }
-                else {
-                    const trainerClass = data.readUInt8(2);
-                    const trainerNum = data.readUInt8(3);
-                    enemy_party = this.ParseParty(data.slice(4 + NAME_LENGTH));
-                    enemy_party.forEach((p, i) => p.personality_value = (p.personality_value ^ (i << 16) ^ ((trainerClass << 8 | trainerNum))) >>> 0); //attempt to avoid enemy PV collisions
-                }
-
-                return { in_battle, battle_kind, enemy_party, enemy_trainers };
-            }
-            return { in_battle };
-        }
-
-        protected ParsePC(data: Buffer): TPP.CombinedPCData {
-            // wCurrentBoxNum
-            const currentBox = (data[0] + 1) & 0x1F;// + 15; //pbr
-            // Active Box
-            // sBox1-12
-            const pc = this.rom.ReadArray(data.slice(1), 0, this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
-            const active = pc.shift();
-            pc[currentBox - 1] = active;
-            //pc[currentBox - 15] = active; //pbr
-            return {
-                current_box_number: currentBox,
-                boxes: pc.map((box, i) => (<TPP.BoxData>{
-                    box_contents: box,
-                    box_name: `Box ${i + 1}`,
-                    box_number: i + 1
-                    // box_name: `Red Box ${i + 1}`, //PBR
-                    // box_number: i + 15 //PBR
-                }))
-            };
-        }
-
         protected ParsePCBox(data: Buffer) {
             // wBoxDataStart::
             // wNumInBox::  ds 1
@@ -335,42 +287,43 @@ namespace RamReader {
             return box;
         }
 
-        protected ParseParty(data: Buffer) {
-            // wPartyCount::   ds 1 ; d163
-            const partyCount = data[0];
-            // wPartySpecies:: ds PARTY_LENGTH ; d164
-            // wPartyEnd::     ds 1 ; d16a
-            const partySpecies = data.slice(1, 1 + partyCount).map(s => s);
+        // protected ParseParty(data: Buffer) {
+        //     // wPartyCount::   ds 1 ; d163
+        //     const partyCount = data[0];
+        //     // wPartySpecies:: ds PARTY_LENGTH ; d164
+        //     // wPartyEnd::     ds 1 ; d16a
+        //     const partySpecies = data.slice(1, 1 + partyCount).map(s => s);
 
-            // wPartyMons::
-            // wPartyMon1:: party_struct wPartyMon1 ; d16b
-            // wPartyMon2:: party_struct wPartyMon2 ; d197
-            // wPartyMon3:: party_struct wPartyMon3 ; d1c3
-            // wPartyMon4:: party_struct wPartyMon4 ; d1ef
-            // wPartyMon5:: party_struct wPartyMon5 ; d21b
-            // wPartyMon6:: party_struct wPartyMon6 ; d247
-            const party: TPP.PartyData = partyCount ? this.rom.ReadArray(data, this.rom.symTable['wPartyMons'] - this.rom.symTable['wPartyDataStart'], this.PartyMonSize(), partyCount)
-                .map((p, i) => this.ParsePartyMon(p, partySpecies[i])) : [];
+        //     // wPartyMons::
+        //     // wPartyMon1:: party_struct wPartyMon1 ; d16b
+        //     // wPartyMon2:: party_struct wPartyMon2 ; d197
+        //     // wPartyMon3:: party_struct wPartyMon3 ; d1c3
+        //     // wPartyMon4:: party_struct wPartyMon4 ; d1ef
+        //     // wPartyMon5:: party_struct wPartyMon5 ; d21b
+        //     // wPartyMon6:: party_struct wPartyMon6 ; d247
+        //     const party: TPP.PartyData = partyCount ? this.rom.ReadArray(data, this.rom.symTable['wPartyMons'] - this.rom.symTable['wPartyDataStart'], this.PartyMonSize(), partyCount)
+        //         .map((p, i) => this.ParsePartyMon(p, partySpecies[i])) : [];
 
-            if (partyCount) {
-                // wPartyMonOT::    ds NAME_LENGTH * PARTY_LENGTH ; d273
-                this.AddOTNames(party, data.slice(this.rom.symTable['wPartyMonOT'] - this.rom.symTable['wPartyDataStart']), partyCount);
-                // wPartyMonNicks:: ds NAME_LENGTH * PARTY_LENGTH ; d2b5
-                this.AddNicknames(party, data.slice(this.rom.symTable['wPartyMonNicks'] - this.rom.symTable['wPartyDataStart']), partyCount);
-                // wPartyDataEnd::
-            }
+        //     if (partyCount) {
+        //         // wPartyMonOT::    ds NAME_LENGTH * PARTY_LENGTH ; d273
+        //         this.AddOTNames(party, data.slice(this.rom.symTable['wPartyMonOT'] - this.rom.symTable['wPartyDataStart']), partyCount);
+        //         // wPartyMonNicks:: ds NAME_LENGTH * PARTY_LENGTH ; d2b5
+        //         this.AddNicknames(party, data.slice(this.rom.symTable['wPartyMonNicks'] - this.rom.symTable['wPartyDataStart']), partyCount);
+        //         // wPartyDataEnd::
+        //     }
 
-            const pastPartyOffset = this.PartySize();
-            // wIsInBattle: ds 1
-            if (data[pastPartyOffset] != 0) {
-                // wPlayerMonNumber: ds 1
-                const battleMonIndex = data[pastPartyOffset + 1];
-                if (party[battleMonIndex]) {
-                    party[battleMonIndex] = Object.assign(party[battleMonIndex], this.ParseBattlePokemon(data.slice(pastPartyOffset + 2)) || {});
-                }
-            }
-            return party.filter(p => !!p && !!p.species && !!p.personality_value);
-        }
+        //     const pastPartyOffset = this.PartySize();
+        //     // wIsInBattle: ds 1
+        //     if (data[pastPartyOffset] != 0) {
+        //         // wPlayerMonNumber: ds 1
+        //         const battleMonIndex = data[pastPartyOffset + 1];
+        //         const battleMon: TPP.PartyPokemon = this.ParseBattlePokemon(data.slice(pastPartyOffset + 2));
+        //         if (party[battleMonIndex] && battleMon && party[battleMonIndex].species && battleMon.species && party[battleMonIndex].species.id == battleMon.species.id) {
+        //             party[battleMonIndex] = { ...party[battleMonIndex], ...battleMon };
+        //         }
+        //     }
+        //     return party.filter(p => !!p && !!p.species && !!p.personality_value);
+        // }
 
         protected AddOTNames(mons: Gen1BoxedMon[], data: Buffer, monCount: number) {
             this.rom.ReadArray(data, 0, NAME_LENGTH, monCount).forEach((n, i) => mons[i] && mons[i].original_trainer ? mons[i].original_trainer.name = this.rom.ConvertText(n) : null);
@@ -551,8 +504,9 @@ namespace RamReader {
             const hRomBank = 0xFFB8;
             //Evolution detect
             const { bank, address } = this.rom.LinearAddressToBanked(this.rom.symTable["EvolveMon"]);
+            const doneAddress = this.rom.symTable["EvolveMon.done"] ? this.rom.LinearAddressToBanked(this.rom.symTable["EvolveMon.done"]).address : address + 152;
             this.SetSelfCallEvent("Evolution Start", "Execute", address, "override/evolution_is_happening/true", hRomBank, bank);
-            this.SetSelfCallEvent("Evolution End", "Execute", address + 152, "override/evolution_is_happening", hRomBank, bank);
+            this.SetSelfCallEvent("Evolution End", "Execute", doneAddress, "override/evolution_is_happening", hRomBank, bank);
         }
     }
 }

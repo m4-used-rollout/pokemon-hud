@@ -1385,10 +1385,7 @@ declare namespace RamReader {
             };
         };
         protected BaseOffsetCalc: (baseSymbol: string, extraOffset?: number) => (symbol: string) => number;
-        protected ParseBattleBundle(data: Buffer): TPP.BattleStatus;
-        protected ParsePC(data: Buffer): TPP.CombinedPCData;
         protected ParsePCBox(data: Buffer): Gen1BoxedMon[];
-        protected ParseParty(data: Buffer): TPP.PartyPokemon[];
         protected AddOTNames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
         protected AddNicknames(mons: Gen1BoxedMon[], data: Buffer, monCount: number): void;
         protected FixCapsNonNickname(nick: string, speciesName: string): string;

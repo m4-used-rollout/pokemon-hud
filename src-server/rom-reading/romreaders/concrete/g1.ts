@@ -7,6 +7,7 @@ namespace RomReader {
     const charmap = gen1Charmap;
     const mapNames = gen1MapNames;
     const genericMonRef: Pokemon.Species[] = require(`./data/generic/species.json`);
+    const kepRef: Pokemon.Species[] = require(`./data/gen1/kep.json`);
 
     const jessieJamesSpriteId = -30;
 
@@ -27,7 +28,7 @@ namespace RomReader {
     }
 
     export class Gen1 extends GBReader {
-        private fishingRodIds = { oldRod: 0, goodRod: 0, superRod: 0 };
+        private fishingRodIds = { oldRod: 0, goodRod: 0, superRod: 0, fishingRod: 0 };
         private jessieJamesRocketMinTrainerId?: number;
 
         constructor(romFileLocation: string) {
@@ -92,7 +93,7 @@ namespace RomReader {
             //     case this.fishingRodIds.superRod:
             //         return `./img/items/firered/264.png`;
             // }
-            return `./img/items/redblue/${id}.png`;
+            return `./img/items/${TPP.Server.getConfig().spriteFolder || "redblue"}/${id}.png`;
         }
 
         public CheckIfCanSurf(runState: TPP.RunStatus) {
@@ -133,6 +134,17 @@ namespace RomReader {
                         }))
                     ));
             });
+            this.symTable['FishingRodSlots'] && this.ReadArray(romData, this.symTable['FishingRodSlots'], 9).forEach(sr => {
+                this.GetMap(sr.readUInt8(0)).encounters['all'].fishing = this.CombineDuplicateEncounters(alwaysFish
+                    .concat(this.ReadArray(sr, 1, 2)
+                        .map((f, i, arr) => (<Pokemon.EncounterMon>{
+                            speciesId: f[0],
+                            species: this.GetSpecies(f[0]),
+                            requiredItem: this.GetItem(this.fishingRodIds.fishingRod),
+                            rate: Math.round([40, 30, 20, 10][i] || 1)
+                        }))
+                    ));
+            }); // KEP
         }
 
         private ParseEncounters(encounters: Buffer, encounterRates: number[]) {
@@ -206,7 +218,7 @@ namespace RomReader {
         }
 
         private FindFishingRods(romData: Buffer) {
-            const useFishingRodAddrs = ['ItemUseOldRod', 'ItemUseGoodRod', 'ItemUseSuperRod'].map(a => this.LinearAddressToBanked(this.symTable[a]).address);
+            const useFishingRodAddrs = ['ItemUseOldRod', 'ItemUseGoodRod', 'ItemUseSuperRod', 'ItemUseFishingRod'].map(a => this.LinearAddressToBanked(this.symTable[a]).address);
             this.ReadArray(romData.slice(this.symTable["ItemUsePtrTable"], this.symTable["ItemUseBall"]), 0, 2, 255)
                 .map((u, i) => ({ ptr: u.readInt16LE(0), id: i + 1 }))
                 .filter(p => useFishingRodAddrs.indexOf(p.ptr) >= 0)
@@ -281,10 +293,12 @@ namespace RomReader {
                 .map(data => {
                     const speciesOffset = this.PokedexToIndex(romData, data[0x00]);
                     const nameAddr = this.symTable['MonsterNames'] + (nameBytes * speciesOffset);
+                    const name = this.FixAllCaps(this.ConvertText(romData.slice(nameAddr, nameAddr + nameBytes)));
+                    const futureMon = genericMonRef.concat(kepRef).find(p => p.name.toLowerCase() == name.toLowerCase() || p.name.toLowerCase() == name.toLowerCase().replace(/\s/g, ""));
                     return (<Pokemon.Species>{
                         id: speciesOffset + 1,
                         dexNumber: data[0x00],
-                        name: this.FixAllCaps(this.ConvertText(romData.slice(nameAddr, nameAddr + nameBytes))),
+                        name,
                         baseStats: {
                             hp: data[0x01],
                             atk: data[0x02],
@@ -297,7 +311,7 @@ namespace RomReader {
                         type2: types[data[0x07]],
                         catchRate: data[0x08],
                         baseExp: data[0x09],
-                        genderRatio: genericMonRef.filter(p => p.dexNumber == data[0x00]).pop().genderRatio,
+                        genderRatio: futureMon ? futureMon.genderRatio : 0xFF, //genericMonRef.filter(p => p.dexNumber == data[0x00]).pop().genderRatio,
                         spriteSize: data[0x0A] % 16, //sprites are always square
                         frontSpritePointer: data.readInt16LE(0x0B),
                         // 0x0D	Pointer to backsprite	word
@@ -317,7 +331,24 @@ namespace RomReader {
             this.ReadArray(romData, this.symTable["EvosMovesPointerTable"], 2, mons).forEach((ptr, i) => {
                 let addr = this.BankAddressToLinear(bank, ptr.readUInt16LE(0));
                 const moves = new Array<Pokemon.MoveLearn>();
-                for (addr = addr; romData[addr] != 0; addr++); //skip evolution data
+                const evos = new Array<Pokemon.Evolution>();
+                for (addr = addr; romData[addr] != 0; addr++) { //evolution data
+                    switch (romData[addr]) {
+                        case 1: //db EVOLVE_LEVEL, level, species
+                            evos.push({ speciesId: romData[addr + 2], level: romData[addr + 1] });
+                            addr += 2;
+                            break;
+                        case 2: //db EVOLVE_ITEM, used item, 1, species
+                            evos.push({ speciesId: romData[addr + 3], item: this.GetItem(romData[addr + 1]) });
+                            addr += 3;
+                            break;
+                        case 3: //db EVOLVE_TRADE, 1, species
+                            evos.push({ speciesId: romData[addr + 2], isTrade: true });
+                            addr += 2;
+                            break;
+                    }
+                }
+                this.GetSpeciesById(i + 1).evolutions = evos;
                 for (addr++; romData[addr] != 0; addr += 2)
                     if (romData[addr] && romData[addr + 1])
                         moves.push(Object.assign({ level: romData[addr] }, this.GetMove(romData[addr + 1])));
