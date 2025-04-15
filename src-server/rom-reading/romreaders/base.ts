@@ -57,17 +57,20 @@ namespace RomReader {
             return (this.pokemon || []).length > 0;
         }
 
+        protected textAdjust: Record<string, string> = {};
+
         ConvertText(text: string | Buffer | number[]): string {
             if (text instanceof Buffer) {
                 const decoded = text.toString("ucs2");
                 const terminatorLocation = decoded.indexOf('\u0000');
                 if (terminatorLocation > 0)
                     return decoded.slice(0, terminatorLocation);
-                return decoded;
+                return this.ConvertText(decoded);
             }
             else if (Array.isArray(text)) {
                 return this.ConvertText(Buffer.from(text));
             }
+            Object.keys(this.textAdjust).forEach(k => text = (text as string).replace(new RegExp(k, "g"), this.textAdjust[k]));
             return text;
         }
 

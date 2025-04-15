@@ -8,21 +8,21 @@ namespace RamReader {
     const DEX_SEEN_FLAG_BYTES = Math.floor((NUM_POKEMON_FORMS + 7) / 8);
 
 
-    // const partyLocation = "33F7F9B8"; //USUM
-    // const pcLocation = "33015408"; //USUM
-    // const battleLocation = "30000000"; //USUM
-    // const saveBlock1Location = "33011934"; //USUM
-    // const saveBlock2Location = "33F6D748"; //USUM
-    // const daycareLocation = "3307B010"; //USUM
-    // const battleTrainerLocation = "30034B60"; //USUM
-
-    const partyLocation = "33F7FA38"; //Star (USUM + 0x80)
+    const partyLocation = "33F7F9B8"; //USUM
     const pcLocation = "33015408"; //USUM
     const battleLocation = "30000000"; //USUM
-    const saveBlock1Location = "33011934"; //Star
-    const saveBlock2Location = "33F6D7C8"; //Star?
-    const daycareLocation = "3307B090"; //Star?
-    const battleTrainerLocation = "30034B60"; //Star?
+    const saveBlock1Location = "33011934"; //USUM
+    const saveBlock2Location = "33F6D748"; //USUM
+    const daycareLocation = "3307B010"; //USUM
+    const battleTrainerLocation = "30034B60"; //USUM
+
+    // const partyLocation = "33F7FA38"; //Star (USUM + 0x80)
+    // const pcLocation = "33015408"; //USUM
+    // const battleLocation = "30000000"; //USUM
+    // const saveBlock1Location = "33011934"; //Star
+    // const saveBlock2Location = "33F6D7C8"; //Star?
+    // const daycareLocation = "3307B090"; //Star?
+    // const battleTrainerLocation = "30034B60"; //Star?
 
 
     interface Gen7Pokemon extends TPP.Pokemon {

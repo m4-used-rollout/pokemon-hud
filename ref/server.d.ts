@@ -86,6 +86,7 @@ declare namespace Pokemon {
 declare namespace Pokemon {
     interface Evolution {
         level?: number;
+        form?: number;
         item?: Item;
         move?: Move;
         moveType?: string;
@@ -259,6 +260,7 @@ declare namespace RomReader {
         protected ZeroPad(int: number, digits: number): string;
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet;
         HasPokemonData(): boolean;
+        protected textAdjust: Record<string, string>;
         ConvertText(text: string | Buffer | number[]): string;
         static FindLocalFile(path: string): string;
         protected shouldFixCaps: boolean;

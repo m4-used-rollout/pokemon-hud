@@ -1,6 +1,4 @@
-/// <reference path="../base.ts" />import { posix } from "path";
-
-
+/// <reference path="../base.ts" />
 
 namespace RomReader {
     const fs = require('fs');
@@ -29,11 +27,18 @@ namespace RomReader {
             this.items = require(`./data/${dataFolder}/items.json`);
             this.moves = require(`./data/${dataFolder}/moves.json`);
             this.moveLearns = {};
+            const evos = (require(`./data/${dataFolder}/evolutions.json`) as Record<number, Array<Pokemon.Evolution & { formId?: number, itemId?: number; moveId?: number }>>);
+            Object.keys(evos).map(k => parseInt(k)).forEach(k => this.pokemon[k].evolutions = evos[k].map(({ itemId, moveId, formId, ...evo }) => ({
+                ...evo,
+                form: formId,
+                item: itemId && this.GetItem(itemId),
+                move: moveId && this.GetMove(moveId)
+            })));
         }
 
         GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
             const spriteFolder = TPP.Server.getConfig().spriteFolder;
-            let possibleSpriteUrls:string[] = [];
+            let possibleSpriteUrls: string[] = [];
             if (!generic && spriteFolder) {
                 possibleSpriteUrls.push(((this.pokemonSprites[id] || [])[form] || { base: null, shiny: null })[shiny ? "shiny" : "base"] || `./img/sprites/${spriteFolder}/${shiny ? "shiny/" : ""}${gender == "Female" ? "female/" : ""}${this.ZeroPad(id, 3)}${form ? `-${form}` : ''}.png`);
             }
@@ -58,7 +63,7 @@ namespace RomReader {
         }
 
         CollapseSeenForms(seen: number[]) {
-            return seen.map(s=>this.formBackMapping[s] || s);//.filter((s, i, arr) => arr.indexOf[s] == i);
+            return seen.map(s => this.formBackMapping[s] || s);//.filter((s, i, arr) => arr.indexOf[s] == i);
         }
     }
 }

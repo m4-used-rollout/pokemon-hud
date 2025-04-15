@@ -1,6 +1,7 @@
 namespace Pokemon {
     export interface Evolution {
         level?: number;
+        form?: number;
         item?: Item;
         move?: Move;
         moveType?: string;

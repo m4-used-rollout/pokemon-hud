@@ -20,6 +20,11 @@ namespace RomReader {
 
         constructor() {
             super("gen7");
+            this.textAdjust["\ue08e"] = "♂";
+            this.textAdjust["\ue08f"] = "♀";
+            this.pokemon.forEach(s => {
+                s.name = this.ConvertText(s.name);
+            });
             this.maps = require('./data/gen7/maps.json');
             this.maps.forEach(m => Object.keys(m.encounters).forEach(k => Object.keys(m.encounters[k] || {}).forEach(j => (m.encounters[k][j] || []).forEach(e => e.species = this.GetSpecies(e.speciesId)))));
             this.trainers = require('./data/gen7/trainers.json');
@@ -38,8 +43,8 @@ namespace RomReader {
             if (!map || (!map.id && map.id !== 0))
                 return null;
             let dayTime = new Date().getHours() >= 6 && new Date().getHours() < 18;
-            // return map.encounters[dayTime ? "day" : "night"]; //Sun
-            return map.encounters[dayTime ? "night" : "day"]; //Moon
+            return map.encounters[dayTime ? "day" : "night"]; //Sun
+            //return map.encounters[dayTime ? "night" : "day"]; //Moon
         }
 
         CollapseSeenForms(seen: number[]) {
