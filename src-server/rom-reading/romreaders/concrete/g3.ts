@@ -15,6 +15,8 @@ namespace RomReader {
     const fishingEncounterRates = [70, 30, 60, 20, 20, 40, 30, 15, 10, 5];
     const fishingRequiredRods = [262, 262, 263, 263, 263, 264, 264, 264, 264, 264]
 
+    const timeThresholdHours = [4, 10, 20, 22]; // Unbound (probably)
+
     const wildPokemonPtrMarker = '0348048009E00000FFFF0000';
     const mapBanksPtrMarker = '80180068890B091808687047';
 
@@ -75,15 +77,20 @@ namespace RomReader {
             const romData = this.loadROM();
             const config = this.config = this.LoadConfig(romData);
             this.types = typeNames;
+            this.isCFRU = config["System"] == "CFRU";
             if (romFileLocation.indexOf("touhoumon.gba") >= 0) {
                 this.types = touhouTypes;
                 this.shouldFixCaps = false; //some of Touhoumon is already decapped
             }
+            if (this.isCFRU)
+                this.shouldFixCaps = false;
+
             this.gfRomHeader = this.ParseGFRomHeader(romData);
 
             // Update INI from Rom Header
             // Doesn't exist for Ruby or Sapphire
-            if (this.romHeader != 'AXVE' && this.romHeader != 'AXPE') {
+            // Not updated for CFRU
+            if (this.romHeader != 'AXVE' && this.romHeader != 'AXPE' && !this.isCFRU) {
                 config.ItemPCOffset = this.gfRomHeader.pcItemsOffset.toString(16);
                 config.ItemPocketOffset = this.gfRomHeader.bagItemsOffset.toString(16);
                 config.ItemBallOffset = this.gfRomHeader.bagPokeballsOffset.toString(16);
@@ -105,15 +112,22 @@ namespace RomReader {
 
             this.abilities = this.ReadAbilities(romData, config);
             this.pokemon = this.ReadPokeData(romData, config);
+            if (this.isCFRU)
+                this.CalculateFormNumbers(this.pokemon);
             this.items = this.ReadItemData(romData, config);
+            // if (this.isCFRU)
             this.ballIds = this.items.filter((i: Gen3Item) => i.isPokeball).map(i => i.id);
+            // else
+            //     this.ballIds = this.ballIds || ["Poké Ball", "Great Ball", "Safari Ball", "Ultra Ball", "Master Ball", "Net Ball", "Dive Ball", "Nest Ball", "Repeat Ball", "Timer Ball", "Luxury Ball", "Premier Ball"]
+            //         .map(n => n.toLowerCase()).map(n => this.items.find(i => (i.name || "").toLowerCase() == n).id);
 
-            // //Blazing Emerald
-            // this.ballIds[0] = 4;
-            // this.ballIds[1] = 3;
-            // this.ballIds[2] = 5;
-            // this.ballIds[3] = 2;
-            // this.ballIds[4] = 1;
+            if (!this.isCFRU) {
+                this.ballIds[0] = 4;
+                this.ballIds[1] = 3;
+                this.ballIds[2] = 5;
+                this.ballIds[3] = 2;
+                this.ballIds[4] = 1;
+            }
 
             this.moves = this.ReadMoveData(romData, config);
             this.GetTMHMNames(romData, config);
@@ -153,7 +167,20 @@ namespace RomReader {
         GetCurrentMapEncounters(map: Pokemon.Map, state: TPP.TrainerData): Pokemon.EncounterSet {
             if (!map.encounters)
                 return {};
-            return map.encounters.all;
+            let hour = (state.time || { h: 9 }).h;
+            if (hour > timeThresholdHours[0]) {
+                if (hour > timeThresholdHours[1]) {
+                    if (hour > timeThresholdHours[2]) {
+                        if (hour > (timeThresholdHours[3] || timeThresholdHours[2])) {
+                            return map.encounters.nite || map.encounters.day || map.encounters.all || {};
+                        }
+                        return map.encounters.eve || map.encounters.day || map.encounters.all || {};
+                    }
+                    return map.encounters.day || map.encounters.all || {};
+                }
+                return map.encounters.morn || map.encounters.day || map.encounters.all || {};
+            }
+            return map.encounters.nite || map.encounters.day || map.encounters.all || {};
         }
 
         GetCurrentLevelCap(badges: number, champion?: boolean) {
@@ -169,6 +196,12 @@ namespace RomReader {
             if (champion && badgeCount < (this.levelCaps.length - 1))
                 badgeCount++;
             return this.levelCaps[badgeCount];
+        }
+
+        MapCaughtBallId(ballId: number) {
+            if (ballId > this.ballIds.length)
+                return this.ballIds[this.ballIds.length - 1];
+            return this.ballIds[ballId];
         }
 
         private CurrentMapIn(id: number, bank: number, mapArr: number[][]) {
@@ -200,9 +233,10 @@ namespace RomReader {
         protected isFRLG(config: PGEINI) {
             return ['BPR', 'BPG'].indexOf(config.Header.substring(0, 3)) >= 0;
         }
+        public isCFRU: boolean;
 
         protected ReadAbilities(romData: Buffer, config: PGEINI, numAbilities = parseInt(config.NumberOfAbilities)) {
-            return this.ReadArray(romData, parseInt(config.AbilityNames, 16), 13, numAbilities).map(a => this.FixAllCaps(this.ConvertText(a)));
+            return this.ReadArray(romData, parseInt(config.AbilityNames, 16), parseInt(config["AbilityNameLength"] || "0") || 13, numAbilities).map(a => this.FixAllCaps(this.ConvertText(a)));
         }
 
         protected ReadPokeData(romData: Buffer, config: PGEINI) {
@@ -235,12 +269,16 @@ namespace RomReader {
                 expFunction: expCurves[data[19]],
                 eggGroup1: eggGroups[data[20]],
                 eggGroup2: eggGroups[data[21]],
-                abilities: [this.abilities[data[22]], this.abilities[data[23]]],
+                abilities: [this.abilities[data[22]], this.abilities[data[23]], ...[this.abilities[data[26]]].filter(a => !!a)],
                 //abilities: [this.ReadAbilities(romData, config, data[22] + 1).pop(), this.ReadAbilities(romData, config, data[23] + 1).pop()], //Allow for ROMs with an unknown number of abilities
                 //safariZoneRate: data[24],
                 //dexColor: data[25] % 128,
                 doNotflipSprite: !!(data[25] & 128)
             }));
+        }
+
+        protected CalculateFormNumbers(pokeData: Pokemon.Species[]) {
+            pokeData.forEach(s => s.formNumber = pokeData.filter(fs => fs.dexNumber == s.dexNumber).indexOf(s));
         }
 
         protected ReadTrainerData(romData: Buffer, config: PGEINI) {
@@ -258,7 +296,8 @@ namespace RomReader {
         protected ReadItemData(romData: Buffer, config: PGEINI) {
             const itemStructExtensionBytes = 0; //16 for TriHard Emerald and TTH2019
             return this.ReadArray(romData, parseInt(config.ItemData, 16), 44 + itemStructExtensionBytes, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
-                name: this.FixAllCaps(this.ConvertText(data)),
+                // Expanded Item Names (CFRU): if the 4th byte is 8 or 9 (not valid characters), assume this is a pointer to the real name in ROM
+                name: this.FixAllCaps(this.ConvertText(data[3] == 8 || data[3] == 9 ? romData.slice(data.readUInt32LE(0) % 0x08000000, data.readUInt32LE(0) % 0x08000000 + 30) : data)),
                 // name: this.ConvertText(romData.slice(this.ReadRomPtr(data, 0), 255 + this.ReadRomPtr(data, 0))), //TTH
                 // pluralName: this.ConvertText(romData.slice(data.readInt32LE(4) > 0 && !data.readInt32LE(8) ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0), 255 + (data.readInt32LE(4) > 0 ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0)))) + (data.readInt32LE(4) || data.readInt32LE(8) ? "" : "s"), //TTH
                 id: i,
@@ -275,7 +314,7 @@ namespace RomReader {
                 // battleUsage: data.readInt32LE(32),
                 // battleUsagePtr: data.readInt32LE(36),
                 // extraParameter: data.readInt32LE(40),
-                isPokeball: data[26 + itemStructExtensionBytes] == 2, // && data.readInt32LE(40) == data[27],
+                isPokeball: data[26 + itemStructExtensionBytes] == (this.isFRLG(config) ? 3 : 2), // && data.readInt32LE(40) == data[27],
                 // data: data.toString("hex")
             }));
         }
@@ -352,11 +391,12 @@ namespace RomReader {
         }
 
         protected ReadMaps(romData: Buffer, config: PGEINI) {
-            let mapBanksPtr = /*parseInt(config.Pointer2PointersToMapBanks || "0", 16) ||*/ this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
+            let mapBanksPtr = config["gMapGroups"] ? parseInt(config["gMapGroups"], 16) : this.FindPtrFromPreceedingData(romData, mapBanksPtrMarker);
             const mapLabelOffset = parseInt(config.MapLabelOffset || "0", 16);
             //this.totalPuzzles = mapLabelOffset;
+            const mapBankPtrEncryptor = !!config["MapGroupPointerXORAddr"] ? romData.readInt32LE(parseInt(config["MapGroupPointerXORAddr"] || "0", 16)) : 0;
             return this.ReadPtrBlock(romData, mapBanksPtr)
-                .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
+                .map((bankPtr, b, arr) => this.ReadPtrBlock(romData, bankPtr ^ mapBankPtrEncryptor, arr[b + 1]).map(ptr => romData.slice(ptr, ptr + 32))
                     .map((mapHeader, m) => /*(<TTHMap>{*/(<Pokemon.Map>{
                         bank: b,
                         id: m,
@@ -370,6 +410,12 @@ namespace RomReader {
                         encounters: {}
                     }))
                 ).reduce((allMaps, currBank) => Array.prototype.concat.apply(allMaps, currBank), []);
+        }
+
+        public FixAreaIdFRLG(areaId:number) {
+            if (this.isFRLG(this.config))
+                return areaId - 88;
+            return areaId;
         }
 
         // TrainerIsRival(id: number, classId: number) {
@@ -497,21 +543,38 @@ namespace RomReader {
         }
 
         protected FindMapEncounters(romData: Buffer, config: PGEINI) {
-            let wildPokemonPtr = this.FindPtrFromPreceedingData(romData, wildPokemonPtrMarker);
-            this.ReadArray(romData, wildPokemonPtr, 20).forEach(data => {
+            let wildPokemonPtr = config["gWildMonHeaders"] ? parseInt(config["gWildMonHeaders"], 16) : this.FindPtrFromPreceedingData(romData, wildPokemonPtrMarker);
+            this.ParseMapEncounterHeaders(romData, wildPokemonPtr);
+            this.ReadCFRUTimeEncounters(romData, config);
+        }
+
+        protected ReadCFRUTimeEncounters(romData: Buffer, config: PGEINI) {
+            if (!!config["gWildMonNightHeaders"])
+                this.ParseMapEncounterHeaders(romData, parseInt(config["gWildMonNightHeaders"], 16), "nite");
+            if (!!config["gWildMonMorningHeaders"])
+                this.ParseMapEncounterHeaders(romData, parseInt(config["gWildMonMorningHeaders"], 16), "morn");
+            if (!!config["gWildMonEveningHeaders"])
+                this.ParseMapEncounterHeaders(romData, parseInt(config["gWildMonEveningHeaders"], 16), "eve");
+        }
+
+        protected ParseMapEncounterHeaders(romData: Buffer, address: number, timeOfDay: keyof Pokemon.Map["encounters"] = "all") {
+            this.ReadArray(romData, address, 20).forEach(data => {
                 let mapBank = data[0], mapId = data[1];
                 if (mapBank == 0xFF && mapId == 0xFF)
                     return;
                 let map = this.GetMap(mapId, mapBank);
                 let rockSmashExp = /[[TH]M\d+ Rock Smash/i
                 let rockSmashTmId = (this.items.filter(i => rockSmashExp.test(i.name)).shift() || { id: 0 }).id;
-                map.encounters = {
-                    all: {
-                        grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 4), grassEncounterRates),
-                        surfing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 8), surfEncounterRates),
-                        hidden_grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 12), rockSmashEncounterRates, rockSmashEncounterRates.map(e => rockSmashTmId), true),
-                        fishing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 16), fishingEncounterRates, fishingRequiredRods, true),
-                    }
+                map.encounters = map.encounters || {};
+                if (map.encounters["all"] && timeOfDay != "all") {
+                    map.encounters["day"] = map.encounters["all"];
+                    delete map.encounters["all"];
+                }
+                map.encounters[timeOfDay] = {
+                    grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 4), grassEncounterRates),
+                    surfing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 8), surfEncounterRates),
+                    hidden_grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 12), rockSmashEncounterRates, rockSmashEncounterRates.map(e => rockSmashTmId), true),
+                    fishing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 16), fishingEncounterRates, fishingRequiredRods, true),
                 };
             });
         }
@@ -556,12 +619,13 @@ namespace RomReader {
         }
 
         protected ReadEvolutions(romData: Buffer, config: PGEINI) {
-            this.evolutionMethods[0xFE] = this.evolutionMethods[0xFE] || this.EvolutionMethod.MegaEvo; // Nameless
+            this.evolutionMethods[0xFE] = this.evolutionMethods[0xFE] || this.EvolutionMethod.MegaEvo; // Nameless, CFRU
+            this.evolutionMethods[0xFD] = this.evolutionMethods[0xFD] || this.EvolutionMethod.Gigantamax; // CFRU
 
             const evoCount = parseInt(config.NumberOfEvolutionsPerPokemon);
             this.ReadArray(romData, parseInt(config.PokemonEvolutions, 16), 8 * evoCount, this.pokemon.length)
                 .map(evoData => this.ReadArray(evoData, 0, 8, evoCount)
-                    .map(e => this.ParseEvolution(e.readUInt16LE(0), e.readInt16LE(2), e.readUInt16LE(4)))
+                    .map(e => this.ParseEvolution(e.readUInt16LE(0), e.readInt16LE(2), e.readUInt16LE(4), e.readUInt16LE(6)))
                 )
                 .forEach((evos, i) => this.pokemon[i] && (this.pokemon[i].evolutions = evos.filter(e => !!e)));
         }
@@ -584,7 +648,7 @@ namespace RomReader {
             /* 4*/ this.EvolutionMethod.Level,
             /* 5*/ this.EvolutionMethod.Trade,
             /* 6*/ this.EvolutionMethod.TradeItem,
-            /* 7*/ this.EvolutionMethod.Stone,
+            /* 7*/ this.EvolutionMethod.StoneExtra, //this.EvolutionMethod.Stone, //CFRU
             /* 8*/ this.EvolutionMethod.LevelAttackHigher,
             /* 9*/ this.EvolutionMethod.LevelAtkDefEqual,
             /*10*/ this.EvolutionMethod.LevelDefenseHigher,
@@ -593,20 +657,45 @@ namespace RomReader {
             /*13*/ this.EvolutionMethod.LevelSpawnPokemon,
             /*14*/ this.EvolutionMethod.LevelIsSpawned,
             /*15*/ this.EvolutionMethod.LevelHighBeauty,
-            // Blazing Emerald
-            /*16*/ this.EvolutionMethod.LevelWithMove,
-            /*17*/ this.EvolutionMethod.LevelSpecificArea,
-            /*18*/ undefined,
-            /*19*/ undefined,
-            /*20*/ undefined,
-            /*21*/ undefined,
-            /*22*/ this.EvolutionMethod.LevelMale,
-            /*23*/ this.EvolutionMethod.LevelFemale, //Probably
-            /*24*/ undefined,
-            /*25*/ this.EvolutionMethod.LevelWithOtherSpecies,
-            /*26*/ undefined,
-            /*27*/ this.EvolutionMethod.StoneMale,
-            /*28*/ this.EvolutionMethod.StoneFemale,
+            // CFRU
+            /*16*/ this.EvolutionMethod.LevelInRainOrFog,
+            /*17*/ this.EvolutionMethod.LevelWithMoveType,
+            /*18*/ this.EvolutionMethod.LevelWithType,
+            /*19*/ this.EvolutionMethod.LevelOnMap,
+            /*20*/ this.EvolutionMethod.LevelMale,
+            /*21*/ this.EvolutionMethod.LevelFemale,
+            /*22*/ this.EvolutionMethod.LevelNight,
+            /*23*/ this.EvolutionMethod.LevelDay,
+            /*24*/ this.EvolutionMethod.LevelItemNight,
+            /*25*/ this.EvolutionMethod.LevelItemDay,
+            /*26*/ this.EvolutionMethod.LevelWithMove,
+            /*27*/ this.EvolutionMethod.LevelWithOtherSpecies,
+            /*28*/ this.EvolutionMethod.LevelAtTime,
+            /*29*/ this.EvolutionMethod.LevelIfFlagSet,
+            /*30*/ this.EvolutionMethod.CriticalHits,
+            /*31*/ this.EvolutionMethod.LevelNatureAmped,
+            /*32*/ this.EvolutionMethod.LevelNatureLowKey,
+            /*33*/ this.EvolutionMethod.DamageLocation,
+            /*34*/ this.EvolutionMethod.StoneLocation,
+            /*35*/ this.EvolutionMethod.LevelHoldItem,
+            /*36*/ this.EvolutionMethod.LevelWithMoveMale,
+            /*37*/ this.EvolutionMethod.LevelWithMoveFemale,
+            /*38*/ this.EvolutionMethod.StoneNight
+
+            // // Blazing Emerald
+            // /*16*/ this.EvolutionMethod.LevelWithMove,
+            // /*17*/ this.EvolutionMethod.LevelSpecificArea,
+            // /*18*/ undefined,
+            // /*19*/ undefined,
+            // /*20*/ undefined,
+            // /*21*/ undefined,
+            // /*22*/ this.EvolutionMethod.LevelMale,
+            // /*23*/ this.EvolutionMethod.LevelFemale, //Probably
+            // /*24*/ undefined,
+            // /*25*/ this.EvolutionMethod.LevelWithOtherSpecies,
+            // /*26*/ undefined,
+            // /*27*/ this.EvolutionMethod.StoneMale,
+            // /*28*/ this.EvolutionMethod.StoneFemale,
         ]
 
     }

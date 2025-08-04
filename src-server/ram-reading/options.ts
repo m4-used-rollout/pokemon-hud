@@ -20,7 +20,7 @@ namespace RamReader {
         return shift;
     }
 
-    function ParseOption(rawOptions: number, fieldSpec: OptionsFieldSpec) {
+    export function ParseOption(rawOptions: number, fieldSpec: OptionsFieldSpec) {
         const possibleValues = Object.keys(fieldSpec).map(k => parseInt(k)).filter(k => k).sort();
         const selection = (fieldSpec.bitmask || possibleValues.reduce((mask, key) => mask | key, 0)) & rawOptions;
         if (fieldSpec[selection]) //exact match
@@ -32,7 +32,7 @@ namespace RamReader {
         return fieldSpec[possibleValues.filter(v => (selection & v) == v).pop() || possibleValues.shift()];
     }
 
-    function SetOption(rawOptions: number, setting: string, fieldSpec: OptionsFieldSpec) {
+    export function SetOption(rawOptions: number, setting: string, fieldSpec: OptionsFieldSpec) {
         const backMapping = {} as { [key: string]: number };
         rawOptions &= ~(fieldSpec.bitmask || Object.keys(fieldSpec).map(k => parseInt(k)).filter(k => k).reduce((mask, key) => mask | key, 0));
         Object.keys(fieldSpec).map(k => parseInt(k)).filter(k => k).sort().forEach(k => backMapping[fieldSpec[k].toLowerCase()] = k);
@@ -50,6 +50,15 @@ namespace RamReader {
 
     export function SetOptions(rawOptions: number, desiredOptions: TPP.Options, optionsSpec: OptionsSpec) {
         return Object.keys(desiredOptions).filter(o => optionsSpec[o]).reduce((rawOpts, option) => SetOption(rawOpts, desiredOptions[option], optionsSpec[option]), rawOptions);
+    }
+
+
+    export interface VarOptionsFieldSpec extends OptionsFieldSpec {
+        var: number;
+    }
+
+    export interface VarOptionsSpec {
+        [key: string]: VarOptionsFieldSpec;
     }
 
 }

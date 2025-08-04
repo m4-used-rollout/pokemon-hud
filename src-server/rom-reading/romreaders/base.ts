@@ -12,7 +12,7 @@ namespace RomReader {
     const fixWronglyCapped = /(['’][A-Z]|okéMon|onéKa|okéTch)/g;
     const fixWronglyLowercased = /(^[T|H]m|\bTv\b)/g;
 
-    export type EvoMethod = (evoParam: number, speciesId: number) => Pokemon.Evolution;
+    export type EvoMethod = (evoParam: number, speciesId: number, extra?: number) => Pokemon.Evolution;
 
     export type PokeSprite = { base: string, shiny: string };
 
@@ -336,11 +336,11 @@ namespace RomReader {
         }
 
         protected evolutionMethods: EvoMethod[];
-        protected ParseEvolution(method: number, evoParam: number, speciesId: number): Pokemon.Evolution {
+        protected ParseEvolution(method: number, evoParam: number, speciesId: number, extra?: number): Pokemon.Evolution {
             if (!method)
                 return null;
             if (this.evolutionMethods[method])
-                return this.evolutionMethods[method](evoParam, speciesId);
+                return this.evolutionMethods[method](evoParam, speciesId, extra);
             return { speciesId, specialCondition: `Unknown evolution method: ${method} (${evoParam})` };
         }
 
@@ -388,7 +388,23 @@ namespace RomReader {
             ScrollOfWaters: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Use Scroll Of Waters` }),
             MegaEvo: (evoParam: number, speciesId: number) => ({ speciesId, item: evoParam ? this.GetItem(evoParam) : undefined, specialCondition: evoParam ? "Mega Evolve With" : "Mega Evolution" }),
             MegaEvoMove: (evoParam: number, speciesId: number) => ({ speciesId, move: evoParam ? this.GetMove(evoParam) : undefined, specialCondition: evoParam ? "Mega Evolve Knowing" : "Mega Evolution" }),
-            MegaEvoPrimal: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: "Primal Reversion" })
+            MegaEvoPrimal: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: "Primal Reversion" }),
+            Gigantamax: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: "Gigantamax" }),
+
+            //CFRU
+            LevelInRainOrFog: (evoParam: number, speciesId: number) => ({ speciesId, level: evoParam || undefined, specialCondition: "In Rain or Fog" }),
+            StoneExtra: (evoParam: number, speciesId: number, extra?: number) => (((this.GetItem(evoParam) || { name: undefined }).name || "").toLowerCase() == "dawn stone" ? (!!extra ? this.EvolutionMethod.StoneFemale : this.EvolutionMethod.StoneMale) : this.EvolutionMethod.Stone)(evoParam, speciesId),
+            LevelWithType: (evoParam: number, speciesId: number, extra?: number) => ({ speciesId, level: evoParam || undefined, specialCondition: `Level With ${this.types[extra || 0]} Type In Party` }),
+            LevelOnMap: (evoParam: number, speciesId: number, extra?: number) => ({ speciesId, specialCondition: `Level at ${(this.GetMap(extra || 0, evoParam) || { name: "a certain place" }).name}` }),
+            LevelAtTime: (evoParam: number, speciesId: number, extra?: number) => ({ speciesId, level: evoParam, specialCondition: `Between ${(extra || 0) >> 8}:00 and ${(extra || 0) % 0x100}:00` }),
+            LevelIfFlagSet: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Level when flag 0x${evoParam.toString(16)} is set` }),
+            DamageLocation: (evoParam: number, speciesId: number) => ({ speciesId, specialCondition: `Stand in Place After Taking 49+ HP Of Damage` }),
+            StoneLocation: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), specialCondition: "Stand in Place and Use Item" }),
+            LevelHoldItem: (evoParam: number, speciesId: number, extra?: number) => ({ speciesId, item: this.GetItem(extra || 0), level: evoParam, specialCondition: "Level While Holding" }),
+            StoneHoldItem: (evoParam: number, speciesId: number, extra?: number) => ({ speciesId, item: this.GetItem(evoParam), specialCondition: `Use While Holding ${(this.GetItem(extra || 0) || { name: undefined }).name}` }),
+            LevelWithMoveMale: (evoParam: number, speciesId: number) => ({ speciesId, move: this.GetMove(evoParam), specialCondition: "Male Only" }),
+            LevelWithMoveFemale: (evoParam: number, speciesId: number) => ({ speciesId, move: this.GetMove(evoParam), specialCondition: "Female Only" }),
+            StoneNight: (evoParam: number, speciesId: number) => ({ speciesId, item: this.GetItem(evoParam), timeOfDay: "Night" })
         }
 
         private surfExp = /^surf$/i;

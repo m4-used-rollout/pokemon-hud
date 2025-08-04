@@ -32,10 +32,9 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
                     <span className="quantity">{i.count || 1}</span>
                 </div>)}
             </div>}
-            {config.generation < 6 && (!t.items || !t.items.candy) && !hudTheme.includes("n3ds-theme") && typeof t.frontier_symbols === "undefined" && <Badges bitfield={t.badges} rematch={t.rematch_available} />}
-            {config.generation < 6 && typeof t.frontier_symbols === "number" && <BattleFrontier bitfield={t.frontier_symbols} />}
+            {config.generation < 6 && (!t.items || !t.items.candy) && !hudTheme.includes("n3ds-theme") && (typeof t.frontier_symbols === "number" && config.frontierFacilities && <BattleFrontier bitfield={t.frontier_symbols} /> || <Badges bitfield={t.badges} rematch={t.rematch_available} />)}
             {t.time && <Clock time={t.time} />}
-            {config.generation < 6 && !hudTheme.includes("n3ds-theme") && (!t.time || config.generation < 3) && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
+            {config.generation < 6 && !hudTheme.includes("n3ds-theme") /*&& (!t.time || config.generation < 3)*/ && config.badgeCount < 9 && t.options && displayOpts.length > 1 && <div className="options">
                 {displayOpts.map(opt => t.options[opt] && <span key={opt} className={`option ${cleanString(opt)}`} data-val={cleanString(t.options[opt])}>{t.options[opt]}</span>)}
             </div>}
             <FitToWidth className="bottom-row">

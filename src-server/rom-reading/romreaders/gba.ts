@@ -22,13 +22,18 @@ namespace RomReader {
         protected LoadConfig(romData: Buffer): PGEINI {
             this.romHeader = romData.toString('ascii', 0xAC, 0xB0);
             let iniData = ini.parse(fs.readFileSync(this.iniFileLocation, 'utf8'));
-            let romIniData = iniData[this.romHeader] || {}
+            let romIniData:PGEINI = iniData[this.romHeader] || {}
             romIniData.Header = this.romHeader;
+            Object.keys(romIniData).forEach(k=> {
+                const num = parseInt(romIniData[k],16)
+                if (num > 0x8000000)
+                    romIniData[k] = (num % 0x8000000).toString(16);
+            });
             return romIniData;
         }
 
         protected ReadRomPtr(romData: Buffer, addr: number = 0) {
-            return romData.readUInt32LE(addr) - 0x8000000;
+            return romData.readUInt32LE(addr) % 0x8000000;
         }
 
         protected ReadPtrBlock(romData: Buffer, startAddr: number, endAddr?: number) {

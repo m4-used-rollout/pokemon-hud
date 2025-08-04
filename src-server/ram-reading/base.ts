@@ -118,7 +118,7 @@ namespace RamReader {
         }
 
         protected ReadSync(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
-            this.TrainerProcessor(state, transmitState)()
+            this.TrainerProcessor(state, transmitState, this.ReadTrainerSync.bind(this))()
                 .then(() => state.generation > 3 && state.party && state.in_battle ? null : this.PartyProcessor(state, transmitState)())
                 .then(this.BattleProcessor(state, transmitState))
                 .then(this.PCProcessor(state, transmitState))
@@ -152,17 +152,17 @@ namespace RamReader {
                 });
         public ReadTrainerSync: () => Promise<TPP.TrainerData> = () =>
             new Promise((resolve, reject) => {
-                const trainerData = {} as Partial<TPP.TrainerData> as TPP.TrainerData;
+                const trainerData = { ...this.currentState } as Partial<TPP.TrainerData> as TPP.TrainerData;
                 const queue = this.TrainerChunkReaders.filter(f => !!f);
-                function nextPromise() {
+                (function nextPromise() {
                     if (queue.length)
-                        queue.shift()()
+                        queue.shift()(trainerData)
                             .then(chunk => Object.assign(trainerData, chunk))
                             .catch(err => console.error(err))
                             .finally(nextPromise);
                     else
                         resolve(trainerData);
-                }
+                })();
             });
 
 
@@ -248,7 +248,7 @@ namespace RamReader {
             }));
         }
 
-        protected abstract TrainerChunkReaders: Array<() => Promise<TPP.TrainerData>>;
+        protected abstract TrainerChunkReaders: Array<(trainerData?: TPP.TrainerData) => Promise<TPP.TrainerData>>;
 
         public HTTPGet(url: string) {
             return new Promise<string>((resolve, reject) => {
@@ -284,17 +284,17 @@ namespace RamReader {
             });
         }
 
-        public CachedEmulatorCaller<T>(path: string[] | string, callback: (data: string) => (T | Promise<T>), ignoreCharStart = -1, ignoreCharEnd = -1) {
+        public CachedEmulatorCaller<T, U = never>(path: string[] | string, callback: (data: string, extraData?: U) => (T | Promise<T>), ignoreCharStart = -1, ignoreCharEnd = -1) {
             const cacheKey = Array.isArray(path) ? path.join(' ') : path;
             //console.log(cacheKey);
-            return () => this.CallEmulator<T>(path, data => {
+            return (extraData?: U) => this.CallEmulator<T>(path, data => {
                 let stringData = data;
                 if (ignoreCharStart >= 0 && ignoreCharEnd >= ignoreCharStart) {
                     stringData = (ignoreCharStart ? data.slice(0, ignoreCharStart) : "") + data.slice(ignoreCharEnd);
                 }
                 if (this.stringDataCache[cacheKey] != stringData) {
                     // try {
-                    const result = callback(data);
+                    const result = callback(data, extraData);
                     if (result) {
                         this.stringDataCache[cacheKey] = stringData;
                         return result;
@@ -320,8 +320,8 @@ namespace RamReader {
             return nodes;
         }
 
-        public WrapBytes<T>(callback: (data: Buffer) => T) {
-            return (hex: string) => callback(Buffer.from(hex, "hex"));
+        public WrapBytes<T, U = never>(callback: (data: Buffer, extraData?: U) => T) {
+            return (hex: string, extraData?: U) => callback(Buffer.from(hex, "hex"), extraData);
         }
 
         protected Markings = ['●', '▲', '■', '♥', '★', '♦'];
@@ -501,7 +501,7 @@ namespace RamReader {
 
         public ParseOptions = (rawOptions: number, optionsSpec = this.OptionsSpec) => ParseOptions(rawOptions, optionsSpec);
         public SetOptions = (rawOptions: number, desiredOptions: TPP.Options, optionsSpec = this.OptionsSpec) => SetOptions(rawOptions, desiredOptions, optionsSpec);
-        public ShouldForceOptions = (options: TPP.Options, optionsSpec = this.OptionsSpec) => Object.keys(this.config.forceOptions || {}).filter(k => !!optionsSpec[k]).some(k => this.config.forceOptions[k].toLowerCase() != options[k].toLowerCase());
+        public ShouldForceOptions = (options: TPP.Options, optionsSpec = this.OptionsSpec) => Object.keys(this.config.forceOptions || {}).filter(k => !!optionsSpec[k]).filter(k => this.config.forceOptions[k].toLowerCase() != options[k].toLowerCase());
 
         public GetSetFlags(flagBytes: Buffer, flagCount = flagBytes.length * 8, offset = 0) {
             return this.rom.GetSetFlags(flagBytes, flagCount, offset);
@@ -553,9 +553,9 @@ namespace RamReader {
         //     }));
         // }
 
-        protected StructEmulatorCaller<T>(domain: string, struct: Record<string, number>, symbolMapper: (symbol: string) => string | number, callback: (struct: Record<string, Buffer>) => (T | Promise<T>)): () => Promise<T>;
-        protected StructEmulatorCaller<T>(domain: string[], struct: Record<string, number>, symbolMapper: (symbol: string) => { address: string | number, domain: string }, callback: (struct: Record<string, Buffer>) => (T | Promise<T>)): () => Promise<T>;
-        protected StructEmulatorCaller<T>(domain: string | string[], struct: Record<string, number>, symbolMapper: (symbol: string) => string | number | { address: string | number, domain: string }, callback: (struct: Record<string, Buffer>) => (T | Promise<T>)): () => Promise<T> {
+        protected StructEmulatorCaller<T, U = never>(domain: string, struct: Record<string, number>, symbolMapper: (symbol: string) => string | number, callback: (struct: Record<string, Buffer>, extraData?: U) => (T | Promise<T>)): (extraData?: U) => Promise<T>;
+        protected StructEmulatorCaller<T, U = never>(domain: string[], struct: Record<string, number>, symbolMapper: (symbol: string) => { address: string | number, domain: string }, callback: (struct: Record<string, Buffer>, extraData?: U) => (T | Promise<T>)): (extraData?: U) => Promise<T>;
+        protected StructEmulatorCaller<T, U = never>(domain: string | string[], struct: Record<string, number>, symbolMapper: (symbol: string) => string | number | { address: string | number, domain: string }, callback: (struct: Record<string, Buffer>, extraData?: U) => (T | Promise<T>)): (extraData?: U) => Promise<T> {
             let symbols = Object.keys(struct).map(s => {
                 let mapping = symbolMapper(s);
                 if (typeof mapping !== "object")
@@ -581,8 +581,8 @@ namespace RamReader {
             //         contiguousSymbols.push(lastSymbol = s);
             // });
             const calls = domains.map(d => `${d.domain}/ReadByteRange/${contiguousSymbols.filter(s => s.domain == d.domain).map(s => `${typeof s.address === "number" ? s.address.toString(16) : s.address}/${s.length.toString(16)}`).join('/')}`)
-            console.dir(calls);
-            return this.CachedEmulatorCaller(calls, this.WrapBytes(data => {
+            //console.dir(calls);
+            return this.CachedEmulatorCaller(calls, this.WrapBytes((data, extraData) => {
                 let offset = 0;
                 const outStruct: Record<string, Buffer> = {};
                 symbols.forEach(s => {
@@ -590,7 +590,7 @@ namespace RamReader {
                     outStruct[s.symbol] = data.slice(offset, offset + s.length);
                     offset += s.length;
                 });
-                return callback(outStruct);
+                return callback(outStruct, extraData);
             }));
         }
 

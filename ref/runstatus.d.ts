@@ -62,11 +62,14 @@ declare namespace TPP {
         pikachu_happiness?: number;
         rematch_available?: number;
         time?: {
-            tod?:string;
+            tod?: string;
             d: string;
             h: number;
             m: number;
             s: number;
+            year?: number;
+            month?: number;
+            date?: number;
         };
     }
 

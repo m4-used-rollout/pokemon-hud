@@ -52,15 +52,40 @@ namespace RamReader {
 
         public ReadParty = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.gPlayerParty}/${this.rom.config.PartyBytes}`, this.WrapBytes(data => this.ParseParty(data)));
 
-        public ReadPC = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.PCBlockAddress}/${this.rom.config.PCBytes}`, this.WrapBytes(data => ({
-            current_box_number: data.readUInt32LE(0),
-            // boxes: [],
-            boxes: this.rom.ReadArray(data.slice(4, 0x8344), 0, 30 * 80, 14).map((box, i) => ({
-                box_number: i + 1,
-                box_name: /*["The Fallen", "The Forgiven", "The Innocent", "The Lost", "The Remembered", "The Loved", "The Mourned", "The Troubled", "The Faithful", "The Forlorn"][i] ||*/ this.rom.ConvertText(data.slice(0x8344 + (i * 9), 0x8344 + ((i + 1) * 9))), //TriHard Names
-                box_contents: this.rom.ReadArray(box, 0, 80, 30).map((pkmdata, b) => this.ParsePokemon(pkmdata, b + 1)).filter(p => !!p)
-            } as TPP.BoxData))//.filter(b => b.box_contents.length > 0) // TriHard Filter
-        } as TPP.CombinedPCData)));
+        // CFRU
+        // #define BOX_20_RAM ((struct CompressedPokemon*) 0x203CB44)
+        // #define BOX_21_RAM (BOX_20_RAM + 30)
+        // #define BOX_22_RAM (BOX_21_RAM + 30) //Should end at 0x203DFA8
+        // #define BOX_23_RAM ((struct CompressedPokemon*) 0x2027434)
+        // #define BOX_24_RAM (BOX_23_RAM + 30)
+        // #define BOX_25_RAM ((struct CompressedPokemon*) 0x2024638)
+
+        public ReadPC = this.CachedEmulatorCaller(this.rom.isCFRU
+            ? `ReadByteRange/${this.rom.config.PCBlockAddress}/${(58 * 30 * 19).toString(16)}/203CB44-4/${(58 * 30 * 3).toString(16)}/2027434-4/${(58 * 30 * 2).toString(16)}/2024638-4/${(58 * 30).toString(16)}/${this.rom.config.PCBlockAddress}+${(58 * 30 * 19).toString(16)}/${(parseInt(this.rom.config.PCBytes, 16) - (58 * 30 * 19)).toString(16)}`
+            : `ReadByteRange/${this.rom.config.PCBlockAddress}/${this.rom.config.PCBytes}`, this.WrapBytes(data => {
+                const pkmnBytes = this.rom.isCFRU ? 58 : 80;
+                const boxes = this.rom.isCFRU ? 25 : 14;
+                const boxSlots = 30;
+                const boxBytes = boxSlots * pkmnBytes;
+                const boxesBytes = boxes * boxBytes;
+                const boxNameLength = 9;
+                const parser = (this.rom.isCFRU ? this.ParseCFRUCompressedBoxMon : this.ParsePokemon).bind(this);
+                //const boxNames = ["The Fallen", "The Forgiven", "The Innocent", "The Lost", "The Remembered", "The Loved", "The Mourned", "The Troubled", "The Faithful", "The Forlorn"]; //TriHard Names
+                const boxNames = this.rom.ReadArray(data, data.length - boxNameLength * boxes, boxNameLength, boxes)
+                    .map(b => this.rom.ConvertText(b));
+                if (this.rom.isCFRU) //Box names after 14 are listed backwards before 1
+                    boxNames.splice(0, 25 - 14).reverse().forEach(b => boxNames.push(b));
+                return {
+                    current_box_number: data.readUInt32LE(0) + 1,
+                    // boxes: [],
+                    boxes: this.rom.ReadArray(data.slice(4), 0, boxBytes, boxes).map((box, i) => ({
+                        box_number: i + 1,
+                        box_name: boxNames[i],
+                        box_contents: this.rom.ReadArray(box, 0, pkmnBytes, boxSlots)
+                            .map((pkmdata, b) => parser(pkmdata, b + 1)).filter(p => !!p)
+                    } as TPP.BoxData))//.filter(b => b.box_contents.length > 0) // TriHard Filter
+                } as TPP.CombinedPCData;
+            }));
 
         public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.InBattleAddr}/1/${this.rom.config.gBattleTypeFlags}/4/${this.rom.config.gTrainerBattleOpponent_A}/4/${this.rom.config.gEnemyParty}/${this.rom.config.PartyBytes}/${this.rom.config.gBattleMons}/${this.rom.config.gBattleMonsBytes}/${this.rom.config.gBattlersCount}/${((parseInt(this.rom.config.gBattlerPositions, 16) - parseInt(this.rom.config.gBattlersCount, 16)) + 4).toString(16)}`, this.WrapBytes<TPP.BattleStatus>(data => {
             const in_battle = (data.readUInt8(0) & 2) > 0;
@@ -99,9 +124,10 @@ namespace RamReader {
 
         protected TrainerChunkReaders = [
             //Save Block 2
-            this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}/${(parseInt(this.rom.config.EncryptionKeyOffset || "FB", 16) + 4).toString(16)}`, this.WrapBytes(data => {
+            this.CachedEmulatorCaller<TPP.TrainerData, TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}/${(parseInt(this.rom.config.EncryptionKeyOffset || "FB", 16) + 4).toString(16)}`, this.WrapBytes((data, trainerData) => {
                 let dexValues = {};
                 //if (this.rom.romHeader == 'AXVE' || this.rom.romHeader == 'AXPE') {
+                if (!this.rom.isCFRU) {
                     const caughtList = this.GetSetFlags(data.slice(0x28), 412);
                     const seenList = this.GetSetFlags(data.slice(0x5C), 412);
                     dexValues = {
@@ -110,7 +136,7 @@ namespace RamReader {
                         seen: seenList.length,
                         seen_list: seenList,
                     };
-                //}
+                }
                 const rawOptions = data.readUInt32LE(0x13) & 0xFFFFFF;
                 const options = this.ParseOptions(rawOptions);
                 if (this.ShouldForceOptions(options)) {
@@ -121,7 +147,7 @@ namespace RamReader {
                     gender: data.readUInt8(8) ? "Female" : "Male",
                     id: data.readUInt16LE(10),
                     secret: data.readUInt16LE(12),
-                    options,
+                    options: { ...(trainerData || {}).options || {}, ...options },
                     ...dexValues,
                     security_key: this.rom.config.EncryptionKeyOffset ? data.readUInt32LE(parseInt(this.rom.config.EncryptionKeyOffset, 16)) : 0,
                 } as TPP.TrainerData;
@@ -154,30 +180,52 @@ namespace RamReader {
                 EncryptionKeyOffset: 4,
                 MoneyOffset: 8,
                 ItemPCOffset: parseInt(this.rom.config.ItemPCCount, 16) * 4,
-                // ItemCandyOffset: parseInt(this.rom.config.ItemCandyCount || "0", 16) * 4, // TTH
-                ItemPocketOffset: parseInt(this.rom.config.ItemPocketCount, 16) * 4,
-                ItemKeyOffset: parseInt(this.rom.config.ItemKeyCount, 16) * 4,
-                ItemBallOffset: parseInt(this.rom.config.ItemBallCount, 16) * 4, // Remove for TTH
-                ItemTMOffset: parseInt(this.rom.config.ItemTMCount, 16) * 4,
-                ItemBerriesOffset: parseInt(this.rom.config.ItemBerriesCount, 16) * 4
-            }, sym => (this.rom.config[sym] ? `${sym == "EncryptionKeyOffset" ? this.rom.config.SaveBlock2Address : this.rom.config.SaveBlock1Address}+${this.rom.config[sym]}` : 0), struct => {
+                ... (this.rom.isCFRU ? {
+                    gBagRegularItems: parseInt(this.rom.config.ItemPocketCount) * 4,
+                    gBagKeyItems: parseInt(this.rom.config.ItemKeyCount) * 4,
+                    gBagPokeBalls: parseInt(this.rom.config.ItemBallCount) * 4,
+                    gBagTMHM: parseInt(this.rom.config.ItemTMCount) * 4,
+                    gBagBerries: parseInt(this.rom.config.ItemBerriesCount) * 4,
+                    DexSeenFlagsOffset: Math.floor(999 / 8) + 1,
+                    DexCaughtFlagsOffset: Math.floor(999 / 8) + 1
+                } : {
+                    // ItemCandyOffset: parseInt(this.rom.config.ItemCandyCount || "0", 16) * 4, // TTH
+                    ItemPocketOffset: parseInt(this.rom.config.ItemPocketCount, 16) * 4,
+                    ItemKeyOffset: parseInt(this.rom.config.ItemKeyCount, 16) * 4,
+                    ItemBallOffset: parseInt(this.rom.config.ItemBallCount, 16) * 4, // Remove for TTH
+                    ItemTMOffset: parseInt(this.rom.config.ItemTMCount, 16) * 4,
+                    ItemBerriesOffset: parseInt(this.rom.config.ItemBerriesCount, 16) * 4
+                })
+            }, sym => (this.rom.config[sym] ? this.rom.isCFRU && sym.charAt(0) == 'g' ? this.rom.config[sym] : `${sym == "EncryptionKeyOffset" ? this.rom.config.SaveBlock2Address : this.rom.config.SaveBlock1Address}+${this.rom.config[sym]}` : 0), struct => {
                 const key = struct.EncryptionKeyOffset ? struct.EncryptionKeyOffset.readInt32LE(0) : 0;
                 const halfKey = key & 0xFFFF;
                 const items: TPP.TrainerData["items"] = {
-                    pc: this.ParseItemCollection(struct.ItemPCOffset, struct.ItemPCOffset.length / 4), //no key
-                    items: this.ParseItemCollection(struct.ItemPocketOffset, struct.ItemPocketOffset.length / 4, halfKey),
-                    key: this.ParseItemCollection(struct.ItemKeyOffset, struct.ItemKeyOffset.length / 4, halfKey),
-                    balls: this.ParseItemCollection(struct.ItemBallOffset, struct.ItemBallOffset.length / 4, halfKey), // Remove for TTH
-                    tms: this.ParseItemCollection(struct.ItemTMOffset, struct.ItemTMOffset.length / 4, halfKey),
-                    berries: this.ParseItemCollection(struct.ItemBerriesOffset, struct.ItemBerriesOffset.length / 4, halfKey)
+                    pc: this.ParseItemCollection(struct.ItemPCOffset), //no key
+                    items: this.ParseItemCollection(struct.gBagRegularItems || struct.ItemPocketOffset, undefined, halfKey),
+                    key: this.ParseItemCollection(struct.gBagKeyItems || struct.ItemKeyOffset, undefined, halfKey),
+                    balls: this.ParseItemCollection(struct.gBagPokeBalls || struct.ItemBallOffset, undefined, halfKey), // Remove for TTH
+                    tms: this.ParseItemCollection(struct.gBagTMHM || struct.ItemTMOffset, undefined, halfKey),
+                    berries: this.ParseItemCollection(struct.gBagBerries || struct.ItemBerriesOffset, undefined, halfKey)
                 };
                 // if (struct.ItemCandyOffset)
                 //     items.candy = this.ParseItemCollection(struct.ItemCandyOffset, struct.ItemCandyOffset.length / 4, halfKey); //TTH
+                let dexValues = {};
+                if (this.rom.isCFRU) {
+                    const caughtList = this.GetSetFlags(struct.DexCaughtFlagsOffset);
+                    const seenList = this.GetSetFlags(struct.DexSeenFlagsOffset);
+                    dexValues = {
+                        caught: caughtList.length,
+                        caught_list: caughtList,
+                        seen: seenList.length,
+                        seen_list: seenList,
+                    };
+                }
                 return {
                     money: struct.MoneyOffset.readUInt32LE(0) ^ key,
                     coins: struct.MoneyOffset.readUInt16LE(4) ^ halfKey,
                     ball_count: items.balls.reduce((sum, b) => sum + b.count, 0),  // Remove for TTH
-                    items
+                    items,
+                    ...dexValues
                 } as TPP.TrainerData
             }),
             // this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.MoneyOffset}/8/${this.rom.config.SaveBlock1Address}+${this.rom.config.ItemPCOffset}/${(this.TotalItemSlots() * 4).toString(16)}${this.rom.config.EncryptionKeyOffset ? `/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4` : ""}`, this.WrapBytes(data => {
@@ -214,17 +262,37 @@ namespace RamReader {
             //     } as TPP.TrainerData
             // })),
             //Badges Ruby/Sapphire/FireRed/LeafGreen
-            !this.rom.config.VarsOffset && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/1000`, this.WrapBytes(data => {
+            (!this.rom.config.VarsOffset || this.rom.isCFRU) && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/1000`, this.WrapBytes(data => {
                 let badges = (data.slice(parseInt(this.rom.config.BadgesOffset, 16) || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8)).readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100
                 if (gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()])
                     badges = this.ReadBadgeFlags(data, gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()]);
                 return { badges } as TPP.Goals
             })),
+            //Vars for Options/Missions (CFRU)
+            this.rom.isCFRU && this.CachedEmulatorCaller<TPP.TrainerData, TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.VarsOffset}/2000` + (this.rom.config["gExpandedVars"] ? `/${this.rom.config["gExpandedVars"]}/${this.rom.config["ExpandedVarsSize"] || "400"}` : ""), this.WrapBytes((data, trainerData) => {
+                function getVar(varId: number) {
+                    return data.readUInt16LE((varId % 0x4000) * 2);
+                }
+                const options = {} as TPP.TrainerData["options"];
+                Object.keys(this.VarOptionsSpec).forEach(k => options[k] = ParseOption(getVar(this.VarOptionsSpec[k].var), this.VarOptionsSpec[k]));
+                this.ShouldForceOptions(options, this.VarOptionsSpec).map(k => ({ k, v: this.VarOptionsSpec[k] }))
+                    .forEach(kv => this.CallEmulator(`WriteU16LE/${kv.v.var >= 0x5000 && !!this.rom.config["gExpandedVars"] ? this.rom.config["gExpandedVars"] : `${this.rom.config.SaveBlock1Address}+${this.rom.config.VarsOffset}`}+${(kv.v.var % (!!this.rom.config["gExpandedVars"] ? 0x1000 : 0x4000) * 2).toString(16)}/${parseInt(Object.keys(kv.v)[Object.values(kv.v).findIndex(k => k.toLowerCase() == this.config.forceOptions[kv.k].toLowerCase())]).toString(16)}`)); 
+                return {
+                    options: { ...(trainerData || {}).options || {}, ...options },
+                    game_stats: {
+                        ...((trainerData || {}).game_stats || {}),
+                        "Missions Completed": getVar(0x501A)
+                    }
+                };
+            })),
             //Stats (FireRed)
-            !this.rom.config.VarsOffset && this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4/${this.rom.config.SaveBlock1Address}+${this.rom.config.GameStatsOffset}/${this.rom.config.GameStatsOffset}`, this.WrapBytes(data => {
+            (!this.rom.config.VarsOffset || this.rom.isCFRU) && this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData, TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4/${this.rom.config.SaveBlock1Address}+${this.rom.config.GameStatsOffset}/${this.rom.config.GameStatsOffset}`, this.WrapBytes((data, trainerData) => {
                 const key = data.readUInt32LE(0);
                 return {
-                    game_stats: this.ParseGameStats(this.rom.ReadArray(data, 4, 4, parseInt(this.rom.config.GameStatsBytes, 16) / 4).map(s => (s.readUInt32LE(0) ^ key) >>> 0))
+                    game_stats: {
+                        ...((trainerData || {}).game_stats || {}),
+                        ...this.ParseGameStats(this.rom.ReadArray(data, 4, 4, parseInt(this.rom.config.GameStatsBytes, 16) / 4).map(s => (s.readUInt32LE(0) ^ key) >>> 0))
+                    }
                 };
             })),
             //Badges Touhoumon
@@ -245,7 +313,7 @@ namespace RamReader {
                 } as TPP.Goals
             })),
             ///Flags/Vars/Stats Emerald
-            this.rom.config.VarsOffset && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/${(parseInt(this.rom.config.GameStatsOffset || "0", 16) - parseInt(this.rom.config.FlagsOffset, 16) + parseInt(this.rom.config.GameStatsBytes || "0", 16)).toString(16)}/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
+            this.rom.config.Header == "BPEE" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/${(parseInt(this.rom.config.GameStatsOffset || "0", 16) - parseInt(this.rom.config.FlagsOffset, 16) + parseInt(this.rom.config.GameStatsBytes || "0", 16)).toString(16)}/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4`, this.WrapBytes(data => {
                 const GameStatsOffset = parseInt(this.rom.config.GameStatsOffset || "0", 16);
                 const FlagsOffset = parseInt(this.rom.config.FlagsOffset, 16);
                 const GameStatsBytes = parseInt(this.rom.config.GameStatsBytes || "0", 16);
@@ -272,7 +340,7 @@ namespace RamReader {
                 } as TPP.TrainerData
             }), 760, 1668), //ignore a large swath in the middle of vars/stats because it changes every step
             //Clock
-            this.rom.config.IwramClockAddr && this.CachedEmulatorCaller<TPP.TrainerData>(`${parseInt(this.rom.config.IwramClockAddr, 16) < 0x8000 ? 'IWRAM/' : ""}ReadByteRange/${this.rom.config.IwramClockAddr}/6`, this.WrapBytes(data => ({
+            (this.rom.config.IwramClockAddr || this.rom.config["gClock"]) && this.CachedEmulatorCaller<TPP.TrainerData>(`${parseInt(this.rom.config.IwramClockAddr || this.rom.config["gClock"], 16) < 0x8000 ? 'IWRAM/' : ""}ReadByteRange/${this.rom.config.IwramClockAddr || this.rom.config["gClock"]}/A`, this.WrapBytes(data => ({
                 // struct Time
                 // {
                 //     /*0x00*/ s16 days;
@@ -281,11 +349,27 @@ namespace RamReader {
                 //     /*0x04*/ s8 seconds;
                 //     /*0x05*/ s8 dayOfWeek;
                 // };
+                // struct Clock
+                // {
+                //     /*0x00*/ u16 year;
+                //     /*0x02*/ u8 _; //Unused - left in to maintain compatability with old hacks
+                //     /*0x03*/ u8 month;
+                //     /*0x04*/ u8 day;
+                //     /*0x05*/ u8 dayOfWeek;
+                //     /*0x06*/ u8 hour;
+                //     /*0x07*/ u8 minute;
+                //     /*0x08*/ u8 second;
+                // };
                 time: {
-                    h: data.readUInt8(2),
-                    m: data.readUInt8(3),
-                    s: data.readUInt8(4),
-                    d: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][data.readUInt8(5) % 7]
+                    h: data.readUInt8(this.rom.isCFRU ? 6 : 2),
+                    m: data.readUInt8(this.rom.isCFRU ? 7 : 3),
+                    s: data.readUInt8(this.rom.isCFRU ? 8 : 4),
+                    d: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][data.readUInt8(5) % 7],
+                    ...(this.rom.isCFRU ? {
+                        year: data.readUInt16LE(0),
+                        month: data.readUInt8(3),
+                        date: data.readUInt8(4)
+                    } : {})
                 }
             } as TPP.TrainerData))),
             //Rival Name
@@ -331,6 +415,97 @@ namespace RamReader {
         }
 
         private pkmCache: { [key: number]: TPP.PartyPokemon & TPP.BoxedPokemon } = {};
+
+        protected ParseCFRUCompressedBoxMon(pkmdata: Buffer, boxSlot: number): TPP.BoxedPokemon {
+            const pkmn = {} as Gen3PartyPokemon;
+
+            pkmn.personality_value = pkmdata.readUInt32LE(0);
+            if (!pkmdata.readUInt32LE(0x4) && !pkmn.personality_value) {
+                //console.error("Pokemon OT Id and PV are both 0!");
+                return null;
+            }
+            pkmn.original_trainer = {
+                name: this.rom.ConvertText(pkmdata.slice(0x14, 0x14 + 7)),
+                id: pkmdata.readUInt16LE(0x4),
+                secret: pkmdata.readUInt16LE(0x6)
+            }
+
+            pkmn.name = this.rom.ConvertText(pkmdata.slice(0x8, 0x8 + 10));
+            pkmn.language = Gen3Language[pkmdata.readUInt8(0x12)] || pkmdata.readUInt16LE(18).toString();
+            pkmn.marking = this.ParseMarkings(pkmdata.readUInt8(0x1B));
+            pkmn.shiny = this.CalculateShiny(pkmn);
+
+            pkmn.species = Pokemon.Convert.SpeciesToRunStatus(this.rom.GetSpecies(pkmdata.readUInt16LE(0x1C)));
+            const itemId = pkmdata.readUInt16LE(0x1E)
+            pkmn.held_item = itemId ? Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(itemId)) : null;
+            const exp = pkmdata.readUInt32LE(0x20);
+            const ppUps = pkmdata.readUInt8(0x24);
+            pkmn.friendship = pkmdata.readUInt8(0x25);
+            const pokeball = pkmdata.readUInt8(0x26);
+
+            pkmn.moves = [
+                //11111111|11222222|22223333|33333344|44444444
+                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x27) >>> 0 & 0x3FF), 0, (ppUps >>> 0) % 4),
+                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x28) >>> 2 & 0x3FF), 0, (ppUps >>> 2) % 4),
+                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x29) >>> 4 & 0x3FF), 0, (ppUps >>> 4) % 4),
+                Pokemon.Convert.MoveToRunStatus(this.rom.GetMove(pkmdata.readUInt16LE(0x2A) >>> 6 & 0x3FF), 0, (ppUps >>> 6) % 4),
+            ].filter(m => m && m.id);
+
+            pkmn.evs = {
+                hp: pkmdata.readUInt8(0x2C),
+                attack: pkmdata.readUInt8(0x2D),
+                defense: pkmdata.readUInt8(0x2E),
+                speed: pkmdata.readUInt8(0x2F),
+                special_attack: pkmdata.readUInt8(0x30),
+                special_defense: pkmdata.readUInt8(0x31)
+            }
+            pkmn.pokerus = this.ParsePokerus(pkmdata.readUInt8(0x32));
+            const metArea = pkmdata.readUInt8(0x33) - 88;
+            const met = pkmdata.readUInt16LE(0x34);
+            const ivs = pkmdata.readUInt32LE(0x36);
+            pkmn.ivs = {
+                hp: ivs % 32,
+                attack: (ivs >>> 5) % 32,
+                defense: (ivs >>> 10) % 32,
+                speed: (ivs >>> 15) % 32,
+                special_attack: (ivs >>> 20) % 32,
+                special_defense: (ivs >>> 25) % 32
+            }
+            pkmn.is_egg = (ivs >>> 30) % 2 > 0;
+            pkmn.ability = !!(ivs >>> 31) && pkmn.species.abilities.length > 2 ? pkmn.species.abilities[2] : pkmn.species.abilities[pkmn.personality_value & 1];
+            if (pkmn.ability == this.rom.GetAbility(0))
+                pkmn.ability = pkmn.species.abilities[0];
+
+            pkmn.met = {
+                area_id: metArea,
+                area_name: this.rom.GetAreaName(metArea),
+                level: met % 128,
+                game: this.ParseOriginalGame((met >>> 7) % 16),
+                caught_in: this.rom.GetItem(this.rom.MapCaughtBallId(pokeball)).name,
+            };
+            pkmn.original_trainer.gender = this.ParseGender(met >>> 15);
+
+            if (pkmn.species) {
+                pkmn.form = this.rom.GetSpecies(pkmn.species.id).formNumber;
+                pkmn.gender = this.CalculateGender(pkmn.species.gender_ratio, pkmn.personality_value);
+                if (pkmn.species.expFunction) {
+                    pkmn.level = pkmn.level || this.CalculateLevelFromExp(exp, pkmn.species.expFunction);
+                    pkmn.experience = this.CalculateExpVals(exp, pkmn.level, pkmn.species.expFunction);
+                }
+                const moveLearn = this.rom.GetNextMoveLearn(pkmn.species.id, pkmn.form, pkmn.level, pkmn.moves.map(m => m.id));
+                if (moveLearn)
+                    pkmn.next_move = { level: moveLearn.level, name: null, id: null, type: moveLearn.type };
+
+                if (pkmn.name.toLowerCase() == pkmn.species.name.toLowerCase())
+                    pkmn.name = pkmn.species.name;
+            }
+
+            if (boxSlot)
+                pkmn.box_slot = boxSlot;
+
+            return pkmn;
+        }
+
         protected ParsePokemon(pkmdata: Buffer, boxSlot?: number): TPP.PartyPokemon & TPP.BoxedPokemon {
             const pkmn = {} as Gen3PartyPokemon;
             pkmn.personality_value = pkmdata.readUInt32LE(0);
@@ -349,7 +524,9 @@ namespace RamReader {
             pkmn.marking = this.ParseMarkings(pkmdata.readUInt8(27));
             pkmn.checksum = pkmdata.readUInt16LE(28);
             pkmn.shiny = this.CalculateShiny(pkmn);
-            const sections = this.Descramble(this.Decrypt(pkmdata.slice(32, 80), pkmn.encryption_key, pkmn.checksum), pkmn.personality_value);
+            const sections = this.rom.isCFRU
+                ? this.Descramble(pkmdata.slice(32, 80), 0)
+                : this.Descramble(this.Decrypt(pkmdata.slice(32, 80), pkmn.encryption_key, pkmn.checksum), pkmn.personality_value);
             if (!sections) {
                 return this.pkmCache[pkmn.personality_value] || null;
             }
@@ -361,6 +538,7 @@ namespace RamReader {
             const exp = sections.A.readUInt32LE(4);
             const ppUps = sections.A.readUInt8(8);
             pkmn.friendship = sections.A.readUInt8(9);
+            const pokeball = sections.A.readUInt8(10); // CFRU
 
             //Moves
             pkmn.moves = [
@@ -392,7 +570,8 @@ namespace RamReader {
             pkmn.pokerus = this.ParsePokerus(sections.D.readUInt8(0));
             const met = sections.D.readUInt16LE(2);
             //const metMap = this.rom.GetMap(sections.D.readUInt8(1));
-            const metArea = sections.D.readUInt8(1) & 0xFF; // Blazing Emerald
+            const metArea = this.rom.FixAreaIdFRLG(sections.D.readUInt8(1));
+            //const metArea = sections.D.readUInt8(1) & 0xFF; // Blazing Emerald
             const bgCaughtIn = (sections.D[3] >>> 5 & 0x1F) - 1;
             pkmn.met = {
                 // map_id: metMap.id,
@@ -401,14 +580,17 @@ namespace RamReader {
                 area_id: metArea,
                 area_name: this.rom.GetAreaName(metArea),
                 level: met % 128,
-                // game: this.ParseOriginalGame((met >>> 7) % 16),
-                // caught_in: this.rom.GetItem(this.rom.MapCaughtBallId((met >>> 11) % 16)).name || ((met >>> 11) % 16).toString(),
-                game: this.ParseOriginalGame((met >>> 7) & 0x7), //Blazing Emerald
+                game: this.ParseOriginalGame((met >>> 7) % 16),
+                caught_in: this.rom.GetItem(this.rom.MapCaughtBallId((met >>> 11) % 16)).name || ((met >>> 11) % 16).toString(),
+                // game: this.ParseOriginalGame((met >>> 7) & 0x7), //Blazing Emerald
                 // caught_in: `${this.rom.GetItem(this.rom.MapCaughtBallId(bgCaughtIn + 1)).name}`// (${bgCaughtIn.toString(16)})`,
-                caught_in: this.rom.GetItem(bgCaughtIn).name || bgCaughtIn.toString(16),
+                // caught_in: this.rom.GetItem(bgCaughtIn).name || bgCaughtIn.toString(16),
                 //data: sections.D.slice(1, 4).toString('hex')
             }; // as TPP.Pokemon["met"];
             pkmn.original_trainer.gender = this.ParseGender(met >>> 15);
+            if (this.rom.isCFRU)
+                pkmn.met.caught_in = this.rom.GetItem(this.rom.MapCaughtBallId(pokeball)).name;
+
             const ivs = sections.D.readUInt32LE(4);
             pkmn.ivs = {
                 hp: ivs % 32,
@@ -420,6 +602,11 @@ namespace RamReader {
             }
             pkmn.is_egg = (ivs >>> 30) % 2 > 0;
             pkmn.ability = pkmn.species.abilities[ivs >>> 31] || (ivs >>> 31).toString();
+            if (this.rom.isCFRU)
+                pkmn.ability = !!(ivs >>> 31) && pkmn.species.abilities.length > 2 ? pkmn.species.abilities[2] : pkmn.species.abilities[pkmn.personality_value & 1];
+            if (pkmn.ability == this.rom.GetAbility(0))
+                pkmn.ability = pkmn.species.abilities[0];
+
             const ribbons = sections.D.readUInt32LE(8);
             pkmn.ribbons = this.ParseHoennRibbons(ribbons);
             //pkmn.fateful_encounter = (ribbons >>> 27) % 16;
@@ -559,14 +746,14 @@ namespace RamReader {
         }
 
         protected GameStatsMapping = ["Saves Made", "Play Time at First HoF", "Trends Started", "Berries Planted", "Bikes Traded",
-            "Steps Taken", "Interviews", "Battles Fought (Total)", "Battles Fought (Wild)", "Battles Fought (Trainer)", "Hall of Fame Entries",
+            "Steps Taken", this.rom.isCFRU ? "Items Found by Pickup" : "Interviews", "Battles Fought (Total)", "Battles Fought (Wild)", "Battles Fought (Trainer)", "Hall of Fame Entries",
             "Pokémon Caught", "Pokémon Caught While Fishing", "Eggs Hatched", "Pokémon Evolved", "Pokémon Center Uses", "Naps Taken at Home",
-            "Safari Zone Trips", "Trees Cut", "Rocks Smashed", "Secret Bases Moved", "Pokémon Traded",
-            "Blackouts", "Link Battles Won", "Link Battles Lost", "Link Battles Tied", "Splash Uses", "Struggle Uses",
-            "Hit the Jackpot", "Consecutive Roulette Wins", "Battle Tower Attempts", null, "Best Battle Tower Streak",
-            "Pokéblocks Made", "Pokéblocks Made With Friends", "Link Contests Won", "Contests Entered", "Contests Won",
+            "Safari Zone Trips", "Trees Cut", "Rocks Smashed", this.rom.isCFRU ? "Hidden Items Found" : "Secret Bases Moved", "Pokémon Traded",
+            this.rom.isCFRU ? "Trash Cans Checked" : "Blackouts", "Link Battles Won", "Link Battles Lost", "Link Battles Tied", "Splash Uses", "Struggle Uses",
+            "Hit the Jackpot", this.rom.isCFRU ? "Trainer Tips Gathered" : "Consecutive Roulette Wins", this.rom.isCFRU ? "Frontier Battles Won" : "Battle Tower Attempts", this.rom.isCFRU ? "Times Mined" : null, this.rom.isCFRU ? "Best Battle Facility Streak" : "Best Battle Tower Streak",
+            this.rom.isCFRU ? "Pokémon Caught Today" : "Pokéblocks Made", this.rom.isCFRU ? "Exp Earned Today" : "Pokéblocks Made With Friends", this.rom.isCFRU ? "Items Sold to Maniac" : "Link Contests Won", this.rom.isCFRU ? "Fossils Revived" : "Contests Entered", this.rom.isCFRU ? "Headbutt Encounters" : "Contests Won",
             "Shopping Trips", "Itemfinder Uses", "Rainstorms Soaked By", "Pokédex Views", "Ribbons Earned", "Ledges Jumped",
-            "TVs Watched", "Clocks Checked", "Lottery Wins", "Daycare Uses", "Cable Car Rides", "Hot Spring Baths", "Union Room Battles", "Berries Crushed"
+            "TVs Watched", this.rom.isCFRU ? "DexNav Scans" : "Clocks Checked", "Lottery Wins", "Daycare Uses", this.rom.isCFRU ? "Raid Battles" : "Cable Car Rides", "Hot Spring Baths", "Union Room Battles", "Berries Crushed"
         ];
         // , "Puzzles Completed"] //TTH
         //, "People Harassed", "Pokémon Lost", "Enemy Pokémon Defeated", "Things Stolen", "Elite Four Attempts"]; //TriHard Emerald
@@ -634,6 +821,16 @@ namespace RamReader {
                 2: "L=A"
             },
 
-        }
+        };
+
+        // CFRU
+        protected VarOptionsSpec: VarOptionsSpec = {
+            difficulty: {
+                var: 0x50DF,
+                1: "Vanilla",
+                2: "Expert",
+                0: "Difficult"
+            }
+        };
     }
 }

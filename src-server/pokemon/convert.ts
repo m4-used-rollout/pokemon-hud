@@ -81,14 +81,15 @@ namespace Pokemon.Convert {
         } as StatSpeciesWithExp;
     }
 
-    export function MoveToRunStatus(move: Move, pp = 0, ppUp = 0, maxPP = 0) {
+    export function MoveToRunStatus(move: Move, pp?: number, ppUp = 0, maxPP = 0) {
+        maxPP = maxPP || (move.basePP + Math.floor(ppUp * move.basePP * 0.2));
         return {
             accuracy: move.accuracy,
             base_power: move.basePower,
             id: move.id,
-            pp,
+            pp: typeof pp === "number" ? pp : maxPP,
             pp_up: ppUp,
-            max_pp: maxPP || (move.basePP + Math.floor(ppUp * move.basePP * 0.2)),
+            max_pp: maxPP,
             name: move.name,
             type: move.type,
             contest: move.contestData

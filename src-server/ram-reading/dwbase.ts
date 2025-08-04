@@ -523,7 +523,7 @@ namespace RamReader {
 
         public ReadPC: (data?: Buffer) => Promise<TPP.CombinedPCData>;
         public ReadBattle: (data?: Buffer) => Promise<TPP.BattleStatus>;
-        protected TrainerChunkReaders: ((data?: Buffer) => Promise<TPP.TrainerData>)[];
+        protected TrainerChunkReaders: Array<(trainerData?: TPP.TrainerData) => Promise<TPP.TrainerData>>;
         protected OptionsSpec: OptionsSpec;
 
         public IsPartyDefeated = (party: TPP.PartyData) => !party.some(p => p && p.health && p.health[0] > 0);
