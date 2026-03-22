@@ -87,24 +87,36 @@ namespace RamReader {
                 } as TPP.CombinedPCData;
             }));
 
-        public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.InBattleAddr}/1/${this.rom.config.gBattleTypeFlags}/4/${this.rom.config.gTrainerBattleOpponent_A}/4/${this.rom.config.gEnemyParty}/${this.rom.config.PartyBytes}/${this.rom.config.gBattleMons}/${this.rom.config.gBattleMonsBytes}/${this.rom.config.gBattlersCount}/${((parseInt(this.rom.config.gBattlerPositions, 16) - parseInt(this.rom.config.gBattlersCount, 16)) + 4).toString(16)}`, this.WrapBytes<TPP.BattleStatus>(data => {
+        private CFRUSecondTrainerVar = 0x50BE; // Unbound. CFRU should use 0x5010
+
+        public ReadBattle = this.CachedEmulatorCaller(`ReadByteRange/${this.rom.config.InBattleAddr}/1/${this.rom.config.gBattleTypeFlags}/4/${this.rom.config.gTrainerBattleOpponent_A}/4/${this.rom.config.gEnemyParty}/${this.rom.config.PartyBytes}/${this.rom.config.gBattleMons}/${this.rom.config.gBattleMonsBytes}/${this.rom.config.gBattlersCount}/${((parseInt(this.rom.config.gBattlerPositions, 16) - parseInt(this.rom.config.gBattlersCount, 16)) + 4).toString(16)}` + ((this.rom.isCFRU && !!this.rom.config.gExpandedVars) ? `/${this.rom.config.gExpandedVars}+${((this.CFRUSecondTrainerVar - 0x5000) * 2).toString(16)}/2` : ""), this.WrapBytes<TPP.BattleStatus>(data => {
             const in_battle = (data.readUInt8(0) & 2) > 0;
             const battleFlags = data.readUInt32LE(1);
             if (in_battle) {
                 const battle_kind = battleFlags & 8 ? "Trainer" : "Wild";
+                const partyBytes = parseInt(this.rom.config.PartyBytes, 16);
+                const enemy_party = this.ParseParty(data.slice(9, 9 + partyBytes));
                 const enemy_trainers = new Array<TPP.EnemyTrainer>();
                 if (battle_kind == "Trainer") {
                     //const map = this.rom.GetMap(this.currentState.map_id, this.currentState.map_bank) as RomReader.TTHMap; //TTH
                     enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(5))));
                     // enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(5)))); //TTH
-                    if (battleFlags & 0x8000) { //BATTLE_TYPE_TWO_OPPONENTS
-                        enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(data.readUInt16LE(7))));
+                    if (battleFlags & (this.rom.isCFRU ? 0x200000 : 0x8000)) { //BATTLE_TYPE_TWO_OPPONENTS
+                        //in CFRU this is stored in Var 0x5010 by default (Unbound uses 0x50BE though)
+                        enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(this.rom.isCFRU ? data.readUInt16LE(data.length - 2) : data.readUInt16LE(7))));
                         // enemy_trainers.push(Pokemon.Convert.EnemyTrainerToRunStatus(map.trainers.find(t => t.id == data.readUInt16LE(7)))); //TTH
                     }
+                    if (!enemy_trainers.filter(t => !!t).length) // Assume a battle facility
+                        enemy_trainers.push({
+                            id: data.readUInt16LE(5),
+                            name: enemy_party.map(p => p && p.original_trainer && p.original_trainer.name).filter((n, i, arr) => arr.indexOf(n) == i).join(' & ') || "",
+                            class_id: -1,
+                            gender: enemy_party[0] && enemy_party[0].original_trainer && enemy_party[0].original_trainer.gender || undefined,
+                            pic_id: -1,
+                            class_name: ""
+                        })
                 }
-                const partyBytes = parseInt(this.rom.config.PartyBytes, 16);
                 const gBattleMonsBytes = parseInt(this.rom.config.gBattleMonsBytes, 16);
-                const enemy_party = this.ParseParty(data.slice(9, 9 + partyBytes));
                 const numBattlers = data.readUInt8(9 + partyBytes + gBattleMonsBytes);
                 const isBattlerOnEnemyTeam = new Array<boolean>();
                 const battlerPartyIndexes = new Array<number>();
@@ -124,7 +136,7 @@ namespace RamReader {
 
         protected TrainerChunkReaders = [
             //Save Block 2
-            this.CachedEmulatorCaller<TPP.TrainerData, TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}/${(parseInt(this.rom.config.EncryptionKeyOffset || "FB", 16) + 4).toString(16)}`, this.WrapBytes((data, trainerData) => {
+            this.CachedEmulatorCaller<TPP.TrainerData, TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}/${(parseInt(this.rom.config.EncryptionKeyOffset || "FB", 16) + 4).toString(16)}`, this.WrapBytes(data => {
                 let dexValues = {};
                 //if (this.rom.romHeader == 'AXVE' || this.rom.romHeader == 'AXPE') {
                 if (!this.rom.isCFRU) {
@@ -137,20 +149,23 @@ namespace RamReader {
                         seen_list: seenList,
                     };
                 }
-                const rawOptions = data.readUInt32LE(0x13) & 0xFFFFFF;
-                const options = this.ParseOptions(rawOptions);
-                if (this.ShouldForceOptions(options)) {
-                    this.CallEmulator(`WriteU24LE/${this.rom.config.SaveBlock2Address}+13/${this.SetOptions(rawOptions, this.config.forceOptions).toString(16)}`);
+                let options = {} as TPP.Options;
+                if (!this.rom.isCFRU) {
+                    const rawOptions = data.readUInt32LE(0x13) & 0xFFFFFF;
+                    options = this.ParseOptions(rawOptions);
+                    if (!!this.ShouldForceOptions(options).length) {
+                        this.CallEmulator(`WriteU24LE/${this.rom.config.SaveBlock2Address}+13/${this.SetOptions(rawOptions, this.config.forceOptions || {} as TPP.Options).toString(16)}`);
+                    }
                 }
                 return {
                     name: this.rom.ConvertText(data.slice(0, 8)),
                     gender: data.readUInt8(8) ? "Female" : "Male",
                     id: data.readUInt16LE(10),
                     secret: data.readUInt16LE(12),
-                    options: { ...(trainerData || {}).options || {}, ...options },
+                    ...(this.rom.isCFRU ? {} : { options }),
                     ...dexValues,
                     security_key: this.rom.config.EncryptionKeyOffset ? data.readUInt32LE(parseInt(this.rom.config.EncryptionKeyOffset, 16)) : 0,
-                } as TPP.TrainerData;
+                } as any as TPP.TrainerData;
             }), 0xE * 2, 0x13 * 2),
             //Pokedex
             // this.rom.romHeader != 'AXVE' && this.rom.romHeader != 'AXPE' && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+10+${this.rom.gfRomHeader.pokedexOffset.toString(16)}/${Math.ceil(412/8).toString(16)}/${this.rom.config.SaveBlock1Address}+44+${this.rom.gfRomHeader.seen1Offset.toString(16)}/${Math.ceil(412/8).toString(16)}`, this.WrapBytes(data=> {
@@ -207,8 +222,8 @@ namespace RamReader {
                     tms: this.ParseItemCollection(struct.gBagTMHM || struct.ItemTMOffset, undefined, halfKey),
                     berries: this.ParseItemCollection(struct.gBagBerries || struct.ItemBerriesOffset, undefined, halfKey)
                 };
-                // if (struct.ItemCandyOffset)
-                //     items.candy = this.ParseItemCollection(struct.ItemCandyOffset, struct.ItemCandyOffset.length / 4, halfKey); //TTH
+                if (struct.ItemCandyOffset)
+                    items.candy = this.ParseItemCollection(struct.ItemCandyOffset, struct.ItemCandyOffset.length / 4, halfKey); //TTH
                 let dexValues = {};
                 if (this.rom.isCFRU) {
                     const caughtList = this.GetSetFlags(struct.DexCaughtFlagsOffset);
@@ -228,71 +243,66 @@ namespace RamReader {
                     ...dexValues
                 } as TPP.TrainerData
             }),
-            // this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.MoneyOffset}/8/${this.rom.config.SaveBlock1Address}+${this.rom.config.ItemPCOffset}/${(this.TotalItemSlots() * 4).toString(16)}${this.rom.config.EncryptionKeyOffset ? `/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4` : ""}`, this.WrapBytes(data => {
-            //     const key = this.rom.config.EncryptionKeyOffset ? data.readUInt32LE((this.TotalItemSlots() * 4) + 8) : 0;
-            //     const halfKey = key % 0x10000;
-            //     const PCCount = parseInt(this.rom.config.ItemPCCount, 16);
-            //     const CandyCount = parseInt(this.rom.config.ItemCandyCount || "0", 16);
-            //     const ItemCount = parseInt(this.rom.config.ItemPocketCount, 16);
-            //     const KeyCount = parseInt(this.rom.config.ItemKeyCount, 16);
-            //     const BallCount = parseInt(this.rom.config.ItemBallCount, 16);
-            //     const TMCount = parseInt(this.rom.config.ItemTMCount, 16);
-            //     const BerriesCount = parseInt(this.rom.config.ItemBerriesCount, 16);
-            //     const PCOffset = parseInt(this.rom.config.ItemPCOffset, 16) - 8;
-            //     const CandyOffset = parseInt(this.rom.config.ItemCandyOffset || "0", 16) - PCOffset;
-            //     const ItemsOffset = parseInt(this.rom.config.ItemPocketOffset, 16) - PCOffset;
-            //     const KeyOffset = parseInt(this.rom.config.ItemKeyOffset, 16) - PCOffset;
-            //     const BallOffset = parseInt(this.rom.config.ItemBallOffset, 16) - PCOffset;
-            //     const TMOffset = parseInt(this.rom.config.ItemTMOffset, 16) - PCOffset;
-            //     const BerriesOffset = parseInt(this.rom.config.ItemBerriesOffset, 16) - PCOffset;
-            //     const ballPocket = this.ParseItemCollection(data.slice(BallOffset), BallCount, halfKey);
-            //     return {
-            //         money: data.readUInt32LE(0) ^ key,
-            //         coins: data.readUInt16LE(4) ^ halfKey,
-            //         items: {
-            //             pc: this.ParseItemCollection(data.slice(8), PCCount), //no key //no PC (TriHard)
-            //             // candy: this.ParseItemCollection(data.slice(CandyOffset), CandyCount, halfKey), //TTH
-            //             items: this.ParseItemCollection(data.slice(ItemsOffset), ItemCount, halfKey),
-            //             key: this.ParseItemCollection(data.slice(KeyOffset), KeyCount, halfKey),
-            //             balls: ballPocket,
-            //             tms: this.ParseItemCollection(data.slice(TMOffset), TMCount, halfKey),
-            //             berries: this.ParseItemCollection(data.slice(BerriesOffset), BerriesCount, halfKey)
-            //         },
-            //         ball_count: ballPocket.reduce((sum, b) => sum + b.count, 0)
-            //     } as TPP.TrainerData
-            // })),
             //Badges Ruby/Sapphire/FireRed/LeafGreen
-            (!this.rom.config.VarsOffset || this.rom.isCFRU) && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/1000`, this.WrapBytes(data => {
+            !this.rom.config.VarsOffset && this.rom.types[0] == "Normal" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/1000`, this.WrapBytes(data => {
                 let badges = (data.slice(parseInt(this.rom.config.BadgesOffset, 16) || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8)).readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100
                 if (gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()])
                     badges = this.ReadBadgeFlags(data, gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()]);
                 return { badges } as TPP.Goals
             })),
-            //Vars for Options/Missions (CFRU)
-            this.rom.isCFRU && this.CachedEmulatorCaller<TPP.TrainerData, TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.VarsOffset}/2000` + (this.rom.config["gExpandedVars"] ? `/${this.rom.config["gExpandedVars"]}/${this.rom.config["ExpandedVarsSize"] || "400"}` : ""), this.WrapBytes((data, trainerData) => {
+            //Flags/Vars/Stats for Options/Missions/Stats (CFRU)
+            this.rom.isCFRU && this.CachedEmulatorCaller<TPP.TrainerData, TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.VarsOffset}/2000` + (this.rom.config["gExpandedVars"] ? `/${this.rom.config["gExpandedVars"]}/${this.rom.config["ExpandedVarsSize"] || "400"}` : "") + `/${this.rom.config.SaveBlock2Address}+13/4/${this.rom.config.SaveBlock1Address}+${this.rom.config.GameStatsOffset}/${this.rom.config.GameStatsBytes}/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/${this.rom.config.FlagsBytes || "120"}` + (this.rom.config["gExpandedFlags"] ? `/${this.rom.config["gExpandedFlags"]}/${this.rom.config["ExpandedFlagsSize"] || "200"}` : ""), this.WrapBytes(data => {
+                const varBytes = 0x2000 + (!!this.rom.config["gExpandedVars"] ? parseInt(this.rom.config["ExpandedVarsSize"] || "400", 16) : 0);
+                const statsBytes = parseInt(this.rom.config.GameStatsBytes, 16);
+                const vars = data.slice(0, varBytes);
+                const rawOptions = data.slice(varBytes, varBytes + 4).readUInt32LE(0) & 0xFFFFFF;
+                const stats = data.slice(varBytes + 4, varBytes + 4 + statsBytes);
+                const flags = data.slice(varBytes + 4 + statsBytes);
                 function getVar(varId: number) {
-                    return data.readUInt16LE((varId % 0x4000) * 2);
+                    return vars.readUInt16LE((varId % 0x4000) * 2);
                 }
-                const options = {} as TPP.TrainerData["options"];
-                Object.keys(this.VarOptionsSpec).forEach(k => options[k] = ParseOption(getVar(this.VarOptionsSpec[k].var), this.VarOptionsSpec[k]));
-                this.ShouldForceOptions(options, this.VarOptionsSpec).map(k => ({ k, v: this.VarOptionsSpec[k] }))
-                    .forEach(kv => this.CallEmulator(`WriteU16LE/${kv.v.var >= 0x5000 && !!this.rom.config["gExpandedVars"] ? this.rom.config["gExpandedVars"] : `${this.rom.config.SaveBlock1Address}+${this.rom.config.VarsOffset}`}+${(kv.v.var % (!!this.rom.config["gExpandedVars"] ? 0x1000 : 0x4000) * 2).toString(16)}/${parseInt(Object.keys(kv.v)[Object.values(kv.v).findIndex(k => k.toLowerCase() == this.config.forceOptions[kv.k].toLowerCase())]).toString(16)}`)); 
-                return {
-                    options: { ...(trainerData || {}).options || {}, ...options },
-                    game_stats: {
-                        ...((trainerData || {}).game_stats || {}),
-                        "Missions Completed": getVar(0x501A)
+                const getFlag = (flagId: number) => this.GetFlag(flags, flagId) ? 1 : 0;
+                const options = this.ParseOptions(rawOptions);
+                if (!!this.ShouldForceOptions(options, this.OptionsSpec).length) {
+                    this.CallEmulator(`WriteU24LE/${this.rom.config.SaveBlock2Address}+13/${this.SetOptions(rawOptions, this.config.forceOptions || {} as TPP.Options).toString(16)}`);
+                }
+                Object.keys(this.VarFlagOptionsSpec).forEach(k => options[k] = ParseOption(!!this.VarFlagOptionsSpec[k].var ? getVar(this.VarFlagOptionsSpec[k].var) : getFlag(this.VarFlagOptionsSpec[k].flag), this.VarFlagOptionsSpec[k], true));
+                this.ShouldForceOptions(options, this.VarFlagOptionsSpec).map(k => ({ k, v: this.VarFlagOptionsSpec[k] }))
+                    .forEach(kv => {
+                        const newValue = parseInt(Object.keys(kv.v)[Object.values(kv.v).findIndex(k => k.toLowerCase() == this.config.forceOptions[kv.k].toLowerCase())]);
+                        if (!!kv.v.var)
+                            this.CallEmulator(`WriteU16LE/${kv.v.var >= 0x5000 && !!this.rom.config["gExpandedVars"] ? this.rom.config["gExpandedVars"] : `${this.rom.config.SaveBlock1Address}+${this.rom.config.VarsOffset}`}+${(kv.v.var % (!!this.rom.config["gExpandedVars"] ? 0x1000 : 0x4000) * 2).toString(16)}/${newValue.toString(16)}`);
+                        else
+                            this.CallEmulator(`${!newValue ? "Clear" : "Set"}Flag/${kv.v.flag >= 0x900 && !!this.rom.config["gExpandedFlags"] ? this.rom.config["gExpandedFlags"] : `${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}`}/${(kv.v.flag >= 0x900 && !!this.rom.config["gExpandedFlags"] ? kv.v.flag - 0x900 : kv.v.flag).toString(16)}`);
+                    });
+                // For display, merge these options
+                Object.keys(this.MergeOptions || {}).forEach(k => {
+                    const merge = this.MergeOptions[k];
+                    if (merge && merge.every(m => !!this.VarFlagOptionsSpec[m] || !!this.OptionsSpec[m])) {
+                        const newVal = merge.slice(1).reduce((result, cur) => options[cur] == ParseOption(0, this.VarFlagOptionsSpec[cur] || this.OptionsSpec[cur]) ? result : options[cur], options[merge[0]]);
+                        //console.dir({ k, oldVal: options[k], merge, values: merge.map(m => options[m]), newVal });
+                        options[k] = newVal || options[k];
+                        merge.filter(m => m != k).forEach(m => delete options[m]);
                     }
+                });
+                let badges = (flags.slice(parseInt(this.rom.config.BadgesOffset, 16) || Math.floor(parseInt(this.rom.config.BadgeFlag, 16) / 8)).readUInt16LE(0) >>> (this.rom.config.BadgesOffset ? 0 : (parseInt(this.rom.config.BadgeFlag, 16) % 8))) % 0x100
+                if (gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()])
+                    badges = this.ReadBadgeFlags(flags, gen3BadgeFlagMaps[(this.config.mainRegion || "Hoenn").toLowerCase()]);
+                return {
+                    options,
+                    badges,
+                    game_stats: {
+                        "Missions Completed": getVar(0x501A),
+                        ...this.ParseGameStats(this.rom.ReadArray(stats, 0, 4, parseInt(this.rom.config.GameStatsBytes, 16) / 4).map(s => s.readUInt32LE(0) >>> 0))
+                    },
+                    // level_cap: getVar(0x5011), // Wrong, doesn't appear to be that simple
                 };
             })),
             //Stats (FireRed)
-            (!this.rom.config.VarsOffset || this.rom.isCFRU) && this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData, TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4/${this.rom.config.SaveBlock1Address}+${this.rom.config.GameStatsOffset}/${this.rom.config.GameStatsOffset}`, this.WrapBytes((data, trainerData) => {
+            !this.rom.config.VarsOffset && this.rom.config.GameStatsOffset && this.CachedEmulatorCaller<TPP.TrainerData, TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock2Address}+${this.rom.config.EncryptionKeyOffset}/4/${this.rom.config.SaveBlock1Address}+${this.rom.config.GameStatsOffset}/${this.rom.config.GameStatsBytes}`, this.WrapBytes(data => {
                 const key = data.readUInt32LE(0);
                 return {
-                    game_stats: {
-                        ...((trainerData || {}).game_stats || {}),
-                        ...this.ParseGameStats(this.rom.ReadArray(data, 4, 4, parseInt(this.rom.config.GameStatsBytes, 16) / 4).map(s => (s.readUInt32LE(0) ^ key) >>> 0))
-                    }
+                    game_stats: this.ParseGameStats(this.rom.ReadArray(data, 4, 4, parseInt(this.rom.config.GameStatsBytes, 16) / 4).map(s => (s.readUInt32LE(0) ^ key) >>> 0))
                 };
             })),
             //Badges Touhoumon
@@ -394,7 +404,7 @@ namespace RamReader {
         }
 
         protected ParseItemCollection(itemData: Buffer, length = itemData.length / 4, key = 0) {
-            return this.rom.ReadArray(itemData, 0, 4, length, true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data.readUInt16LE(0)), (data.readUInt16LE(2) >>> 0) ^ (key >>> 0))).filter(i => i.id);
+            return this.rom.ReadArray(itemData, 0, 4, length, !this.rom.isCFRU).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data.readUInt16LE(0)), (data.readUInt16LE(2) >>> 0) ^ (key >>> 0))).filter(i => i.id);
         }
 
         protected ParseParty(partyData: Buffer) {
@@ -672,8 +682,9 @@ namespace RamReader {
             let name = this.rom.ConvertText(pkmdata.slice(0x30, 0x3C));
             if (name.toLowerCase() == species.name.toLowerCase())
                 name = species.name;
-            return {
-                species: Object.assign(Pokemon.Convert.SpeciesToRunStatus(species), { type1: this.rom.GetType(pkmdata.readUInt8(0x21)), type2: this.rom.GetType(pkmdata.readUInt8(0x22)) }),
+            const pkmn = {
+                species: Object.assign(Pokemon.Convert.SpeciesToRunStatus(species, this.rom.GetType(pkmdata.readUInt8(0x21)), this.rom.GetType(pkmdata.readUInt8(0x22))),
+                    (this.rom.isCFRU ? { type3: this.rom.GetType(pkmdata.readUInt8(0x18)) } : {})),
                 stats: {
                     hp: pkmdata.readUInt16LE(0x2C),
                     attack: pkmdata.readUInt16LE(0x02),
@@ -698,14 +709,14 @@ namespace RamReader {
                 },
                 is_egg: (ivs >>> 30) % 2 > 0,
                 buffs: {
-                    hp: pkmdata.readUInt8(0x18),
-                    attack: pkmdata.readUInt8(0x19),
-                    defense: pkmdata.readUInt8(0x1A),
-                    speed: pkmdata.readUInt8(0x1B),
-                    special_attack: pkmdata.readUInt8(0x1C),
-                    special_defense: pkmdata.readUInt8(0x1D),
-                    accuracy: pkmdata.readUInt8(0x1E),
-                    evasion: pkmdata.readUInt8(0x1F),
+                    hp: pkmdata.readUInt8(0x18 + (this.rom.isCFRU ? 1 : 0)),
+                    attack: pkmdata.readUInt8(0x19 + (this.rom.isCFRU ? 1 : 0)),
+                    defense: pkmdata.readUInt8(0x1A + (this.rom.isCFRU ? 1 : 0)),
+                    speed: pkmdata.readUInt8(0x1B + (this.rom.isCFRU ? 1 : 0)),
+                    special_attack: pkmdata.readUInt8(0x1C + (this.rom.isCFRU ? 1 : 0)),
+                    special_defense: pkmdata.readUInt8(0x1D + (this.rom.isCFRU ? 1 : 0)),
+                    accuracy: pkmdata.readUInt8(0x1E + (this.rom.isCFRU ? 1 : 0)),
+                    ...(!this.rom.isCFRU ? { evasion: pkmdata.readUInt8(0x1F) } : {}),
                 },
                 ability: this.rom.GetAbility(pkmdata.readUInt8(0x20)),
                 health: [pkmdata.readUInt16LE(0x28), pkmdata.readUInt16LE(0x2C)],
@@ -724,6 +735,11 @@ namespace RamReader {
                 status: this.ParseStatus(pkmdata.readUInt32LE(0x4C)),
                 volatile_status: this.ParseVolatileStatus(pkmdata.readUInt32LE(0x50))
             } as Gen3BattlePokemon;
+
+            if (!!this.rom.isCFRU)
+                cfruAbilityRename(species, pkmn);
+
+            return pkmn;
         }
 
         protected ParseVolatileStatus(status: number) {
@@ -782,55 +798,122 @@ namespace RamReader {
         }
 
         protected OptionsSpec = {
-            sound: {
-                0: "Mono",
-                0x10000: "Stereo"
-            },
-            battle_style: {
-                0: "Shift",
-                0x20000: "Set"
-            },
-            // battle_style: { //Blazing Emerald
-            //     0: "Normal",
-            //     0x20000: "Hard"
-            // },
-            // experience: {
-            //     0: "Party",
-            //     0x10000: "Single"
-            // },
-            battle_scene: {
-                0: "On",
-                0x40000: "Off"
-            },
-            map_zoom: {
-                0: "Full",
-                0x80000: "Zoom"
-            },
-            text_speed: {
-                0: "Slow",
-                0x100: "Med",
-                0x200: "Fast"
-            },
-            frame: {
-                bitmask: 0xF800,
-                offset: 1
-            },
-            button_mode: {
-                0: "Normal",
-                1: "LR",
-                2: "L=A"
-            },
-
+            ...(this.rom.isCFRU ? {
+                speakers: {
+                    0: "Mono",
+                    0x10000: "Stereo"
+                },
+                battle_style: {
+                    0: "Shift",
+                    0x20000: "Set"
+                },
+                battle_effects: {
+                    0: "On",
+                    0x40000: "Off"
+                },
+                frame: {
+                    bitmask: 0xF800,
+                    offset: 1
+                },
+                'l-button_mode': {
+                    0: "Off",
+                    1: "Auto Run",
+                    2: "L=A",
+                    3: "Reg Item 2"
+                },
+            } : {
+                sound: {
+                    0: "Mono",
+                    0x10000: "Stereo"
+                },
+                battle_style: {
+                    0: "Shift",
+                    0x20000: "Set"
+                },
+                // battle_style: { //Blazing Emerald
+                //     0: "Normal",
+                //     0x20000: "Hard"
+                // },
+                // experience: {
+                //     0: "Party",
+                //     0x10000: "Single"
+                // },
+                battle_scene: {
+                    0: "On",
+                    0x40000: "Off"
+                },
+                map_zoom: {
+                    0: "Full",
+                    0x80000: "Zoom"
+                },
+                text_speed: {
+                    0: "Slow",
+                    0x100: "Med",
+                    0x200: "Fast"
+                },
+                frame: {
+                    bitmask: 0xF800,
+                    offset: 1
+                },
+                button_mode: {
+                    0: "Normal",
+                    1: "LR",
+                    2: "L=A"
+                }
+            })
         };
 
-        // CFRU
-        protected VarOptionsSpec: VarOptionsSpec = {
-            difficulty: {
-                var: 0x50DF,
-                1: "Vanilla",
-                2: "Expert",
-                0: "Difficult"
-            }
+        // CFRU/Unbound
+        protected VarFlagOptionsSpec: VarFlagOptionsSpec = {
+            'r-button_mode': opt(0x506D, "None", "View Party", "View Items", "Mission Log"),
+            save_prompts: opt(0x901),
+            skip_cutscenes: opt(0x5045),
+            puzzle_difficulty: opt(0x16E3, "Challenging", "Easy"),
+            auto_item_sort: opt(0x50E4, "Off", "By Name", "By Type", "By Amount"),
+            quick_HMs: opt(0x903),
+            semi_shift: opt(0x9F1, undefined, "Semi-Shift"),
+            battle_difficulty: opt(0x50DF, "Difficult", "Vanilla", "Expert", "Insane"),
+            item_restrictions: opt(0x50E6, "No Restrictions", "4 Items Only", "No Items", "Enemy Trainer Only"),
+            "exp._gain": opt(0x9F2, "Regular", "Exp. Share"),
+            "capped_exp._share": opt(0x16E0, undefined, "Capped Exp. Share"),
+            quick_run: opt(0x50E3, "R", "B>A"),
+            team_preview: opt(0x16EB, "Frontier Only", "Always"),
+            last_used_ball: opt(0x1704, "After 1 Ball", "Always"),
+            last_used_best_ball: opt(0x8D7, undefined, "Always Best Ball"),
+            fast_messages: opt(0x903),
+            type_icons: opt(0x2F6),
+            nickname_offer: opt(0x1705, "On", "Off"),
+            take_wild_item: opt(0x50E5, "Prompt", "Always", "Never"),
+            overworld_music: opt(0x506E, ...this.rom.songNames),
+            wild_music: opt(0x506F/* guess */, ...this.rom.songNames),
+            trainer_music: opt(0x5070, ...this.rom.songNames),
+            audio_quality: opt(0x50E2, "Medium (Default)", "Low (Faster)", "High (Slower)"),
+            sound_effects: opt(0x904, "On", "Off"),
+            background_music: opt(0x905, "On", "Off"),
+            bike_and_surf_music: opt(0x1703, "On", "Off"),
         };
+
+        // Picks the value from the options to the right unless they're their 0 value (i.e. "Off")
+        protected MergeOptions: Record<string, string[]> = {
+            battle_style: ["battle_style", "semi_shift"],
+            "exp._gain": ["exp._gain", "capped_exp._share"],
+            last_used_ball: ["last_used_ball", "last_used_best_ball"]
+        }
+    }
+
+    function opt(id: number, ...options: string[]) {
+        if (id >= 0x4000)
+            return varOpt(id, ...options);
+        return flagOpt(id, ...options);
+    }
+    function flagOpt(flag: number, offOption?: string, onOption?: string) {
+        return { flag, 0: offOption || "Off", 1: onOption || "On" };
+    }
+    function varOpt(varId: number, ...options: string[]) {
+        return {
+            var: varId,
+            ...(options.length > 0 ? options : ["Off", "On"]),
+            bitmask: 0xFFFF // Display any unexpected values as numbers
+        }
     }
 }

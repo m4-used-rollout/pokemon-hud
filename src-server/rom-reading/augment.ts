@@ -155,7 +155,7 @@ namespace RomReader {
 
         function augmentSpecies(s: TPP.PokemonSpecies, fromRom: Pokemon.Species = null) {
             if (!s || !s.id) return s;
-            let romMon = Pokemon.Convert.SpeciesToRunStatus(fromRom || romData.GetSpecies(s.id));
+            let romMon = Pokemon.Convert.SpeciesToRunStatus(fromRom || romData.GetSpecies(s.id), s.type1, s.type2);
             return Object.assign(s, romMon, s);
         }
 

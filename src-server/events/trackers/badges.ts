@@ -63,6 +63,8 @@ namespace Events {
                 case "harvestcraft":
                     // Harvestcraft can swap the order of the first two badges depending on who you fight first. Joy!
                     return this._badges = ["Blank", "Warm", "Soil", "Metal", "Swarm", "Pixie", "Dew", "Brain"];
+                case "borrius": // Unbound
+                    return this._badges = ["Leaf", "Vision", "Wings", "Fall", "Battery", "Ring", "Swamp", "Time"];
             }
             return [];
         }

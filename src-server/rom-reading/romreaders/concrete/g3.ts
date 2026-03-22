@@ -2,7 +2,7 @@
 
 namespace RomReader {
 
-    const typeNames = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Disease" /*Snakewood*/, "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy", "Fairy", "Fairy", "Fairy", "Fairy", "Fairy"];
+    const typeNames = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "???"/*"Disease" /*Snakewood*/, "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy", "Fairy", "Fairy", "Fairy", "Fairy", "Fairy"];
     const eggGroups = ["???", "Monster", "Water 1", "Bug", "Flying", "Field", "Fairy", "Grass", "Human-Like", "Water 3", "Mineral", "Amorphous", "Water 2", "Ditto", "Dragon", "Undiscovered"];
     const expCurves = [Pokemon.ExpCurve.MediumFast, Pokemon.ExpCurve.Erratic, Pokemon.ExpCurve.Fluctuating, Pokemon.ExpCurve.MediumSlow, Pokemon.ExpCurve.Fast, Pokemon.ExpCurve.Slow];
     const expCurveNames = ["Medium Fast", "Erratic", "Fluctuating", "Medium Slow", "Fast", "Slow"];
@@ -15,7 +15,7 @@ namespace RomReader {
     const fishingEncounterRates = [70, 30, 60, 20, 20, 40, 30, 15, 10, 5];
     const fishingRequiredRods = [262, 262, 263, 263, 263, 264, 264, 264, 264, 264]
 
-    const timeThresholdHours = [4, 10, 20, 22]; // Unbound (probably)
+    const timeThresholdHours = [5, 10, 17, 20]; // Unbound (probably)
 
     const wildPokemonPtrMarker = '0348048009E00000FFFF0000';
     const mapBanksPtrMarker = '80180068890B091808687047';
@@ -70,6 +70,8 @@ namespace RomReader {
         //public totalPuzzles = 0;
         public gfRomHeader: GFRomHeader;
 
+        public songNames = new Array<string>();
+
         stringTerminator = 0xFF;
 
         constructor(romFileLocation: string, iniFileLocation: string = "pge.ini") {
@@ -82,8 +84,12 @@ namespace RomReader {
                 this.types = touhouTypes;
                 this.shouldFixCaps = false; //some of Touhoumon is already decapped
             }
-            if (this.isCFRU)
+            if (this.isCFRU) {
                 this.shouldFixCaps = false;
+                this.types[0x09] = "Mystery";
+                this.types[0x13] = "Roostless";
+                this.types[0x14] = "Blank";
+            }
 
             this.gfRomHeader = this.ParseGFRomHeader(romData);
 
@@ -112,8 +118,10 @@ namespace RomReader {
 
             this.abilities = this.ReadAbilities(romData, config);
             this.pokemon = this.ReadPokeData(romData, config);
-            if (this.isCFRU)
+            if (this.isCFRU) {
                 this.CalculateFormNumbers(this.pokemon);
+                this.pokemon.forEach(s => cfruAbilityRename(s));
+            }
             this.items = this.ReadItemData(romData, config);
             // if (this.isCFRU)
             this.ballIds = this.items.filter((i: Gen3Item) => i.isPokeball).map(i => i.id);
@@ -128,6 +136,13 @@ namespace RomReader {
                 this.ballIds[3] = 2;
                 this.ballIds[4] = 1;
             }
+
+            ["SongNameTableOW", "SongNameTableWB", "SongNameTableTB"]
+                .filter(t => !!config[t])
+                .forEach(table => this.ReadArray(romData, parseInt(config[table], 16) % 0x08000000, table == "SongNameTableWB" ? 12 : 8, undefined, undefined, data => data.readUInt32LE(0) < 0x08000000)
+                    .map(data => (this.songNames[data.readInt16LE(4)] = this.ConvertText(romData.slice(this.ReadRomPtr(data), this.ReadRomPtr(data) + 255))))
+                    .forEach((song, i) => this.songNames[i] = this.songNames[i] || song));
+
 
             this.moves = this.ReadMoveData(romData, config);
             this.GetTMHMNames(romData, config);
@@ -277,12 +292,25 @@ namespace RomReader {
             }));
         }
 
+        GetPokemonSprite(id: number, form = 0, gender = "", shiny = false, generic = false) {
+            if (this.isCFRU && gender == "Female") {
+                const species = this.GetSpecies(id, form);
+                id = (this.pokemon.filter(f => f.dexNumber == species.dexNumber).find(s => s.genderRatio == 254) || species).id;
+            }
+            return super.GetPokemonSprite(id, form, gender, shiny);
+        }
+
+        protected ReadExpandedName(romData: Buffer, data: Buffer) {
+            // Expanded Item Names (CFRU): if the 4th byte is 8 or 9 (not valid characters), assume this is a pointer to the real name in ROM
+            return this.ConvertText(data[3] == 8 || data[3] == 9 ? romData.slice(data.readUInt32LE(0) % 0x08000000, data.readUInt32LE(0) % 0x08000000 + 50) : data)
+        }
+
         protected CalculateFormNumbers(pokeData: Pokemon.Species[]) {
             pokeData.forEach(s => s.formNumber = pokeData.filter(fs => fs.dexNumber == s.dexNumber).indexOf(s));
         }
 
         protected ReadTrainerData(romData: Buffer, config: PGEINI) {
-            let trainerClasses = this.ReadArray(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ConvertText(tc)));
+            let trainerClasses = this.ReadArray(romData, parseInt(config.TrainerClasses, 16), 13, parseInt(config.NumberOfTrainerClasses)).map(tc => this.FixAllCaps(this.ReadExpandedName(romData, tc)));
             return this.ReadArray(romData, parseInt(config.TrainerTable, 16), 40, parseInt(config.NumberOfTrainers)).map((data, i) => (<Pokemon.Trainer>{
                 classId: data[1],
                 className: trainerClasses[data[1]],
@@ -296,8 +324,7 @@ namespace RomReader {
         protected ReadItemData(romData: Buffer, config: PGEINI) {
             const itemStructExtensionBytes = 0; //16 for TriHard Emerald and TTH2019
             return this.ReadArray(romData, parseInt(config.ItemData, 16), 44 + itemStructExtensionBytes, parseInt(config.NumberOfItems)).map((data, i) => (<Gen3Item>{
-                // Expanded Item Names (CFRU): if the 4th byte is 8 or 9 (not valid characters), assume this is a pointer to the real name in ROM
-                name: this.FixAllCaps(this.ConvertText(data[3] == 8 || data[3] == 9 ? romData.slice(data.readUInt32LE(0) % 0x08000000, data.readUInt32LE(0) % 0x08000000 + 30) : data)),
+                name: this.FixAllCaps(this.ReadExpandedName(romData, data)),
                 // name: this.ConvertText(romData.slice(this.ReadRomPtr(data, 0), 255 + this.ReadRomPtr(data, 0))), //TTH
                 // pluralName: this.ConvertText(romData.slice(data.readInt32LE(4) > 0 && !data.readInt32LE(8) ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0), 255 + (data.readInt32LE(4) > 0 ? this.ReadRomPtr(data, 4) : this.ReadRomPtr(data, 0)))) + (data.readInt32LE(4) || data.readInt32LE(8) ? "" : "s"), //TTH
                 id: i,
@@ -320,7 +347,7 @@ namespace RomReader {
         }
 
         protected ReadMoveData(romData: Buffer, config: PGEINI) {
-            let moveNames = this.ReadArray(romData, parseInt(config.AttackNames, 16), 13, parseInt(config.NumberOfAttacks) + 1).map(p => this.FixAllCaps(this.ConvertText(p)));
+            let moveNames = this.ReadArray(romData, parseInt(config.AttackNames, 16), 13, parseInt(config.NumberOfAttacks) + 1).map(p => this.FixAllCaps(this.ReadExpandedName(romData, p)));
             let contestData = this.ReadArray(romData, parseInt(config.ContestMoveEffectData, 16), 4, parseInt(config.NumberOfAttacks)).map(data => ({
                 effect: contestEffects[data[0]],
                 appeal: new Array(Math.floor(data[1] / 10)).fill('♡').join(''),
@@ -412,7 +439,7 @@ namespace RomReader {
                 ).reduce((allMaps, currBank) => Array.prototype.concat.apply(allMaps, currBank), []);
         }
 
-        public FixAreaIdFRLG(areaId:number) {
+        public FixAreaIdFRLG(areaId: number) {
             if (this.isFRLG(this.config))
                 return areaId - 88;
             return areaId;
@@ -571,10 +598,10 @@ namespace RomReader {
                     delete map.encounters["all"];
                 }
                 map.encounters[timeOfDay] = {
-                    grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 4), grassEncounterRates),
-                    surfing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 8), surfEncounterRates),
-                    hidden_grass: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 12), rockSmashEncounterRates, rockSmashEncounterRates.map(e => rockSmashTmId), true),
-                    fishing: this.ReadEncounterSet(romData, this.ReadRomPtr(data, 16), fishingEncounterRates, fishingRequiredRods, true),
+                    grass: (this.ReadRomPtr(data, 4) > 0 || !map.encounters.day) ? this.ReadEncounterSet(romData, this.ReadRomPtr(data, 4), grassEncounterRates) : map.encounters.day.grass,
+                    surfing: (this.ReadRomPtr(data, 4) > 0 || !map.encounters.day) ? this.ReadEncounterSet(romData, this.ReadRomPtr(data, 8), surfEncounterRates) : map.encounters.day.surfing,
+                    hidden_grass: (this.ReadRomPtr(data, 4) > 0 || !map.encounters.day) ? this.ReadEncounterSet(romData, this.ReadRomPtr(data, 12), rockSmashEncounterRates, rockSmashEncounterRates.map(e => rockSmashTmId), true) : map.encounters.day.hidden_grass,
+                    fishing: (this.ReadRomPtr(data, 4) > 0 || !map.encounters.day) ? this.ReadEncounterSet(romData, this.ReadRomPtr(data, 16), fishingEncounterRates, fishingRequiredRods, true) : map.encounters.day.fishing,
                 };
             });
         }
@@ -600,11 +627,11 @@ namespace RomReader {
         protected ReadMoveLearns(romData: Buffer, config: PGEINI) {
             const movelearns = {} as { [key: number]: Pokemon.MoveLearn[] };
             this.ReadPtrBlock(romData, parseInt(config.PokemonAttackTable, 16)).forEach((addr, i) => {
-                movelearns[i] = this.ReadArray(romData, addr, 2).map(data => {
+                movelearns[i] = this.ReadArray(romData, addr, this.isCFRU ? 3 : 2, undefined, undefined, this.isCFRU ? data => data.readUInt8(2) == 0xFF : undefined).map(data => {
                     const raw = data.readUInt16LE(0);
-                    const move = this.GetMove(raw % 0x200);
+                    const move = this.GetMove(this.isCFRU ? raw : raw % 0x200);
                     return {
-                        level: raw >> 9,
+                        level: this.isCFRU ? data.readUInt8(2) : raw >> 9,
                         id: move.id,
                         accuracy: move.accuracy,
                         basePower: move.basePower,

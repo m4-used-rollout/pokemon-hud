@@ -29,18 +29,20 @@ const Render = throttle((id: string = targetId) => {
 function Register() {
     let oldState: TPP.RunStatus;
     ipcRenderer.on('state-update', (event, state: TPP.RunStatus) => {
-        if (oldState) {
-            //ignore coordinate changes
-            const newState = { ...state };
-            delete newState.x;
-            delete newState.y;
-            delete newState.z;
-            if (newState.game_stats)
-                delete newState.game_stats["Total Steps"];
-            if (JSON.stringify(oldState) == JSON.stringify(newState))
-                return;
-            oldState = newState;
-        }
+
+        //ignore coordinate changes
+        // const { events, x, y, z, game_stats, ...newState } = state;
+        // // if (newState.game_stats) {
+        // //     newState.game_stats = { ...newState.game_stats };
+        // //     delete newState.game_stats["Total Steps"];
+        // // }
+        // if (newState.time) {
+        //     newState.time = { ...newState.time };
+        //     delete newState.time.s; //Not worth doing entire re-renders every second. Let the clock component handle seconds.
+        // }
+        // if (oldState && JSON.stringify(oldState) == JSON.stringify(newState))
+        //     return;
+        // oldState = newState;
         data = state;
         Render();
     });

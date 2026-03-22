@@ -341,3 +341,235 @@ const gen3BadgeFlagMaps = {
 		0x07C8  // Spook Badge: Lycoris Gym
 	]
 }
+
+const cfruAbilityRename = (species: Pokemon.Species, pokemon?: TPP.BoxedPokemon) => {
+	const mapAbility = (ability: string) => {
+		switch (ability.toUpperCase().replace(/\s/g, "")) {
+			case "CLOUDNINE":
+				switch (species.name.toUpperCase()) {
+					case "RAYQUAZA":
+						return "Air Lock";
+				}
+				break;
+			case "INSOMNIA":
+				switch (species.name.toUpperCase()) {
+					case "MANKEY":
+					case "PRIMEAPE":
+					case "MR_MIME":
+					case "ELECTABUZZ":
+					case "MAGMAR":
+					case "DELIBIRD":
+					case "TYROGUE":
+					case "ELEKID":
+					case "MAGBY":
+					case "VIGOROTH":
+					case "ELECTIVIRE":
+					case "MAGMORTAR":
+					case "LILLIPUP":
+					case "ROCKRUFF":
+					case "LYCANROC":
+						return "Vital Spirit";
+				}
+				break;
+			case "CLEARBODY":
+				switch (species.name.toUpperCase()) {
+					case "TORKOAL":
+					case "HEATMOR":
+					case "SIZZLIPEDE":
+					case "CENTISKORCH":
+						return "White Smoke";
+				}
+				break;
+			case "HUGEPOWER":
+				switch (species.name.toUpperCase()) {
+					case "MEDITITE":
+					case "MEDICHAM":
+						return "Pure Power";
+				}
+				break;
+			case "ROUGHSKIN":
+				if (species.type1 == "Steel" || species.type2 == "Steel") //Species original type is Steel - Assumes Ferroseed, Ferrothorn, and Togedemaru types haven't changed
+					return "Iron Barbs"; //Gives all Steel-types with Rough Skin in randomizers Iron Barbs instead
+				break;
+			case "STURDY":
+				switch (species.name.toUpperCase()) {
+					case "MEOWTH":
+					case "PERSIAN":
+						return "Nine Lives";
+					case "MACHOKE":
+					case "MACHAMP":
+						return "Focus Belt";
+				}
+				break;
+			case "FILTER":
+				switch (species.name.toUpperCase()) {
+					case "CAMERUPT":
+					case "RHYPERIOR":
+					case "TIRTOUGA":
+					case "CARRACOSTA":
+					case "STONJOURNER":
+						return "Solid Rock";
+				}
+				break;
+			case "MOLDBREAKER":
+				if (species.name == "Reshiram" || (species.name == "Kyurem" && species.formNumber == 2))
+					return "Turboblaze";
+				if (species.name == "Zekrom" || (species.name == "Kyurem" && species.formNumber == 1))
+					return "Teravolt";
+				break;
+			case "STORMDRAIN":
+				if (species.name == "Magcargo")
+					return "Evaporate";
+				break;
+			case "MOXIE":
+				switch (species.name.toUpperCase()) {
+					case "GLASTRIER":
+						return "Chilling Neigh";
+					case "PONYTA":
+					case "RAPIDASH":
+						return "Fiery Neigh";
+					case "BLITZLE":
+					case "ZEBSTRIKA":
+						return "Shocking Neigh";
+					case "PIDOVE":
+					case "TRANQUILL":
+					case "UNFEZANT":
+						return "Pride";
+				}
+				break;
+			case "MULTISCALE":
+				switch (species.name.toUpperCase()) {
+					case "BALTOY":
+					case "CLAYDOL":
+						return "Multieye";
+				}
+				break;
+			case "PROTEAN":
+				switch (species.name.toUpperCase()) {
+					case "SCORBUNNY":
+					case "RABOOT":
+					case "CINDERACE":
+						return "Libero";
+					case "MOTHIM":
+						return "Subterfuge";
+				}
+				break;
+			case "GOOEY":
+				switch (species.name.toUpperCase()) {
+					case "DIGLETT":
+					case "DUGTRIO":
+						return "Tangling Hair";
+					case "MAREEP":
+					case "FLAAFFY":
+					case "AMPHAROS":
+						return "Tangling Wool";
+				}
+				break;
+			case "PARENTALBOND":
+				switch (species.name.toUpperCase()) {
+					case "GIRAFARIG":
+						return "Brain Bond";
+				}
+				break;
+			case "GALEWINGS":
+				if (species.name == "Sunflora")
+					return "Grass Dash";
+				else if (species.name == "Seviper")
+					return "Slippery Tail";
+				break;
+			case "EMERGENCYEXIT":
+				switch (species.name.toUpperCase()) {
+					case "WIMPOD":
+						return "Wimp  Out";
+				}
+				break;
+			case "DAZZLING":
+				switch (species.name.toUpperCase()) {
+					case "TSAREENA":
+					case "NIDOQUEEN":
+					case "VESPIQUEN":
+						return "Queenly Majesty";
+				}
+				break;
+			case "RECEIVER":
+				switch (species.name.toUpperCase()) {
+					case "GRIMER":
+					case "MUK":
+						return "Power of Alchemy";
+				}
+				break;
+			case "MERCILESS":
+				if (species.name == "Spearow" || species.name == "Fearow")
+					return "Drill Beak";
+				break;
+			case "STALWART":
+				switch (species.name.toUpperCase()) {
+					case "ARROKUDA":
+					case "BARRASKEWDA":
+						return "Propeller Tail";
+				}
+				break;
+			case "COTTONDOWN":
+				switch (species.name.toUpperCase()) {
+					case "SWABLU":
+					case "ALTARIA":
+						return "Cotton Cloud";
+				}
+				break;
+			case "PUNKROCK":
+				switch (species.name.toUpperCase()) {
+					case "WHISMUR":
+					case "LOUDRED":
+					case "EXPLOUD":
+						return "Bellow";
+					case "VIBRAVA":
+					case "FLYGON":
+					case "NOIBAT":
+					case "NOIVERN":
+						return "Sound Waves";
+				}
+				break;
+			case "ICESCALES":
+				switch (species.name.toUpperCase()) {
+					case "GLACEON":
+					case "SMOOCHUM":
+					case "JYNX":
+						return "Icy Skin";
+					case "DUSTOX":
+						return "Dusty Scales";
+				}
+				break;
+			case "GORILLATACTICS":
+				switch (species.name.toUpperCase()) {
+
+					case "CRABMINBLE":
+						return "Crabby Tactics";
+
+				}
+				break;
+			case "DAUNTLESSSHIELD":
+				switch (species.name.toUpperCase()) {
+
+					case "SHIELDON":
+					case "BASTIODON":
+						return "Face Shield";
+					case "VESPIQUEN":
+						return "Honey Armor";
+				}
+				break;
+			case "GRIMNEIGH":
+				switch (species.name.toUpperCase()) {
+					case "LITLEO":
+					case "PYROAR":
+						return "Royal Roar";
+				}
+				break;
+		}
+		return ability;
+	};
+	if (!!pokemon)
+		pokemon.ability = pokemon.ability && mapAbility(pokemon.ability);
+	else
+		for (let i = 0; i < (species.abilities || []).length; i++)
+			species.abilities[i] = mapAbility(species.abilities[i]);
+}

@@ -42,5 +42,5 @@ namespace Events {
 
     }
 
-    //RegisterTracker(DexTracker);
+    RegisterTracker(DexTracker);
 }

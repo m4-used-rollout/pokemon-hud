@@ -501,7 +501,7 @@ namespace RamReader {
 
         public ParseOptions = (rawOptions: number, optionsSpec = this.OptionsSpec) => ParseOptions(rawOptions, optionsSpec);
         public SetOptions = (rawOptions: number, desiredOptions: TPP.Options, optionsSpec = this.OptionsSpec) => SetOptions(rawOptions, desiredOptions, optionsSpec);
-        public ShouldForceOptions = (options: TPP.Options, optionsSpec = this.OptionsSpec) => Object.keys(this.config.forceOptions || {}).filter(k => !!optionsSpec[k]).filter(k => this.config.forceOptions[k].toLowerCase() != options[k].toLowerCase());
+        public ShouldForceOptions = (options: TPP.Options, optionsSpec = this.OptionsSpec) => Object.keys(this.config.forceOptions || {}).filter(k => !!optionsSpec[k]).filter(k => this.config.forceOptions[k].toLowerCase() != (options[k] || "").toLowerCase());
 
         public GetSetFlags(flagBytes: Buffer, flagCount = flagBytes.length * 8, offset = 0) {
             return this.rom.GetSetFlags(flagBytes, flagCount, offset);

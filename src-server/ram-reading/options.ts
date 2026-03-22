@@ -20,7 +20,7 @@ namespace RamReader {
         return shift;
     }
 
-    export function ParseOption(rawOptions: number, fieldSpec: OptionsFieldSpec) {
+    export function ParseOption(rawOptions: number, fieldSpec: OptionsFieldSpec, showNumberIfNoneMatch = false) {
         const possibleValues = Object.keys(fieldSpec).map(k => parseInt(k)).filter(k => k).sort();
         const selection = (fieldSpec.bitmask || possibleValues.reduce((mask, key) => mask | key, 0)) & rawOptions;
         if (fieldSpec[selection]) //exact match
@@ -29,7 +29,7 @@ namespace RamReader {
             return ((selection >> CalcBitmaskShift(fieldSpec.bitmask)) + (fieldSpec.offset || 0)).toString();
         }
         //return the highest value that matches (or the lowest if none match)
-        return fieldSpec[possibleValues.filter(v => (selection & v) == v).pop() || possibleValues.shift()];
+        return fieldSpec[possibleValues.filter(v => (selection & v) == v).pop() || (showNumberIfNoneMatch && selection.toString()) || possibleValues.shift()];
     }
 
     export function SetOption(rawOptions: number, setting: string, fieldSpec: OptionsFieldSpec) {
@@ -53,12 +53,13 @@ namespace RamReader {
     }
 
 
-    export interface VarOptionsFieldSpec extends OptionsFieldSpec {
-        var: number;
+    export interface VarFlagOptionsFieldSpec extends OptionsFieldSpec {
+        var?: number;
+        flag?: number;
     }
 
-    export interface VarOptionsSpec {
-        [key: string]: VarOptionsFieldSpec;
+    export interface VarFlagOptionsSpec {
+        [key: string]: VarFlagOptionsFieldSpec;
     }
 
 }

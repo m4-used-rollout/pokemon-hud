@@ -493,6 +493,7 @@ declare const gen3BadgeFlagMaps: {
     "ivara": number[];
     "cyenn": number[];
 };
+declare const cfruAbilityRename: (species: Pokemon.Species, pokemon?: TPP.BoxedPokemon) => void;
 declare namespace Tools.LZ77 {
     function Decompress(compressed: Buffer, offset?: number): Buffer;
 }
@@ -534,6 +535,7 @@ declare namespace RomReader {
             bank: number;
         }[];
         gfRomHeader: GFRomHeader;
+        songNames: string[];
         stringTerminator: number;
         constructor(romFileLocation: string, iniFileLocation?: string);
         CheckIfCanSurf(runState: TPP.RunStatus): boolean;
@@ -546,6 +548,8 @@ declare namespace RomReader {
         isCFRU: boolean;
         protected ReadAbilities(romData: Buffer, config: PGEINI, numAbilities?: number): string[];
         protected ReadPokeData(romData: Buffer, config: PGEINI): Pokemon.Species[];
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+        protected ReadExpandedName(romData: Buffer, data: Buffer): string;
         protected CalculateFormNumbers(pokeData: Pokemon.Species[]): void;
         protected ReadTrainerData(romData: Buffer, config: PGEINI): Pokemon.Trainer[];
         protected ReadItemData(romData: Buffer, config: PGEINI): Gen3Item[];
@@ -1235,7 +1239,7 @@ declare namespace Pokemon.Convert {
     interface StatSpeciesWithExp extends TPP.PokemonSpecies {
         expFunction?: ExpCurve.CalcExp;
     }
-    function SpeciesToRunStatus(species: Species): StatSpeciesWithExp;
+    function SpeciesToRunStatus(species: Species, newType1?: string, newType2?: string): StatSpeciesWithExp;
     function MoveToRunStatus(move: Move, pp?: number, ppUp?: number, maxPP?: number): TPP.Move;
     function MoveLearnToRunStatus(move: MoveLearn): TPP.MoveLearn;
     function ItemToRunStatus(item: Item, count?: number): TPP.Item;
@@ -1250,15 +1254,16 @@ declare namespace RamReader {
     interface OptionsSpec {
         [key: string]: OptionsFieldSpec;
     }
-    function ParseOption(rawOptions: number, fieldSpec: OptionsFieldSpec): string;
+    function ParseOption(rawOptions: number, fieldSpec: OptionsFieldSpec, showNumberIfNoneMatch?: boolean): any;
     function SetOption(rawOptions: number, setting: string, fieldSpec: OptionsFieldSpec): number;
     function ParseOptions(rawOptions: number, optionsSpec: OptionsSpec): TPP.Options;
     function SetOptions(rawOptions: number, desiredOptions: TPP.Options, optionsSpec: OptionsSpec): number;
-    interface VarOptionsFieldSpec extends OptionsFieldSpec {
-        var: number;
+    interface VarFlagOptionsFieldSpec extends OptionsFieldSpec {
+        var?: number;
+        flag?: number;
     }
-    interface VarOptionsSpec {
-        [key: string]: VarOptionsFieldSpec;
+    interface VarFlagOptionsSpec {
+        [key: string]: VarFlagOptionsFieldSpec;
     }
 }
 declare namespace RamReader {
@@ -1484,6 +1489,7 @@ declare namespace RamReader {
         protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
         ReadParty: (extraData?: never) => Promise<TPP.PartyPokemon[]>;
         ReadPC: (extraData?: never) => Promise<TPP.CombinedPCData>;
+        private CFRUSecondTrainerVar;
         ReadBattle: (extraData?: never) => Promise<TPP.BattleStatus>;
         protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
         protected TotalItemSlots(): number;
@@ -1500,6 +1506,29 @@ declare namespace RamReader {
         protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
         protected ReadBadgeFlags(flags: Buffer, flagMap: number[]): number;
         protected OptionsSpec: {
+            speakers: {
+                0: string;
+                0x10000: string;
+            };
+            battle_style: {
+                0: string;
+                0x20000: string;
+            };
+            battle_effects: {
+                0: string;
+                0x40000: string;
+            };
+            frame: {
+                bitmask: number;
+                offset: number;
+            };
+            'l-button_mode': {
+                0: string;
+                1: string;
+                2: string;
+                3: string;
+            };
+        } | {
             sound: {
                 0: string;
                 0x10000: string;
@@ -1531,7 +1560,8 @@ declare namespace RamReader {
                 2: string;
             };
         };
-        protected VarOptionsSpec: VarOptionsSpec;
+        protected VarFlagOptionsSpec: VarFlagOptionsSpec;
+        protected MergeOptions: Record<string, string[]>;
     }
 }
 declare namespace RamReader {
@@ -2194,6 +2224,8 @@ declare namespace Events {
         className?: string;
         trainerString?: string;
     };
+}
+declare namespace Events {
 }
 declare namespace Events {
 }

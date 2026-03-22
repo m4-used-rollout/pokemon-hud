@@ -58,7 +58,7 @@ namespace Pokemon.Convert {
     export interface StatSpeciesWithExp extends TPP.PokemonSpecies {
         expFunction?: ExpCurve.CalcExp; //won't serialize
     }
-    export function SpeciesToRunStatus(species: Species) {
+    export function SpeciesToRunStatus(species: Species, newType1?: string, newType2?: string) {
         return {
             abilities: species.abilities,
             base_stats: StatsToRunStatus(species.baseStats),
@@ -72,8 +72,8 @@ namespace Pokemon.Convert {
             id: species.id,
             name: species.name,
             national_dex: species.dexNumber,
-            type1: species.type1,
-            type2: species.type2,
+            type1: newType1 || species.type1,
+            type2: newType2 || species.type2,
             expFunction: species.expFunction,
             held_items: [species.heldItem1, species.heldItem2].filter(i => !!i).map(i => ItemToRunStatus(i)),
             tm_moves: species.tmMoves ? species.tmMoves.filter(m => !!m).map(m => MoveToRunStatus(m)) : species.tmCompat,
