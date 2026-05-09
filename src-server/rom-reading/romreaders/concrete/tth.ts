@@ -275,99 +275,99 @@ namespace RomReader {
             return this.ReadArray(romData, mapScriptPtr, 5, 0, true, data => data[0] == 0).filter(data => data[0] == 0x21).map(data => this.ConvertText(romData.slice(this.ReadRomPtr(data, 1), this.ReadRomPtr(data, 1) + 255))).shift();
         }
 
-        protected ParseGFRomHeader(romData: Buffer) {
-            //TODO: This doesn't exist in Ruby and Sapphire
-            const headerData = romData.slice(0x100, 0x204);
-            const romHeader = <GFRomHeader>{
-                version: headerData.readUInt32LE(0x0),
-                language: headerData.readUInt32LE(0x4),
-                gameName: headerData.toString("utf8", 0x8, 0x28),
-                monFrontPicsAddr: headerData.readUInt32LE(0x28),
-                monBackPicsAddr: headerData.readUInt32LE(0x2C),
-                monNormalPalettesAddr: headerData.readUInt32LE(0x30),
-                monShinyPalettesAddr: headerData.readUInt32LE(0x34),
-                monIconsAddr: headerData.readUInt32LE(0x38),
-                monIconPaletteIdsAddr: headerData.readUInt32LE(0x3C),
-                monIconPalettesAddr: headerData.readUInt32LE(0x40),
-                monSpeciesNamesAddr: headerData.readUInt32LE(0x44),
-                moveNamesAddr: headerData.readUInt32LE(0x48),
-                decorationsAddr: headerData.readUInt32LE(0x4C),
-                flagsOffset: headerData.readUInt32LE(0x50),
-                varsOffset: headerData.readUInt32LE(0x54),
-                pokedexOffset: headerData.readUInt32LE(0x58),
-                seen1Offset: headerData.readUInt32LE(0x5C),
-                seen2Offset: headerData.readUInt32LE(0x60),
-                pokedexVar: headerData.readUInt32LE(0x64),
-                pokedexFlag: headerData.readUInt32LE(0x68),
-                mysteryEventFlag: headerData.readUInt32LE(0x6C),
-                pokedexCount: headerData.readUInt32LE(0x70),
-                playerNameLength: headerData.readUInt8(0x74),
-                trainerNameLength: headerData.readUInt8(0x75),
-                pokemonNameLength1: headerData.readUInt8(0x76),
-                pokemonNameLength2: headerData.readUInt8(0x77),
-                unk5: headerData.readUInt8(0x78),
-                unk6: headerData.readUInt8(0x79),
-                unk7: headerData.readUInt8(0x7A),
-                unk8: headerData.readUInt8(0x7B),
-                unk9: headerData.readUInt8(0x7C),
-                unk10: headerData.readUInt8(0x7D),
-                unk11: headerData.readUInt8(0x7E),
-                unk12: headerData.readUInt8(0x7F),
-                unk13: headerData.readUInt8(0x80),
-                unk14: headerData.readUInt8(0x81),
-                unk15: headerData.readUInt8(0x82),
-                unk16: headerData.readUInt8(0x83),
-                unk17: headerData.readUInt8(0x84),
-                // 3 bytes padding
-                saveBlock2Size: headerData.readUInt32LE(0x88),
-                saveBlock1Size: headerData.readUInt32LE(0x8C),
-                partyCountOffset: headerData.readUInt32LE(0x90),
-                partyOffset: headerData.readUInt32LE(0x94),
-                warpFlagsOffset: headerData.readUInt32LE(0x98),
-                trainerIdOffset: headerData.readUInt32LE(0x9C),
-                playerNameOffset: headerData.readUInt32LE(0xA0),
-                playerGenderOffset: headerData.readUInt32LE(0xA4),
-                frontierStatusOffset: headerData.readUInt32LE(0xA8),
-                frontierStatusOffset2: headerData.readUInt32LE(0xAC),
-                externalEventFlagsOffset: headerData.readUInt32LE(0xB0),
-                externalEventDataOffset: headerData.readUInt32LE(0xB4),
-                unk18: headerData.readUInt32LE(0xB8),
-                baseStatsAddr: headerData.readUInt32LE(0xBC),
-                abilityNamesAddr: headerData.readUInt32LE(0xC0),
-                abilityDescriptionsAddr: headerData.readUInt32LE(0xC4),
-                itemsAddr: headerData.readUInt32LE(0xC8),
-                movesAddr: headerData.readUInt32LE(0xCC),
-                ballGfxAddr: headerData.readUInt32LE(0xD0),
-                ballPalettesAddr: headerData.readUInt32LE(0xD4),
-                gcnLinkFlagsOffset: headerData.readUInt32LE(0xD8),
-                gameClearFlag: headerData.readUInt32LE(0xDC),
-                ribbonFlag: headerData.readUInt32LE(0xE0),
-                bagCountItems: headerData.readUInt8(0xE4),
-                bagCountKeyItems: headerData.readUInt8(0xE5),
-                bagCountPokeballs: headerData.readUInt8(0xE6),
-                bagCountTMHMs: headerData.readUInt8(0xE7),
-                bagCountBerries: headerData.readUInt8(0xE8),
-                pcItemsCount: headerData.readUInt8(0xE9),
-                // 2 bytes padding
-                pcItemsOffset: headerData.readUInt32LE(0xEC),
-                giftRibbonsOffset: headerData.readUInt32LE(0xF0),
-                enigmaBerryOffset: headerData.readUInt32LE(0xF4),
-                enigmaBerrySize: headerData.readUInt32LE(0xF8),
-                moveDescriptionsAddr: headerData.readUInt32LE(0xFC),
-                unk20: headerData.readUInt32LE(0x100)
-            }
-            romHeader.bagCountCandy = 50; // TTH
+        // protected ParseGFRomHeader(romData: Buffer) {
+        //     //TODO: This doesn't exist in Ruby and Sapphire
+        //     const headerData = romData.slice(0x100, 0x204);
+        //     const romHeader = <GFRomHeader>{
+        //         version: headerData.readUInt32LE(0x0),
+        //         language: headerData.readUInt32LE(0x4),
+        //         gameName: headerData.toString("utf8", 0x8, 0x28),
+        //         monFrontPicsAddr: headerData.readUInt32LE(0x28),
+        //         monBackPicsAddr: headerData.readUInt32LE(0x2C),
+        //         monNormalPalettesAddr: headerData.readUInt32LE(0x30),
+        //         monShinyPalettesAddr: headerData.readUInt32LE(0x34),
+        //         monIconsAddr: headerData.readUInt32LE(0x38),
+        //         monIconPaletteIdsAddr: headerData.readUInt32LE(0x3C),
+        //         monIconPalettesAddr: headerData.readUInt32LE(0x40),
+        //         monSpeciesNamesAddr: headerData.readUInt32LE(0x44),
+        //         moveNamesAddr: headerData.readUInt32LE(0x48),
+        //         decorationsAddr: headerData.readUInt32LE(0x4C),
+        //         flagsOffset: headerData.readUInt32LE(0x50),
+        //         varsOffset: headerData.readUInt32LE(0x54),
+        //         pokedexOffset: headerData.readUInt32LE(0x58),
+        //         seen1Offset: headerData.readUInt32LE(0x5C),
+        //         seen2Offset: headerData.readUInt32LE(0x60),
+        //         pokedexVar: headerData.readUInt32LE(0x64),
+        //         pokedexFlag: headerData.readUInt32LE(0x68),
+        //         mysteryEventFlag: headerData.readUInt32LE(0x6C),
+        //         pokedexCount: headerData.readUInt32LE(0x70),
+        //         playerNameLength: headerData.readUInt8(0x74),
+        //         trainerNameLength: headerData.readUInt8(0x75),
+        //         pokemonNameLength1: headerData.readUInt8(0x76),
+        //         pokemonNameLength2: headerData.readUInt8(0x77),
+        //         unk5: headerData.readUInt8(0x78),
+        //         unk6: headerData.readUInt8(0x79),
+        //         unk7: headerData.readUInt8(0x7A),
+        //         unk8: headerData.readUInt8(0x7B),
+        //         unk9: headerData.readUInt8(0x7C),
+        //         unk10: headerData.readUInt8(0x7D),
+        //         unk11: headerData.readUInt8(0x7E),
+        //         unk12: headerData.readUInt8(0x7F),
+        //         unk13: headerData.readUInt8(0x80),
+        //         unk14: headerData.readUInt8(0x81),
+        //         unk15: headerData.readUInt8(0x82),
+        //         unk16: headerData.readUInt8(0x83),
+        //         unk17: headerData.readUInt8(0x84),
+        //         // 3 bytes padding
+        //         saveBlock2Size: headerData.readUInt32LE(0x88),
+        //         saveBlock1Size: headerData.readUInt32LE(0x8C),
+        //         partyCountOffset: headerData.readUInt32LE(0x90),
+        //         partyOffset: headerData.readUInt32LE(0x94),
+        //         warpFlagsOffset: headerData.readUInt32LE(0x98),
+        //         trainerIdOffset: headerData.readUInt32LE(0x9C),
+        //         playerNameOffset: headerData.readUInt32LE(0xA0),
+        //         playerGenderOffset: headerData.readUInt32LE(0xA4),
+        //         frontierStatusOffset: headerData.readUInt32LE(0xA8),
+        //         frontierStatusOffset2: headerData.readUInt32LE(0xAC),
+        //         externalEventFlagsOffset: headerData.readUInt32LE(0xB0),
+        //         externalEventDataOffset: headerData.readUInt32LE(0xB4),
+        //         unk18: headerData.readUInt32LE(0xB8),
+        //         baseStatsAddr: headerData.readUInt32LE(0xBC),
+        //         abilityNamesAddr: headerData.readUInt32LE(0xC0),
+        //         abilityDescriptionsAddr: headerData.readUInt32LE(0xC4),
+        //         itemsAddr: headerData.readUInt32LE(0xC8),
+        //         movesAddr: headerData.readUInt32LE(0xCC),
+        //         ballGfxAddr: headerData.readUInt32LE(0xD0),
+        //         ballPalettesAddr: headerData.readUInt32LE(0xD4),
+        //         gcnLinkFlagsOffset: headerData.readUInt32LE(0xD8),
+        //         gameClearFlag: headerData.readUInt32LE(0xDC),
+        //         ribbonFlag: headerData.readUInt32LE(0xE0),
+        //         bagCountItems: headerData.readUInt8(0xE4),
+        //         bagCountKeyItems: headerData.readUInt8(0xE5),
+        //         bagCountPokeballs: headerData.readUInt8(0xE6),
+        //         bagCountTMHMs: headerData.readUInt8(0xE7),
+        //         bagCountBerries: headerData.readUInt8(0xE8),
+        //         pcItemsCount: headerData.readUInt8(0xE9),
+        //         // 2 bytes padding
+        //         pcItemsOffset: headerData.readUInt32LE(0xEC),
+        //         giftRibbonsOffset: headerData.readUInt32LE(0xF0),
+        //         enigmaBerryOffset: headerData.readUInt32LE(0xF4),
+        //         enigmaBerrySize: headerData.readUInt32LE(0xF8),
+        //         moveDescriptionsAddr: headerData.readUInt32LE(0xFC),
+        //         unk20: headerData.readUInt32LE(0x100)
+        //     }
+        //     romHeader.bagCountCandy = 50; // TTH
 
-            // Precalc bag offsets
-            romHeader.bagCandyOffset = romHeader.pcItemsOffset + romHeader.pcItemsCount * 4; // TTH
-            romHeader.bagItemsOffset = romHeader.bagCandyOffset + romHeader.bagCountCandy * 4; // TTH
-            romHeader.bagKeyItemsOffset = romHeader.bagItemsOffset + romHeader.bagCountItems * 4;
-            romHeader.bagPokeballsOffset = romHeader.bagKeyItemsOffset + romHeader.bagCountKeyItems * 4;
-            romHeader.bagTMHMsOffset = romHeader.bagPokeballsOffset + romHeader.bagCountPokeballs * 4;
-            romHeader.bagBerriesOffset = romHeader.bagTMHMsOffset + romHeader.bagCountTMHMs * 4;
+        //     // Precalc bag offsets
+        //     romHeader.bagCandyOffset = romHeader.pcItemsOffset + romHeader.pcItemsCount * 4; // TTH
+        //     romHeader.bagItemsOffset = romHeader.bagCandyOffset + romHeader.bagCountCandy * 4; // TTH
+        //     romHeader.bagKeyItemsOffset = romHeader.bagItemsOffset + romHeader.bagCountItems * 4;
+        //     romHeader.bagPokeballsOffset = romHeader.bagKeyItemsOffset + romHeader.bagCountKeyItems * 4;
+        //     romHeader.bagTMHMsOffset = romHeader.bagPokeballsOffset + romHeader.bagCountPokeballs * 4;
+        //     romHeader.bagBerriesOffset = romHeader.bagTMHMsOffset + romHeader.bagCountTMHMs * 4;
 
-            return romHeader;
-        }
+        //     return romHeader;
+        // }
 
         protected FindMapEncounters(romData: Buffer, config: PGEINI) {
             this.ReadArray(romData, parseInt(config.WildPokemonHeaders || "", 16), 20).forEach(data => {

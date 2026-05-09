@@ -84,8 +84,8 @@ namespace RomReader {
         }
 
         protected shouldFixCaps = true;
-        public FixAllCaps(str: string) {
-            if (!this.shouldFixCaps)
+        public FixAllCaps(str: string, fixAnyway=false) {
+            if (!this.shouldFixCaps && !fixAnyway)
                 return str;
             return str.toLowerCase().replace(fixCaps, c => c.toUpperCase()).replace(fixWronglyCapped, c => c.toLowerCase()).replace(fixWronglyLowercased, c => c.toUpperCase());
         }
@@ -287,7 +287,7 @@ namespace RomReader {
             return choppedData;
         }
 
-        GetSetFlags(flagBytes: Buffer, flagCount = flagBytes.length * 8, offset = 0) {
+        GetSetFlags(flagBytes, flagCount = flagBytes.length * 8, offset = 0) {
             const length = Math.floor((flagCount + 7) / 8);
             const setFlags = new Array<number>();
             for (let i = 0; i < length; i++)

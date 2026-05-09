@@ -26,7 +26,8 @@ namespace Events {
         }
         public Reporter(state: TPP.RunStatus): TPP.RunStatus {
             state.game_stats = state.game_stats || {};
-            state.game_stats["Battles Fought (Total)"] = this.battles;
+            const gsBattles = (state.game_stats["Battles Fought (Wild)"] || 0) + (state.game_stats["Battles Fought (Trainer)"] || 0);
+            state.game_stats["Battles Fought (Total)"] = Math.max(gsBattles, this.battles);
             return state;
         }
 

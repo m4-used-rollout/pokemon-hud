@@ -557,20 +557,6 @@ namespace RamReader {
             "TVs Watched", "Clocks Checked", "Lottery Wins", "Daycare Uses", "Cable Car Rides", "Hot Spring Baths", "Union Room Battles", "Berries Crushed",
             "Puzzles Completed", "Select Presses", "Rules Discovered", "Candy Collected", "Puzzles Cleaned Out", "Candy Trades"]; //TTH
 
-        protected Decrypt(data: Buffer, key: number, checksum?: number) {
-            if (typeof (checksum) == "number" && checksum == this.CalcChecksum(data)) {
-                return data; //already decrypted
-            }
-            for (let i = 0; i < data.length; i += 4) {
-                data.writeInt32LE(data.readInt32LE(i) ^ key, i);
-            }
-            if (typeof (checksum) == "number" && this.CalcChecksum(data) != checksum) {
-                console.error(`Checksum ${checksum} does not match calculated sum ${this.CalcChecksum(data)}`);
-                return null;
-            }
-            return data;
-        }
-
         public CalcChecksum(data: Buffer) {
             let sum = 0;
             for (let i = 0; i < data.length; i += 4) {

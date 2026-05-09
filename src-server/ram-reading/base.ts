@@ -226,7 +226,7 @@ namespace RamReader {
         private CurrentBattleSeenPokemon: number[];
 
         protected ConcealEnemyParty(party: (TPP.PartyPokemon & { active?: boolean })[]): TPP.EnemyParty {
-            // return party; //SPY!
+            //return party; //SPY!
             return party.map((p, i) => p && ({
                 species: this.HasBeenSeenThisBattle(p) ? { ...p.species, abilities: [], tm_moves: [] } as TPP.PokemonSpecies : { id: 0, name: "???", national_dex: 0 },
                 health: p.health,
@@ -334,7 +334,20 @@ namespace RamReader {
             return marking;
         }
 
-        protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer {
+        protected Decrypt(data: Buffer, key: number, checksum?: number) {
+            if (typeof (checksum) == "number" && checksum == this.CalcChecksum(data)) {
+                return data; //already decrypted
+            }
+            for (let i = 0; i < data.length; i += 4) {
+                data.writeInt32LE(data.readInt32LE(i) ^ key, i);
+            }
+            if (typeof (checksum) == "number") {
+                const calcSum = this.CalcChecksum(data);
+                if (calcSum != checksum) {
+                    console.error(`Checksum ${checksum} does not match calculated sum ${calcSum}`);
+                    return null;
+                }
+            }
             return data;
         }
 
@@ -355,10 +368,13 @@ namespace RamReader {
 
         public CalcChecksum(data: Buffer) {
             let sum = 0;
-            for (let i = 0; i < data.length; i += 2) {
-                sum = (sum + data.readUInt16LE(i)) % 0x10000;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const word = data.readUInt32LE(i);
+                sum = (sum + (word & 0xFFFF) + (word >>> 16)) >>> 0;
             }
-            return sum;
+
+            return sum & 0xFFFF;
         }
 
         protected Descramble(data: Buffer, key: number) {
@@ -378,16 +394,18 @@ namespace RamReader {
         protected ParseStatus(status: number) {
             if (status % 8 > 0)
                 return "SLP";
-            if (status & 8)
+            if (status & 1 << 3)
                 return "PSN";
-            if (status & 16)
+            if (status & 1 << 4)
                 return "BRN";
-            if (status & 32)
+            if (status & 1 << 5)
                 return "FRZ";
-            if (status & 64)
+            if (status & 1 << 6)
                 return "PAR";
-            if (status & 128)
+            if (status & 1 << 7)
                 return "TOX";
+            if (status & 1 << 12)
+                return "FRZ"; // Frostbite (RHH)
             return null;
         }
 

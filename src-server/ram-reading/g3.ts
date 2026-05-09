@@ -774,20 +774,6 @@ namespace RamReader {
         // , "Puzzles Completed"] //TTH
         //, "People Harassed", "Pokémon Lost", "Enemy Pokémon Defeated", "Things Stolen", "Elite Four Attempts"]; //TriHard Emerald
 
-        protected Decrypt(data: Buffer, key: number, checksum?: number) {
-            if (typeof (checksum) == "number" && checksum == this.CalcChecksum(data)) {
-                return data; //already decrypted
-            }
-            for (let i = 0; i < data.length; i += 4) {
-                data.writeInt32LE(data.readInt32LE(i) ^ key, i);
-            }
-            if (typeof (checksum) == "number" && this.CalcChecksum(data) != checksum) {
-                console.error(`Checksum ${checksum} does not match calculated sum ${this.CalcChecksum(data)}`);
-                return null;
-            }
-            return data;
-        }
-
         protected ReadBadgeFlags(flags: Buffer, flagMap: number[]) {
             const badgeBuffer = Buffer.alloc(Math.ceil(flagMap.length / 8));
             flagMap.forEach((f, i) => this.GetFlag(flags, f) && this.SetFlag(badgeBuffer, i));

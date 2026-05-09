@@ -119,6 +119,7 @@ declare namespace TPP {
         name: string;
         type1?: string;
         type2?: string;
+        type3?: string;
         catch_rate?: number;
         egg_cycles?: number;
         egg_type1?: string;

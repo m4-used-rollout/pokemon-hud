@@ -4,6 +4,7 @@
 /// <reference path="rom-reading/romreaders/concrete/g1.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g2.ts" />
 /// <reference path="rom-reading/romreaders/concrete/tth.ts" />
+/// <reference path="rom-reading/romreaders/concrete/rhh.ts" />
 /// <reference path="rom-reading/romreaders/concrete/col.ts" />
 /// <reference path="rom-reading/romreaders/concrete/xd.ts" />
 /// <reference path="rom-reading/romreaders/concrete/g4.ts" />
@@ -15,6 +16,7 @@
 /// <reference path="ram-reading/g2.ts" />
 /// <reference path="ram-reading/g3.ts" />
 /// <reference path="ram-reading/tth.ts" />
+/// <reference path="ram-reading/rhh.ts" />
 /// <reference path="ram-reading/col.ts" />
 /// <reference path="ram-reading/xd.ts" />
 /// <reference path="ram-reading/g6.ts" />
@@ -138,17 +140,30 @@ module TPP.Server {
         })
     }
 
+    let prevOptimizedState = "";
     ipcMain.on('register-renderer', e => {
         let renderer = e.sender;
         let sendFunc = (state: TPP.RunStatus) => {
-            if (!renderer.isDestroyed())
-                renderer.send('state-update', state);
+            if (!renderer.isDestroyed()) {
+                const { events, extra, game_stats, ...optimizedState } = state;
+                const stateStr = JSON.stringify(optimizedState);
+                if (stateStr == prevOptimizedState)
+                    return;
+                prevOptimizedState = stateStr;
+                renderer.send('state-update', optimizedState);
+            }
         };
         stateChangeHandlers.push(sendFunc);
         sendFunc(state);
     });
 
+    let prevState: string = "";
+
     function transmitState() {
+        const stateStr = JSON.stringify(state);
+        if (prevState == stateStr)
+            return;
+        prevState = stateStr;
         state = events.Analyze(state);
         for (let i = 0; i < stateChangeHandlers.length; i++) {
             try {
@@ -211,6 +226,14 @@ module TPP.Server {
                 RomData = rom;
                 if (!config.listenOnly)
                     RamData = new RamReader.Gen3TTH(rom, 5337, "localhost", config);
+                break;
+            }
+            case 3.4: { //RHH
+                let rom = new RomReader.Gen3RHH(path);
+                RomData = rom;
+                                if (!config.listenOnly)
+                    RamData = new RamReader.Gen3RHH(rom, 5337, "localhost", config);
+
                 break;
             }
             case 3.5: { //Colosseum

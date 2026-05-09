@@ -6,7 +6,7 @@
   "author": "",
   "license": "MIT",
   "overrides": {
-    "graceful-fs": "^4.2.10",
+    "graceful-fs": "^4.2.11",
     "fs-extra": "^8.1.0"
   },
   "devDependencies": {
@@ -15,7 +15,6 @@
     "@types/react": "^15.0.20",
     "@types/react-dom": "^0.14.23",
     "del": "^2.2.2",
-    "graceful-fs": "^4.2.10",
     "gulp": "^5.0.0",
     "gulp-changed": "^4.0.3",
     "gulp-electron": "^0.1.3",

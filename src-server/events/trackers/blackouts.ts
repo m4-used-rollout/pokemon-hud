@@ -33,7 +33,8 @@ namespace Events {
         public Reporter(state: TPP.RunStatus): TPP.RunStatus {
             state.game_stats = state.game_stats || {};
             state.events.push(...this.blackoutEvents);
-            state.game_stats["Blackouts"] = this.blackouts;
+            state.game_stats["Blackouts"] = Math.max(state.game_stats["Blackouts"] || 0, this.blackouts);
+            this.blackouts = state.game_stats["Blackouts"];
             return state;
         }
 

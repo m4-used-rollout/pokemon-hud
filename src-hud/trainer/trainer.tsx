@@ -12,6 +12,8 @@ class Trainer extends React.Component<{ trainer: TPP.RunStatus }, {}> {
         let pc: TPP.CombinedPCData = t.pc || { current_box_number: 0, boxes: [] };
         let pcBoxCount = (pc.boxes || []).filter(b => !!b && b.box_contents && b.box_number == pc.current_box_number).map(b => b.box_contents.length).shift() || 0;
         let maxDex = (config.totalInDex || 0) + (t.seen_list || []).filter(i => i > (config.totalInDex || 0) || i <= 0).length;
+        if (config.generation == 3.4)
+            maxDex = config.totalInDex; // Lock to specified dex for RHH for now
         const hudTheme = config.hudTheme || "";
 
         return <div className={`trainer-info ${t.transitioning ? "glitch" : ""}`}>

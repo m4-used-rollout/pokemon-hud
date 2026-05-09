@@ -264,7 +264,7 @@ declare namespace RomReader {
         ConvertText(text: string | Buffer | number[]): string;
         static FindLocalFile(path: string): string;
         protected shouldFixCaps: boolean;
-        FixAllCaps(str: string): string;
+        FixAllCaps(str: string, fixAnyway?: boolean): string;
         GetForm(pokemon: TPP.Pokemon): number;
         GetSpecies(id: number, form?: number): Pokemon.Species;
         GetSpeciesById(id: number): Pokemon.Species;
@@ -303,7 +303,7 @@ declare namespace RomReader {
         protected CombineDuplicateEncounters(mons: Pokemon.EncounterMon[]): Pokemon.EncounterMon[];
         ReadArray(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endFunc?: (data: Buffer) => boolean): Buffer[];
         ReadArray(romData: Buffer, startOffset: number, strideBytes: number, length?: number, lengthIsMax?: boolean, endValue?: number): Buffer[];
-        GetSetFlags(flagBytes: Buffer, flagCount?: number, offset?: number): number[];
+        GetSetFlags(flagBytes: any, flagCount?: number, offset?: number): number[];
         CountSetBytes(bytes: number): number;
         CalculateGender(pokemon: TPP.Pokemon): void;
         CalculateShiny(pokemon: TPP.Pokemon, threshold?: number): void;
@@ -514,6 +514,89 @@ declare namespace RomReader {
         CalculateGender(pokemon: TPP.Pokemon): void;
         CalculateShiny(pokemon: TPP.Pokemon): void;
         ShinyThreshold(): number;
+        protected ParseGFRomHeader(romData: Buffer): GFRomHeader;
+    }
+    interface GFRomHeader {
+        version: number;
+        language: number;
+        gameName: string;
+        monFrontPicsAddr: number;
+        monBackPicsAddr: number;
+        monNormalPalettesAddr: number;
+        monShinyPalettesAddr: number;
+        monIconsAddr: number;
+        monIconPaletteIdsAddr: number;
+        monIconPalettesAddr: number;
+        monSpeciesNamesAddr: number;
+        moveNamesAddr: number;
+        decorationsAddr: number;
+        flagsOffset: number;
+        varsOffset: number;
+        pokedexOffset: number;
+        seen1Offset: number;
+        pokedexVar: number;
+        pokedexFlag: number;
+        mysteryEventFlag: number;
+        pokedexCount: number;
+        playerNameLength: number;
+        trainerNameLength: number;
+        pokemonNameLength1: number;
+        pokemonNameLength2: number;
+        abilityNameLength: number;
+        moveNameLength: number;
+        unk7: number;
+        unk8: number;
+        unk9: number;
+        unk10: number;
+        unk11: number;
+        unk12: number;
+        unk13: number;
+        unk14: number;
+        unk15: number;
+        unk16: number;
+        unk17: number;
+        saveBlock2Size: number;
+        saveBlock1Size: number;
+        partyCountOffset: number;
+        partyOffset: number;
+        warpFlagsOffset: number;
+        trainerIdOffset: number;
+        playerNameOffset: number;
+        playerGenderOffset: number;
+        frontierStatusOffset: number;
+        frontierStatusOffset2: number;
+        externalEventFlagsOffset: number;
+        externalEventDataOffset: number;
+        unk18: number;
+        baseStatsAddr: number;
+        abilityNamesAddr: number;
+        abilityDescriptionsAddr: number;
+        itemsAddr: number;
+        movesAddr: number;
+        ballGfxAddr: number;
+        ballPalettesAddr: number;
+        gcnLinkFlagsOffset: number;
+        gameClearFlag: number;
+        ribbonFlag: number;
+        bagCountItems: number;
+        bagCountKeyItems: number;
+        bagCountPokeballs: number;
+        bagCountTMHMs: number;
+        bagCountBerries: number;
+        pcItemsCount: number;
+        pcItemsOffset: number;
+        giftRibbonsOffset: number;
+        enigmaBerryOffset: number;
+        enigmaBerrySize: number;
+        moveDescriptionsAddr: number;
+        unk20: number;
+        bagItemsOffset?: number;
+        bagKeyItemsOffset?: number;
+        bagPokeballsOffset?: number;
+        bagTMHMsOffset?: number;
+        bagBerriesOffset?: number;
+        bagCountCandy?: number;
+        bagCandyOffset?: number;
     }
 }
 declare namespace RomReader {
@@ -558,7 +641,6 @@ declare namespace RomReader {
         protected ReadMapLabels(romData: Buffer, config: PGEINI): string[];
         protected ReadMaps(romData: Buffer, config: PGEINI): any;
         FixAreaIdFRLG(areaId: number): number;
-        protected ParseGFRomHeader(romData: Buffer): GFRomHeader;
         protected FindMapEncounters(romData: Buffer, config: PGEINI): void;
         protected ReadCFRUTimeEncounters(romData: Buffer, config: PGEINI): void;
         protected ParseMapEncounterHeaders(romData: Buffer, address: number, timeOfDay?: keyof Pokemon.Map["encounters"]): void;
@@ -569,88 +651,6 @@ declare namespace RomReader {
         protected ReadEvolutions(romData: Buffer, config: PGEINI): void;
         protected ReadLevelCaps(romData: Buffer, config: PGEINI): void;
         evolutionMethods: EvoMethod[];
-    }
-    interface GFRomHeader {
-        version: number;
-        language: number;
-        gameName: string;
-        monFrontPicsAddr: number;
-        monBackPicsAddr: number;
-        monNormalPalettesAddr: number;
-        monShinyPalettesAddr: number;
-        monIconsAddr: number;
-        monIconPaletteIdsAddr: number;
-        monIconPalettesAddr: number;
-        monSpeciesNamesAddr: number;
-        moveNamesAddr: number;
-        decorationsAddr: number;
-        flagsOffset: number;
-        varsOffset: number;
-        pokedexOffset: number;
-        seen1Offset: number;
-        pokedexVar: number;
-        pokedexFlag: number;
-        mysteryEventFlag: number;
-        pokedexCount: number;
-        playerNameLength: number;
-        trainerNameLength: number;
-        pokemonNameLength1: number;
-        pokemonNameLength2: number;
-        unk5: number;
-        unk6: number;
-        unk7: number;
-        unk8: number;
-        unk9: number;
-        unk10: number;
-        unk11: number;
-        unk12: number;
-        unk13: number;
-        unk14: number;
-        unk15: number;
-        unk16: number;
-        unk17: number;
-        saveBlock2Size: number;
-        saveBlock1Size: number;
-        partyCountOffset: number;
-        partyOffset: number;
-        warpFlagsOffset: number;
-        trainerIdOffset: number;
-        playerNameOffset: number;
-        playerGenderOffset: number;
-        frontierStatusOffset: number;
-        frontierStatusOffset2: number;
-        externalEventFlagsOffset: number;
-        externalEventDataOffset: number;
-        unk18: number;
-        baseStatsAddr: number;
-        abilityNamesAddr: number;
-        abilityDescriptionsAddr: number;
-        itemsAddr: number;
-        movesAddr: number;
-        ballGfxAddr: number;
-        ballPalettesAddr: number;
-        gcnLinkFlagsOffset: number;
-        gameClearFlag: number;
-        ribbonFlag: number;
-        bagCountItems: number;
-        bagCountKeyItems: number;
-        bagCountPokeballs: number;
-        bagCountTMHMs: number;
-        bagCountBerries: number;
-        pcItemsCount: number;
-        pcItemsOffset: number;
-        giftRibbonsOffset: number;
-        enigmaBerryOffset: number;
-        enigmaBerrySize: number;
-        moveDescriptionsAddr: number;
-        unk20: number;
-        bagItemsOffset?: number;
-        bagKeyItemsOffset?: number;
-        bagPokeballsOffset?: number;
-        bagTMHMsOffset?: number;
-        bagBerriesOffset?: number;
-        bagCountCandy?: number;
-        bagCandyOffset?: number;
     }
 }
 declare namespace RomReader {
@@ -686,7 +686,6 @@ declare namespace RomReader {
         protected GetPuzzleTrainers(romData: Buffer, mapTrainerTableAddr: number, config: PGEINI): Pokemon.Trainer[];
         protected GetPuzzleName(romData: Buffer, mapScriptPtr: number): string;
         protected GetPuzzleAuthor(romData: Buffer, mapScriptPtr: number): string;
-        protected ParseGFRomHeader(romData: Buffer): GFRomHeader;
         protected FindMapEncounters(romData: Buffer, config: PGEINI): void;
         protected ReadEncounterSet(romData: Buffer, setAddr: number, encounterRates: number[], requiredItems?: number[], includeGroupRate?: boolean): Pokemon.EncounterMon[];
         protected ReadMoveLearns(romData: Buffer, config: PGEINI): {
@@ -700,87 +699,165 @@ declare namespace RomReader {
             [0xFFFD]: EvoMethod;
         };
     }
-    interface GFRomHeader {
-        version: number;
-        language: number;
-        gameName: string;
-        monFrontPicsAddr: number;
-        monBackPicsAddr: number;
-        monNormalPalettesAddr: number;
-        monShinyPalettesAddr: number;
-        monIconsAddr: number;
-        monIconPaletteIdsAddr: number;
-        monIconPalettesAddr: number;
-        monSpeciesNamesAddr: number;
-        moveNamesAddr: number;
-        decorationsAddr: number;
-        flagsOffset: number;
-        varsOffset: number;
-        pokedexOffset: number;
-        seen1Offset: number;
-        pokedexVar: number;
-        pokedexFlag: number;
-        mysteryEventFlag: number;
-        pokedexCount: number;
-        playerNameLength: number;
-        trainerNameLength: number;
-        pokemonNameLength1: number;
-        pokemonNameLength2: number;
-        unk5: number;
-        unk6: number;
-        unk7: number;
-        unk8: number;
-        unk9: number;
-        unk10: number;
-        unk11: number;
-        unk12: number;
-        unk13: number;
-        unk14: number;
-        unk15: number;
-        unk16: number;
-        unk17: number;
-        saveBlock2Size: number;
-        saveBlock1Size: number;
-        partyCountOffset: number;
-        partyOffset: number;
-        warpFlagsOffset: number;
-        trainerIdOffset: number;
-        playerNameOffset: number;
-        playerGenderOffset: number;
-        frontierStatusOffset: number;
-        frontierStatusOffset2: number;
-        externalEventFlagsOffset: number;
-        externalEventDataOffset: number;
-        unk18: number;
-        baseStatsAddr: number;
-        abilityNamesAddr: number;
-        abilityDescriptionsAddr: number;
-        itemsAddr: number;
-        movesAddr: number;
-        ballGfxAddr: number;
-        ballPalettesAddr: number;
-        gcnLinkFlagsOffset: number;
-        gameClearFlag: number;
-        ribbonFlag: number;
-        bagCountItems: number;
-        bagCountKeyItems: number;
-        bagCountPokeballs: number;
-        bagCountTMHMs: number;
-        bagCountBerries: number;
-        pcItemsCount: number;
-        pcItemsOffset: number;
-        giftRibbonsOffset: number;
-        enigmaBerryOffset: number;
-        enigmaBerrySize: number;
-        moveDescriptionsAddr: number;
-        unk20: number;
-        bagItemsOffset?: number;
-        bagKeyItemsOffset?: number;
-        bagPokeballsOffset?: number;
-        bagTMHMsOffset?: number;
-        bagBerriesOffset?: number;
-        bagCountCandy?: number;
-        bagCandyOffset?: number;
+}
+declare namespace RomReader {
+    const evoStruct: {
+        method: number;
+        param: number;
+        targetSpecies: number;
+        params: number;
+    };
+    interface Gen3Item extends Pokemon.Item {
+        isPokeball: boolean;
+        data?: string;
+        pocket?: string | number;
+    }
+    function ReadCStruct<T extends Record<string, number>>(data: Buffer, structure: T, offset?: number, packed?: boolean): {
+        [K in keyof T]: Buffer;
+    };
+    function SizeOfCStruct(struct: Record<string, number>, packed?: boolean): number;
+    function GetCStructOffset<T extends Record<string, number>>(struct: T, symbol: keyof T, packed?: boolean): number;
+    function UnpackBytes<T extends Record<string, number>>(data: Buffer, struct: T): {
+        [K in keyof T]: Buffer;
+    };
+    class Gen3RHH extends GBAReader {
+        evolutions: Pokemon.Evolution[][];
+        stringTerminator: number;
+        config: PGEINI;
+        gfRomHeader: GFRomHeader;
+        rhhRomHeader: ReturnType<Gen3RHH["ParseRHHRomHeader"]>;
+        tppRomHeader: ReturnType<Gen3RHH["ParseTPPRomHeader"]>;
+        cmdrRomHeader: ReturnType<Gen3RHH["ParseCmdrRomHeader"]>;
+        constructor(romFileLocation: string);
+        GetCurrentLevelCap(badges: number, champion?: boolean): number;
+        private CurrentMapIn;
+        IsUnknownTrainerMap(id: number, bank: number): boolean;
+        protected isFRLG(config: PGEINI): boolean;
+        protected ReadTypes(romData: Buffer, config: PGEINI, typeCount?: number, typeNameLength?: number, typeInfoBytes?: number): string[];
+        protected ReadAbilities(romData: Buffer, config: PGEINI, numAbilities?: number): string[];
+        protected ReadPokeData(romData: Buffer, config: PGEINI): Pokemon.Species[];
+        GetPokemonSprite(id: number, form?: number, gender?: string, shiny?: boolean, generic?: boolean): string;
+        GetBaseForm(speciesId: number): number;
+        protected ReadTrainerData(romData: Buffer, config: PGEINI): Pokemon.Trainer[];
+        protected ReadItemData(romData: Buffer, config: PGEINI): Gen3Item[];
+        protected ReadMoveData(romData: Buffer, config: PGEINI): Pokemon.Move[];
+        protected GetTMHMNames(romData: Buffer, config: PGEINI): void;
+        protected ReadMapLabels(romData: Buffer, config: PGEINI): string[];
+        protected ReadMaps(romData: Buffer, config: PGEINI): any;
+        TrainerIsRival(id: number, classId: number): boolean;
+        protected ParseRHHRomHeader(romData: Buffer): {
+            rhh_magic: string;
+            expansionVersion: string;
+            movesCount: number;
+            numSpecies: number;
+            abilitiesCount: number;
+            abilitiesInfoPtr: number;
+            itemsCount: number;
+            itemNameLength: number;
+        };
+        protected ParseTPPRomHeader(romData: Buffer): {
+            gPlayerParty: string;
+            PartyBytes: string;
+            PCBlockAddress: string;
+            PCBytes: string;
+            GameStatsOffset: string;
+            GameStatsBytes: string;
+            DaycareOffset: string;
+            MoneyOffset: string;
+            BadgeFlag: number;
+            ClockAddr: string;
+            MusicAddr: string;
+            EvolutionMusicIds: string;
+            CurrentAreaAddr: string;
+            gBattleTypeFlags: string;
+            gTrainerBattleOpponent_A: string;
+            gEnemyParty: string;
+            gBattlersCount: string;
+            gBattlerPartyIndexes: string;
+            gBattlerPositions: string;
+            gBattleMons: string;
+            gBattleMonsBytes: string;
+            gTMHMItemMoveIds: number;
+            gMapGroups: number;
+            gWildMonHeaders: number;
+            gTrainers: number;
+            gTrainerClasses: number;
+            TrainerCount: number;
+            TrainerClassCount: number;
+            gTrainerSprites: number;
+            gTypesInfo: number;
+            TypesCount: number;
+            TypeNameLength: number;
+            TypeInfoSize: number;
+            gContestEffects: number;
+            gRegionMapEntries: number;
+            RegionCount: number;
+        };
+        protected ParseCmdrRomHeader(romData: Buffer): {
+            cmdr_magic: string;
+            Windows: number;
+            TargetingCursor: number;
+            TargetingControllerFunction: number;
+            MoveSwitchingControllerFunction: number;
+            FirstMonBattleController: number;
+            SecondMonBattleController: number;
+            NicknameScreen: number;
+            PokemonSummaryScreen: number;
+            PokemonSummaryScreenCallbackOffset: number;
+            SummaryReturnToBattle: number;
+            SummaryReturnToParty: number;
+            SummaryReturnToTMLearn: number;
+            CursorMoveLearnOffset: number;
+            DialogText: number;
+            BattleText: number;
+            BattleFlags: number;
+            BattleResources: number;
+            MenuIdOffset: number;
+            DoubleBattleMenuIdOffset: number;
+            YesNoWindowId: number;
+            BattleMoveLearnState: number;
+            BattleCommunicationState: number;
+            CursorYesNo: number;
+            CursorBattle: number;
+            CursorDoubleBattle: number;
+            CursorFight: number;
+            CursorDoubleFight: number;
+            BagId: number;
+            CursorBagStart: number;
+            ScrollBagStart: number;
+            SaveBlock1Pointer: number;
+            SaveBlock2Pointer: number;
+            CurrentMusic: number;
+            InBattle: number;
+            CursorSubmenu: number;
+            PartyMenu: number;
+            BagMenu: number;
+            Evolution: number;
+            SecurityKeyOffset: number;
+            ContestResources: number;
+            PartyMenuInternal: number;
+            ItemsOffset: number;
+            pcItemsCount: number;
+            bagCountItems: number;
+            bagCountKeyItems: number;
+            bagCountPokeballs: number;
+            bagCountTMHMs: number;
+            bagCountBerries: number;
+            bagItemsOffset: number;
+            bagKeyItemsOffset: number;
+            bagPokeballsOffset: number;
+            bagTMHMsOffset: number;
+            bagBerriesOffset: number;
+        };
+        private wildEncounterTypeStruct;
+        private wildPokemonHeaderStruct;
+        protected FindMapEncounters(romData: Buffer, config: PGEINI): void;
+        protected ReadEncounterSet(romData: Buffer, setAddr: number, encounterRates: number[], requiredItems?: number[], includeGroupRate?: boolean): Pokemon.EncounterMon[];
+        protected ParseRHHEvolution(romData: Buffer, evoData: {
+            [K in keyof typeof evoStruct]: Buffer;
+        }): Pokemon.Evolution | undefined;
+        protected LoadConfig(romData: Buffer): PGEINI;
+        CheckIfCanSurf(runState: TPP.RunStatus): boolean;
     }
 }
 declare namespace RomReader {
@@ -1503,7 +1580,6 @@ declare namespace RamReader {
         protected ParseVolatileStatus(status: number): string[];
         protected CalculateGender(genderRatio: number, personalityValue: number): "Male" | "Female";
         protected GameStatsMapping: string[];
-        protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
         protected ReadBadgeFlags(flags: Buffer, flagMap: number[]): number;
         protected OptionsSpec: {
             speakers: {
@@ -1583,8 +1659,457 @@ declare namespace RamReader {
         protected ParseVolatileStatus(status: number): string[];
         protected CalculateGender(genderRatio: number, personalityValue: number): "Male" | "Female";
         protected GameStatsMapping: string[];
-        protected Decrypt(data: Buffer, key: number, checksum?: number): Buffer;
         CalcChecksum(data: Buffer): number;
+        protected ReadBadgeFlags(flags: Buffer, flagMap: number[]): number;
+        protected OptionsSpec: {
+            sound: {
+                0: string;
+                0x10000: string;
+            };
+            battle_style: {
+                0: string;
+                0x20000: string;
+            };
+            battle_scene: {
+                0: string;
+                0x40000: string;
+            };
+            map_zoom: {
+                0: string;
+                0x80000: string;
+            };
+            text_speed: {
+                0: string;
+                0x100: string;
+                0x200: string;
+            };
+            frame: {
+                bitmask: number;
+                offset: number;
+            };
+            button_mode: {
+                0: string;
+                1: string;
+                2: string;
+            };
+        };
+    }
+}
+declare namespace RamReader {
+    class Gen3RHH extends RamReaderBase<RomReader.Gen3RHH> {
+        constructor(rom: RomReader.Gen3RHH, port: number, hostname: string, config: Config);
+        protected Markings: string[];
+        protected PokemonSubstruct0: {
+            species_teraType: number;
+            heldItem: number;
+            experience_nickname11: number;
+            ppBonuses: number;
+            friendship: number;
+            pokeball_nickname12: number;
+        };
+        protected PokemonSubstruct1: {
+            move1_evo1: number;
+            move2_evo2: number;
+            move3: number;
+            move4_hyper: number;
+            pp1_hyperDef: number;
+            pp2_hyperSpeed: number;
+            pp3_hyperSpAtk: number;
+            pp4_hyperSpDef: number;
+        };
+        protected PokemonSubstruct2: {
+            hpEV: number;
+            attackEV: number;
+            defenseEV: number;
+            speedEV: number;
+            spAttackEV: number;
+            spDefenseEV: number;
+            cool: number;
+            beauty: number;
+            cute: number;
+            smart: number;
+            tough: number;
+            sheen: number;
+        };
+        protected PokemonSubstruct3: {
+            pokerus: number;
+            metLocation: number;
+            metLevel_game_dyna_gender: number;
+            ivs: number;
+            ribbons_ability: number;
+        };
+        protected BoxPokemonStruct: {
+            personality: number;
+            otId: number;
+            nickname: number;
+            language_nature: number;
+            badEgg_hasSpecies_isEgg_blockBoxRS_daysSinceFormChange: number;
+            otName: number;
+            markings_status: number;
+            checksum: number;
+            hpLost_shiny: number;
+            substructs: number;
+        };
+        protected PokemonStruct: {
+            box: number;
+            status: number;
+            level: number;
+            mail: number;
+            hp: number;
+            maxHp: number;
+            attack: number;
+            defense: number;
+            speed: number;
+            spAttack: number;
+            spDefense: number;
+        };
+        protected PokemonStorageStruct: {
+            currentBox: number;
+            boxes: number;
+            boxNames: number;
+            boxWallpapers: number;
+            fusions: number;
+        };
+        protected BattlePokemonStruct: {
+            species: number;
+            attack: number;
+            defense: number;
+            speed: number;
+            spAttack: number;
+            spDefense: number;
+            moves: number;
+            ivs: number;
+            statStages: number;
+            ability: number;
+            types: number;
+            pp: number;
+            hp: number;
+            level: number;
+            friendship: number;
+            maxHP: number;
+            item: number;
+            nickname: number;
+            ppBonuses: number;
+            otName: number;
+            experience: number;
+            personality: number;
+            status1: number;
+            volatiles: number;
+            otId: number;
+            metLevel: number;
+            isShiny: number;
+        };
+        protected BattlePackedBytes: {
+            ivs: {
+                hpIV: number;
+                attackIV: number;
+                defenseIV: number;
+                speedIV: number;
+                spAttackIV: number;
+                spDefenseIV: number;
+                abilityNum: number;
+            };
+            volatiles: {
+                confusionTurns: number;
+                flinched: number;
+                uproarTurns: number;
+                torment: number;
+                bideTurns: number;
+                lockConfusionTurns: number;
+                multipleTurns: number;
+                wrapped: number;
+                powder: number;
+                unused: number;
+                infatuation: number;
+                defenseCurl: number;
+                transformed: number;
+                recharge: number;
+                rage: number;
+                substitute: number;
+                destinyBond: number;
+                escapePrevention: number;
+                nightmare: number;
+                cursed: number;
+                foresight: number;
+                dragonCheer: number;
+                focusEnergy: number;
+            };
+        };
+        protected PokemonPackedBytes: {
+            species_teraType: {
+                species: number;
+                teraType: number;
+            };
+            heldItem: {
+                heldItem: number;
+            };
+            experience_nickname11: {
+                experience: number;
+                nickname11: number;
+            };
+            pokeball_nickname12: {
+                pokeball: number;
+                nickname12: number;
+            };
+            move1_evo1: {
+                move1: number;
+                evolutionTracker1: number;
+            };
+            move2_evo2: {
+                move2: number;
+                evolutionTracker2: number;
+            };
+            move3: {
+                move3: number;
+                unused: number;
+            };
+            move4_hyper: {
+                move4: number;
+                unused: number;
+                hyperTrainedHP: number;
+                hyperTrainedAttack: number;
+            };
+            pp1_hyperDef: {
+                pp1: number;
+                hyperTrainedDefense: number;
+            };
+            pp2_hyperSpeed: {
+                pp2: number;
+                hyperTrainedSpeed: number;
+            };
+            pp3_hyperSpAtk: {
+                pp3: number;
+                hyperTrainedSpAttack: number;
+            };
+            pp4_hyperSpDef: {
+                pp4: number;
+                hyperTrainedSpDefense: number;
+            };
+            metLevel_game_dyna_gender: {
+                metLevel: number;
+                metGame: number;
+                dynamaxLevel: number;
+                otGender: number;
+            };
+            ivs: {
+                hpIV: number;
+                attackIV: number;
+                defenseIV: number;
+                speedIV: number;
+                spAttackIV: number;
+                spDefenseIV: number;
+                isEgg: number;
+                gigantamaxFactor: number;
+            };
+            ribbons_ability: {
+                coolRibbon: number;
+                beautyRibbon: number;
+                cuteRibbon: number;
+                smartRibbon: number;
+                toughRibbon: number;
+                championRibbon: number;
+                winningRibbon: number;
+                victoryRibbon: number;
+                artistRibbon: number;
+                effortRibbon: number;
+                marineRibbon: number;
+                landRibbon: number;
+                skyRibbon: number;
+                countryRibbon: number;
+                nationalRibbon: number;
+                earthRibbon: number;
+                worldRibbon: number;
+                isShadow: number;
+                unused: number;
+                abilityNum: number;
+                modernFatefulEncounter: number;
+            };
+            language_nature: {
+                language: number;
+                hiddenNatureModifier: number;
+            };
+            badEgg_hasSpecies_isEgg_blockBoxRS_daysSinceFormChange: {
+                isBadEgg: number;
+                hasSpecies: number;
+                isEgg: number;
+                blockBoxRS: number;
+                daysSinceFormChange: number;
+                unused: number;
+            };
+            markings_status: {
+                markings: number;
+                compressedStatus: number;
+            };
+            hpLost_shiny: {
+                hpLost: number;
+                shinyModifier: number;
+            };
+        };
+        protected PokedexStruct: {
+            order: number;
+            mode: number;
+            nationalMagic: number;
+            unownPersonality: number;
+            spindaPersonality: number;
+            unknown: number;
+            filler: number;
+        };
+        protected TimeStruct: {
+            days: number;
+            hours: number;
+            minutes: number;
+            seconds: number;
+        };
+        protected SaveBlock2: {
+            playerName: number;
+            playerGender: number;
+            specialSaveWarpFlags: number;
+            playerTrainerId: number;
+            playTimeHours: number;
+            playTimeMinutes: number;
+            playTimeSeconds: number;
+            playTimeVBlanks: number;
+            options: number;
+            pokedex: number;
+            filler_90: number;
+            localTimeOffset: number;
+            lastBerryTreeUpdate: number;
+            gcnLinkFlags: number;
+            encryptionKey: number;
+        };
+        protected WarpData: {
+            mapGroup: number;
+            mapNum: number;
+            warpId: number;
+            x: number;
+            y: number;
+        };
+        protected ItemSlot: {
+            itemId: number;
+            quantity: number;
+        };
+        protected Bag: {
+            items: number;
+            keyItems: number;
+            pokeBalls: number;
+            TMsHMs: number;
+            berries: number;
+        };
+        protected Pokeblock: {
+            color: number;
+            spicy: number;
+            dry: number;
+            sweet: number;
+            bitter: number;
+            sour: number;
+            feel: number;
+        };
+        protected Mail: {
+            words: number;
+            playerName: number;
+            trainerId: number;
+            species: number;
+            itemId: number;
+        };
+        protected DaycareMail: {
+            message: number;
+            otName: number;
+            monName: number;
+            language: number;
+        };
+        protected DaycareMon: {
+            mon: number;
+            mail: number;
+            steps: number;
+        };
+        protected DayCare: {
+            mons: number;
+            offspringPersonality: number;
+            stepCounter: number;
+        };
+        protected SaveBlock1NeededSubstructs: {
+            [x: number]: {
+                location: number;
+                money?: undefined;
+                coins?: undefined;
+                registeredItem?: undefined;
+                flags?: undefined;
+                vars?: undefined;
+                gameStats?: undefined;
+                daycare?: undefined;
+                dexSeen?: undefined;
+                dexCaught?: undefined;
+            } | {
+                money: number;
+                coins: number;
+                registeredItem: number;
+                location?: undefined;
+                flags?: undefined;
+                vars?: undefined;
+                gameStats?: undefined;
+                daycare?: undefined;
+                dexSeen?: undefined;
+                dexCaught?: undefined;
+            } | {
+                flags: number;
+                vars: number;
+                gameStats: number;
+                location?: undefined;
+                money?: undefined;
+                coins?: undefined;
+                registeredItem?: undefined;
+                daycare?: undefined;
+                dexSeen?: undefined;
+                dexCaught?: undefined;
+            } | {
+                daycare: number;
+                location?: undefined;
+                money?: undefined;
+                coins?: undefined;
+                registeredItem?: undefined;
+                flags?: undefined;
+                vars?: undefined;
+                gameStats?: undefined;
+                dexSeen?: undefined;
+                dexCaught?: undefined;
+            } | {
+                dexSeen: number;
+                dexCaught: number;
+                location?: undefined;
+                money?: undefined;
+                coins?: undefined;
+                registeredItem?: undefined;
+                flags?: undefined;
+                vars?: undefined;
+                gameStats?: undefined;
+                daycare?: undefined;
+            };
+            [0x04]: {
+                location: number;
+            };
+            [0x490]: {
+                money: number;
+                coins: number;
+                registeredItem: number;
+            };
+            [0x3030]: {
+                daycare: number;
+            };
+        };
+        protected readerFunc: (state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) => void;
+        ReadParty: (extraData?: never) => Promise<(TPP.PartyPokemon & TPP.BoxedPokemon)[]>;
+        ReadPC: (extraData?: never) => Promise<TPP.CombinedPCData>;
+        ReadBattle: (extraData?: never) => Promise<TPP.BattleStatus>;
+        protected TrainerChunkReaders: (() => Promise<TPP.TrainerData>)[];
+        protected TotalItemSlots(): number;
+        protected ParseItemCollection(itemData: Buffer, key?: number): TPP.Item[];
+        protected ParseParty(partyData: Buffer, partyLength?: number): (TPP.PartyPokemon & TPP.BoxedPokemon)[];
+        protected ParseBattleMons(battleData: Buffer, numBattlers: number): TPP.PartyPokemon[];
+        private pkmCache;
+        protected ParsePokemon(pkmdata: Buffer, boxSlot?: number): TPP.PartyPokemon & TPP.BoxedPokemon;
+        protected ParseBattlePokemon(pkmdata: Buffer): TPP.PartyPokemon;
+        protected CalculateGender(genderRatio: number, personalityValue: number): "Male" | "Female";
+        protected GameStatsMapping: string[];
         protected ReadBadgeFlags(flags: Buffer, flagMap: number[]): number;
         protected OptionsSpec: {
             sound: {
