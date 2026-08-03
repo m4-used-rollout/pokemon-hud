@@ -446,9 +446,12 @@ declare namespace RomReader {
         private fishingSummary;
         private trainerSummary;
         private phoneContacts;
+        private tmCount;
+        private hmCount;
         constructor(romFileLocation: string);
         readonly isCrystal16: boolean;
         readonly isPrism: boolean;
+        readonly isPeridot: boolean;
         private NearToFarPointer;
         ReadCrystal16IndirectionTable(romData: Buffer, address: number, skipEmptyZero?: boolean): Buffer[];
         ReadCrystal16ListItems(romData: Buffer, address: number): Buffer[];
@@ -1380,15 +1383,15 @@ declare namespace RamReader {
         private HasBeenSeenThisBattle;
         private GetBattleMon;
         private IsCurrentlyBattling;
-        private CurrentParty;
-        private CurrentBattleMons;
-        private CurrentBattleSeenPokemon;
+        private CurrentParty?;
+        private CurrentBattleMons?;
+        private CurrentBattleSeenPokemon?;
         protected ConcealEnemyParty(party: (TPP.PartyPokemon & {
             active?: boolean;
         })[]): TPP.EnemyParty;
         protected abstract TrainerChunkReaders: Array<(trainerData?: TPP.TrainerData) => Promise<TPP.TrainerData>>;
         HTTPGet(url: string): Promise<string>;
-        CallEmulator<T>(path: string[] | string, callback?: (data: string) => (T | Promise<T>), force?: boolean): Promise<T>;
+        CallEmulator<T>(path: string[] | string, callback?: (data: string) => (T | Promise<T> | null), force?: boolean): Promise<T>;
         CachedEmulatorCaller<T, U = never>(path: string[] | string, callback: (data: string, extraData?: U) => (T | Promise<T>), ignoreCharStart?: number, ignoreCharEnd?: number): (extraData?: U) => Promise<T>;
         ReadLinkedList(data: Buffer, baseAddr: number): Buffer[];
         WrapBytes<T, U = never>(callback: (data: Buffer, extraData?: U) => T): (hex: string, extraData?: U) => T;
@@ -1499,7 +1502,7 @@ declare namespace RamReader {
 declare namespace RamReader {
     interface Gen2BoxedMon extends TPP.Pokemon {
         health: number[];
-        status: string;
+        status: string | null;
         sleep_turns?: number;
     }
     class Gen2 extends RamReaderBase<RomReader.Gen2> {
@@ -1521,12 +1524,13 @@ declare namespace RamReader {
         ReadParty: (extraData?: never) => Promise<TPP.PartyPokemon[]>;
         ReadPC: (extraData?: never) => Promise<TPP.CombinedPCData>;
         ReadBattle: (extraData?: never) => Promise<TPP.BattleStatus>;
-        protected TrainerChunkReaders: ((extraData?: never) => Promise<TPP.TrainerData>)[];
+        protected TrainerChunkReaders: ((trainerData?: TPP.TrainerData) => Promise<TPP.TrainerData>)[];
         private getMissingDefaultTime;
         protected OptionsSpec: OptionsSpec;
         protected FrameSpec: OptionsSpec;
         protected PrinterSpec: OptionsSpec;
         protected Options2Spec: OptionsSpec;
+        protected DifficultySpec: OptionsSpec;
         protected BaseOffsetCalc: (baseSymbol: string, extraOffset?: number) => (symbol: string) => number;
         protected ParseBattleBundle(data: Buffer): TPP.BattleStatus;
         protected ParsePC(data: Buffer): TPP.CombinedPCData;

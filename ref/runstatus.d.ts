@@ -31,7 +31,7 @@ declare namespace TPP {
         last_caught_pokemon?: Pokemon;
         id?: number;
         items?: {
-            [key: string]: Item[];
+            [key: string]: Item[] | undefined;
             items?: Item[];
             free_space?: Item[];
             key?: Item[];
@@ -151,7 +151,7 @@ declare namespace TPP {
         encryption_constant?: number;
         original_trainer: Trainer;
         name: string;
-        held_item: Item;
+        held_item: Item|null;
         gender: string;
         shiny: boolean;
         shiny_value?: number;
@@ -181,7 +181,7 @@ declare namespace TPP {
             strain: number;
             cured: boolean;
         }
-        met: {
+        met?: {
             map_id?: number;
             area_id?: number;
             area_name?: string;
@@ -208,7 +208,7 @@ declare namespace TPP {
 
     export interface PartyPokemon extends Pokemon {
         health: number[];
-        status: string;
+        status: string | null;
         sleep_turns?: number;
         stats: Stats;
         pokerus_remaining?: number;
@@ -326,7 +326,7 @@ declare namespace TPP {
     }
 
     export interface Options {
-        [key: string]: string;
+        [key: string]: string | undefined;
         box_mode?: string;
         button_mode?: string;
         frame?: string;

@@ -10,8 +10,8 @@ namespace Events {
         private earnedBadges: TPP.Event[] = [];
         private earnedZCrystals: number[] = [];
         private canEarnBadges: boolean = false;
-        private _badges: string[];
-        private _frontierSymbols: string[];
+        private _badges?: string[];
+        private _frontierSymbols?: string[];
 
         protected get badges() {
             if (this._badges)
@@ -65,6 +65,8 @@ namespace Events {
                     return this._badges = ["Blank", "Warm", "Soil", "Metal", "Swarm", "Pixie", "Dew", "Brain"];
                 case "borrius": // Unbound
                     return this._badges = ["Leaf", "Vision", "Wings", "Fall", "Battery", "Ring", "Swamp", "Time"];
+                case "peridot": // Peridot
+                    return this._badges = ["Fist", "Wave", "Mystic", "Skull", "Cog", "Root", "Terra", "Wyrm"];
             }
             return [];
         }
@@ -87,7 +89,7 @@ namespace Events {
                 return (action.className || "Leader").toLowerCase() == "leader";
             if (action.classId == 29 && action.id == 3) //Giovanni
                 return true;
-            return [0, 34, 35, 36, 37, 38, 40, 39].indexOf(action.classId) > 0; //rest of Kanto's gym leaders
+            return [0, 34, 35, 36, 37, 38, 40, 39].indexOf(action.classId || 0) > 0; //rest of Kanto's gym leaders
         }
 
         private ParseBadges(badgeBytes: number) {
@@ -111,12 +113,12 @@ namespace Events {
 
         public Analyzer(newState: TPP.RunStatus, oldState: TPP.RunStatus, dispatch: (action: KnownActions) => void): void {
             if (this.badges.length && newState.badges != oldState.badges) {
-                const oldBadges = this.ParseBadges(oldState.badges);
-                this.ParseBadges(newState.badges).filter(b => oldBadges.indexOf(b) < 0).forEach(b => dispatch({ type: "Earned Badge", name: `${b} Badge` }));
+                const oldBadges = this.ParseBadges(oldState.badges || 0);
+                this.ParseBadges(newState.badges || 0).filter(b => oldBadges.indexOf(b) < 0).forEach(b => dispatch({ type: "Earned Badge", name: `${b} Badge` }));
             }
             if (this.frontierSymbols.length && newState.frontier_symbols != oldState.frontier_symbols) {
-                const oldSymbols = this.ParseFrontier(oldState.frontier_symbols);
-                this.ParseFrontier(newState.frontier_symbols).filter(s => oldSymbols.indexOf(s) < 0).forEach(name => dispatch({ type: "Earned Badge", name }));
+                const oldSymbols = this.ParseFrontier(oldState.frontier_symbols || 0);
+                this.ParseFrontier(newState.frontier_symbols || 0).filter(s => oldSymbols.indexOf(s) < 0).forEach(name => dispatch({ type: "Earned Badge", name }));
             }
         }
         public Reducer(action: KnownActions & Timestamp): void {
@@ -153,7 +155,7 @@ namespace Events {
             }
         }
         public Reporter(state: TPP.RunStatus): TPP.RunStatus {
-            state.events.push(...this.earnedBadges);
+            state.events && state.events.push(...this.earnedBadges);
             return state;
         }
 

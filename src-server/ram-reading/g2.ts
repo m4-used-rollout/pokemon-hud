@@ -14,7 +14,7 @@ namespace RamReader {
 
     interface Gen2BoxedMon extends TPP.Pokemon {
         health: number[];
-        status: string;
+        status: string | null;
         sleep_turns?: number;
     }
 
@@ -25,7 +25,7 @@ namespace RamReader {
                 throw `Could not find symbol ${symbols.join(' ')}`;
             return this.rom.symTable[symbol].toString(16);
         };
-        protected StructSize = (startSymbol: string, ...endSymbol: string[]) => this.rom.symTable[[...endSymbol, startSymbol.replace("Start", '') + "End"].find(s => !!this.rom.symTable[s])] - this.rom.symTable[startSymbol];
+        protected StructSize = (startSymbol: string, ...endSymbol: string[]) => this.rom.symTable[[...endSymbol, startSymbol.replace("Start", '') + "End"].find(s => !!this.rom.symTable[s]) || ""] - this.rom.symTable[startSymbol];
 
         protected readerFunc = this.ReadSync;
 
@@ -57,8 +57,8 @@ namespace RamReader {
                 const struct = {
                     "sBox": this.PCBoxSize(),
                 };
-                Object.keys(this.rom.symTable).filter(s => /^sBox\d+$/.test(s)).forEach(k => struct[k] = this.PCBoxSize());
-                Object.keys(this.rom.symTable).filter(s => /^sBox\d+PokemonIndexes$/.test(s)).forEach(k => struct[k] = 2 * MONS_PER_BOX);
+                Object.keys(this.rom.symTable).filter(s => /^sBox\d+$/.test(s)).forEach(k => struct[k as keyof typeof struct] = this.PCBoxSize());
+                Object.keys(this.rom.symTable).filter(s => /^sBox\d+PokemonIndexes$/.test(s)).forEach(k => struct[k as keyof typeof struct] = 2 * MONS_PER_BOX);
                 return struct;
             })(), sym => this.rom.symTable[sym], async struct => {
                 const { wCurBox, wBoxNames } = await (this.StructEmulatorCaller('WRAM', { wCurBox: 1, wBoxNames: this.NumPCBoxes() * BOX_NAME_LENGTH },
@@ -86,6 +86,7 @@ namespace RamReader {
                 wPlayerID: 2,
                 wSecretID: 2,
                 wOptions: this.StructSize('wOptions'),
+                wDifficultyMode: 1, //Peridot
                 wPokedexCaught: DEX_FLAG_BYTES,
                 wPokedexSeen: DEX_FLAG_BYTES,
                 wXCoord: 1,
@@ -123,7 +124,8 @@ namespace RamReader {
                     ...this.ParseOptions(struct.wOptions[0], this.OptionsSpec),
                     ...this.ParseOptions(struct.wOptions[2], this.FrameSpec),
                     ...this.ParseOptions(struct.wOptions[4], this.PrinterSpec),
-                    ...this.ParseOptions(struct.wOptions[5], this.Options2Spec)
+                    ...this.ParseOptions(struct.wOptions[5], this.Options2Spec),
+                    ...(struct.wDifficultyMode ? this.ParseOptions(struct.wDifficultyMode[0], this.DifficultySpec) : {})  //Peridot
                 };
                 if (this.ShouldForceOptions(options, this.OptionsSpec))
                     this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wOptions')}/${this.SetOptions(struct.wOptions[0], this.config.forceOptions, this.OptionsSpec).toString(16)}`);
@@ -133,6 +135,8 @@ namespace RamReader {
                     this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wGBPrinter')}/${this.SetOptions(struct.wOptions[4], this.config.forceOptions, this.PrinterSpec).toString(16)}`);
                 if (this.ShouldForceOptions(options, this.Options2Spec))
                     this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wOptions2')}/${this.SetOptions(struct.wOptions[5], this.config.forceOptions, this.Options2Spec).toString(16)}`);
+                if (this.ShouldForceOptions(options, this.DifficultySpec) && this.SymAddr('wDifficultyMode'))
+                    this.CallEmulator(`WRAM/WriteByte/${this.SymAddr('wDifficultyMode')}/${this.SetOptions(struct.wDifficultyMode[0], this.config.forceOptions, this.DifficultySpec).toString(16)}`);
                 options.frame = (parseInt(options.frame || "0") + 1).toFixed(0);
                 const tms = this.rom.GetTMsHMs();
                 const seenMons = this.GetSetFlags(struct.wPokedexSeen).map(id => this.rom.GetSpecies(id).dexNumber);
@@ -170,13 +174,13 @@ namespace RamReader {
                         medicine: struct.wMedicine && this.rom.ReadArray(struct.wMedicine, 0, 2, struct.wNumMedicine[0]).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1])),
                         tms: this.rom.isPrism ?
                             this.GetSetFlags(struct.wTMsHMs).map(id => Pokemon.Convert.ItemToRunStatus({ name: this.rom.GetTMById(id), isKeyItem: true, id: id + 255 })) :
-                            this.rom.ReadArray(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => tm.count > 0),
+                            this.rom.ReadArray(struct.wTMsHMs, 0, 1, 255).map((count, i) => Pokemon.Convert.ItemToRunStatus(tms[i], count[0])).filter(tm => (tm.count || 0) > 0),
                         pc: this.rom.ReadArray(struct.wNumPCItems ? struct.wPCItems : struct.wPCItems.slice(1), 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : struct.wPCItems[0], true).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[0]), data[1]))
                         // pc: this.rom.ReadArray(struct.wPCItems, 0, 2, struct.wNumPCItems ? struct.wNumPCItems[0] : 255, true, data => data[1] == 255).map(data => Pokemon.Convert.ItemToRunStatus(this.rom.GetItem(data[1]), data[0]))
                     },
-                    phone_book: struct.wPhoneList && (this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => (data[0] == 1 && struct.wMomsName) ? "Mom" /*this.rom.ConvertText(struct.wMomsName) /* Used as player name backup? */ : this.rom.GetPhoneContact(data[0])).filter(p => !!p)),
+                    phone_book: this.rom.isPeridot ? undefined : (struct.wPhoneList && (this.rom.ReadArray(struct.wPhoneList, 0, 1, 255).map(data => (data[0] == 1 && struct.wMomsName) ? "Mom" /*this.rom.ConvertText(struct.wMomsName) /* Used as player name backup? */ : this.rom.GetPhoneContact(data[0])).filter(p => !!p))) || undefined,
                     time: { ...((this.currentState || { time: null }).time || { h: 0, m: 0, s: 0 }), d: dayOfWeek[struct.wCurDay[0] % 7], tod: struct.wTimeOfDay ? timeOfDay[struct.wTimeOfDay[0]] : undefined }
-                };
+                } as Partial<TPP.TrainerData>;
             }),
             // Prism Bingo stats
             this.rom.isPrism && this.StructEmulatorCaller<TPP.TrainerData>('WRAM', {
@@ -232,8 +236,8 @@ namespace RamReader {
                     "Money in the Bank": struct.wBankMoney && struct.wBankMoney.readUIntBE(0, 3),
                 };
                 Object.keys(game_stats).forEach(k => {
-                    if (!game_stats[k]) //Filter out any stats that are missing or 0
-                        delete game_stats[k];
+                    if (!game_stats[k as keyof typeof game_stats]) //Filter out any stats that are missing or 0
+                        delete game_stats[k as keyof typeof game_stats];
                 });
                 return { game_stats };
             }),
@@ -266,7 +270,7 @@ namespace RamReader {
                     s: struct.hSeconds && struct.hSeconds[0]
                 }
             }))
-        ].filter(r => !!r);
+        ].filter(r => !!r) as RamReaderBase<RomReader.Gen2>['TrainerChunkReaders'];
 
         private async getMissingDefaultTime() {
             return this.CallEmulator(`WRAM/ReadByteRange/${this.rom.symTable["wCurDay"].toString(16)}/1` + (!!this.rom.symTable["wTimeOfDay"] ? `/${this.rom.symTable["wTimeOfDay"].toString(16)}/1` : ""), this.WrapBytes(data => ({
@@ -339,6 +343,14 @@ namespace RamReader {
             //     8: '12-hour'
             // }
         }
+        protected DifficultySpec: OptionsSpec = {
+            // Peridot
+            difficulty: {
+                0: 'Normal',
+                1: 'Relaxed',
+                2: 'Expert'
+            }
+        }
 
         protected BaseOffsetCalc = (baseSymbol: string, extraOffset = 0) => ((symbol: string) => (this.rom.symTable[baseSymbol + symbol] - this.rom.symTable[baseSymbol]) + extraOffset);
 
@@ -361,11 +373,11 @@ namespace RamReader {
                     //wTrainerNo/1
                     const trainerNum = data.readUInt8(3);
                     const trainer = Pokemon.Convert.EnemyTrainerToRunStatus(this.rom.GetTrainer(trainerNum, trainerClass));
-                    if (/Rival\d+/i.test(trainer.class_name))
+                    if (trainer && trainer.class_name && /Rival\d+/i.test(trainer.class_name))
                         trainer.class_name = "Rival"
-                    if (trainer.name == "Cal")
+                    if (trainer && trainer.name == "Cal")
                         trainer.name = this.rom.ConvertText(data.slice(data.length - NAME_LENGTH));
-                    enemy_trainers.push(trainer);
+                    trainer && enemy_trainers.push(trainer);
                 }
                 //wOTParty
                 let enemy_party: TPP.PartyData = [];
@@ -393,7 +405,7 @@ namespace RamReader {
             // Active Box
             // sBox0-14
             const pc = this.rom.ReadArray(data, 1 + (BOX_NAME_LENGTH * NUM_BOXES), this.PCBoxSize(), NUM_BOXES + 1).map(b => this.ParsePCBox(b));
-            const active = pc.shift();
+            const active = pc.shift() as Gen2BoxedMon[];
             pc[currentBox - 1] = active;
             return {
                 current_box_number: currentBox,
@@ -588,7 +600,7 @@ namespace RamReader {
             poke.personality_value = (data.readUInt16BE(offset('DVs')) << 16) + (poke.original_trainer.id | (!!offset('CaughtData') ? data.readInt16BE(offset('CaughtData')) : 0));
 
             if (this.rom.isPrism && poke.species) // If DVs have an even number of set bits, ability 0. Otherwise, ability 1
-                poke.ability = poke.species.abilities[this.rom.CountSetBytes(data.readUInt16BE(offset('DVs'))) % 2];
+                poke.ability = poke.species && poke.species.abilities && poke.species.abilities[this.rom.CountSetBytes(data.readUInt16BE(offset('DVs'))) % 2];
 
             if (nickname)
                 poke.name = this.rom.ConvertText(nickname);

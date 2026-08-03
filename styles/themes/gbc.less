@@ -137,6 +137,7 @@
                     background-size: 87% 87%;
                     background-position: 50% 64%;
                     background-repeat: no-repeat;
+                    background-image: none!important;
 
                     img {
                         position: absolute;
@@ -146,6 +147,7 @@
                         // height:(@party-member-height * .8);
                         height: 112px;
                         image-rendering: pixelated;
+                        filter: none;
 
                         &.frame-border {
                             transform:translateX(-50%)translateY(-50%);
@@ -251,7 +253,7 @@
                             font-family: pokeplatinum;
                             .bar('EXP', (@party-member-height / 25));
                             top:auto;
-                            bottom:0;
+                            bottom: -0.5em;
                             left:2em;
                             transition: transform @transition-time ease-in-out;
 
@@ -281,15 +283,17 @@
                         margin-bottom: -.1em;
                         white-space: nowrap;
                         font-family: pokered;
+                        height: 2.5em!important;
 
                         > div {
                             min-width: 100%;
                             display:flex;
                             flex-flow: row nowrap;
                             justify-content: space-around;
-                            align-items: baseline;
-                            position: relative;
-                            top: -.1em;
+                            align-items: center;
+                            height: 1.75em;
+                            position: static;
+                            //top: -.1em;
 
                             > * {
                                 width: auto;
@@ -305,7 +309,10 @@
                         }
 
                         .held-item {
-                            //font-size: 1.2em;
+                            position: static;
+                            overflow: visible;
+                            height: auto;
+                            font-size: 1em;
                             font-family: pokeplatinum;
                             img {
                                 display: none;
@@ -381,6 +388,7 @@
                         width:100%;
                         padding:0;
                         margin:0;
+                        margin-left: .1em;
                         margin-top: -.1em;
                         position: relative;
                         display: flex;
@@ -596,6 +604,7 @@
                     opacity: 0;
                     z-index: 3;
                     transition: transform @transition-time ease-in-out, opacity @transition-time ease-in-out;
+                    display: none;
                 }
 
                 &:after {
@@ -831,16 +840,28 @@
 
         .trainer-info {
             .badges {
+                &:before, &:after {
+                    display:none;
+                }
+
                 position: relative;
                 width:100%;
                 text-align: center;
+
+                display:flex;
+                flex-flow: row nowrap;
+                justify-content: space-evenly;
+                align-items: center;
+
                 span {
                     background-size: contain;
                     background-repeat: no-repeat;
                     background-position: center;
                     display: inline-block;
-                    margin: .5vw 0;// 1vw; //BW3
-                    margin-top: 0;
+                    //margin: .5vw 0;// 1vw; //BW3
+                    //margin-top: 0;
+                    width:fit-content;
+                    flex: 0 0 48px; //Peridot
                     // margin: .25vw; // Gold97
                     // &:first-child, &:nth-child(9) {
                     //     margin-left:2vw;
@@ -853,18 +874,20 @@
                         vertical-align: middle;
                         transition: filter (@transition-time * 3) ease-in, opacity @transition-time ease-out, transform (@transition-time * 2) ease-out;
                         .outline(@bar-chrome);
-                        width: 10vw;
+                        //width: 10vw;
+                        width: 48px; //Peridot
+                        height: 48px; //Peridot
                         //width: 8vw;
                         // height: 6vw; //Prism
                         // width: 6vw; //Prism
-                        // object-fit: contain; //Prism
+                        object-fit: contain; //Prism, Peridot
                         margin: 0 1vw;
                         //margin: 0 .25vw; //Gold97
                         transform-origin: center center;
-                        // image-rendering: pixelated; //Gold97, Prism
+                        image-rendering: pixelated; //Gold97, Prism, Peridot
 
                         &.unowned {
-                            filter: contrast(0%) brightness(50%);
+                            filter: contrast(0%) brightness(25%);
                         }
                         &.badge-slot {
                             filter:none;
@@ -910,7 +933,7 @@
                 font-family: pokered;
                 font-size: .8em;
                 font-size: .5em;
-                line-height: 1.65em;
+                line-height: 1em;
                 text-align: center;
                 margin:auto;
                 &.slim {

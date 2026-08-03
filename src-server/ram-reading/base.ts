@@ -119,7 +119,7 @@ namespace RamReader {
 
         protected ReadSync(state: TPP.RunStatus, transmitState: (state: TPP.RunStatus) => void) {
             this.TrainerProcessor(state, transmitState, this.ReadTrainerSync.bind(this))()
-                .then(() => state.generation > 3 && state.party && state.in_battle ? null : this.PartyProcessor(state, transmitState)())
+                .then(() => (state.generation || 0) > 3 && state.party && state.in_battle ? null : this.PartyProcessor(state, transmitState)())
                 .then(this.BattleProcessor(state, transmitState))
                 .then(this.PCProcessor(state, transmitState))
                 .then(() => this.ReadSync(state, transmitState));
@@ -156,7 +156,7 @@ namespace RamReader {
                 const queue = this.TrainerChunkReaders.filter(f => !!f);
                 (function nextPromise() {
                     if (queue.length)
-                        queue.shift()(trainerData)
+                        (queue.shift() as ((trainerData?: TPP.TrainerData | undefined) => Promise<TPP.TrainerData>))(trainerData)
                             .then(chunk => Object.assign(trainerData, chunk))
                             .catch(err => console.error(err))
                             .finally(nextPromise);
@@ -177,7 +177,7 @@ namespace RamReader {
 
             mons.forEach((m, i) => {
                 if (m && monInEnemyParty[i] && !this.HasBeenSeenThisBattle(m))
-                    this.CurrentBattleSeenPokemon.push(m.personality_value);
+                    (this.CurrentBattleSeenPokemon = this.CurrentBattleSeenPokemon || []).push(m.personality_value);
             });
         }
 
@@ -187,7 +187,7 @@ namespace RamReader {
                 return false;
             if ((this.config.generation > 2 && mon.health[0] < mon.health[1]) || mon.health[0] == 0) //obviously we've seen it because it's hurt
                 return true;
-            if (this.config.generation > 2 && (mon.moves || []).some(m => m.max_pp > 0 && m.pp < m.max_pp)) //obviously we've seen it because it used a move
+            if (this.config.generation > 2 && (mon.moves || []).some(m => m.pp < (m.max_pp || 0))) //obviously we've seen it because it used a move
                 return true;
             if (mon.active) { //Gen 1/2 reader manages the active flag itself, so let's go off that
                 if (!this.CurrentBattleSeenPokemon.some(pv => mon.personality_value == pv))
@@ -199,7 +199,7 @@ namespace RamReader {
 
         private GetBattleMon(partyIndex: number, isEnemy: boolean, personalityValue?: number, name?: string, nonFainted = false) {
             if (this.CurrentBattleMons && this.CurrentBattleMons.battleMons.length) {
-                const battlerIndex = this.CurrentBattleMons.partyIndexes.map((p, i) => p == partyIndex && this.CurrentBattleMons.isEnemyMon[i] == isEnemy ? i : null).filter(i => i != null).pop();
+                const battlerIndex = this.CurrentBattleMons.partyIndexes.map((p, i) => !!this.CurrentBattleMons && p == partyIndex && this.CurrentBattleMons.isEnemyMon[i] == isEnemy ? i : null).filter(i => i != null).pop();
                 if (battlerIndex != null) {
                     const battler = this.CurrentBattleMons.battleMons[battlerIndex];
                     if (battler &&
@@ -217,13 +217,13 @@ namespace RamReader {
             return (this.GetBattleMon(partyIndex, isEnemy) || { personality_value: null }).personality_value == pokemon.personality_value;
         }
 
-        private CurrentParty: TPP.PartyPokemon[];
-        private CurrentBattleMons: {
+        private CurrentParty?: TPP.PartyPokemon[];
+        private CurrentBattleMons?: {
             battleMons: TPP.PartyPokemon[];
             partyIndexes: number[];
             isEnemyMon: boolean[];
         };
-        private CurrentBattleSeenPokemon: number[];
+        private CurrentBattleSeenPokemon?: number[];
 
         protected ConcealEnemyParty(party: (TPP.PartyPokemon & { active?: boolean })[]): TPP.EnemyParty {
             //return party; //SPY!
@@ -243,7 +243,7 @@ namespace RamReader {
                 fitness: p.fitness,
                 personality_value: p.personality_value,
                 buffs: p.buffs,
-                moves: (p.moves || []).filter(m => m.pp < m.max_pp), //only show moves with less than max PP (because they've been used)
+                moves: (p.moves || []).filter(m => m.pp < (m.max_pp || 0)), //only show moves with less than max PP (because they've been used)
                 name: this.HasBeenSeenThisBattle(p) ? p.name : "???"
             }));
         }
@@ -265,7 +265,7 @@ namespace RamReader {
             })
         }
 
-        public CallEmulator<T>(path: string[] | string, callback?: (data: string) => (T | Promise<T>), force = false) {
+        public CallEmulator<T>(path: string[] | string, callback?: (data: string) => (T | Promise<T> | null), force = false) {
             let paths = Array.isArray(path) ? path : [path];
             return Promise.all(paths.map(path => new Promise<string>((resolve, reject) => {
                 if (!this.running && !force)
@@ -519,7 +519,7 @@ namespace RamReader {
 
         public ParseOptions = (rawOptions: number, optionsSpec = this.OptionsSpec) => ParseOptions(rawOptions, optionsSpec);
         public SetOptions = (rawOptions: number, desiredOptions: TPP.Options, optionsSpec = this.OptionsSpec) => SetOptions(rawOptions, desiredOptions, optionsSpec);
-        public ShouldForceOptions = (options: TPP.Options, optionsSpec = this.OptionsSpec) => Object.keys(this.config.forceOptions || {}).filter(k => !!optionsSpec[k]).filter(k => this.config.forceOptions[k].toLowerCase() != (options[k] || "").toLowerCase());
+        public ShouldForceOptions = (options: TPP.Options, optionsSpec = this.OptionsSpec) => Object.keys(this.config.forceOptions || {}).filter(k => !!optionsSpec[k]).filter(k => (this.config.forceOptions[k] || "").toLowerCase() != (options[k] || "").toLowerCase());
 
         public GetSetFlags(flagBytes: Buffer, flagCount = flagBytes.length * 8, offset = 0) {
             return this.rom.GetSetFlags(flagBytes, flagCount, offset);
@@ -544,7 +544,7 @@ namespace RamReader {
         }
 
         protected CalculateShiny(pokemon: TPP.Pokemon) {
-            pokemon.shiny_value = ((pokemon.original_trainer.id ^ pokemon.original_trainer.secret) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536)))
+            pokemon.shiny_value = ((pokemon.original_trainer.id ^ (pokemon.original_trainer.secret || 0)) ^ (Math.floor(pokemon.personality_value / 65536) ^ (pokemon.personality_value % 65536)))
             return pokemon.shiny = pokemon.shiny_value < this.rom.ShinyThreshold();
         }
 
