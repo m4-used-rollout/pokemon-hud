@@ -607,13 +607,13 @@ namespace RomReader {
     trainerSpriteClearFix[3] = { start: [[22, 32], [32, 32], [33, 35], [33, 40]] }; //Bugsy
     trainerSpriteClearFix[4] = { start: [[33, 30]] }; //Morty
     trainerSpriteClearFix[6] = { start: [[35, 23], [34, 24], [33, 25], [32, 36]] }; //Girl2
-    trainerSpriteClearFix[7] = { start: [[18, 18], [17, 21]] }; //Scruff Guy
+    //trainerSpriteClearFix[7] = { start: [[18, 18], [17, 21]] }; //Scruff Guy
     trainerSpriteClearFix[8] = { start: [[27, 17]] }; //Clair
     trainerSpriteClearFix[9] = { start: [[22, 23]] }; //Girl3
     trainerSpriteClearFix[10] = { start: [[28, 52]] }; //Pokemon Prof
     trainerSpriteClearFix[11] = { start: [[22, 47]] }; //Old Guy
     trainerSpriteClearFix[13] = { start: [[16, 36], [36, 36]] }; //Bruno
-    // trainerSpriteClearFix[15] = { start: [[22, 32], [22, 40]] }; //Koga
+    trainerSpriteClearFix[15] = { start: [[22, 32], [22, 40]] }; //Koga
     trainerSpriteClearFix[16] = { start: [[22, 23]] }; //Girl3
     trainerSpriteClearFix[17] = { start: [[28, 44]] }; //Brock
     trainerSpriteClearFix[20] = { start: [[39, 27], [16, 37], [40, 36]] }; //Science Guy
@@ -626,7 +626,7 @@ namespace RomReader {
     trainerSpriteClearFix[33] = { start: [[24, 26], [33, 29]] }; //Skier
     trainerSpriteClearFix[34] = { start: [[17, 25], [18, 24]] }; //Teacher
     trainerSpriteClearFix[36] = { start: [[33, 25], [38, 45]] }; //Bug Catcher
-    // trainerSpriteClearFix[37] = { start: [[12, 17], [14, 18], [16, 19], [17, 20], [19, 21], [20, 22], [22, 23], [24, 24], [25, 25], [26, 26]] }; //Fisher
+    trainerSpriteClearFix[37] = { start: [[12, 17], [14, 18], [16, 19], [17, 20], [19, 21], [20, 22], [22, 23], [24, 24], [25, 25], [26, 26]] }; //Fisher
     trainerSpriteClearFix[38] = { start: [[33, 13]] }; //Swimmer M
     trainerSpriteClearFix[40] = { start: [[40, 17], [41, 18], [42, 19]] }; //Sailor
     trainerSpriteClearFix[42] = { start: [[22, 23]] }; //Girl3
@@ -642,8 +642,7 @@ namespace RomReader {
     trainerSpriteClearFix[61] = { start: [[8, 29], [10, 35], [22, 37], [23, 38], [42, 37], [27, 23]] }; //Twins /*36 in Chatty Crystal*/
     // trainerSpriteClearFix[63] = { start: [[18, 23], [19, 22], [35, 29], [36, 28], [28, 43]] }; //Azure (TPP Red replacement for Pyrite)
     trainerSpriteClearFix[64] = { start: [[19, 21], [20, 20]] }; //Blue
-    // trainerSpriteClearFix[65] = { stop: [[19, 33], [19, 34], [20, 34]] }; //Officer /*39 in Chatty Crystal*/
-    trainerSpriteClearFix[66] = { stop: [[19, 33], [19, 34], [20, 34]] }; //Officer (Peridot)
+    trainerSpriteClearFix[65] = { stop: [[19, 33], [19, 34], [20, 34]] }; //Officer /*39 in Chatty Crystal*/
 
     // Black and White 3: Genesis
     // trainerSpriteClearFix[25] = trainerSpriteClearFix[26] = { start: [[12, 17], [14, 18], [16, 19], [17, 20], [19, 21], [20, 22], [22, 23], [24, 24], [25, 25], [26, 26]] };
@@ -674,6 +673,26 @@ namespace RomReader {
     // trainerSpriteClearFix[60] = { stop: [[19, 33], [19, 34], [20, 34]] }; //Officer
     // trainerSpriteClearFix[72] = { start: [[22, 32], [32, 32], [33, 35], [33, 40]] }; //Bugsy
 
+    // Peridot
+    // Peridot shifts the original trainers up 1
+    Object.keys(trainerSpriteClearFix).reverse().map(k => trainerSpriteClearFix[parseInt(k) + 1] = trainerSpriteClearFix[parseInt(k)]);
+    trainerSpriteClearFix[1] = { start: [[35, 16], [38, 21], [39, 22], [37, 22], [36, 26], [36, 28]] }; //
+    trainerSpriteClearFix[2] = { clearDiagonal: true, stop: [[10, 11], [9, 14], [10, 15], [40, 29], [39, 31]] }; //
+    trainerSpriteClearFix[5] = { start: [[22, 47]] }; //Pryce?
+    trainerSpriteClearFix[7] = {}; //
+    trainerSpriteClearFix[6] = { start: [[21, 31]] }; //
+    trainerSpriteClearFix[8] = { start: [[20, 28], [28, 28]] }; //
+    trainerSpriteClearFix[12] = { start: [[39, 34], [38, 35]] }; //
+    trainerSpriteClearFix[13] = { start: [[17, 10], [26, 49]] }; //
+    trainerSpriteClearFix[14] = { start: [[24, 26], [31, 24]] }; //
+    trainerSpriteClearFix[15] = { start: [[10, 9], [12, 9], [5, 17], [14, 17], [15, 45], [20, 46], [13, 48], [20, 48], [37, 26], [36, 31], [42, 29], [42, 31]] }; //
+    trainerSpriteClearFix[16] = { start: [[16, 26], [24, 23], [41, 25]] }; //
+    trainerSpriteClearFix[47] = { start: [[34, 17], [34, 24]] }; //
+    trainerSpriteClearFix[56] = { start: [[24, 29], [22, 18]] }; //
+    trainerSpriteClearFix[61] = {}; // Kimono Girl
+    trainerSpriteClearFix[65] = { start: [[33, 27], [33, 31], [34, 36]] }; //
+    trainerSpriteClearFix[67] = { start: [[34, 17], [34, 24]] }; //
+    trainerSpriteClearFix[68] = { start: [[39, 34], [38, 35]] }; //
 
     interface Gen2Item extends Pokemon.Item {
         price: number;

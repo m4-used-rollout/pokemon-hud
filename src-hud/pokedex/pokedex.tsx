@@ -1,7 +1,7 @@
 /// <reference path="../pokesprite.tsx" />
 /// <reference path="../trainersprite.tsx" />
 
-const DEVMODE = true;
+const DEVMODE = false;
 
 type dexProps = { seen: number[], owned: number[], noDisplay?: boolean };
 type dexState = { newEntry: number, scrollTo: number, firstEntry: boolean };
@@ -62,7 +62,7 @@ class Pokedex extends React.Component<dexProps, dexState> {
             }
         }
         let style = { transform: state.scrollTo ? `translateY(${state.scrollTo}%)` : null };
-        return <div className={`pokedex ${state.newEntry ? "new-entry" : ""}`} data-region={(typeof config.dexName === "undefined" ? config.mainRegion : config.dexName) || "National"}>
+        return <div className={`pokedex ${state.newEntry ? "new-entry" : ""} ${DEVMODE ? "show-all" : ""}`} data-region={(typeof config.dexName === "undefined" ? config.mainRegion : config.dexName) || "National"}>
             <div className="pokemon-display">
                 <ul className="pokemon-list" style={style}>
                     {mons}
