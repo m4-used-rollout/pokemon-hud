@@ -324,9 +324,17 @@ namespace RamReader {
             // }
         }
         protected Options2Spec: OptionsSpec = {
-            menu_account: { // Removed for Prism
-                0: 'Off',
-                1: 'On'
+            // menu_account: { // Removed for Prism
+            //     0: 'Off',
+            //     1: 'On'
+            // }
+            clock_view: { // Peridot
+                 0: 'Off',
+                 1: 'On'
+             },
+             give_nicknames: { // Peridot
+                2: 'Off',
+                0: 'On'
             }
             // hold_to_mash: { // Prism
             //     0: 'None',

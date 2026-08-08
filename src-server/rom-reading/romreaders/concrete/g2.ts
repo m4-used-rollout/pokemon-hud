@@ -17,7 +17,8 @@ namespace RomReader {
 
     const grassEncounterRates = [30, 30, 20, 10, 5, 4, 1];
     //const grassEncounterRates = [20, 15, 15, 15, 10, 10, 5, 5, 4, 1]; // BW3
-    const surfEncounterRates = [60, 30, 10];
+    // const surfEncounterRates = [60, 30, 10];
+    const surfEncounterRates = [50, 20, 15, 10, 5]; // Peridot
     const encounterTimesOfDay: (keyof GrassSummary["encounters"])[] = ['morning', 'day', 'night'];
     const fishingRodIds = { oldRod: 58, goodRod: 59, superRod: 61 };
     const fishingRods: (keyof typeof fishingRodIds)[] = ['oldRod', 'goodRod', 'superRod'];
@@ -883,7 +884,7 @@ namespace RomReader {
             let switchFish = this.symTable[config.TimeFishGroups] ? this.ReadArray(romData, this.symTable[config.TimeFishGroups], this.isCrystal16 ? 6 : 4, 255, true).map(fish => ({ day: this.isCrystal16 ? fish.readUInt16LE(1) : fish[0], night: this.isCrystal16 ? fish.readUInt16LE(4) : fish[2] })) : [];
             this.fishingSummary.timeFishGroups = this.symTable[config.TimeFishGroups] ? this.ReadArray(romData, this.symTable[config.TimeFishGroups], this.isCrystal16 ? 6 : 4, 22, true).map(fish => ({ day: { species: this.isCrystal16 ? fish.readUInt16LE(1) : fish[0], level: this.isCrystal16 ? fish[0] : fish[1] }, night: { species: this.isCrystal16 ? fish.readUInt16LE(4) : fish[2], level: fish[3] } })) : [];
             // switchFish.unshift({ day: 0, night: 0 });
-            const fishGroupHeaderBytes = 8; // 7 BW3
+            const fishGroupHeaderBytes = 7; // 7 BW3, Peridot. 8 normally
             const fishBank = this.LinearAddressToBanked(this.symTable[config.FishingWildsOffset]).bank, fishEncounterGroupsStartAddr = this.BankAddressToLinear(fishBank, romData.readUInt16LE(this.symTable[config.FishingWildsOffset] + 1));
             let fishEncounterGroups = this.ReadArray(romData.slice(this.symTable[config.FishingWildsOffset], fishEncounterGroupsStartAddr), 0, fishGroupHeaderBytes).map((header, i, arr) => {
                 let nibbleRate = header[0] / 255;
@@ -900,9 +901,9 @@ namespace RomReader {
                     summary.encounters[rodType] = this.ReadArray(romData.slice(addr, !nextAddr || nextAddr < addr ? addr + 255 : nextAddr), 0, this.isCrystal16 ? 4 : 3, 4)
                         .map(enc => ({ rate: Math.round(enc[0] * 100 / 255), species: this.isCrystal16 ? enc.readUInt16LE(2) : enc[1], level: enc[this.isCrystal16 ? 1 : 2] }));
                 }
-                let oldRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(2)),// 1 Bw3
-                    goodRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(4)), // 3 BW3
-                    superRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(6)), // 5 BW3
+                let oldRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(1)),// 1 BW3, Peridot. 2 normally
+                    goodRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(3)), // 3 BW3, Peridot. 4 normally
+                    superRod = this.BankAddressToLinear(fishBank, header.readUInt16LE(5)), // 5 BW3, Peridot. 6 normally
                     next = (arr[i + 1] ? this.BankAddressToLinear(fishBank, arr[i + 1].readUInt16LE(1)) : null);
                 processFishEncs(oldRod, goodRod, "oldRod");
                 processFishEncs(goodRod, superRod, "goodRod");
