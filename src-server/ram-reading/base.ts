@@ -619,7 +619,7 @@ namespace RamReader {
             return this.CallEmulator(callUrl);
         }
 
-        protected GameStatsMapping = new Array<string>();
+        protected GameStatsMapping = new Array<string | null>();
 
         protected ParseGameStats(statArr: number[]) {
             const stats: { [key: string]: number } = {};

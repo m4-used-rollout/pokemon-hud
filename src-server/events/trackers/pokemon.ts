@@ -162,9 +162,9 @@ namespace Events {
                 .forEach(c => state.events.push({ group: "Pokemon", name: c.species, time: new Date(c.time).toISOString(), traded: state.id && c.otId && state.id.toString() != c.otId || undefined } as TPP.Event));
             state.game_stats = state.game_stats || {};
             state.game_stats["Pokémon Caught"] = knowns.length;
-            delete state.game_stats["Pokémon Caught While Fishing"];
-            knowns.map(k => k.caughtIn).filter((c, i, arr) => c && arr.indexOf(c) == i)
-                .forEach(ball => state.game_stats[`Pokémon Caught in a ${ball}`] = knowns.filter(k => k.caughtIn == ball).length);
+            // delete state.game_stats["Pokémon Caught While Fishing"];
+            // knowns.map(k => k.caughtIn).filter((c, i, arr) => c && arr.indexOf(c) == i)
+            //     .forEach(ball => state.game_stats[`Pokémon Caught in a ${ball}`] = knowns.filter(k => k.caughtIn == ball).length);
 
             this.pokerus.forEach(pkrs => state.events.push({ group: "Caught Pokerus", name: pkrs.name, time: pkrs.timestamp }));
 

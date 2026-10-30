@@ -61,6 +61,11 @@ declare namespace TPP {
         phone_book?: string[];
         pikachu_happiness?: number;
         rematch_available?: number;
+        roamers?: {
+            species: number;
+            map_id: number;
+            map_bank?: number;
+        }[],
         time?: {
             tod?: string;
             d: string;

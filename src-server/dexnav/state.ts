@@ -242,6 +242,19 @@ namespace TPP.Server.DexNav {
             if (!RomData.CheckIfCanSurf(runState)) {
                 delete this.KnownEncounters.surfing;
             }
+
+            (runState.roamers || []).forEach(roamer => {
+            if (roamer.map_id == runState.map_id && (typeof roamer.map_bank === 'undefined' || roamer.map_bank == runState.map_bank))
+                this.KnownEncounters.grass.push({
+                    speciesId: roamer.species,
+                    dexNum: RomData.GetSpecies(roamer.species).dexNumber,
+                    owned: monIsOwned({ species: RomData.GetSpecies(roamer.species) } as Pokemon.EncounterMon),
+                    form: 0,
+                    rate: 0,
+                    categoryIcon: "roamer",
+                    requiredItemId: 0
+                });
+            });
         }
 
         private PopulateCompletionTotals(allMapEncounters: Pokemon.EncounterSet, runState: TPP.RunStatus) {

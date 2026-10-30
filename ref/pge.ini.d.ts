@@ -289,4 +289,6 @@ declare interface PGEINI {
     "gBattleMons": string;
     "gBattleMonsBytes": string;
     "InBattleAddr": string;
+    "sRoamerLocation": string;
+    "RoamerOffset": string;
 }

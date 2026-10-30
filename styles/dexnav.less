@@ -225,7 +225,8 @@
                     background-size: contain;
                     image-rendering: pixelated;
                     background-repeat: no-repeat;
-                    filter: drop-shadow(1px -1px 0 black)
+                    filter: drop-shadow(1px -1px 0 black);
+                    z-index: 2;
                 }
 
                 &.surfing, &.fishing {
@@ -245,6 +246,8 @@
                         background-image:url("img/dexnav/terrain/surf.png");
                         -webkit-mask-image:linear-gradient(to top, black 0%,black 25%,transparent 60%, transparent 100%);
                         z-index: -1;
+
+                        filter:grayscale(100%);  // Ghost Grey
                     }
                 }
 
@@ -351,6 +354,8 @@
                 white-space: nowrap;
                 max-width: 65vw;
                 z-index: 2;
+
+                filter:grayscale(100%);  // Ghost Grey
 
                 .name {
                     //font-size: 1.2em; //use the extra space in 3DS mode
@@ -460,6 +465,8 @@
                         margin:auto;
                     }
                 }
+
+                filter:grayscale(100%);  // Ghost Grey
             }
             img.type {
                 border-radius: 50%;
@@ -671,6 +678,8 @@
     white-space: nowrap;
     .text-outline(black);
     z-index:2;
+
+    filter:grayscale(100%);  // Ghost Grey
 
     &:before {
         box-sizing: border-box;

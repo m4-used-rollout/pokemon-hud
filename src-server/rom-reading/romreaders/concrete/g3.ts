@@ -84,11 +84,16 @@ namespace RomReader {
                 this.types = touhouTypes;
                 this.shouldFixCaps = false; //some of Touhoumon is already decapped
             }
+
             if (this.isCFRU) {
                 this.shouldFixCaps = false;
                 this.types[0x09] = "Mystery";
                 this.types[0x13] = "Roostless";
                 this.types[0x14] = "Blank";
+            }
+
+            if (romFileLocation.toLowerCase().includes("ghostgrey")) {
+                this.shouldFixCaps = false;
             }
 
             this.gfRomHeader = this.ParseGFRomHeader(romData);
@@ -214,6 +219,8 @@ namespace RomReader {
         }
 
         MapCaughtBallId(ballId: number) {
+            if (this.romHeader == "BPRE")
+                return ballId;
             if (ballId > this.ballIds.length)
                 return this.ballIds[this.ballIds.length - 1];
             return this.ballIds[ballId];

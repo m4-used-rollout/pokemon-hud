@@ -305,6 +305,22 @@ namespace RamReader {
                     game_stats: this.ParseGameStats(this.rom.ReadArray(data, 4, 4, parseInt(this.rom.config.GameStatsBytes, 16) / 4).map(s => (s.readUInt32LE(0) ^ key) >>> 0))
                 };
             })),
+            //Roamer
+            this.rom.config.RoamerOffset && this.rom.config.sRoamerLocation && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.sRoamerLocation}/2/${this.rom.config.SaveBlock1Address}+${this.rom.config.RoamerOffset}/14`, this.WrapBytes(data => {
+                const roamers: TPP.TrainerData["roamers"] = [];
+                const species = data.readUInt16LE(2 + 0x8);
+                const active = data.readUInt8(2 + 0x13);
+                if (species && !!active) {
+                    roamers.push({
+                        species,
+                        map_id: data.readUInt8(1),
+                        map_bank: data.readUInt8(0)
+                    });
+                }
+                return {
+                    roamers
+                } as TPP.TrainerData;
+            })),
             //Badges Touhoumon
             this.rom.types[0] == "Illusion" && this.CachedEmulatorCaller<TPP.TrainerData>(`ReadByteRange/${this.rom.config.SaveBlock1Address}+${this.rom.config.FlagsOffset}/290`, this.WrapBytes(data => {
                 const kantoBadges = (data.readUInt16LE(parseInt(this.rom.config.BadgesOffset, 16)) >>> 0) % 0x100;
@@ -765,7 +781,7 @@ namespace RamReader {
             "Steps Taken", this.rom.isCFRU ? "Items Found by Pickup" : "Interviews", "Battles Fought (Total)", "Battles Fought (Wild)", "Battles Fought (Trainer)", "Hall of Fame Entries",
             "Pokémon Caught", "Pokémon Caught While Fishing", "Eggs Hatched", "Pokémon Evolved", "Pokémon Center Uses", "Naps Taken at Home",
             "Safari Zone Trips", "Trees Cut", "Rocks Smashed", this.rom.isCFRU ? "Hidden Items Found" : "Secret Bases Moved", "Pokémon Traded",
-            this.rom.isCFRU ? "Trash Cans Checked" : "Blackouts", "Link Battles Won", "Link Battles Lost", "Link Battles Tied", "Splash Uses", "Struggle Uses",
+            this.rom.isCFRU ? "Trash Cans Checked" : /*"Blackouts"*/ null, "Link Battles Won", "Link Battles Lost", "Link Battles Tied", "Splash Uses", "Struggle Uses",
             "Hit the Jackpot", this.rom.isCFRU ? "Trainer Tips Gathered" : "Consecutive Roulette Wins", this.rom.isCFRU ? "Frontier Battles Won" : "Battle Tower Attempts", this.rom.isCFRU ? "Times Mined" : null, this.rom.isCFRU ? "Best Battle Facility Streak" : "Best Battle Tower Streak",
             this.rom.isCFRU ? "Pokémon Caught Today" : "Pokéblocks Made", this.rom.isCFRU ? "Exp Earned Today" : "Pokéblocks Made With Friends", this.rom.isCFRU ? "Items Sold to Maniac" : "Link Contests Won", this.rom.isCFRU ? "Fossils Revived" : "Contests Entered", this.rom.isCFRU ? "Headbutt Encounters" : "Contests Won",
             "Shopping Trips", "Itemfinder Uses", "Rainstorms Soaked By", "Pokédex Views", "Ribbons Earned", "Ledges Jumped",

@@ -18,6 +18,8 @@ namespace Events {
                 return this._badges;
             switch ((this.config.mainRegion || "").toLowerCase()) {
                 case "kanto":
+                    if (this.config.romFile && this.config.romFile[0].toLowerCase().indexOf("ghostgrey") >= 0)
+                        return this._badges = ["Volcano", "Boulder", "Shock", "Plague", "Chaos", "Famine", "Flood", "Hope"]; //Ghost Grey
                     return this._badges = ["Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth", "Zephyr", "Hive", "Plain", "Fog", "Mineral", "Storm", "Glacier", "Rising"];
                 case "johto":
                     if (this.config.generation == 2)
