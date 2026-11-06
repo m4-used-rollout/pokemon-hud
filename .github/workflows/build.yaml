@@ -17,6 +17,7 @@ jobs:
       - name: Build
         run: |
           npm install
+          cp config-default.json config.json
           gulp build
       - name: Upload
         uses: actions/upload-artifact@v7
