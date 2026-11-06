@@ -1,11 +1,11 @@
 name: Build
-on: workflow_dispatch
+on: [pull_request, workflow_dispatch]
 jobs:
   build:
     runs-on: windows-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [24.x]
     steps:
       - uses: actions/checkout@v4
       - uses: milliewalky/setup-7-zip@v2
@@ -45,4 +45,4 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: win32-x64
-          path: release/v5.0.2/win32-x64
+          path: release/*/win32-x64
