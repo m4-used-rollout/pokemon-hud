@@ -32,18 +32,17 @@ jobs:
           Invoke-WebRequest -Uri $url -OutFile $outputFile
           Write-Host "Download complete."
 
-      - name: Build
+      - name: Install Dependencies
         run: |
           npm install
+          
+      - name: Build
+        run: |
           copy config-default.json config.json
           gulp build
+          
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
-          # Name of the artifact to upload.
-          # Optional. Default is 'artifact'
           name: win32-x64
-      
-          # A file, directory or wildcard pattern that describes what to upload
-          # Required.
-          path: release/win32-x64
+          path: release/v5.0.2/win32-x64
