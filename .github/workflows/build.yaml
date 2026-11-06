@@ -15,6 +15,23 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Pre-seed Electron v5.0.2 Cache
+        shell: powershell
+        run: |
+          # Ensure the exact target cache folder structure exists
+          $cacheDir = "cache\v5.0.2"
+          if (!(Test-Path -Path $cacheDir)) {
+              New-Item -ItemType Directory -Force -Path $cacheDir
+          }
+          
+          # Download the official, uncorrupted binary directly from GitHub
+          $url = "https://github.com"
+          $outputFile = Join-Path $cacheDir "electron-v5.0.2-win32-x64.zip"
+          
+          Write-Host "Downloading Electron binary from $url to $outputFile..."
+          Invoke-WebRequest -Uri $url -OutFile $outputFile
+          Write-Host "Download complete."
+
       - name: Build
         run: |
           npm install
