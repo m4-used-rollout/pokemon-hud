@@ -24,8 +24,8 @@ jobs:
               New-Item -ItemType Directory -Force -Path $cacheDir
           }
           
-          # Download the official, uncorrupted binary directly from GitHub
-          $url = "https://github.com"
+          # Download the official binary directly from Huawei's mirror
+          $url = "https://mirrors.huaweicloud.com/electron/5.0.2/"
           $outputFile = Join-Path $cacheDir "electron-v5.0.2-win32-x64.zip"
           
           Write-Host "Downloading Electron binary from $url to $outputFile..."
